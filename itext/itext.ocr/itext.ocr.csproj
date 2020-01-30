@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net4</TargetFramework>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <Version>0.0.1-SNAPSHOT</Version>
+    <Company>iText Group NV</Company>
+    <Product>iText</Product>
+    <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\itext.ocr.xml</DocumentationFile>
+  </PropertyGroup>
+</Project>
