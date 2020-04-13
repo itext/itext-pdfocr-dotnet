@@ -172,7 +172,7 @@ namespace iText.Ocr {
             String result = null;
             String pdfPath = null;
             try {
-                pdfPath = UtilService.GetTempDir() + System.Guid.NewGuid().ToString() + ".pdf";
+                pdfPath = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".pdf";
                 DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, languages, fontPath);
                 result = GetTextFromPdfLayer(pdfPath, "Text Layer", page);
             }
@@ -262,7 +262,7 @@ namespace iText.Ocr {
             String result = null;
             String txtPath = null;
             try {
-                txtPath = UtilService.GetTempDir() + System.Guid.NewGuid().ToString() + ".txt";
+                txtPath = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".txt";
                 DoOcrAndSaveToTextFile(tesseractReader, input, txtPath, languages);
                 result = GetTextFromTextFile(new FileInfo(txtPath));
             }
@@ -457,7 +457,7 @@ namespace iText.Ocr {
             bool result = false;
             String resutTxtFile = null;
             try {
-                resutTxtFile = UtilService.GetTempDir() + System.Guid.NewGuid().ToString() + ".txt";
+                resutTxtFile = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".txt";
                 DoOcrAndSaveToTextFile(tesseractReader, imgPath, resutTxtFile, languages);
                 result = CompareTxtFiles(expectedPath, resutTxtFile);
             }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>itext7.pdfocr</id>
+    <version>0.0.1-SNAPSHOT</version>
+    <title>iText 7 pdfOcr</title>
+    <authors>iText Software</authors>
+    <owners>iText Software</owners>
+    <description>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to
+    retrieve text from the image.</description>
+    <summary>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from the image.</summary>
+    <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
+    <language>en-US</language>
+  </metadata>
+</package>

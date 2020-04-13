@@ -50,17 +50,6 @@ namespace iText.Ocr {
             return pixels * PX_TO_PT;
         }
 
-        /// <summary>Get system temporary directory.</summary>
-        /// <returns>String</returns>
-        public static String GetTempDir() {
-            String tempDir = Environment.GetEnvironmentVariable("java.io.tmpdir") == null ? Environment.GetEnvironmentVariable
-                ("TEMP") : Environment.GetEnvironmentVariable("java.io.tmpdir");
-            if (!(tempDir.EndsWith("/") || tempDir.EndsWith("\\"))) {
-                tempDir = tempDir + System.IO.Path.DirectorySeparatorChar;
-            }
-            return tempDir;
-        }
-
         /// <summary>Delete file using provided path.</summary>
         /// <param name="pathToFile">String</param>
         public static void DeleteFile(String pathToFile) {
@@ -92,7 +81,7 @@ namespace iText.Ocr {
              textPositioning) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             foreach (FileInfo inputFile in inputFiles) {
-                if (inputFile != null && inputFile.Exists) {
+                if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
                     Document doc = Supremes.Dcsoup.Parse(new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read), encodingUTF8
                         , inputFile.FullName);
                     Elements pages = doc.GetElementsByClass("ocr_page");

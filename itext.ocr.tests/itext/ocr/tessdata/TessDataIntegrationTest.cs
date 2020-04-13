@@ -421,7 +421,7 @@ namespace iText.Ocr.Tessdata {
             tesseractReader.SetUserWords("fra", userWords);
             String result = GetOCRedTextFromTextFile(tesseractReader, imgPath);
             NUnit.Framework.Assert.IsTrue(result.Contains(userWords[0]) || result.Contains(userWords[1]));
-            NUnit.Framework.Assert.AreEqual(UtilService.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "fra.user-words"
+            NUnit.Framework.Assert.AreEqual(TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "fra.user-words"
                 , tesseractReader.GetUserWordsFilePath());
             tesseractReader.SetUserWords("eng", new List<String>());
             tesseractReader.SetLanguages(new List<String>());
@@ -438,7 +438,7 @@ namespace iText.Ocr.Tessdata {
                 result = result.Replace("\n", "").Replace("\f", "");
                 result = iText.IO.Util.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
                 NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
-                NUnit.Framework.Assert.AreEqual(UtilService.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "eng.user-words"
+                NUnit.Framework.Assert.AreEqual(TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "eng.user-words"
                     , tesseractReader.GetUserWordsFilePath());
             }
             finally {

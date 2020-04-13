@@ -192,7 +192,7 @@ namespace iText.Ocr {
                     }
                     DoTesseractOcr(input, tempFiles, IOcrReader.OutputFormat.txt, page);
                     foreach (FileInfo tmpFile in tempFiles) {
-                        if (tmpFile.Exists) {
+                        if (File.Exists(System.IO.Path.Combine(tmpFile.FullName))) {
                             data.Append(UtilService.ReadTxtFile(tmpFile));
                         }
                         else {
@@ -306,8 +306,8 @@ namespace iText.Ocr {
         /// <param name="language">String</param>
         /// <param name="inputStream">InputStream</param>
         public virtual void SetUserWords(String language, Stream inputStream) {
-            String userWordsFileName = UtilService.GetTempDir() + System.IO.Path.DirectorySeparatorChar + language + "."
-                 + DEFAULT_USER_WORDS_SUFFIX;
+            String userWordsFileName = TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + language +
+                 "." + DEFAULT_USER_WORDS_SUFFIX;
             if (!GetLanguagesAsList().Contains(language)) {
                 if ("eng".Equals(language.ToLowerInvariant())) {
                     IList<String> languagesList = GetLanguagesAsList();
@@ -379,14 +379,16 @@ namespace iText.Ocr {
         public virtual void ValidateLanguages(IList<String> languagesList) {
             String suffix = ".traineddata";
             if (languagesList.Count == 0) {
-                if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + "eng" + suffix).Exists) {
+                if (!File.Exists(System.IO.Path.Combine(GetTessData() + System.IO.Path.DirectorySeparatorChar + "eng" + suffix
+                    ))) {
                     LOGGER.Error("eng" + suffix + " doesn't exist in provided directory");
                     throw new OCRException(OCRException.INCORRECT_LANGUAGE).SetMessageParams("eng" + suffix, GetTessData());
                 }
             }
             else {
                 foreach (String lang in languagesList) {
-                    if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix).Exists) {
+                    if (!File.Exists(System.IO.Path.Combine(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix
+                        ))) {
                         LOGGER.Error(lang + suffix + " doesn't exist in provided directory");
                         throw new OCRException(OCRException.INCORRECT_LANGUAGE).SetMessageParams(lang + suffix, GetTessData());
                     }
@@ -398,7 +400,7 @@ namespace iText.Ocr {
         /// <param name="extension">String</param>
         /// <returns>File</returns>
         private FileInfo CreateTempFile(String extension) {
-            String tmpFileName = UtilService.GetTempDir() + System.Guid.NewGuid().ToString() + extension;
+            String tmpFileName = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + extension;
             return new FileInfo(tmpFileName);
         }
     }

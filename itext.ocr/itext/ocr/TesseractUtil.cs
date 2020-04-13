@@ -91,7 +91,6 @@ namespace iText.Ocr
                     process = System.Diagnostics.Process.Start(pb);
                 }
                 bool cmdSucceeded = process.WaitForExit(3 * 60 * 60 * 1000);
-                Console.WriteLine("cmdSucceeded " + cmdSucceeded);
                 if (!cmdSucceeded)
                 {
                     LOGGER.Error("Error occurred during running command: " + String.Join(" ", command));
@@ -100,8 +99,9 @@ namespace iText.Ocr
             }
             catch (Exception e)
             {
-                throw new OCRException(OCRException.TESSERACT_FAILED);
                 LOGGER.Error("Error occurred:" + e.Message);
+                Console.WriteLine("Error occurred:" + e.Message);
+                throw new OCRException(OCRException.TESSERACT_FAILED);
             }
         }
 
@@ -137,7 +137,7 @@ namespace iText.Ocr
             // preprocess image
             pix = PreprocessPix(pix);
             // save preprocessed file
-            String tmpFileName = UtilService.GetTempDir() + System.Guid.NewGuid().ToString() + ".png";
+            String tmpFileName = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".png";
             pix.Save(tmpFileName, ImageFormat.Png);
             DestroyPix(pix);
             return tmpFileName;
@@ -414,6 +414,14 @@ namespace iText.Ocr
         public static System.Drawing.Bitmap ConvertPixToImage(Pix pix)
         {
             return PixConverter.ToBitmap(pix);
+        }
+
+        /// <summary>Get system temporary directory.</summary>
+        /// <returns>String</returns>
+        public static String GetTempDir()
+        {
+            String tempDir = System.IO.Path.GetTempPath();
+            return tempDir;
         }
     }
 }
