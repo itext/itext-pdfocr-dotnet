@@ -188,9 +188,10 @@ namespace iText.Ocr {
                 for (int page = 1; page <= numOfPages; page++) {
                     IList<FileInfo> tempFiles = new List<FileInfo>();
                     for (int i = 0; i < numOfFiles; i++) {
-                        tempFiles.Add(CreateTempFile(".txt"));
+                        String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
+                        tempFiles.Add(CreateTempFile(extension));
                     }
-                    DoTesseractOcr(input, tempFiles, IOcrReader.OutputFormat.txt, page);
+                    DoTesseractOcr(input, tempFiles, outputFormat, page);
                     foreach (FileInfo tmpFile in tempFiles) {
                         if (File.Exists(System.IO.Path.Combine(tmpFile.FullName))) {
                             data.Append(UtilService.ReadTxtFile(tmpFile));
@@ -238,7 +239,7 @@ namespace iText.Ocr {
                     IDictionary<int, IList<TextInfo>> pageData = UtilService.ParseHocrFile(tempFiles, GetTextPositioning());
                     LOGGER.Info((pageData.Keys.Count > 1 ? pageData.Keys.Count : page) + " page(s) were read");
                     if (IsPreprocessingImages()) {
-                        imageData.Add(page, TesseractUtil.GetValueByKey(pageData, 1));
+                        imageData.Put(page, pageData.Get(1));
                     }
                     else {
                         imageData = pageData;
@@ -275,9 +276,9 @@ namespace iText.Ocr {
                 try {
                     MemoryStream baos = new MemoryStream();
                     foreach (String word in userWords) {
-                        byte[] bytesWord = System.Text.Encoding.UTF8.GetBytes(word);
+                        byte[] bytesWord = word.GetBytes();
                         baos.Write(bytesWord, 0, bytesWord.Length);
-                        byte[] bytesSeparator = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
+                        byte[] bytesSeparator = Environment.NewLine.GetBytes();
                         baos.Write(bytesSeparator, 0, bytesSeparator.Length);
                     }
                     Stream inputStream = new MemoryStream(baos.ToArray());
@@ -379,16 +380,14 @@ namespace iText.Ocr {
         public virtual void ValidateLanguages(IList<String> languagesList) {
             String suffix = ".traineddata";
             if (languagesList.Count == 0) {
-                if (!File.Exists(System.IO.Path.Combine(GetTessData() + System.IO.Path.DirectorySeparatorChar + "eng" + suffix
-                    ))) {
+                if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + "eng" + suffix).Exists) {
                     LOGGER.Error("eng" + suffix + " doesn't exist in provided directory");
                     throw new OCRException(OCRException.INCORRECT_LANGUAGE).SetMessageParams("eng" + suffix, GetTessData());
                 }
             }
             else {
                 foreach (String lang in languagesList) {
-                    if (!File.Exists(System.IO.Path.Combine(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix
-                        ))) {
+                    if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix).Exists) {
                         LOGGER.Error(lang + suffix + " doesn't exist in provided directory");
                         throw new OCRException(OCRException.INCORRECT_LANGUAGE).SetMessageParams(lang + suffix, GetTessData());
                     }
@@ -400,7 +399,7 @@ namespace iText.Ocr {
         /// <param name="extension">String</param>
         /// <returns>File</returns>
         private FileInfo CreateTempFile(String extension) {
-            String tmpFileName = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + extension;
+            String tmpFileName = TesseractUtil.GetTempDir() + Guid.NewGuid().ToString() + extension;
             return new FileInfo(tmpFileName);
         }
     }

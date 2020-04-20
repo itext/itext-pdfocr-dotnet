@@ -28,7 +28,7 @@ namespace iText.Ocr.General {
         [NUnit.Framework.Test]
         public virtual void TestFontColorInMultiPagePdf() {
             String path = testImagesDirectory + "multipage.tiff";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             try {
                 tesseractReader.SetPathToTessData(GetTessDataDirectory());
@@ -178,7 +178,7 @@ namespace iText.Ocr.General {
         [NUnit.Framework.Test]
         public virtual void TestFontColor() {
             String path = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ));
@@ -206,7 +206,7 @@ namespace iText.Ocr.General {
         [NUnit.Framework.Test]
         public virtual void TestImageWithoutText() {
             String filePath = testImagesDirectory + "pantone_blue.jpg";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(filePath);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ));
@@ -320,7 +320,7 @@ namespace iText.Ocr.General {
         private String GetTextUsingTesseractFromImage(IOcrReader tesseractReader, FileInfo file) {
             int page = 1;
             IDictionary<int, IList<TextInfo>> data = tesseractReader.ReadDataFromInput(file);
-            IList<TextInfo> pageText = TesseractUtil.GetValueByKey(data, page);
+            IList<TextInfo> pageText = data.Get(page);
             if (pageText.Count > 0) {
                 NUnit.Framework.Assert.AreEqual(4, pageText[0].GetCoordinates().Count);
             }

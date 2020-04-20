@@ -366,18 +366,7 @@ namespace iText.Ocr
         public static void DestroyPixa(PixArray pixa)
         {
             pixa.Dispose();
-        }
-
-        /// <summary>Return vaue by provided key or empty list if key doesn't exist.</summary>
-        /// <param name="data">Map<Integer, List&lt;textinfo>&gt;</param>
-        /// <param name="key">key</param>
-        /// <returns>List<textinfo></returns>
-        public static IList<TextInfo> GetValueByKey(IDictionary<int, IList<TextInfo>> data, int key)
-        {
-            IList<TextInfo> value = new List<TextInfo>();
-            data.TryGetValue(key, out value);
-            return value;
-        }
+        }      
 
         /// <summary>
         /// Helper to perform ocr for the provided Pix object.

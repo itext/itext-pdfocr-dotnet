@@ -26,7 +26,7 @@ namespace iText.Ocr.Pdfa3u {
             String imgPath = testImagesDirectory + "numbers_01.jpg";
             FileInfo file = new FileInfo(imgPath);
             String expected = "619121";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ), DeviceCmyk.BLACK, IPdfRenderer.ScaleMode.scaleToFit);
             PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath), null);
@@ -54,7 +54,7 @@ namespace iText.Ocr.Pdfa3u {
         [NUnit.Framework.Test]
         public virtual void TestDefaultFontInPdf() {
             String path = testImagesDirectory + "example_01.BMP";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ), DeviceRgb.BLACK);
@@ -77,7 +77,7 @@ namespace iText.Ocr.Pdfa3u {
         [NUnit.Framework.Test]
         public virtual void TestCustomFontInPdf() {
             String imgPath = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(imgPath);
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ));
@@ -102,7 +102,7 @@ namespace iText.Ocr.Pdfa3u {
         [NUnit.Framework.Test]
         public virtual void TestInvalidCustomFontInPdf() {
             String path = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ));
@@ -141,7 +141,7 @@ namespace iText.Ocr.Pdfa3u {
         [NUnit.Framework.Test]
         public virtual void TestPdfDefaultMetadata() {
             String path = testImagesDirectory + "example_04.png";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ), DeviceRgb.BLACK);
@@ -206,7 +206,7 @@ namespace iText.Ocr.Pdfa3u {
         [NUnit.Framework.Test]
         public virtual void TestPdfCustomMetadata() {
             String path = testImagesDirectory + "numbers_02.jpg";
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ));

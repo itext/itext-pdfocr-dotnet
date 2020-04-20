@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.ocr", "itext.ocr\itext.ocr.csproj", "{0C4CEB00-9A56-4547-A925-5974A85A6048}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.ocr", "itext\itext.ocr\itext.ocr.csproj", "{0C4CEB00-9A56-4547-A925-5974A85A6048}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.ocr.tests", "itext.ocr.tests\itext.ocr.tests.csproj", "{D6A6EA97-1F23-448F-B700-EFF62971D234}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.ocr.tests", "itext.tests\itext.ocr.tests\itext.ocr.tests.csproj", "{D6A6EA97-1F23-448F-B700-EFF62971D234}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

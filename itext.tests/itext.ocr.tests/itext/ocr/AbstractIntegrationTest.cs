@@ -172,7 +172,7 @@ namespace iText.Ocr {
             String result = null;
             String pdfPath = null;
             try {
-                pdfPath = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".pdf";
+                pdfPath = TesseractUtil.GetTempDir() + Guid.NewGuid().ToString() + ".pdf";
                 DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, languages, fontPath);
                 result = GetTextFromPdfLayer(pdfPath, "Text Layer", page);
             }
@@ -262,7 +262,7 @@ namespace iText.Ocr {
             String result = null;
             String txtPath = null;
             try {
-                txtPath = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".txt";
+                txtPath = TesseractUtil.GetTempDir() + Guid.NewGuid().ToString() + ".txt";
                 DoOcrAndSaveToTextFile(tesseractReader, input, txtPath, languages);
                 result = GetTextFromTextFile(new FileInfo(txtPath));
             }
@@ -457,7 +457,7 @@ namespace iText.Ocr {
             bool result = false;
             String resutTxtFile = null;
             try {
-                resutTxtFile = TesseractUtil.GetTempDir() + System.Guid.NewGuid().ToString() + ".txt";
+                resutTxtFile = TesseractUtil.GetTempDir() + Guid.NewGuid().ToString() + ".txt";
                 DoOcrAndSaveToTextFile(tesseractReader, imgPath, resutTxtFile, languages);
                 result = CompareTxtFiles(expectedPath, resutTxtFile);
             }
@@ -474,8 +474,8 @@ namespace iText.Ocr {
         protected internal virtual bool CompareTxtFiles(String expectedFilePath, String resultFilePath) {
             bool areEqual = true;
             try {
-                IList<String> expected = File.ReadAllLines(System.IO.Path.Combine(expectedFilePath));
-                IList<String> result = File.ReadAllLines(System.IO.Path.Combine(resultFilePath));
+                IList<String> expected = System.IO.File.ReadAllLines(System.IO.Path.Combine(expectedFilePath));
+                IList<String> result = System.IO.File.ReadAllLines(System.IO.Path.Combine(resultFilePath));
                 if (expected.Count != result.Count) {
                     return false;
                 }

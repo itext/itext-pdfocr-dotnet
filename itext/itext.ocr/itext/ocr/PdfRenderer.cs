@@ -292,7 +292,7 @@ namespace iText.Ocr {
         public byte[] GetFont() {
             if (fontPath != null && !String.IsNullOrEmpty(fontPath)) {
                 try {
-                    return File.ReadAllBytes(System.IO.Path.Combine(fontPath));
+                    return System.IO.File.ReadAllBytes(System.IO.Path.Combine(fontPath));
                 }
                 catch (Exception e) {
                     LOGGER.Error("Cannot load provided font: " + e.Message);
@@ -356,7 +356,7 @@ namespace iText.Ocr {
             IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
                 <int, IList<TextInfo>>>();
             foreach (FileInfo inputImage in GetInputImages()) {
-                imagesTextData.Add(inputImage, DoOCRForImages(inputImage));
+                imagesTextData.Put(inputImage, DoOCRForImages(inputImage));
             }
             // create PdfDocument
             return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData);
@@ -508,8 +508,7 @@ namespace iText.Ocr {
                             ImageData imageData = imageDataList[page];
                             Rectangle imageSize = UtilService.CalculateImageSize(imageData, GetScaleMode(), GetPageSize());
                             LOGGER.Info("Started parsing image " + inputImage.Name);
-                            AddToCanvas(pdfDocument, defaultFont, imageSize, TesseractUtil.GetValueByKey(imageTextData, page + 1), imageData
-                                );
+                            AddToCanvas(pdfDocument, defaultFont, imageSize, imageTextData.Get(page + 1), imageData);
                         }
                     }
                     else {
@@ -563,7 +562,7 @@ namespace iText.Ocr {
                 if ("tiff".Equals(ext.ToLowerInvariant()) || "tif".Equals(ext.ToLowerInvariant())) {
                     int tiffPages = ImageUtil.GetNumberOfPageTiff(inputImage);
                     for (int page = 0; page < tiffPages; page++) {
-                        byte[] bytes = File.ReadAllBytes(inputImage.FullName);
+                        byte[] bytes = System.IO.File.ReadAllBytes(inputImage.FullName);
                         ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
                         images.Add(imageData);
                     }
@@ -652,7 +651,7 @@ namespace iText.Ocr {
                         float deltaX = UtilService.GetPoints(left);
                         float deltaY = imageSize.GetHeight() - UtilService.GetPoints(bottom);
                         float descent = defaultFont.GetDescent(line, fontSize);
-                        iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pdfCanvas.GetDocument(), pageMediaBox);
+                        iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
                         iText.Layout.Element.Text text = new iText.Layout.Element.Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth
                             ).SetBaseDirection(BaseDirection.LEFT_TO_RIGHT);
                         Paragraph paragraph = new Paragraph(text).SetMargin(0).SetMultipliedLeading(1);

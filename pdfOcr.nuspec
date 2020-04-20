@@ -13,7 +13,7 @@
     <language>en-US</language>
   </metadata>
   <files>
-    <file src="itext.ocr\bin\Release\itext.ocr.dll" target="lib\net461" />
-    <file src="itext.ocr\bin\Release\itext.ocr.xml" target="lib\net461" />
+    <file src="itext\itext.ocr\bin\Release\itext.ocr.dll" target="lib\net461" />
+    <file src="itext\itext.ocr\bin\Release\itext.ocr.xml" target="lib\net461" />
   </files>
 </package>

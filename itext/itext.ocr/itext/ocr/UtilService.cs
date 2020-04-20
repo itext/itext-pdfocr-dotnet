@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Common.Logging;
-using Supremes.Nodes;
 using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel.Geom;
+using iText.StyledXmlParser.Jsoup.Nodes;
+using iText.StyledXmlParser.Jsoup.Select;
 
 namespace iText.Ocr {
     /// <summary>Helper class.</summary>
@@ -34,7 +35,7 @@ namespace iText.Ocr {
         public static String ReadTxtFile(FileInfo txtFile) {
             String content = null;
             try {
-                content = iText.IO.Util.JavaUtil.GetStringForBytes(File.ReadAllBytes(txtFile.FullName), System.Text.Encoding
+                content = iText.IO.Util.JavaUtil.GetStringForBytes(System.IO.File.ReadAllBytes(txtFile.FullName), System.Text.Encoding
                     .UTF8);
             }
             catch (System.IO.IOException e) {
@@ -82,16 +83,16 @@ namespace iText.Ocr {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             foreach (FileInfo inputFile in inputFiles) {
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
-                    Document doc = Supremes.Dcsoup.Parse(new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read), encodingUTF8
-                        , inputFile.FullName);
+                    Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read
+                        ), encodingUTF8, inputFile.FullName);
                     Elements pages = doc.GetElementsByClass("ocr_page");
-                    Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile("bbox(\\s+\\d+){4}");
-                    Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile("(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)"
+                    Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*");
+                    Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
                         );
                     IList<String> searchedClasses = IOcrReader.TextPositioning.byLines.Equals(textPositioning) ? JavaUtil.ArraysAsList
                         ("ocr_line", "ocr_caption") : JavaCollectionsUtil.SingletonList<String>("ocrx_word");
-                    foreach (Element page in pages) {
-                        String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id, "page_");
+                    foreach (iText.StyledXmlParser.Jsoup.Nodes.Element page in pages) {
+                        String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id(), "page_");
                         int pageNumber = Convert.ToInt32(pageNum[pageNum.Length - 1]);
                         IList<TextInfo> textData = new List<TextInfo>();
                         if (searchedClasses.Count > 0) {
@@ -102,7 +103,7 @@ namespace iText.Ocr {
                                     objects.Add(foundElements[j]);
                                 }
                             }
-                            foreach (Element obj in objects) {
+                            foreach (iText.StyledXmlParser.Jsoup.Nodes.Element obj in objects) {
                                 String value = obj.Attr("title");
                                 Match bboxMatcher = iText.IO.Util.StringUtil.Match(bboxPattern, value);
                                 if (bboxMatcher.Success) {
@@ -114,7 +115,7 @@ namespace iText.Ocr {
                                             String coord = iText.IO.Util.StringUtil.Group(bboxCoordinateMatcher, i + 1);
                                             coordinates.Add(float.Parse(coord, System.Globalization.CultureInfo.InvariantCulture));
                                         }
-                                        textData.Add(new TextInfo(obj.Text, coordinates));
+                                        textData.Add(new TextInfo(obj.Text(), coordinates));
                                     }
                                 }
                             }
@@ -123,7 +124,7 @@ namespace iText.Ocr {
                             if (imageData.ContainsKey(pageNumber)) {
                                 pageNumber = Enumerable.Max(imageData.Keys) + 1;
                             }
-                            imageData.Add(pageNumber, textData);
+                            imageData.Put(pageNumber, textData);
                         }
                     }
                 }

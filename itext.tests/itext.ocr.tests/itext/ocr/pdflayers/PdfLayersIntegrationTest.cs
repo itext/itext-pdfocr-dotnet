@@ -58,7 +58,7 @@ namespace iText.Ocr.Pdflayers {
         [NUnit.Framework.Test]
         public virtual void TestTextFromPdfLayers() {
             String path = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testDocumentsDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testDocumentsDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             try {
                 IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
@@ -87,7 +87,7 @@ namespace iText.Ocr.Pdflayers {
         public virtual void TestTextFromPdfLayersFromMultiPageTiff() {
             bool preprocess = tesseractReader.IsPreprocessingImages();
             String path = testImagesDirectory + "multipage.tiff";
-            String pdfPath = testDocumentsDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testDocumentsDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             try {
                 tesseractReader.SetPreprocessingImages(false);
@@ -116,7 +116,7 @@ namespace iText.Ocr.Pdflayers {
 
         [NUnit.Framework.Test]
         public virtual void TestTextFromPdfLayersFromMultiPagePdf() {
-            String pdfPath = testImagesDirectory + System.Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(testImagesDirectory + "german_01.jpg"), new FileInfo
                 (testImagesDirectory + "noisy_01.png"), new FileInfo(testImagesDirectory + "numbers_01.jpg"), new FileInfo
                 (testImagesDirectory + "example_04.png"));
