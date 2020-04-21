@@ -51,14 +51,6 @@
     <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="itext.barcodes, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.barcodes.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itext.forms, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.forms.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="itext.io, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.io.dll</HintPath>
       <Private>True</Private>
@@ -75,30 +67,13 @@
       <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.pdfa.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itext.sign, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.sign.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="itext.styledxmlparser, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.styledxmlparser.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itext.svg, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.svg.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\System.Drawing.Common.4.7.0\lib\net461\System.Drawing.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="Tesseract, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\lib\net45\Tesseract.dll</HintPath>
     </Reference>
