@@ -6,8 +6,8 @@
     <title>iText 7 pdfOcr</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
-    <description>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to
-    retrieve text from the image.</description>
+    <iconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
+    <description>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from the image.</description>
     <summary>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from the image.</summary>
     <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
     <language>en-US</language>
