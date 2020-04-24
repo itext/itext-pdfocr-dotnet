@@ -14,9 +14,10 @@ using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Xobject;
 using iText.Layout.Element;
+using iText.Test;
 
 namespace iText.Ocr {
-    public class AbstractIntegrationTest {
+    public class AbstractIntegrationTest : ExtendedITextTest {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.AbstractIntegrationTest));
 
         // path to hocr script for tesseract executable

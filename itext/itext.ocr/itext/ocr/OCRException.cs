@@ -11,9 +11,11 @@ namespace iText.Ocr {
 
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
+        public const String CANNOT_READ_SPECIFIED_INPUT_IMAGE = "Cannot read input image {0}";
+
         public const String CANNOT_READ_FONT = "Cannot read font";
 
-        public const String TESSERACT_FAILED = "Tesseract failed. " + "Please check provided parameters";
+        public const String TESSERACT_FAILED = "Tesseract failed. " + "Please check provided parameters: {0}";
 
         public const String TESSERACT_FAILED_WITH_REASON = "Tesseract " + "failed. {0}";
 

@@ -60,7 +60,7 @@ namespace iText.Ocr {
                     File.Delete(System.IO.Path.Combine(pathToFile));
                 }
                 catch (System.IO.IOException e) {
-                    LOGGER.Warn("File " + pathToFile + " cannot be deleted: " + e.Message);
+                    LOGGER.Info("File " + pathToFile + " cannot be deleted: " + e.Message);
                 }
             }
         }

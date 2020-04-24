@@ -22,9 +22,6 @@ namespace iText.Ocr {
     /// set path to directory with tess data.
     /// </remarks>
     public class TesseractLibReader : TesseractReader {
-        /// <summary>TesseractExecutableReader logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.TesseractLibReader));
-
         /// <summary>Tesseract Instance.</summary>
         /// <remarks>
         /// Tesseract Instance.
@@ -95,42 +92,50 @@ namespace iText.Ocr {
         /// <param name="pageNumber">- int</param>
         public override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, IOcrReader.OutputFormat
              outputFormat, int pageNumber) {
-            ValidateLanguages(GetLanguagesAsList());
-            InitializeTesseract(outputFormat);
-            // if proprocessing is not needed and provided image is tiff,
-            // the image will be paginated and separate pages will be OCRed
-            IList<String> resultList = new List<String>();
-            if (!IsPreprocessingImages() && ImageUtil.IsTiffImage(inputImage)) {
-                resultList = GetOCRResultForMultiPage(inputImage, outputFormat);
-            }
-            else {
-                resultList.Add(GetOCRResultForSinglePage(inputImage, outputFormat, pageNumber));
-            }
-            // list of result strings is written to separate files
-            // (one for each page)
-            for (int i = 0; i < resultList.Count; i++) {
-                String result = resultList[i];
-                FileInfo outputFile = i >= outputFiles.Count ? null : outputFiles[i];
-                if (result != null && outputFile != null) {
-                    try {
-                        using (TextWriter writer = new StreamWriter(new FileStream(outputFile.FullName, FileMode.Create), System.Text.Encoding
-                            .UTF8)) {
-                            writer.Write(result);
-                        }
-                    }
-                    catch (System.IO.IOException e) {
-                        LOGGER.Error("Cannot write to file: " + e.Message);
-                        throw new OCRException(OCRException.TESSERACT_FAILED_WITH_REASON).SetMessageParams("Cannot write to file "
-                             + outputFile.FullName);
-                    }
+            try {
+                ValidateLanguages(GetLanguagesAsList());
+                InitializeTesseract(outputFormat);
+                // if proprocessing is not needed and provided image is tiff,
+                // the image will be paginated and separate pages will be OCRed
+                IList<String> resultList = new List<String>();
+                if (!IsPreprocessingImages() && ImageUtil.IsTiffImage(inputImage)) {
+                    resultList = GetOCRResultForMultiPage(inputImage, outputFormat);
                 }
                 else {
-                    LOGGER.Warn("OCR result is NULL for " + inputImage.FullName);
+                    resultList.Add(GetOCRResultForSinglePage(inputImage, outputFormat, pageNumber));
                 }
+                // list of result strings is written to separate files
+                // (one for each page)
+                for (int i = 0; i < resultList.Count; i++) {
+                    String result = resultList[i];
+                    FileInfo outputFile = i >= outputFiles.Count ? null : outputFiles[i];
+                    if (result != null && outputFile != null) {
+                        try {
+                            using (TextWriter writer = new StreamWriter(new FileStream(outputFile.FullName, FileMode.Create), System.Text.Encoding
+                                .UTF8)) {
+                                writer.Write(result);
+                            }
+                        }
+                        catch (System.IO.IOException e) {
+                            LogManager.GetLogger(GetType()).Error("Cannot write to file: " + e.Message);
+                            throw new OCRException(OCRException.TESSERACT_FAILED).SetMessageParams("Cannot write to file " + outputFile
+                                .FullName);
+                        }
+                    }
+                    else {
+                        LogManager.GetLogger(GetType()).Info("OCR result is NULL for " + inputImage.FullName);
+                    }
+                }
+                TesseractUtil.DisposeTesseractInstance(GetTesseractInstance());
             }
-            TesseractUtil.DisposeTesseractInstance(GetTesseractInstance());
-            if (GetUserWordsFilePath() != null) {
-                UtilService.DeleteFile(GetUserWordsFilePath());
+            catch (OCRException e) {
+                LogManager.GetLogger(GetType()).Error(e.Message);
+                throw new OCRException(e.Message, e);
+            }
+            finally {
+                if (GetUserWordsFilePath() != null) {
+                    UtilService.DeleteFile(GetUserWordsFilePath());
+                }
             }
         }
 
@@ -160,8 +165,9 @@ namespace iText.Ocr {
                 }
             }
             catch (TesseractException e) {
-                LOGGER.Error("OCR failed: " + e.Message);
-                throw new OCRException(OCRException.TESSERACT_FAILED, e);
+                String msg = String.Format(OCRException.TESSERACT_FAILED, e.Message);
+                LogManager.GetLogger(GetType()).Error(msg);
+                throw new OCRException(OCRException.TESSERACT_FAILED).SetMessageParams(e.Message);
             }
             return resultList;
         }
@@ -191,19 +197,20 @@ namespace iText.Ocr {
                             bufferedImage = ImageUtil.ReadImageFromFile(inputImage);
                         }
                         catch (Exception ex) {
-                            LOGGER.Warn("Cannot create a buffered image " + "from the input image: " + ex.Message);
+                            LogManager.GetLogger(GetType()).Info("Cannot create a buffered image " + "from the input image: " + ex.Message
+                                );
                             bufferedImage = ImageUtil.ReadAsPixAndConvertToBufferedImage(inputImage);
                         }
                     }
                     catch (System.IO.IOException ex) {
-                        LOGGER.Warn("Cannot read image: " + ex.Message);
+                        LogManager.GetLogger(GetType()).Info("Cannot read image: " + ex.Message);
                     }
                     if (bufferedImage != null) {
                         try {
                             result = TesseractUtil.GetOcrResultAsString(GetTesseractInstance(), bufferedImage, outputFormat);
                         }
                         catch (TesseractException e) {
-                            LOGGER.Warn("Cannot process image: " + e.Message);
+                            LogManager.GetLogger(GetType()).Info("Cannot process image: " + e.Message);
                         }
                     }
                     if (result == null) {
@@ -215,8 +222,9 @@ namespace iText.Ocr {
                 }
             }
             catch (TesseractException e) {
-                LOGGER.Error("OCR failed: " + e.Message);
-                throw new OCRException(OCRException.TESSERACT_FAILED, e);
+                String msg = String.Format(OCRException.TESSERACT_FAILED, e.Message);
+                LogManager.GetLogger(GetType()).Error(msg);
+                throw new OCRException(OCRException.TESSERACT_FAILED).SetMessageParams(e.Message);
             }
             finally {
                 if (preprocessed != null) {

@@ -10,6 +10,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Ocr;
+using iText.Test.Attributes;
 
 namespace iText.Ocr.General {
     public abstract class BasicTesseractIntegrationTest : AbstractIntegrationTest {
@@ -247,6 +248,7 @@ namespace iText.Ocr.General {
             DeleteFile(pdfPath);
         }
 
+        [LogMessage(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputInvalidImage() {
             FileInfo file1 = new FileInfo(testImagesDirectory + "example.txt");
@@ -265,6 +267,8 @@ namespace iText.Ocr.General {
             tesseractReader.SetPathToTessData(GetTessDataDirectory());
         }
 
+        [LogMessage(OCRException.CANNOT_FIND_PATH_TO_TESSDATA, Count = 1)]
+        [LogMessage(OCRException.INCORRECT_LANGUAGE, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectPathToTessData() {
             FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
@@ -284,12 +288,12 @@ namespace iText.Ocr.General {
                 String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", "test/");
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
-            tesseractReader.SetPathToTessData(GetTessDataDirectory());
+            tesseractReader.SetPathToTessData(scriptTessDataDirectory);
             try {
                 GetTextFromPdf(tesseractReader, file);
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", langTessDataDirectory
+                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", scriptTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }

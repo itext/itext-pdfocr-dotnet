@@ -73,22 +73,6 @@ namespace iText.Ocr {
         /// <param name="outputFormat">OutputFormat</param>
         /// <returns>List<textinfo></returns>
         public abstract String ReadDataFromInput(FileInfo input, IOcrReader.OutputFormat outputFormat);
-
-        /// <summary>
-        /// Reads data from input stream and returns retrieved data
-        /// in the following format:
-        /// </summary>
-        /// <remarks>
-        /// Reads data from input stream and returns retrieved data
-        /// in the following format:
-        /// <para />
-        /// List<textinfo> where each list TextInfo element contains word
-        /// or line and its 4 coordinates(bbox).
-        /// </remarks>
-        /// <param name="is">InputStream</param>
-        /// <param name="outputFormat">OutputFormat</param>
-        /// <returns>List<textinfo></returns>
-        public abstract IList<TextInfo> ReadDataFromInput(Stream @is, IOcrReader.OutputFormat outputFormat);
     }
 
     public static class IOcrReaderConstants {

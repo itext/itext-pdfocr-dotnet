@@ -101,8 +101,8 @@ namespace iText.Ocr.Pdflayers {
                 NUnit.Framework.Assert.AreEqual("Image Layer", layers[2].GetPdfObject().Get(PdfName.Name).ToString());
                 NUnit.Framework.Assert.AreEqual("Text Layer", layers[3].GetPdfObject().Get(PdfName.Name).ToString());
                 doc.Close();
-                //             Text layer should contain all text
-                //             Image layer shouldn't contain any text
+                // Text layer should contain all text
+                // Image layer shouldn't contain any text
                 String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
                 NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "Text Layer", 5));
                 NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "Image Layer", 5));

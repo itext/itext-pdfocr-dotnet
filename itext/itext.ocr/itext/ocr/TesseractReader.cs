@@ -28,9 +28,6 @@ namespace iText.Ocr {
         /// </remarks>
         public const String DEFAULT_USER_WORDS_SUFFIX = "user-words";
 
-        /// <summary>TesseractReader logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(TesseractReader));
-
         /// <summary>List of languages required for ocr for provided images.</summary>
         private IList<String> languages = JavaCollectionsUtil.EmptyList<String>();
 
@@ -153,24 +150,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>
-        /// Reads data from input stream and returns retrieved data
-        /// in the following format:
-        /// </summary>
-        /// <remarks>
-        /// Reads data from input stream and returns retrieved data
-        /// in the following format:
-        /// <para />
-        /// List<textinfo> where each list TextInfo element contains word
-        /// or line and its 4 coordinates(bbox).
-        /// </remarks>
-        /// <param name="is">InputStream</param>
-        /// <param name="outputFormat">OutputFormat</param>
-        /// <returns>List<textinfo></returns>
-        public sealed override IList<TextInfo> ReadDataFromInput(Stream @is, IOcrReader.OutputFormat outputFormat) {
-            throw new NotSupportedException();
-        }
-
-        /// <summary>
         /// Reads data from the provided input image file and
         /// returns retrieved data as a string.
         /// </summary>
@@ -197,7 +176,7 @@ namespace iText.Ocr {
                             data.Append(UtilService.ReadTxtFile(tmpFile));
                         }
                         else {
-                            LOGGER.Error("Error occurred. File wasn't created " + tmpFile.FullName);
+                            LogManager.GetLogger(GetType()).Error("Error occurred. File wasn't created " + tmpFile.FullName);
                         }
                     }
                     foreach (FileInfo file in tempFiles) {
@@ -206,7 +185,7 @@ namespace iText.Ocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error("Error occurred: " + e.Message);
+                LogManager.GetLogger(GetType()).Error(String.Format("Error occurred: {0}", e.Message));
             }
             return data.ToString();
         }
@@ -237,7 +216,8 @@ namespace iText.Ocr {
                     }
                     DoTesseractOcr(input, tempFiles, IOcrReader.OutputFormat.hocr, page);
                     IDictionary<int, IList<TextInfo>> pageData = UtilService.ParseHocrFile(tempFiles, GetTextPositioning());
-                    LOGGER.Info((pageData.Keys.Count > 1 ? pageData.Keys.Count : page) + " page(s) were read");
+                    LogManager.GetLogger(GetType()).Info((pageData.Keys.Count > 1 ? pageData.Keys.Count : page) + " page(s) were read"
+                        );
                     if (IsPreprocessingImages()) {
                         imageData.Put(page, pageData.Get(1));
                     }
@@ -250,7 +230,7 @@ namespace iText.Ocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error("Error occurred: " + e.Message);
+                LogManager.GetLogger(GetType()).Error("Error occurred: " + e.Message);
             }
             return imageData;
         }
@@ -286,7 +266,7 @@ namespace iText.Ocr {
                     SetUserWords(language, inputStream);
                 }
                 catch (System.IO.IOException e) {
-                    LOGGER.Warn("Cannot use custom user words: " + e.Message);
+                    LogManager.GetLogger(GetType()).Warn("Cannot use custom user words: " + e.Message);
                 }
             }
         }
@@ -333,7 +313,7 @@ namespace iText.Ocr {
             }
             catch (System.IO.IOException e) {
                 userWordsFile = null;
-                LOGGER.Warn("Cannot use custom user words: " + e.Message);
+                LogManager.GetLogger(GetType()).Warn("Cannot use custom user words: " + e.Message);
             }
         }
 
@@ -368,7 +348,7 @@ namespace iText.Ocr {
         public virtual String IdentifyOSType() {
             String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
                 ) : Environment.GetEnvironmentVariable("os.name");
-            LOGGER.Info("Using System Property: " + os);
+            LogManager.GetLogger(GetType()).Info("Using System Property: " + os);
             return os.ToLowerInvariant();
         }
 
@@ -381,14 +361,12 @@ namespace iText.Ocr {
             String suffix = ".traineddata";
             if (languagesList.Count == 0) {
                 if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + "eng" + suffix).Exists) {
-                    LOGGER.Error("eng" + suffix + " doesn't exist in provided directory");
                     throw new OCRException(OCRException.INCORRECT_LANGUAGE).SetMessageParams("eng" + suffix, GetTessData());
                 }
             }
             else {
                 foreach (String lang in languagesList) {
                     if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix).Exists) {
-                        LOGGER.Error(lang + suffix + " doesn't exist in provided directory");
                         throw new OCRException(OCRException.INCORRECT_LANGUAGE).SetMessageParams(lang + suffix, GetTessData());
                     }
                 }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
+using iText.Test.Attributes;
 
 namespace iText.Ocr {
     public class TesseractLibIntegrationTest : AbstractIntegrationTest {
+        [LogMessage(OCRException.INCORRECT_LANGUAGE, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectLanguages() {
             FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
@@ -28,6 +30,7 @@ namespace iText.Ocr {
             }
         }
 
+        [LogMessage(OCRException.INCORRECT_LANGUAGE, Count = 3)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectLanguagesScript() {
             FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
@@ -60,17 +63,19 @@ namespace iText.Ocr {
             }
         }
 
+        [LogMessage(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCorruptedImageAndCatchException() {
+            FileInfo file = new FileInfo(testImagesDirectory + "corrupted.jpg");
             try {
-                FileInfo file = new FileInfo(testImagesDirectory + "corrupted.jpg");
                 TesseractReader tesseractReader = new TesseractLibReader(GetTessDataDirectory());
                 String realOutput = GetTextFromPdf(tesseractReader, file);
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
             catch (OCRException e) {
-                NUnit.Framework.Assert.AreEqual(OCRException.CANNOT_READ_INPUT_IMAGE, e.Message);
+                String expectedMsg = String.Format(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE, file.FullName);
+                NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
         }
 
@@ -82,27 +87,5 @@ namespace iText.Ocr {
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path));
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
         }
-        // works ok only with tesseract 5
-        /*@Test
-        public void compareGreekPNG() throws IOException, InterruptedException {
-        String filename = "greek_02";
-        String expectedPdfPath = testDocumentsDirectory + filename + ".pdf";
-        String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
-        
-        TesseractReader tesseractReader = new TesseractLibReader(getTessDataDirectory());
-        try {
-        tesseractReader.setPathToTessData(getTessDataDirectory());
-        tesseractReader.setTextPositioning(IOcrReader.TextPositioning.byLines);
-        doOcrAndSavePdfToPath(tesseractReader,
-        testImagesDirectory + filename + ".png", resultPdfPath,
-        Arrays.<String>asList("ell", "eng"),
-        notoSansFontPath, DeviceCmyk.BLACK);
-        
-        new CompareTool().compareByContent(expectedPdfPath, resultPdfPath,
-        testDocumentsDirectory, "diff_");
-        } finally {
-        deleteFile(resultPdfPath);
-        }
-        }*/
     }
 }

@@ -25,9 +25,6 @@ namespace iText.Ocr {
     /// installed in the system
     /// </remarks>
     public class TesseractExecutableReader : TesseractReader {
-        /// <summary>TesseractExecutableReader logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.TesseractExecutableReader));
-
         /// <summary>Path to the script.</summary>
         private String pathToScript;
 
@@ -138,8 +135,8 @@ namespace iText.Ocr {
                 TesseractUtil.RunCommand(command, IsWindows());
             }
             catch (OCRException e) {
-                LOGGER.Error("Running tesseract executable failed: " + e);
-                throw new OCRException(e.Message);
+                LogManager.GetLogger(GetType()).Error(e.Message);
+                throw new OCRException(e.Message, e);
             }
             finally {
                 if (imagePath != null && IsPreprocessingImages() && !inputImage.FullName.Equals(imagePath)) {
@@ -232,7 +229,7 @@ namespace iText.Ocr {
             String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
             String fileName = new String(outputFile.FullName.ToCharArray(), 0, outputFile.FullName.IndexOf(extension, 
                 StringComparison.Ordinal));
-            LOGGER.Info("Temp path: " + outputFile.ToString());
+            LogManager.GetLogger(GetType()).Info("Temp path: " + outputFile.ToString());
             command.Add(AddQuotes(fileName));
         }
 

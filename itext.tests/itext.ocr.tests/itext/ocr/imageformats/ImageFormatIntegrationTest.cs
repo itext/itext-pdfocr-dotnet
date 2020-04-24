@@ -4,6 +4,7 @@ using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Utils;
 using iText.Ocr;
+using iText.Test.Attributes;
 
 namespace iText.Ocr.Imageformats {
     public abstract class ImageFormatIntegrationTest : AbstractIntegrationTest {
@@ -178,6 +179,7 @@ namespace iText.Ocr.Imageformats {
             tesseractReader.SetPreprocessingImages(preprocess);
         }
 
+        [LogMessage(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputWrongFormat() {
             try {

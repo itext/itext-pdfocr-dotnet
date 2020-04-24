@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.6.0\build\net40\Microsoft.NET.Test.Sdk.props" Condition="Exists('$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.6.0\build\net40\Microsoft.NET.Test.Sdk.props')" />
   <Import Project="$(SolutionDir)\packages\itext7.pdftest.7.1.12-SNAPSHOT\build\itext7.pdftest.props" Condition="Exists('$(SolutionDir)\packages\itext7.pdftest.7.1.12-SNAPSHOT\build\itext7.pdftest.props')" />
   <Import Project="$(SolutionDir)\packages\MSTest.TestAdapter.2.1.1\build\net45\MSTest.TestAdapter.props" Condition="Exists('$(SolutionDir)\packages\MSTest.TestAdapter.2.1.1\build\net45\MSTest.TestAdapter.props')" />
   <Import Project="$(SolutionDir)\packages\NUnit3TestAdapter.3.16.1\build\net35\NUnit3TestAdapter.props" Condition="Exists('$(SolutionDir)\packages\NUnit3TestAdapter.3.16.1\build\net35\NUnit3TestAdapter.props')" />
   <Import Project="$(SolutionDir)\packages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('$(SolutionDir)\packages\NUnit.3.12.0\build\NUnit.props')" />
-  <Import Project="$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.5.0\build\net40\Microsoft.NET.Test.Sdk.props" Condition="Exists('$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.5.0\build\net40\Microsoft.NET.Test.Sdk.props')" />
-  <Import Project="$(SolutionDir)\packages\Microsoft.CodeCoverage.16.5.0\build\netstandard1.0\Microsoft.CodeCoverage.props" Condition="Exists('$(SolutionDir)\packages\Microsoft.CodeCoverage.16.5.0\build\netstandard1.0\Microsoft.CodeCoverage.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -205,9 +204,7 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\packages\MSTest.TestAdapter.2.1.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('$(SolutionDir)\packages\MSTest.TestAdapter.2.1.0\build\net45\MSTest.TestAdapter.targets')" />
   <Import Project="$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\build\Genesis.Tesseract4.targets" Condition="Exists('$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\build\Genesis.Tesseract4.targets')" />
-  <Import Project="$(SolutionDir)\packages\Microsoft.CodeCoverage.16.5.0\build\netstandard1.0\Microsoft.CodeCoverage.targets" Condition="Exists('$(SolutionDir)\packages\Microsoft.CodeCoverage.16.5.0\build\netstandard1.0\Microsoft.CodeCoverage.targets')" />
-  <Import Project="$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.5.0\build\net40\Microsoft.NET.Test.Sdk.targets" Condition="Exists('$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.5.0\build\net40\Microsoft.NET.Test.Sdk.targets')" />
   <Import Project="$(SolutionDir)\packages\MSTest.TestAdapter.2.1.1\build\net45\MSTest.TestAdapter.targets" Condition="Exists('$(SolutionDir)\packages\MSTest.TestAdapter.2.1.1\build\net45\MSTest.TestAdapter.targets')" />
+  <Import Project="$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.6.0\build\net40\Microsoft.NET.Test.Sdk.targets" Condition="Exists('$(SolutionDir)\packages\Microsoft.NET.Test.Sdk.16.6.0\build\net40\Microsoft.NET.Test.Sdk.targets')" />
 </Project>

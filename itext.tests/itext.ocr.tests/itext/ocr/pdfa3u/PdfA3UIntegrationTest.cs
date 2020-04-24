@@ -9,6 +9,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Utils;
 using iText.Ocr;
 using iText.Pdfa;
+using iText.Test.Attributes;
 
 namespace iText.Ocr.Pdfa3u {
     public abstract class PdfA3UIntegrationTest : AbstractIntegrationTest {
@@ -99,6 +100,7 @@ namespace iText.Ocr.Pdfa3u {
             DeleteFile(pdfPath);
         }
 
+        [LogMessage(iText.IO.IOException.TypeOfFontIsNotRecognized, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidCustomFontInPdf() {
             String path = testImagesDirectory + "numbers_01.jpg";
@@ -123,6 +125,7 @@ namespace iText.Ocr.Pdfa3u {
             DeleteFile(pdfPath);
         }
 
+        [LogMessage(iText.IO.IOException.TypeOfFontIsNotRecognized, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidFontTwice() {
             String path = testImagesDirectory + "numbers_01.jpg";

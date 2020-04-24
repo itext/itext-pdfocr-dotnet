@@ -390,12 +390,12 @@ namespace iText.Ocr {
                 defaultFont = PdfFontFactory.CreateFont(GetFont(), PdfEncodings.IDENTITY_H, true);
             }
             catch (Exception e) {
-                LOGGER.Error("Error occurred when setting default font: " + e.Message);
+                LOGGER.Error(e.Message);
                 try {
                     defaultFont = PdfFontFactory.CreateFont(GetDefaultFont(), PdfEncodings.IDENTITY_H, true);
                 }
-                catch (Exception) {
-                    LOGGER.Error("Error occurred when setting default font: " + e.Message);
+                catch (Exception ex) {
+                    LOGGER.Error(String.Format("{0}: {1}", OCRException.CANNOT_READ_FONT, ex.Message));
                     throw new OCRException(OCRException.CANNOT_READ_FONT);
                 }
             }
@@ -435,6 +435,7 @@ namespace iText.Ocr {
                     extension = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index - 
                         1);
                 }
+                LOGGER.Error(String.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, extension));
                 throw new OCRException(OCRException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension);
             }
             return data;
@@ -455,6 +456,7 @@ namespace iText.Ocr {
                     extension = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index - 
                         1);
                 }
+                LOGGER.Error(String.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, extension));
                 throw new OCRException(OCRException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension);
             }
             return data;
@@ -478,9 +480,6 @@ namespace iText.Ocr {
                         isValid = true;
                         break;
                     }
-                }
-                if (!isValid) {
-                    LOGGER.Error("Image format is invalid: " + extension);
                 }
             }
             return isValid;
@@ -574,14 +573,14 @@ namespace iText.Ocr {
                     }
                     catch (iText.IO.IOException e) {
                         String exception = "Cannot open " + inputImage.FullName + " image, converting to png: " + e.Message;
-                        LOGGER.Warn(exception);
+                        LOGGER.Info(exception);
                         try {
                             System.Drawing.Bitmap bufferedImage = null;
                             try {
                                 bufferedImage = ImageUtil.ReadImageFromFile(inputImage);
                             }
                             catch (Exception ex) {
-                                LOGGER.Warn("Attempting to convert image: " + ex.Message);
+                                LOGGER.Info("Attempting to convert image: " + ex.Message);
                                 bufferedImage = ImageUtil.ReadAsPixAndConvertToBufferedImage(inputImage);
                             }
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -590,9 +589,9 @@ namespace iText.Ocr {
                             images.Add(imageData);
                         }
                         catch (Exception ex) {
-                            exception = "Cannot parse " + inputImage.FullName + " image " + ex.Message;
-                            LOGGER.Error(exception);
-                            throw new OCRException(OCRException.CANNOT_READ_INPUT_IMAGE);
+                            LOGGER.Error(String.Format(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE, ex.Message));
+                            throw new OCRException(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE).SetMessageParams(inputImage.FullName
+                                );
                         }
                     }
                 }

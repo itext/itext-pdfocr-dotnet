@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Common.Logging;
 using Tesseract;
 using iText.IO.Image;
 using iText.IO.Source;
@@ -13,9 +12,6 @@ namespace iText.Ocr {
     /// Class provides tool for basic image preprocessing.
     /// </remarks>
     public sealed class ImageUtil {
-        /// <summary>ImageUtil logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.ImageUtil));
-
         /// <summary>Private constructor for util class.</summary>
         private ImageUtil() {
         }
@@ -36,33 +32,13 @@ namespace iText.Ocr {
                 pix = TesseractUtil.ReadPixPageFromTiff(inputFile, pageNumber - 1);
             }
             else {
-                pix = ReadPix(inputFile);
+                pix = TesseractUtil.ReadPix(inputFile);
             }
             if (pix == null) {
-                throw new OCRException(OCRException.CANNOT_READ_INPUT_IMAGE);
+                throw new OCRException(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE).SetMessageParams(inputFile.FullName
+                    );
             }
             return TesseractUtil.PreprocessPixAndSave(pix);
-        }
-
-        /// <summary>Read Pix from file or convert from buffered image.</summary>
-        /// <param name="inputFile">File</param>
-        /// <returns>Pix</returns>
-        public static Pix ReadPix(FileInfo inputFile) {
-            Pix pix = null;
-            try {
-                System.Drawing.Bitmap bufferedImage = ReadImageFromFile(inputFile);
-                if (bufferedImage != null) {
-                    pix = TesseractUtil.ConvertImageToPix(bufferedImage);
-                }
-                else {
-                    pix = Tesseract.Pix.LoadFromFile(inputFile.FullName);
-                }
-            }
-            catch (Exception e) {
-                LOGGER.Warn("Reading pix from file: " + e.Message);
-                pix = Tesseract.Pix.LoadFromFile(inputFile.FullName);
-            }
-            return pix;
         }
 
         /// <summary>
