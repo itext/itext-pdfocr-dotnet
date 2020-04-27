@@ -113,7 +113,6 @@
     <None Include="resources\itext\ocr\documents\multipage.pdf" />
     <None Include="resources\itext\ocr\documents\numbers_01.pdf" />
     <None Include="resources\itext\ocr\documents\numbers_01_a3u.pdf" />
-    <None Include="resources\itext\ocr\documents\scanned_eng_01.pdf" />
     <None Include="resources\itext\ocr\documents\scanned_spa_01executable.pdf" />
     <None Include="resources\itext\ocr\documents\scanned_spa_01lib.pdf" />
     <None Include="resources\itext\ocr\documents\spanish_01_a3u.pdf" />
@@ -196,7 +195,6 @@
     <Content Include="resources\itext\ocr\images\numbers_01.tif" />
     <Content Include="resources\itext\ocr\images\numbers_02.jpg" />
     <Content Include="resources\itext\ocr\images\pantone_blue.jpg" />
-    <Content Include="resources\itext\ocr\images\scanned_eng_01.png" />
     <Content Include="resources\itext\ocr\images\scanned_spa_01.png" />
     <Content Include="resources\itext\ocr\images\small.jpg" />
     <Content Include="resources\itext\ocr\images\spanish_01.jpg" />

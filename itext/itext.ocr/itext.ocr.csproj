@@ -82,6 +82,7 @@
     <Compile Include="itext\ocr\ImageUtil.cs" />
     <Compile Include="itext\ocr\IOcrReader.cs" />
     <Compile Include="itext\ocr\IPdfRenderer.cs" />
+    <Compile Include="itext\ocr\LogMessageConstant.cs" />
     <Compile Include="itext\ocr\OCRException.cs" />
     <Compile Include="itext\ocr\PdfRenderer.cs" />
     <Compile Include="itext\ocr\TesseractExecutableReader.cs" />

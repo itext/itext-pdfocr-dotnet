@@ -295,7 +295,7 @@ namespace iText.Ocr {
                     return System.IO.File.ReadAllBytes(System.IO.Path.Combine(fontPath));
                 }
                 catch (Exception e) {
-                    LOGGER.Error("Cannot load provided font: " + e.Message);
+                    LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_PROVIDED_FONT, e.Message));
                     return GetDefaultFont();
                 }
             }
@@ -313,7 +313,7 @@ namespace iText.Ocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error("Cannot load default font: " + e.Message);
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_DEFAULT_FONT, e.Message));
                 return new byte[0];
             }
         }
@@ -324,7 +324,7 @@ namespace iText.Ocr {
         /// </summary>
         /// <param name="absolutePath">String</param>
         public override void DoPdfOcr(String absolutePath) {
-            LOGGER.Info("Starting ocr for " + GetInputImages().Count + " image(s)");
+            LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.START_OCR_FOR_IMAGES, GetInputImages().Count));
             StringBuilder content = new StringBuilder();
             foreach (FileInfo inputImage in GetInputImages()) {
                 content.Append(DoOCRForImages(inputImage, IOcrReader.OutputFormat.txt));
@@ -349,7 +349,7 @@ namespace iText.Ocr {
         /// <param name="pdfOutputIntent">PdfOutputIntent</param>
         /// <returns>PDF/A-3u document if pdfOutputIntent is not null</returns>
         public sealed override PdfDocument DoPdfOcr(PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent) {
-            LOGGER.Info("Starting ocr for " + GetInputImages().Count + " image(s)");
+            LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.START_OCR_FOR_IMAGES, GetInputImages().Count));
             // map contains:
             // keys: image files
             // values: map pageNumber -> retrieved text data(text and its coordinates)
@@ -390,16 +390,15 @@ namespace iText.Ocr {
                 defaultFont = PdfFontFactory.CreateFont(GetFont(), PdfEncodings.IDENTITY_H, true);
             }
             catch (Exception e) {
-                LOGGER.Error(e.Message);
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_PROVIDED_FONT, e.Message));
                 try {
                     defaultFont = PdfFontFactory.CreateFont(GetDefaultFont(), PdfEncodings.IDENTITY_H, true);
                 }
                 catch (Exception ex) {
-                    LOGGER.Error(String.Format("{0}: {1}", OCRException.CANNOT_READ_FONT, ex.Message));
+                    LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_DEFAULT_FONT, ex.Message));
                     throw new OCRException(OCRException.CANNOT_READ_FONT);
                 }
             }
-            LOGGER.Info("Current scale mode: " + GetScaleMode());
             AddDataToPdfDocument(imagesTextData, pdfDocument, defaultFont);
             return pdfDocument;
         }
@@ -415,7 +414,7 @@ namespace iText.Ocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error("Error occurred during writing to " + path + " file: " + e.Message);
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_WRITE_TO_FILE, path, e.Message));
             }
         }
 
@@ -428,16 +427,6 @@ namespace iText.Ocr {
             if (IsValidImageFormat(inputImage)) {
                 data = ocrReader.ReadDataFromInput(inputImage, outputFormat);
             }
-            else {
-                String extension = "incorrect extension";
-                int index = inputImage.FullName.LastIndexOf('.');
-                if (index > 0) {
-                    extension = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index - 
-                        1);
-                }
-                LOGGER.Error(String.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, extension));
-                throw new OCRException(OCRException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension);
-            }
             return data;
         }
 
@@ -448,16 +437,6 @@ namespace iText.Ocr {
             IDictionary<int, IList<TextInfo>> data = new LinkedDictionary<int, IList<TextInfo>>();
             if (IsValidImageFormat(inputImage)) {
                 data = ocrReader.ReadDataFromInput(inputImage);
-            }
-            else {
-                String extension = "incorrect extension";
-                int index = inputImage.FullName.LastIndexOf('.');
-                if (index > 0) {
-                    extension = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index - 
-                        1);
-                }
-                LOGGER.Error(String.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, extension));
-                throw new OCRException(OCRException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension);
             }
             return data;
         }
@@ -482,6 +461,10 @@ namespace iText.Ocr {
                     }
                 }
             }
+            if (!isValid) {
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_INPUT_IMAGE, image.FullName));
+                throw new OCRException(OCRException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension);
+            }
             return isValid;
         }
 
@@ -500,13 +483,13 @@ namespace iText.Ocr {
                 try {
                     FileInfo inputImage = entry.Key;
                     IList<ImageData> imageDataList = GetImageData(inputImage);
-                    LOGGER.Info(inputImage.ToString() + " image contains " + imageDataList.Count + " page(s)");
+                    LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString(), imageDataList
+                        .Count));
                     IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
                     if (imageTextData.Keys.Count > 0) {
                         for (int page = 0; page < imageDataList.Count; ++page) {
                             ImageData imageData = imageDataList[page];
                             Rectangle imageSize = UtilService.CalculateImageSize(imageData, GetScaleMode(), GetPageSize());
-                            LOGGER.Info("Started parsing image " + inputImage.Name);
                             AddToCanvas(pdfDocument, defaultFont, imageSize, imageTextData.Get(page + 1), imageData);
                         }
                     }
@@ -517,7 +500,7 @@ namespace iText.Ocr {
                     }
                 }
                 catch (System.IO.IOException e) {
-                    LOGGER.Error("Error occurred: " + e.Message);
+                    LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_ADD_DATA_TO_PDF_DOCUMENT, e.Message));
                 }
             }
         }
@@ -540,7 +523,6 @@ namespace iText.Ocr {
             canvas.BeginLayer(imageLayer);
             AddImageToCanvas(imageData, imageSize, canvas);
             canvas.EndLayer();
-            LOGGER.Info("Added image page to canvas");
             // how much the original image size changed
             float multiplier = imageData == null ? 1 : imageSize.GetWidth() / UtilService.GetPoints(imageData.GetWidth
                 ());
@@ -572,15 +554,16 @@ namespace iText.Ocr {
                         images.Add(imageData);
                     }
                     catch (iText.IO.IOException e) {
-                        String exception = "Cannot open " + inputImage.FullName + " image, converting to png: " + e.Message;
-                        LOGGER.Info(exception);
+                        LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.ATTEMPT_TO_CONVERT_TO_PNG, inputImage.FullName, e.
+                            Message));
                         try {
                             System.Drawing.Bitmap bufferedImage = null;
                             try {
                                 bufferedImage = ImageUtil.ReadImageFromFile(inputImage);
                             }
                             catch (Exception ex) {
-                                LOGGER.Info("Attempting to convert image: " + ex.Message);
+                                LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.READING_IMAGE_AS_PIX, inputImage.FullName, ex.Message
+                                    ));
                                 bufferedImage = ImageUtil.ReadAsPixAndConvertToBufferedImage(inputImage);
                             }
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -589,9 +572,8 @@ namespace iText.Ocr {
                             images.Add(imageData);
                         }
                         catch (Exception ex) {
-                            LOGGER.Error(String.Format(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE, ex.Message));
-                            throw new OCRException(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE).SetMessageParams(inputImage.FullName
-                                );
+                            LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
+                            throw new OCRException(OCRException.CANNOT_READ_INPUT_IMAGE);
                         }
                     }
                 }

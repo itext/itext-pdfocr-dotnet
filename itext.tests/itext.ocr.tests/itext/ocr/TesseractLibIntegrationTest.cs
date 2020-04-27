@@ -16,7 +16,7 @@ namespace iText.Ocr {
                 GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("spa", "spa_new", "spa_old"));
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "spa_new.traineddata", langTessDataDirectory
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "spa_new.traineddata", langTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
@@ -24,7 +24,7 @@ namespace iText.Ocr {
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("spa_new"));
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "spa_new.traineddata", langTessDataDirectory
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "spa_new.traineddata", langTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
@@ -40,7 +40,7 @@ namespace iText.Ocr {
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("English"));
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "English.traineddata", scriptTessDataDirectory
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "English.traineddata", scriptTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
@@ -48,7 +48,7 @@ namespace iText.Ocr {
                 GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("Georgian", "Japanese", "English"));
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "English.traineddata", scriptTessDataDirectory
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "English.traineddata", scriptTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
@@ -56,14 +56,14 @@ namespace iText.Ocr {
                 GetTextFromPdf(tesseractReader, file, new List<String>());
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", scriptTessDataDirectory
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", scriptTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetPathToTessData(GetTessDataDirectory());
             }
         }
 
-        [LogMessage(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE, Count = 1)]
+        [LogMessage(LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCorruptedImageAndCatchException() {
             FileInfo file = new FileInfo(testImagesDirectory + "corrupted.jpg");
@@ -74,7 +74,7 @@ namespace iText.Ocr {
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE, file.FullName);
+                String expectedMsg = MessageFormatUtil.Format(OCRException.CANNOT_READ_PROVIDED_IMAGE, file.FullName);
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
         }

@@ -39,7 +39,7 @@ namespace iText.Ocr {
                     .UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error("Cannot read file " + txtFile.FullName + " with error " + e.Message);
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_FILE, txtFile.FullName, e.Message));
             }
             return content;
         }
@@ -60,7 +60,7 @@ namespace iText.Ocr {
                     File.Delete(System.IO.Path.Combine(pathToFile));
                 }
                 catch (System.IO.IOException e) {
-                    LOGGER.Info("File " + pathToFile + " cannot be deleted: " + e.Message);
+                    LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message));
                 }
             }
         }
@@ -78,7 +78,7 @@ namespace iText.Ocr {
         /// <param name="inputFiles">list ofo input files</param>
         /// <param name="textPositioning">TextPositioning</param>
         /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
-        internal static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IOcrReader.TextPositioning
+        public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IOcrReader.TextPositioning
              textPositioning) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             foreach (FileInfo inputFile in inputFiles) {

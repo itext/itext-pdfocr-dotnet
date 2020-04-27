@@ -35,8 +35,7 @@ namespace iText.Ocr {
                 pix = TesseractUtil.ReadPix(inputFile);
             }
             if (pix == null) {
-                throw new OCRException(OCRException.CANNOT_READ_SPECIFIED_INPUT_IMAGE).SetMessageParams(inputFile.FullName
-                    );
+                throw new OCRException(OCRException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile.FullName);
             }
             return TesseractUtil.PreprocessPixAndSave(pix);
         }

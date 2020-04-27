@@ -248,7 +248,7 @@ namespace iText.Ocr.General {
             DeleteFile(pdfPath);
         }
 
-        [LogMessage(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, Count = 1)]
+        [LogMessage(LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputInvalidImage() {
             FileInfo file1 = new FileInfo(testImagesDirectory + "example.txt");
@@ -261,7 +261,7 @@ namespace iText.Ocr.General {
                 pdfRenderer.DoPdfOcr(GetPdfWriter());
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, "txt");
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, "txt");
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
             tesseractReader.SetPathToTessData(GetTessDataDirectory());
@@ -285,7 +285,7 @@ namespace iText.Ocr.General {
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("eng"));
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", "test/");
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", "test/");
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }
             tesseractReader.SetPathToTessData(scriptTessDataDirectory);
@@ -293,7 +293,7 @@ namespace iText.Ocr.General {
                 GetTextFromPdf(tesseractReader, file);
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", scriptTessDataDirectory
+                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_LANGUAGE, "eng.traineddata", scriptTessDataDirectory
                     );
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
             }

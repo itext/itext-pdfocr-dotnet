@@ -229,7 +229,8 @@ namespace iText.Ocr {
             String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
             String fileName = new String(outputFile.FullName.ToCharArray(), 0, outputFile.FullName.IndexOf(extension, 
                 StringComparison.Ordinal));
-            LogManager.GetLogger(GetType()).Info("Temp path: " + outputFile.ToString());
+            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(LogMessageConstant.CREATED_TEMPORARY_FILE, outputFile
+                .FullName));
             command.Add(AddQuotes(fileName));
         }
 

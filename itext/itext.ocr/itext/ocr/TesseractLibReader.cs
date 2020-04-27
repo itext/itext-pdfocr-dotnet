@@ -117,9 +117,10 @@ namespace iText.Ocr {
                             }
                         }
                         catch (System.IO.IOException e) {
-                            LogManager.GetLogger(GetType()).Error("Cannot write to file: " + e.Message);
-                            throw new OCRException(OCRException.TESSERACT_FAILED).SetMessageParams("Cannot write to file " + outputFile
-                                .FullName);
+                            String msg = MessageFormatUtil.Format(LogMessageConstant.TESSERACT_FAILED, "Cannot write to file: " + e.Message
+                                );
+                            LogManager.GetLogger(GetType()).Error(msg);
+                            throw new OCRException(OCRException.TESSERACT_FAILED);
                         }
                     }
                     else {
@@ -165,9 +166,9 @@ namespace iText.Ocr {
                 }
             }
             catch (TesseractException e) {
-                String msg = String.Format(OCRException.TESSERACT_FAILED, e.Message);
+                String msg = String.Format(LogMessageConstant.TESSERACT_FAILED, e.Message);
                 LogManager.GetLogger(GetType()).Error(msg);
-                throw new OCRException(OCRException.TESSERACT_FAILED).SetMessageParams(e.Message);
+                throw new OCRException(OCRException.TESSERACT_FAILED);
             }
             return resultList;
         }
@@ -222,9 +223,8 @@ namespace iText.Ocr {
                 }
             }
             catch (TesseractException e) {
-                String msg = String.Format(OCRException.TESSERACT_FAILED, e.Message);
-                LogManager.GetLogger(GetType()).Error(msg);
-                throw new OCRException(OCRException.TESSERACT_FAILED).SetMessageParams(e.Message);
+                LogManager.GetLogger(GetType()).Error(String.Format(LogMessageConstant.TESSERACT_FAILED, e.Message));
+                throw new OCRException(OCRException.TESSERACT_FAILED);
             }
             finally {
                 if (preprocessed != null) {

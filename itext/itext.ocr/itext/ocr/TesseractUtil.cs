@@ -39,7 +39,7 @@ namespace iText.Ocr
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                    .Error("Cannot get pages from image: " + e.Message);
+                    .Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE, e.Message));
             }
         }
 
@@ -58,8 +58,6 @@ namespace iText.Ocr
             Process process = null;
             try
             {
-                LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                    .Info("Running command: " + String.Join(" ", command));
                 if (isWindows)
                 {
                     String cmd = "";
@@ -98,10 +96,9 @@ namespace iText.Ocr
             }
             catch (Exception e)
             {
-                String msg = String
-                        .Format(OCRException.TESSERACT_FAILED,
-                                e.Message);
-                LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil)).Error(msg);
+                LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
+                    .Error(MessageFormatUtil.Format(LogMessageConstant.TESSERACT_FAILED,
+                                e.Message));
                 throw new OCRException(OCRException.TESSERACT_FAILED)
                     .SetMessageParams(e.Message);
             }
@@ -128,7 +125,10 @@ namespace iText.Ocr
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                    .Info("Reading pix from file: " + e.Message);
+                    .Info(MessageFormatUtil.Format(
+                        LogMessageConstant.READING_IMAGE_AS_PIX,
+                        inputFile.FullName,
+                        e.Message));
                 try
                 {
                     pix = Tesseract.Pix.LoadFromFile(inputFile.FullName);
@@ -136,7 +136,10 @@ namespace iText.Ocr
                 catch (IOException ex)
                 {
                     LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                        .Info("Cannot load pix from file: " + ex.Message);
+                        .Info(MessageFormatUtil.Format(
+                            LogMessageConstant.CANNOT_READ_FILE,
+                            inputFile.FullName,
+                            ex.Message));
                 }
             }
             return pix;
@@ -155,7 +158,10 @@ namespace iText.Ocr
             if (pageNumber >= size)
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                    .Info("Provided number of page (" + pageNumber + ") is incorrect for " + inputFile.FullName);
+                    .Info(MessageFormatUtil.Format(
+                        LogMessageConstant.PAGE_NUMBER_IS_INCORRECT, 
+                        pageNumber,
+                        inputFile.FullName));
                 return null;
             }
             Pix pix = pixa.GetPix(pageNumber);
@@ -215,7 +221,7 @@ namespace iText.Ocr
                 else
                 {
                     LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                        .Info("Cannot convert to gray image with depth " + depth);
+                        .Info(MessageFormatUtil.Format(LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_GRAYSCALE, depth));
                     return pix;
                 }
             }
@@ -251,7 +257,7 @@ namespace iText.Ocr
                 else
                 {
                     LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                        .Info("Cannot binarize image with depth " + pix.Depth);
+                        .Info(MessageFormatUtil.Format(LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
                     return pix;
                 }
             }

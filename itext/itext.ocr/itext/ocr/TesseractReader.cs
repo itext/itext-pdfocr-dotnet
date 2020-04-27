@@ -175,9 +175,6 @@ namespace iText.Ocr {
                         if (File.Exists(System.IO.Path.Combine(tmpFile.FullName))) {
                             data.Append(UtilService.ReadTxtFile(tmpFile));
                         }
-                        else {
-                            LogManager.GetLogger(GetType()).Error("Error occurred. File wasn't created " + tmpFile.FullName);
-                        }
                     }
                     foreach (FileInfo file in tempFiles) {
                         UtilService.DeleteFile(file.FullName);
@@ -185,7 +182,8 @@ namespace iText.Ocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(String.Format("Error occurred: {0}", e.Message));
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_OCR_INPUT_FILE, e
+                    .Message));
             }
             return data.ToString();
         }
@@ -216,8 +214,6 @@ namespace iText.Ocr {
                     }
                     DoTesseractOcr(input, tempFiles, IOcrReader.OutputFormat.hocr, page);
                     IDictionary<int, IList<TextInfo>> pageData = UtilService.ParseHocrFile(tempFiles, GetTextPositioning());
-                    LogManager.GetLogger(GetType()).Info((pageData.Keys.Count > 1 ? pageData.Keys.Count : page) + " page(s) were read"
-                        );
                     if (IsPreprocessingImages()) {
                         imageData.Put(page, pageData.Get(1));
                     }
@@ -230,7 +226,8 @@ namespace iText.Ocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error("Error occurred: " + e.Message);
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_OCR_INPUT_FILE, e
+                    .Message));
             }
             return imageData;
         }
@@ -266,7 +263,8 @@ namespace iText.Ocr {
                     SetUserWords(language, inputStream);
                 }
                 catch (System.IO.IOException e) {
-                    LogManager.GetLogger(GetType()).Warn("Cannot use custom user words: " + e.Message);
+                    LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(LogMessageConstant.CANNOT_USE_USER_WORDS, e.
+                        Message));
                 }
             }
         }
@@ -313,7 +311,8 @@ namespace iText.Ocr {
             }
             catch (System.IO.IOException e) {
                 userWordsFile = null;
-                LogManager.GetLogger(GetType()).Warn("Cannot use custom user words: " + e.Message);
+                LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(LogMessageConstant.CANNOT_USE_USER_WORDS, e.
+                    Message));
             }
         }
 
@@ -348,7 +347,6 @@ namespace iText.Ocr {
         public virtual String IdentifyOSType() {
             String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
                 ) : Environment.GetEnvironmentVariable("os.name");
-            LogManager.GetLogger(GetType()).Info("Using System Property: " + os);
             return os.ToLowerInvariant();
         }
 

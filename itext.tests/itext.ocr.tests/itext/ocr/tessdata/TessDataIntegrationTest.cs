@@ -454,7 +454,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetUserWords("spa", new FileStream(userWords, FileMode.Open, FileAccess.Read));
             }
             catch (Exception e) {
-                String expectedMsg = String.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa");
+                String expectedMsg = MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa");
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetLanguages(new List<String>());
             }
@@ -467,7 +467,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetUserWords("eng1", JavaUtil.ArraysAsList("word1", "word2"));
             }
             catch (OCRException e) {
-                String expectedMsg = String.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1");
+                String expectedMsg = MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1");
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetLanguages(new List<String>());
             }
@@ -476,7 +476,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetUserWords("test", new FileStream(userWords, FileMode.Open, FileAccess.Read));
             }
             catch (Exception e) {
-                String expectedMsg = String.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "test");
+                String expectedMsg = MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "test");
                 NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetLanguages(new List<String>());
             }

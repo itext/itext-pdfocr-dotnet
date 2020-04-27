@@ -125,9 +125,9 @@ namespace iText.Ocr.Pdfa3u {
             DeleteFile(pdfPath);
         }
 
-        [LogMessage(iText.IO.IOException.TypeOfFontIsNotRecognized, Count = 1)]
+        [LogMessage(LogMessageConstant.CANNOT_READ_PROVIDED_FONT, Count = 1)]
         [NUnit.Framework.Test]
-        public virtual void TestInvalidFontTwice() {
+        public virtual void TestInvalidFont() {
             String path = testImagesDirectory + "numbers_01.jpg";
             try {
                 FileInfo file = new FileInfo(path);
