@@ -1,0 +1,7 @@
+Please notice that the following fonts are used with the mentioned below licenses.
+
+* Cairo-Regular - SIL Open Font License, Version 1.1
+* FreeSans - GPL license you can find following the link: https://www.gnu.org/licenses
+* Kosugi-Regular - Apache License, Version 2.0.
+* NotoSans-Regular - SIL Open Font License, Version 1.1
+* NotoSansSC-Regular - SIL Open Font License, Version 1.1

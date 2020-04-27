@@ -102,6 +102,9 @@
     <EmbeddedResource Include="resources\com\itextpdf\ocr\tessdata\eng.traineddata" />
     <EmbeddedResource Include="resources\com\itextpdf\ocr\tessdata\osd.traineddata" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\com\itextpdf\ocr\fonts\NOTICE.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\build\Genesis.Tesseract4.targets" Condition="Exists('$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\build\Genesis.Tesseract4.targets')" />
 </Project>
