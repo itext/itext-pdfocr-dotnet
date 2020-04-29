@@ -32,6 +32,11 @@ namespace iText.Ocr {
     /// or using setter
     /// </remarks>
     public class PdfRenderer : IPdfRenderer {
+        /// <summary>Supported image formats.</summary>
+        private static readonly ICollection<String> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet(
+            new HashSet<String>(JavaUtil.ArraysAsList("bmp", "png", "pnm", "pgm", "ppm", "pbm", "tiff", "tif", "jpeg"
+            , "jpg", "jpe", "jfif")));
+
         /// <summary>Logger.</summary>
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.PdfRenderer));
 
@@ -454,8 +459,8 @@ namespace iText.Ocr {
             int index = image.FullName.LastIndexOf('.');
             if (index > 0) {
                 extension = new String(image.FullName.ToCharArray(), index + 1, image.FullName.Length - index - 1);
-                foreach (IPdfRenderer.ImgFormat imageFormat in System.Enum.GetValues(typeof(IPdfRenderer.ImgFormat))) {
-                    if (imageFormat.ToString().Equals(extension.ToLowerInvariant())) {
+                foreach (String format in SUPPORTED_IMAGE_FORMATS) {
+                    if (format.Equals(extension.ToLowerInvariant())) {
                         isValid = true;
                         break;
                     }

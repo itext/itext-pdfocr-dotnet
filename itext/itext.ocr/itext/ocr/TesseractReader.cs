@@ -154,38 +154,40 @@ namespace iText.Ocr {
         /// returns retrieved data as a string.
         /// </summary>
         /// <param name="input">File</param>
-        /// <param name="outputFormat">OutputFormat</param>
+        /// <param name="outputFormat">
+        /// OutputFormat
+        /// "txt" output format:
+        /// tesseract performs ocr and returns output in txt format
+        /// "hocr" output format:
+        /// tesseract performs ocr and returns output in hocr format,
+        /// then result text is extracted
+        /// </param>
         /// <returns>String</returns>
         public sealed override String ReadDataFromInput(FileInfo input, IOcrReader.OutputFormat outputFormat) {
-            StringBuilder data = new StringBuilder();
-            try {
-                // image needs to be paginated only if it's tiff
-                // or preprocessing isn't required
-                int realNumOfPages = !ImageUtil.IsTiffImage(input) ? 1 : ImageUtil.GetNumberOfPageTiff(input);
-                int numOfPages = IsPreprocessingImages() ? realNumOfPages : 1;
-                int numOfFiles = IsPreprocessingImages() ? 1 : realNumOfPages;
-                for (int page = 1; page <= numOfPages; page++) {
-                    IList<FileInfo> tempFiles = new List<FileInfo>();
-                    for (int i = 0; i < numOfFiles; i++) {
-                        String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
-                        tempFiles.Add(CreateTempFile(extension));
-                    }
-                    DoTesseractOcr(input, tempFiles, outputFormat, page);
-                    foreach (FileInfo tmpFile in tempFiles) {
-                        if (File.Exists(System.IO.Path.Combine(tmpFile.FullName))) {
-                            data.Append(UtilService.ReadTxtFile(tmpFile));
+            IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, outputFormat);
+            if (result != null && result.Count > 0) {
+                IList<String> keys = new List<String>(result.Keys);
+                if (outputFormat.Equals(IOcrReader.OutputFormat.txt)) {
+                    return keys[0];
+                }
+                else {
+                    StringBuilder outputText = new StringBuilder();
+                    IDictionary<int, IList<TextInfo>> outputMap = result.Get(keys[0]);
+                    foreach (int page in outputMap.Keys) {
+                        StringBuilder pageText = new StringBuilder();
+                        foreach (TextInfo textInfo in outputMap.Get(page)) {
+                            pageText.Append(textInfo.GetText());
+                            pageText.Append(Environment.NewLine);
                         }
+                        outputText.Append(pageText);
+                        outputText.Append(Environment.NewLine);
                     }
-                    foreach (FileInfo file in tempFiles) {
-                        UtilService.DeleteFile(file.FullName);
-                    }
+                    return outputText.ToString();
                 }
             }
-            catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_OCR_INPUT_FILE, e
-                    .Message));
+            else {
+                return "";
             }
-            return data.ToString();
         }
 
         /// <summary>
@@ -200,7 +202,30 @@ namespace iText.Ocr {
         /// <param name="input">File</param>
         /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
         public sealed override IDictionary<int, IList<TextInfo>> ReadDataFromInput(FileInfo input) {
+            IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, IOcrReader.OutputFormat
+                .hocr);
+            if (result != null && result.Count > 0) {
+                IList<String> keys = new List<String>(result.Keys);
+                return result.Get(keys[0]);
+            }
+            else {
+                return new LinkedDictionary<int, IList<TextInfo>>();
+            }
+        }
+
+        /// <summary>Reads data from the provided input image file.</summary>
+        /// <param name="input">File</param>
+        /// <param name="outputFormat">OutputFormat</param>
+        /// <returns>
+        /// Pair<Map&lt;Integer, List&lt;textinfo>&gt;, String&gt;
+        /// if output format is txt,
+        /// result is key of the returned map(String),
+        /// otherwise - the value (Map<Integer, List&lt;textinfo>)
+        /// </returns>
+        internal virtual IDictionary<String, IDictionary<int, IList<TextInfo>>> ProcessInputFiles(FileInfo input, 
+            IOcrReader.OutputFormat outputFormat) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
+            StringBuilder data = new StringBuilder();
             try {
                 // image needs to be paginated only if it's tiff
                 // or preprocessing isn't required
@@ -209,16 +234,26 @@ namespace iText.Ocr {
                 int numOfFiles = IsPreprocessingImages() ? 1 : realNumOfPages;
                 for (int page = 1; page <= numOfPages; page++) {
                     IList<FileInfo> tempFiles = new List<FileInfo>();
+                    String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
                     for (int i = 0; i < numOfFiles; i++) {
-                        tempFiles.Add(CreateTempFile(".hocr"));
+                        tempFiles.Add(CreateTempFile(extension));
                     }
-                    DoTesseractOcr(input, tempFiles, IOcrReader.OutputFormat.hocr, page);
-                    IDictionary<int, IList<TextInfo>> pageData = UtilService.ParseHocrFile(tempFiles, GetTextPositioning());
-                    if (IsPreprocessingImages()) {
-                        imageData.Put(page, pageData.Get(1));
+                    DoTesseractOcr(input, tempFiles, outputFormat, page);
+                    if (outputFormat.Equals(IOcrReader.OutputFormat.hocr)) {
+                        IDictionary<int, IList<TextInfo>> pageData = UtilService.ParseHocrFile(tempFiles, GetTextPositioning());
+                        if (IsPreprocessingImages()) {
+                            imageData.Put(page, pageData.Get(1));
+                        }
+                        else {
+                            imageData = pageData;
+                        }
                     }
                     else {
-                        imageData = pageData;
+                        foreach (FileInfo tmpFile in tempFiles) {
+                            if (File.Exists(System.IO.Path.Combine(tmpFile.FullName))) {
+                                data.Append(UtilService.ReadTxtFile(tmpFile));
+                            }
+                        }
                     }
                     foreach (FileInfo file in tempFiles) {
                         UtilService.DeleteFile(file.FullName);
@@ -229,7 +264,10 @@ namespace iText.Ocr {
                 LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_OCR_INPUT_FILE, e
                     .Message));
             }
-            return imageData;
+            IDictionary<String, IDictionary<int, IList<TextInfo>>> result = new LinkedDictionary<String, IDictionary<int
+                , IList<TextInfo>>>();
+            result.Put(data.ToString(), imageData);
+            return result;
         }
 
         /// <summary>

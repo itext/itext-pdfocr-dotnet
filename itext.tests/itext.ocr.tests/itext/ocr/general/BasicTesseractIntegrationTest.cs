@@ -308,6 +308,23 @@ namespace iText.Ocr.General {
             NUnit.Framework.Assert.IsTrue(result.Contains(expectedOutput));
         }
 
+        [NUnit.Framework.Test]
+        public virtual void TestHocrStringOutput() {
+            FileInfo file = new FileInfo(testImagesDirectory + "multipage.tiff");
+            IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
+                , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
+                , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
+                );
+            String result = tesseractReader.ReadDataFromInput(file, IOcrReader.OutputFormat.hocr);
+            foreach (String line in expectedOutput) {
+                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
+            }
+            result = tesseractReader.ReadDataFromInput(file, IOcrReader.OutputFormat.txt);
+            foreach (String line in expectedOutput) {
+                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
+            }
+        }
+
         /// <summary>Parse text from image and compare with expected.</summary>
         /// <param name="path"/>
         /// <param name="expectedOutput"/>

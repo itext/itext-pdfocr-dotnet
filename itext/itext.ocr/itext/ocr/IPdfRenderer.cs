@@ -50,34 +50,6 @@ namespace iText.Ocr {
             scaleToFit
         }
 
-        /// <summary>Supported image formats.</summary>
-        public enum ImgFormat {
-            /// <summary>BMP file format.</summary>
-            bmp,
-            /// <summary>PNG file format.</summary>
-            png,
-            /// <summary>PNM file format.</summary>
-            pnm,
-            /// <summary>PGM file format.</summary>
-            pgm,
-            /// <summary>PPM file format.</summary>
-            ppm,
-            /// <summary>PBM file format.</summary>
-            pbm,
-            /// <summary>TIFF file format.</summary>
-            tiff,
-            /// <summary>TIF file format.</summary>
-            tif,
-            /// <summary>JPEG file format.</summary>
-            jpeg,
-            /// <summary>JPG file format.</summary>
-            jpg,
-            /// <summary>JPE file format.</summary>
-            jpe,
-            /// <summary>JFIF file format.</summary>
-            jfif
-        }
-
         /// <summary>Set list of input images for OCR.</summary>
         /// <param name="images">
         /// a
