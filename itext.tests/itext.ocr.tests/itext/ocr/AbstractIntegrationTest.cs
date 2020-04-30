@@ -330,7 +330,7 @@ namespace iText.Ocr {
             }
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(new 
                 FileInfo(imgPath)));
-            pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.keepOriginalSize);
+            pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE);
             if (fontPath != null && !String.IsNullOrEmpty(fontPath)) {
                 pdfRenderer.SetFontPath(fontPath);
             }

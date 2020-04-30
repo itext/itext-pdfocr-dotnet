@@ -48,7 +48,7 @@ namespace iText.Ocr {
         private bool preprocessingImages = true;
 
         /// <summary>Default text positioning is by lines.</summary>
-        private IOcrReader.TextPositioning textPositioning = IOcrReader.TextPositioning.byLines;
+        private IOcrReader.TextPositioning textPositioning = IOcrReader.TextPositioning.BY_LINES;
 
         /// <summary>Path to the file containing user words.</summary>
         /// <remarks>
@@ -167,7 +167,7 @@ namespace iText.Ocr {
             IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, outputFormat);
             if (result != null && result.Count > 0) {
                 IList<String> keys = new List<String>(result.Keys);
-                if (outputFormat.Equals(IOcrReader.OutputFormat.txt)) {
+                if (outputFormat.Equals(IOcrReader.OutputFormat.TXT)) {
                     return keys[0];
                 }
                 else {
@@ -203,7 +203,7 @@ namespace iText.Ocr {
         /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
         public sealed override IDictionary<int, IList<TextInfo>> ReadDataFromInput(FileInfo input) {
             IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, IOcrReader.OutputFormat
-                .hocr);
+                .HOCR);
             if (result != null && result.Count > 0) {
                 IList<String> keys = new List<String>(result.Keys);
                 return result.Get(keys[0]);
@@ -234,12 +234,12 @@ namespace iText.Ocr {
                 int numOfFiles = IsPreprocessingImages() ? 1 : realNumOfPages;
                 for (int page = 1; page <= numOfPages; page++) {
                     IList<FileInfo> tempFiles = new List<FileInfo>();
-                    String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
+                    String extension = outputFormat.Equals(IOcrReader.OutputFormat.HOCR) ? ".hocr" : ".txt";
                     for (int i = 0; i < numOfFiles; i++) {
                         tempFiles.Add(CreateTempFile(extension));
                     }
                     DoTesseractOcr(input, tempFiles, outputFormat, page);
-                    if (outputFormat.Equals(IOcrReader.OutputFormat.hocr)) {
+                    if (outputFormat.Equals(IOcrReader.OutputFormat.HOCR)) {
                         IDictionary<int, IList<TextInfo>> pageData = UtilService.ParseHocrFile(tempFiles, GetTextPositioning());
                         if (IsPreprocessingImages()) {
                             imageData.Put(page, pageData.Get(1));

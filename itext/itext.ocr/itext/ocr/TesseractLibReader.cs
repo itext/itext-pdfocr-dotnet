@@ -73,7 +73,7 @@ namespace iText.Ocr {
         /// <param name="outputFormat">OutputFormat</param>
         public virtual void InitializeTesseract(IOcrReader.OutputFormat outputFormat) {
             SetTesseractInstance();
-            GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(IOcrReader.OutputFormat.hocr
+            GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(IOcrReader.OutputFormat.HOCR
                 ) ? "1" : "0");
             if (GetUserWordsFilePath() != null) {
                 GetTesseractInstance().SetVariable("load_system_dawg", "0");

@@ -89,7 +89,7 @@ namespace iText.Ocr {
                     Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*");
                     Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
                         );
-                    IList<String> searchedClasses = IOcrReader.TextPositioning.byLines.Equals(textPositioning) ? JavaUtil.ArraysAsList
+                    IList<String> searchedClasses = IOcrReader.TextPositioning.BY_LINES.Equals(textPositioning) ? JavaUtil.ArraysAsList
                         ("ocr_line", "ocr_caption") : JavaCollectionsUtil.SingletonList<String>("ocrx_word");
                     foreach (iText.StyledXmlParser.Jsoup.Nodes.Element page in pages) {
                         String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id(), "page_");
@@ -155,7 +155,7 @@ namespace iText.Ocr {
                 float imgHeightPt = GetPoints(imageData.GetHeight());
                 LOGGER.Info("Original image size in pixels: (" + imageData.GetWidth() + ", " + imageData.GetHeight() + ")"
                     );
-                if (scaleMode == IPdfRenderer.ScaleMode.keepOriginalSize) {
+                if (scaleMode == IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE) {
                     Rectangle size = new Rectangle(imgWidthPt, imgHeightPt);
                     LOGGER.Info("Final size in points: (" + size.GetWidth() + ", " + size.GetHeight() + ")");
                     return size;
@@ -163,17 +163,17 @@ namespace iText.Ocr {
                 else {
                     Rectangle size = new Rectangle(requiredSize.GetWidth(), requiredSize.GetHeight());
                     // scale image according to the page size and scale mode
-                    if (scaleMode == IPdfRenderer.ScaleMode.scaleHeight) {
+                    if (scaleMode == IPdfRenderer.ScaleMode.SCALE_HEIGHT) {
                         float newHeight = imgHeightPt * requiredSize.GetWidth() / imgWidthPt;
                         size.SetHeight(newHeight);
                     }
                     else {
-                        if (scaleMode == IPdfRenderer.ScaleMode.scaleWidth) {
+                        if (scaleMode == IPdfRenderer.ScaleMode.SCALE_WIDTH) {
                             float newWidth = imgWidthPt * requiredSize.GetHeight() / imgHeightPt;
                             size.SetWidth(newWidth);
                         }
                         else {
-                            if (scaleMode == IPdfRenderer.ScaleMode.scaleToFit) {
+                            if (scaleMode == IPdfRenderer.ScaleMode.SCALE_TO_FIT) {
                                 float ratio = Math.Min(requiredSize.GetWidth() / imgWidthPt, requiredSize.GetHeight() / imgHeightPt);
                                 size.SetWidth(imgWidthPt * ratio);
                                 size.SetHeight(imgHeightPt * ratio);

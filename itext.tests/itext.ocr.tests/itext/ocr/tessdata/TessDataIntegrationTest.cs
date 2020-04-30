@@ -64,7 +64,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetPreprocessingImages(false);
             }
             // locate text by words
-            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byWords);
+            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
             DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".png", resultPdfPath, JavaUtil.ArraysAsList
                 ("spa", "spa_old"), DeviceCmyk.BLACK);
             try {
@@ -72,9 +72,9 @@ namespace iText.Ocr.Tessdata {
             }
             finally {
                 DeleteFile(resultPdfPath);
-                NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.byWords, tesseractReader.GetTextPositioning());
+                NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.BY_WORDS, tesseractReader.GetTextPositioning());
                 tesseractReader.SetPreprocessingImages(preprocess);
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byLines);
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
         }
 
@@ -215,7 +215,7 @@ namespace iText.Ocr.Tessdata {
             String expectedPdfPath = testDocumentsDirectory + filename + "_" + parameter + ".pdf";
             String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
             try {
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byWords);
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
                 tesseractReader.SetPathToTessData(GetTessDataDirectory());
                 DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".png", resultPdfPath, JavaUtil.ArraysAsList
                     ("eng", "deu", "spa"), DeviceCmyk.BLACK);
@@ -223,8 +223,8 @@ namespace iText.Ocr.Tessdata {
             }
             finally {
                 DeleteFile(resultPdfPath);
-                NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.byWords, tesseractReader.GetTextPositioning());
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byLines);
+                NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.BY_WORDS, tesseractReader.GetTextPositioning());
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
         }
 
@@ -306,7 +306,7 @@ namespace iText.Ocr.Tessdata {
             String imgPath = testImagesDirectory + "bengali_01.jpeg";
             FileInfo file = new FileInfo(imgPath);
             String expected = "ইংরজে\nশখো";
-            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byWords);
+            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
             // correct result with specified spanish language
             NUnit.Framework.Assert.AreEqual(expected, GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList
                 <String>("ben"), freeSansFontPath));
@@ -317,7 +317,7 @@ namespace iText.Ocr.Tessdata {
             NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList
                 <String>("ben"), kosugiFontPath));
             NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, new List<String>()));
-            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byLines);
+            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
         }
 
         [NUnit.Framework.Test]

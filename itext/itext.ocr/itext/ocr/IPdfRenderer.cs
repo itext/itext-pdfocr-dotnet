@@ -17,37 +17,37 @@ namespace iText.Ocr {
     /// </remarks>
     public abstract class IPdfRenderer {
         public enum ScaleMode {
-            /// <summary>keepOriginalSize (default value).</summary>
+            /// <summary>KEEP_ORIGINAL_SIZE (default value).</summary>
             /// <remarks>
-            /// keepOriginalSize (default value).
+            /// KEEP_ORIGINAL_SIZE (default value).
             /// <para />
             /// the size of every page of
             /// the output PDF document will match the size of the
             /// corresponding input image
             /// </remarks>
-            keepOriginalSize,
-            /// <summary>scaleWidth.</summary>
+            KEEP_ORIGINAL_SIZE,
+            /// <summary>SCALE_WIDTH.</summary>
             /// <remarks>
-            /// scaleWidth.
+            /// SCALE_WIDTH.
             /// <para />
             /// Only width of the image will be proportionally scaled
             /// </remarks>
-            scaleWidth,
-            /// <summary>scaleHeight.</summary>
+            SCALE_WIDTH,
+            /// <summary>SCALE_HEIGHT.</summary>
             /// <remarks>
-            /// scaleHeight.
+            /// SCALE_HEIGHT.
             /// <para />
             /// Only height of the image will be proportionally scaled
             /// </remarks>
-            scaleHeight,
-            /// <summary>scaleToFit.</summary>
+            SCALE_HEIGHT,
+            /// <summary>SCALE_TO_FIT.</summary>
             /// <remarks>
-            /// scaleToFit.
+            /// SCALE_TO_FIT.
             /// <para />
             /// the size of every page of the output PDF document
             /// will match the values set using "setPdfSize()" method
             /// </remarks>
-            scaleToFit
+            SCALE_TO_FIT
         }
 
         /// <summary>Set list of input images for OCR.</summary>

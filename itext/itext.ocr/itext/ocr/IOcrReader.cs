@@ -12,39 +12,39 @@ namespace iText.Ocr {
     /// </remarks>
     public abstract class IOcrReader {
         public enum TextPositioning {
-            /// <summary>byLines (default value).</summary>
+            /// <summary>BY_LINES (default value).</summary>
             /// <remarks>
-            /// byLines (default value).
+            /// BY_LINES (default value).
             /// <para />
             /// text will be located by lines retrieved from hocr file
             /// </remarks>
-            byLines,
-            /// <summary>byWords.</summary>
+            BY_LINES,
+            /// <summary>BY_WORDS.</summary>
             /// <remarks>
-            /// byWords.
+            /// BY_WORDS.
             /// <para />
             /// text will be located by words retrieved from hocr file
             /// </remarks>
-            byWords
+            BY_WORDS
         }
 
         public enum OutputFormat {
-            /// <summary>hocr.</summary>
+            /// <summary>HOCR.</summary>
             /// <remarks>
-            /// hocr.
+            /// HOCR.
             /// <para />
             /// Reader will produce XHTML output compliant
             /// with the hOCR specification.
             /// Output will be parsed and represented as List<textinfo>
             /// </remarks>
-            hocr,
-            /// <summary>txt.</summary>
+            HOCR,
+            /// <summary>TXT.</summary>
             /// <remarks>
-            /// txt.
+            /// TXT.
             /// <para />
             /// Reader will produce plain txt file
             /// </remarks>
-            txt
+            TXT
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace iText.Ocr.Imageformats {
             finally {
                 DeleteFile(resultPdfPath);
                 tesseractReader.SetPreprocessingImages(preprocess);
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byLines);
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
         }
 
@@ -199,14 +199,14 @@ namespace iText.Ocr.Imageformats {
             String filename = "numbers_01";
             String expectedPdfPath = testDocumentsDirectory + filename + ".pdf";
             String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
-            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byWords);
+            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
             DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".jpg", resultPdfPath);
             try {
                 new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
             }
             finally {
                 DeleteFile(resultPdfPath);
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byLines);
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
         }
     }

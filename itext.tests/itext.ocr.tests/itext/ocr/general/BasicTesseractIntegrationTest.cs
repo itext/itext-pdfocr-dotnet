@@ -61,7 +61,7 @@ namespace iText.Ocr.General {
             FileInfo file = new FileInfo(filePath);
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                 ));
-            pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.keepOriginalSize);
+            pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE);
             PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter());
             NUnit.Framework.Assert.IsNotNull(doc);
             ImageData imageData = null;
@@ -78,7 +78,7 @@ namespace iText.Ocr.General {
                 float realHeight = doc.GetFirstPage().GetPageSize().GetHeight();
                 NUnit.Framework.Assert.AreEqual(imageWidth, realWidth, delta);
                 NUnit.Framework.Assert.AreEqual(imageHeight, realHeight, delta);
-                NUnit.Framework.Assert.AreEqual(IPdfRenderer.ScaleMode.keepOriginalSize, pdfRenderer.GetScaleMode());
+                NUnit.Framework.Assert.AreEqual(IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE, pdfRenderer.GetScaleMode());
             }
             if (!doc.IsClosed()) {
                 doc.Close();
@@ -99,7 +99,7 @@ namespace iText.Ocr.General {
             float pageWidthPt = 500f;
             float pageHeightPt = 500f;
             Rectangle pageSize = new Rectangle(pageWidthPt, pageHeightPt);
-            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, IPdfRenderer.ScaleMode.scaleWidth
+            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, IPdfRenderer.ScaleMode.SCALE_WIDTH
                 , pageSize);
             // page size should be equal to the result image size
             // result image height should be equal to the value that
@@ -130,7 +130,7 @@ namespace iText.Ocr.General {
             float pageWidthPt = 500f;
             float pageHeightPt = 500f;
             Rectangle pageSize = new Rectangle(pageWidthPt, pageHeightPt);
-            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, IPdfRenderer.ScaleMode.scaleHeight
+            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, IPdfRenderer.ScaleMode.SCALE_HEIGHT
                 , pageSize);
             if (originalImageData != null) {
                 float originalImageHeight = UtilService.GetPoints(originalImageData.GetHeight());
@@ -221,7 +221,7 @@ namespace iText.Ocr.General {
                 LOGGER.Error(e.Message);
             }
             PageSize defaultPageSize = PageSize.A4;
-            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, IPdfRenderer.ScaleMode.scaleToFit
+            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, IPdfRenderer.ScaleMode.SCALE_TO_FIT
                 , defaultPageSize);
             if (imageData != null) {
                 float imageWidth = UtilService.GetPoints(imageData.GetWidth());
@@ -315,11 +315,11 @@ namespace iText.Ocr.General {
                 , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
                 , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
                 );
-            String result = tesseractReader.ReadDataFromInput(file, IOcrReader.OutputFormat.hocr);
+            String result = tesseractReader.ReadDataFromInput(file, IOcrReader.OutputFormat.HOCR);
             foreach (String line in expectedOutput) {
                 NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
             }
-            result = tesseractReader.ReadDataFromInput(file, IOcrReader.OutputFormat.txt);
+            result = tesseractReader.ReadDataFromInput(file, IOcrReader.OutputFormat.TXT);
             foreach (String line in expectedOutput) {
                 NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
             }

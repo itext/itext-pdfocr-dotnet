@@ -327,7 +327,7 @@ namespace iText.Ocr
             IOcrReader.OutputFormat outputFormat)
         {
             Page page = tesseractInstance.Process(image);
-            if (outputFormat.Equals(IOcrReader.OutputFormat.hocr))
+            if (outputFormat.Equals(IOcrReader.OutputFormat.HOCR))
             {
                 return page.GetHOCRText(0);
             }
@@ -365,7 +365,7 @@ namespace iText.Ocr
         {
             Page page = tesseractInstance.Process(pix);
             String result = null;
-            if (outputFormat.Equals(IOcrReader.OutputFormat.hocr))
+            if (outputFormat.Equals(IOcrReader.OutputFormat.HOCR))
             {
                 result = page.GetHOCRText(0);
             }
@@ -425,7 +425,7 @@ namespace iText.Ocr
             Pix pix, IOcrReader.OutputFormat outputFormat)
         {
             Page page = tesseractInstance.Process(pix);
-            if (outputFormat.Equals(IOcrReader.OutputFormat.hocr))
+            if (outputFormat.Equals(IOcrReader.OutputFormat.HOCR))
             {
                 return page.GetHOCRText(0);
             }

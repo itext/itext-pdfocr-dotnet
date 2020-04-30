@@ -127,7 +127,7 @@ namespace iText.Ocr {
                 AddUserWords(command);
                 // required languages
                 AddLanguages(command);
-                if (outputFormat.Equals(IOcrReader.OutputFormat.hocr)) {
+                if (outputFormat.Equals(IOcrReader.OutputFormat.HOCR)) {
                     // path to hocr script
                     SetHocrOutput(command);
                 }
@@ -226,7 +226,7 @@ namespace iText.Ocr {
         /// <param name="outputFormat">output format</param>
         private void AddOutputFile(IList<String> command, FileInfo outputFile, IOcrReader.OutputFormat outputFormat
             ) {
-            String extension = outputFormat.Equals(IOcrReader.OutputFormat.hocr) ? ".hocr" : ".txt";
+            String extension = outputFormat.Equals(IOcrReader.OutputFormat.HOCR) ? ".hocr" : ".txt";
             String fileName = new String(outputFile.FullName.ToCharArray(), 0, outputFile.FullName.IndexOf(extension, 
                 StringComparison.Ordinal));
             LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(LogMessageConstant.CREATED_TEMPORARY_FILE, outputFile

@@ -29,7 +29,7 @@ namespace iText.Ocr.Pdfa3u {
             String expected = "619121";
             String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
-                ), DeviceCmyk.BLACK, IPdfRenderer.ScaleMode.scaleToFit);
+                ), DeviceCmyk.BLACK, IPdfRenderer.ScaleMode.SCALE_TO_FIT);
             PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath), null);
             doc.Close();
             String result = GetTextFromPdfLayer(pdfPath, "Text Layer", 1);
@@ -168,9 +168,9 @@ namespace iText.Ocr.Pdfa3u {
             try {
                 PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(new 
                     FileInfo(testImagesDirectory + filename + ".jpg")));
-                pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.keepOriginalSize);
+                pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE);
                 pdfRenderer.SetOcrReader(tesseractReader);
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byWords);
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
                 NUnit.Framework.Assert.AreEqual(tesseractReader, pdfRenderer.GetOcrReader());
                 PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(resultPdfPath), GetCMYKPdfOutputIntent());
                 NUnit.Framework.Assert.IsNotNull(doc);
@@ -179,8 +179,8 @@ namespace iText.Ocr.Pdfa3u {
             }
             finally {
                 DeleteFile(resultPdfPath);
-                NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.byWords, tesseractReader.GetTextPositioning());
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.byLines);
+                NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.BY_WORDS, tesseractReader.GetTextPositioning());
+                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
         }
 
@@ -195,7 +195,7 @@ namespace iText.Ocr.Pdfa3u {
                 PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(new 
                     FileInfo(testImagesDirectory + filename + ".jpg")));
                 pdfRenderer.SetTextColor(DeviceRgb.BLACK);
-                pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.keepOriginalSize);
+                pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE);
                 PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(resultPdfPath), GetRGBPdfOutputIntent());
                 NUnit.Framework.Assert.IsNotNull(doc);
                 doc.Close();

@@ -54,7 +54,7 @@ namespace iText.Ocr {
         private Color textColor = null;
 
         /// <summary>Scale mode for input images: "scaleToFit" by default.</summary>
-        private IPdfRenderer.ScaleMode scaleMode = IPdfRenderer.ScaleMode.scaleToFit;
+        private IPdfRenderer.ScaleMode scaleMode = IPdfRenderer.ScaleMode.SCALE_TO_FIT;
 
         /// <summary>Size of the PDF document pages: "A4" by default.</summary>
         /// <remarks>
@@ -128,7 +128,7 @@ namespace iText.Ocr {
             ocrReader = reader;
             inputImages = JavaCollectionsUtil.UnmodifiableList<FileInfo>(images);
             textColor = newColor;
-            scaleMode = IPdfRenderer.ScaleMode.keepOriginalSize;
+            scaleMode = IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE;
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace iText.Ocr {
             LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.START_OCR_FOR_IMAGES, GetInputImages().Count));
             StringBuilder content = new StringBuilder();
             foreach (FileInfo inputImage in GetInputImages()) {
-                content.Append(DoOCRForImages(inputImage, IOcrReader.OutputFormat.txt));
+                content.Append(DoOCRForImages(inputImage, IOcrReader.OutputFormat.TXT));
             }
             // write to file
             WriteToTextFile(absolutePath, content.ToString());
@@ -518,7 +518,7 @@ namespace iText.Ocr {
         /// <param name="imageData">ImageData</param>
         internal virtual void AddToCanvas(PdfDocument pdfDocument, PdfFont defaultFont, Rectangle imageSize, IList
             <TextInfo> pageText, ImageData imageData) {
-            Rectangle rectangleSize = GetScaleMode() == IPdfRenderer.ScaleMode.keepOriginalSize ? imageSize : GetPageSize
+            Rectangle rectangleSize = GetScaleMode() == IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE ? imageSize : GetPageSize
                 ();
             PageSize size = new PageSize(rectangleSize);
             PdfPage pdfPage = pdfDocument.AddNewPage(size);
@@ -592,7 +592,7 @@ namespace iText.Ocr {
         /// <param name="pdfCanvas">pdfCanvas</param>
         private void AddImageToCanvas(ImageData imageData, Rectangle imageSize, PdfCanvas pdfCanvas) {
             if (imageData != null) {
-                if (GetScaleMode() == IPdfRenderer.ScaleMode.keepOriginalSize) {
+                if (GetScaleMode() == IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE) {
                     pdfCanvas.AddImage(imageData, imageSize, false);
                 }
                 else {
@@ -693,7 +693,7 @@ namespace iText.Ocr {
              pageScaleMode) {
             float x = 0;
             float y = 0;
-            if (pageScaleMode != IPdfRenderer.ScaleMode.keepOriginalSize) {
+            if (pageScaleMode != IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE) {
                 if (imageSize.GetHeight() < size.GetHeight()) {
                     y = (size.GetHeight() - imageSize.GetHeight()) / 2;
                 }
