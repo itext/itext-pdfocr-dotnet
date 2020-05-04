@@ -39,17 +39,16 @@ namespace iText.Ocr.Pdfa3u {
 
         [NUnit.Framework.Test]
         public virtual void TestIncompatibleOutputIntentAndFontColorSpaceException() {
-            String path = testImagesDirectory + "example_01.BMP";
-            try {
+            NUnit.Framework.Assert.That(() =>  {
+                String path = testImagesDirectory + "example_01.BMP";
                 FileInfo file = new FileInfo(path);
                 IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
                     ), DeviceCmyk.BLACK);
-                pdfRenderer.DoPdfOcr(GetPdfWriter(), GetRGBPdfOutputIntent());
+                PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(), GetRGBPdfOutputIntent());
+                doc.Close();
             }
-            catch (PdfException e) {
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceException.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT
-                    , e.Message);
-            }
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfAConformanceException.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT))
+;
         }
 
         [NUnit.Framework.Test]
@@ -129,16 +128,12 @@ namespace iText.Ocr.Pdfa3u {
         [NUnit.Framework.Test]
         public virtual void TestInvalidFont() {
             String path = testImagesDirectory + "numbers_01.jpg";
-            try {
-                FileInfo file = new FileInfo(path);
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
-                    ));
-                pdfRenderer.SetFontPath(path);
-                pdfRenderer.DoPdfOcr(GetPdfWriter(), GetCMYKPdfOutputIntent());
-            }
-            catch (Exception e) {
-                NUnit.Framework.Assert.AreEqual(OCRException.CANNOT_READ_FONT, e.Message);
-            }
+            FileInfo file = new FileInfo(path);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
+                ));
+            pdfRenderer.SetFontPath(path);
+            PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(), GetCMYKPdfOutputIntent());
+            doc.Close();
         }
 
         [NUnit.Framework.Test]
@@ -211,22 +206,26 @@ namespace iText.Ocr.Pdfa3u {
             String path = testImagesDirectory + "numbers_02.jpg";
             String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
-            IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
-                ));
-            String locale = "nl-BE";
-            pdfRenderer.SetPdfLang(locale);
-            String title = "Title";
-            pdfRenderer.SetTitle(title);
-            PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath), GetCMYKPdfOutputIntent());
-            NUnit.Framework.Assert.IsNotNull(doc);
-            doc.Close();
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-            NUnit.Framework.Assert.AreEqual(locale, pdfDocument.GetCatalog().GetLang().ToString());
-            NUnit.Framework.Assert.AreEqual(title, pdfDocument.GetDocumentInfo().GetTitle());
-            NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
-                ());
-            pdfDocument.Close();
-            DeleteFile(pdfPath);
+            try {
+                IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
+                    ));
+                String locale = "nl-BE";
+                pdfRenderer.SetPdfLang(locale);
+                String title = "Title";
+                pdfRenderer.SetTitle(title);
+                PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath), GetCMYKPdfOutputIntent());
+                NUnit.Framework.Assert.IsNotNull(doc);
+                doc.Close();
+                PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
+                NUnit.Framework.Assert.AreEqual(locale, pdfDocument.GetCatalog().GetLang().ToString());
+                NUnit.Framework.Assert.AreEqual(title, pdfDocument.GetDocumentInfo().GetTitle());
+                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
+                    ());
+                pdfDocument.Close();
+            }
+            finally {
+                DeleteFile(pdfPath);
+            }
         }
     }
 }

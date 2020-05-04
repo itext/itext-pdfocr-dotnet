@@ -428,7 +428,7 @@ namespace iText.Ocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
-        public virtual void TestCustomUserWords02() {
+        public virtual void TestCustomUserWordsWithListOfLanguages() {
             String imgPath = testImagesDirectory + "bogusText.jpg";
             String expectedOutput = "B1adeb1ab1a";
             try {
@@ -448,38 +448,35 @@ namespace iText.Ocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
-        public virtual void TestUserWordsLanguageNotInList() {
-            String userWords = testDocumentsDirectory + "userwords.txt";
-            try {
+        public virtual void TestUserWordsWithLanguageNotInList() {
+            NUnit.Framework.Assert.That(() =>  {
+                String userWords = testDocumentsDirectory + "userwords.txt";
                 tesseractReader.SetUserWords("spa", new FileStream(userWords, FileMode.Open, FileAccess.Read));
-            }
-            catch (Exception e) {
-                String expectedMsg = MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa");
-                NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetLanguages(new List<String>());
             }
-            tesseractReader.SetLanguages(new List<String>());
+            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa")))
+;
         }
 
         [NUnit.Framework.Test]
-        public virtual void TestIncorrectLanguageForUserWords() {
-            try {
+        public virtual void TestIncorrectLanguageForUserWordsAsList() {
+            NUnit.Framework.Assert.That(() =>  {
                 tesseractReader.SetUserWords("eng1", JavaUtil.ArraysAsList("word1", "word2"));
-            }
-            catch (OCRException e) {
-                String expectedMsg = MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1");
-                NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetLanguages(new List<String>());
             }
-            try {
+            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1")))
+;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestIncorrectLanguageForUserWordsAsInputStream() {
+            NUnit.Framework.Assert.That(() =>  {
                 String userWords = testDocumentsDirectory + "userwords.txt";
                 tesseractReader.SetUserWords("test", new FileStream(userWords, FileMode.Open, FileAccess.Read));
-            }
-            catch (Exception e) {
-                String expectedMsg = MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "test");
-                NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
                 tesseractReader.SetLanguages(new List<String>());
             }
+            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "test")))
+;
         }
     }
 }

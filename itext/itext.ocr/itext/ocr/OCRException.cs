@@ -28,7 +28,9 @@ namespace iText.Ocr {
         /// <summary>Creates a new OCRException.</summary>
         /// <param name="msg">the detail message.</param>
         /// <param name="e">
-        /// the cause (which is saved for later retrieval by
+        /// the cause
+        /// (which is saved for later retrieval
+        /// by
         /// <see cref="System.Exception.InnerException()"/>
         /// method).
         /// </param>

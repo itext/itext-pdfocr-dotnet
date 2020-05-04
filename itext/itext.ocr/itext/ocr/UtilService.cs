@@ -13,14 +13,14 @@ using iText.StyledXmlParser.Jsoup.Select;
 namespace iText.Ocr {
     /// <summary>Helper class.</summary>
     public sealed class UtilService {
-        /// <summary>Constantsfor points per inch (for tests).</summary>
+        /// <summary>Constants for points per inch (for tests).</summary>
         private const float POINTS_PER_INCH = 72.0f;
 
         /// <summary>UtilService logger.</summary>
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.UtilService));
 
         /// <summary>Encoding UTF-8 string.</summary>
-        private static String encodingUTF8 = "UTF-8";
+        private const String encodingUTF8 = "UTF-8";
 
         /// <summary>Constant to convert pixels to points (for tests).</summary>
         internal const float PX_TO_PT = 3f / 4f;
@@ -30,8 +30,14 @@ namespace iText.Ocr {
         }
 
         /// <summary>Read text file to string.</summary>
-        /// <param name="txtFile">File</param>
-        /// <returns>String</returns>
+        /// <param name="txtFile">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public static String ReadTxtFile(FileInfo txtFile) {
             String content = null;
             try {
@@ -72,11 +78,21 @@ namespace iText.Ocr {
         /// <remarks>
         /// Parse `hocr` file, retrieve text, and return in the format
         /// described below.
-        /// each list element : Map.Entry<String, List&lt;integer>&gt; contains
-        /// word or line as a key and its 4 coordinates(bbox) as a values
+        /// Map<Integer, List&lt;textinfo>&gt;:
+        /// key: number of the page,
+        /// value: list of
+        /// <see cref="TextInfo"/>
+        /// elements where
+        /// each
+        /// <see cref="TextInfo"/>
+        /// element contains a word or a line
+        /// and its 4 coordinates(bbox).
         /// </remarks>
-        /// <param name="inputFiles">list ofo input files</param>
-        /// <param name="textPositioning">TextPositioning</param>
+        /// <param name="inputFiles">list of input files</param>
+        /// <param name="textPositioning">
+        /// 
+        /// <see cref="TextPositioning"/>
+        /// </param>
         /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
         public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IOcrReader.TextPositioning
              textPositioning) {
@@ -136,10 +152,22 @@ namespace iText.Ocr {
         /// Calculate the size of the PDF document page
         /// should transform pixels to points and according to image resolution.
         /// </summary>
-        /// <param name="imageData">ImageData</param>
-        /// <param name="scaleMode">IPdfRenderer.ScaleMode</param>
-        /// <param name="requiredSize">Rectangle</param>
-        /// <returns>Rectangle</returns>
+        /// <param name="imageData">
+        /// 
+        /// <see cref="iText.IO.Image.ImageData"/>
+        /// </param>
+        /// <param name="scaleMode">
+        /// 
+        /// <see cref="ScaleMode"/>
+        /// </param>
+        /// <param name="requiredSize">
+        /// 
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// </returns>
         internal static Rectangle CalculateImageSize(ImageData imageData, IPdfRenderer.ScaleMode scaleMode, Rectangle
              requiredSize) {
             // Adjust image size and dpi

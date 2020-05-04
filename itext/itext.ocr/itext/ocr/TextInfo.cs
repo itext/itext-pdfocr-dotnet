@@ -6,7 +6,6 @@ namespace iText.Ocr {
     /// <summary>TextInfo class.</summary>
     /// <remarks>
     /// TextInfo class.
-    /// <para />
     /// This class describes item of text info retrieved
     /// from HOCR file after parsing
     /// </remarks>

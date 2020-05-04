@@ -21,12 +21,10 @@ namespace iText.Ocr {
     /// <summary>PDF Renderer class.</summary>
     /// <remarks>
     /// PDF Renderer class.
-    /// <para />
     /// The IPdfRenderer provides possibilities to set list of input images
     /// to be used for OCR, to set scaling mode for images, color of text in
     /// the output PDF document, set fixed size of the PDF document
     /// and to perform OCR using given images and return PDFDocument as result
-    /// <para />
     /// PDFRenderer's ocr is based on the provided IOcrReader (e.g. tesseract).
     /// This parameter is obligatory and it should be provided in constructor
     /// or using setter
@@ -41,7 +39,7 @@ namespace iText.Ocr {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.PdfRenderer));
 
         /// <summary>Path to default font file (LiberationSans-Regular).</summary>
-        private String defaultFontName = "LiberationSans-Regular.ttf";
+        private readonly String defaultFontName = "LiberationSans-Regular.ttf";
 
         /// <summary>List of Files with input images.</summary>
         private IList<FileInfo> inputImages = JavaCollectionsUtil.EmptyList<FileInfo>();
@@ -90,40 +88,61 @@ namespace iText.Ocr {
         /// </summary>
         private IOcrReader ocrReader;
 
-        /// <summary>PdfRenderer constructor with IOcrReader.</summary>
-        /// <param name="reader">IOcrReader</param>
+        /// <summary>Create a new PdfRenderer.</summary>
+        /// <param name="reader">
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </param>
         public PdfRenderer(IOcrReader reader) {
             ocrReader = reader;
         }
 
-        /// <summary>PdfRenderer constructor with IOcrReader and list of input files.</summary>
-        /// <param name="reader">IOcrReader</param>
-        /// <param name="images">images</param>
+        /// <summary>Create a new PdfRenderer.</summary>
+        /// <param name="reader">
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </param>
+        /// <param name="images">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
         public PdfRenderer(IOcrReader reader, IList<FileInfo> images) {
             ocrReader = reader;
             inputImages = JavaCollectionsUtil.UnmodifiableList<FileInfo>(images);
         }
 
-        /// <summary>
-        /// PdfRenderer constructor with IOcrReader, list of input files
-        /// and scale mode.
-        /// </summary>
-        /// <param name="reader">IOcrReader</param>
-        /// <param name="images">List<file></param>
-        /// <param name="mode">ScaleMode</param>
+        /// <summary>Create a new PdfRenderer.</summary>
+        /// <param name="reader">
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </param>
+        /// <param name="images">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
+        /// <param name="mode">
+        /// 
+        /// <see cref="ScaleMode"/>
+        /// </param>
         public PdfRenderer(IOcrReader reader, IList<FileInfo> images, IPdfRenderer.ScaleMode mode) {
             ocrReader = reader;
             inputImages = JavaCollectionsUtil.UnmodifiableList<FileInfo>(images);
             scaleMode = mode;
         }
 
-        /// <summary>
-        /// PdfRenderer constructor with IOcrReader, list of input files
-        /// and text color.
-        /// </summary>
-        /// <param name="reader">IOcrReader</param>
-        /// <param name="images">List<file></param>
-        /// <param name="newColor">Color</param>
+        /// <summary>Create a new PdfRenderer.</summary>
+        /// <param name="reader">
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </param>
+        /// <param name="images">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
+        /// <param name="newColor">
+        /// 
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </param>
         public PdfRenderer(IOcrReader reader, IList<FileInfo> images, Color newColor) {
             ocrReader = reader;
             inputImages = JavaCollectionsUtil.UnmodifiableList<FileInfo>(images);
@@ -131,14 +150,23 @@ namespace iText.Ocr {
             scaleMode = IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE;
         }
 
-        /// <summary>
-        /// PdfRenderer constructor with IOcrReader, list of input files,
-        /// text color and scale mode.
-        /// </summary>
-        /// <param name="reader">IOcrReader</param>
-        /// <param name="images">List<file></param>
-        /// <param name="newColor">Color</param>
-        /// <param name="mode">ScaleMode</param>
+        /// <summary>Create a new PdfRenderer.</summary>
+        /// <param name="reader">
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </param>
+        /// <param name="images">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
+        /// <param name="newColor">
+        /// 
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </param>
+        /// <param name="mode">
+        /// 
+        /// <see cref="ScaleMode"/>
+        /// </param>
         public PdfRenderer(IOcrReader reader, IList<FileInfo> images, Color newColor, IPdfRenderer.ScaleMode mode) {
             ocrReader = reader;
             textColor = newColor;
@@ -147,25 +175,37 @@ namespace iText.Ocr {
         }
 
         /// <summary>Set list of input images for OCR.</summary>
-        /// <param name="images">List<file></param>
+        /// <param name="images">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
         public override void SetInputImages(IList<FileInfo> images) {
             inputImages = JavaCollectionsUtil.UnmodifiableList<FileInfo>(images);
         }
 
         /// <summary>Get list of provided input images for OCR.</summary>
-        /// <returns>List<file></returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </returns>
         public sealed override IList<FileInfo> GetInputImages() {
             return new List<FileInfo>(inputImages);
         }
 
         /// <summary>Set text color (should be CMYK) in output PDF document.</summary>
-        /// <param name="newColor">CMYK Color</param>
+        /// <param name="newColor">
+        /// 
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </param>
         public sealed override void SetTextColor(Color newColor) {
             textColor = newColor;
         }
 
         /// <summary>Get text color in output PDF document.</summary>
-        /// <returns>Color</returns>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </returns>
         public sealed override Color GetTextColor() {
             return textColor;
         }
@@ -174,13 +214,19 @@ namespace iText.Ocr {
         /// Set scale mode for input images using available options
         /// from ScaleMode enum.
         /// </summary>
-        /// <param name="mode">ScaleMode</param>
+        /// <param name="mode">
+        /// 
+        /// <see cref="ScaleMode"/>
+        /// </param>
         public sealed override void SetScaleMode(IPdfRenderer.ScaleMode mode) {
             scaleMode = mode;
         }
 
         /// <summary>Get scale mode for input images.</summary>
-        /// <returns>ScaleMode</returns>
+        /// <returns>
+        /// 
+        /// <see cref="ScaleMode"/>
+        /// </returns>
         public sealed override IPdfRenderer.ScaleMode GetScaleMode() {
             return scaleMode;
         }
@@ -190,13 +236,19 @@ namespace iText.Ocr {
         /// Set fixed size for output PDF document.
         /// (this parameter is used only is ScaleMode is set as "fitToSize")
         /// </remarks>
-        /// <param name="size">pageSize</param>
+        /// <param name="size">
+        /// 
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// </param>
         public sealed override void SetPageSize(Rectangle size) {
             pageSize = size;
         }
 
         /// <summary>Get size for output document.</summary>
-        /// <returns>Rectangle</returns>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// </returns>
         public sealed override Rectangle GetPageSize() {
             return pageSize;
         }
@@ -206,13 +258,18 @@ namespace iText.Ocr {
         /// Set name for the image layer.
         /// (of by default it is "Image layer")
         /// </remarks>
-        /// <param name="name">layer's name</param>
+        /// <param name="name">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public sealed override void SetImageLayerName(String name) {
             imageLayerName = name;
         }
 
         /// <summary>Get name of image layer.</summary>
         /// <returns>
+        /// 
+        /// <see cref="System.String"/>
         /// layer's name that was manually set
         /// or the default one (="Image layer")
         /// </returns>
@@ -225,12 +282,17 @@ namespace iText.Ocr {
         /// Set name for the text layer.
         /// (of by default it is "Text layer")
         /// </remarks>
-        /// <param name="name">layer's name</param>
+        /// <param name="name">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public sealed override void SetTextLayerName(String name) {
             textLayerName = name;
         }
 
         /// <returns>
+        /// 
+        /// <see cref="System.String"/>
         /// layer's name that was manually set
         /// or the default one (="Text layer")
         /// </returns>
@@ -239,23 +301,37 @@ namespace iText.Ocr {
         }
 
         /// <summary>Specify pdf natural language, and optionally locale.</summary>
-        /// <param name="lang">String</param>
+        /// <param name="lang">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public sealed override void SetPdfLang(String lang) {
             pdfLang = lang;
         }
 
-        /// <returns>pdf document lang</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// pdf document lang
+        /// </returns>
         public sealed override String GetPdfLang() {
             return pdfLang;
         }
 
         /// <summary>Set pdf document title.</summary>
-        /// <param name="name">String</param>
+        /// <param name="name">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public sealed override void SetTitle(String name) {
             title = name;
         }
 
-        /// <returns>pdf document title</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// pdf document title
+        /// </returns>
         public sealed override String GetTitle() {
             return title;
         }
@@ -265,29 +341,46 @@ namespace iText.Ocr {
         /// Set path to font to be used in pdf document.
         /// (if it isn't set default font will be used)
         /// </remarks>
-        /// <param name="path">Path</param>
+        /// <param name="path">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public override void SetFontPath(String path) {
             fontPath = path;
         }
 
-        /// <returns>Font path that was set or default font path</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// Font path that was set or default font path
+        /// </returns>
         public override String GetFontPath() {
             return fontPath;
         }
 
-        /// <returns>path to default font</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// path to default font
+        /// </returns>
         public virtual String GetDefaultFontName() {
             return TesseractUtil.FONT_RESOURCE_PATH + defaultFontName;
         }
 
-        /// <summary>Set IOcrReader reader (e.g. TesseractReader object).</summary>
-        /// <param name="reader">IOcrReader</param>
+        /// <summary>Set IOcrReader reader.</summary>
+        /// <param name="reader">
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </param>
         public void SetOcrReader(IOcrReader reader) {
             ocrReader = reader;
         }
 
         /// <summary>Get used ocr reader.</summary>
-        /// <returns>IOcrReader</returns>
+        /// <returns>
+        /// 
+        /// <see cref="IOcrReader"/>
+        /// </returns>
         public IOcrReader GetOcrReader() {
             return ocrReader;
         }
@@ -327,7 +420,10 @@ namespace iText.Ocr {
         /// Perform OCR for the given list of input images and
         /// save output to a text file with provided path.
         /// </summary>
-        /// <param name="absolutePath">String</param>
+        /// <param name="absolutePath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public override void DoPdfOcr(String absolutePath) {
             LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.START_OCR_FOR_IMAGES, GetInputImages().Count));
             StringBuilder content = new StringBuilder();
@@ -339,8 +435,14 @@ namespace iText.Ocr {
         }
 
         /// <summary>Perform OCR for the given list of input images using provided pdfWriter.</summary>
-        /// <param name="pdfWriter">PdfWriter</param>
-        /// <returns>PdfDocument</returns>
+        /// <param name="pdfWriter">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// </returns>
         public sealed override PdfDocument DoPdfOcr(PdfWriter pdfWriter) {
             return DoPdfOcr(pdfWriter, null);
         }
@@ -350,9 +452,19 @@ namespace iText.Ocr {
         /// Perform OCR for the given list of input images using provided pdfWriter.
         /// PDF/A-3u document will be created if pdfOutputIntent is not null
         /// </remarks>
-        /// <param name="pdfWriter">PdfWriter</param>
-        /// <param name="pdfOutputIntent">PdfOutputIntent</param>
-        /// <returns>PDF/A-3u document if pdfOutputIntent is not null</returns>
+        /// <param name="pdfWriter">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// </param>
+        /// <param name="pdfOutputIntent">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// PDF/A-3u document if pdfOutputIntent is not null
+        /// </returns>
         public sealed override PdfDocument DoPdfOcr(PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent) {
             LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.START_OCR_FOR_IMAGES, GetInputImages().Count));
             // map contains:
@@ -371,10 +483,6 @@ namespace iText.Ocr {
         /// Create a pdf document using provided properties,
         /// add images with parsed text.
         /// </summary>
-        /// <param name="pdfWriter">PdfWriter</param>
-        /// <param name="pdfOutputIntent">PdfOutputIntent</param>
-        /// <param name="imagesTextData">Map<File, Map&lt;Integer, List&lt;textinfo>&gt;&gt;</param>
-        /// <returns>PdfDocument</returns>
         private PdfDocument CreatePdfDocument(PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent, IDictionary<FileInfo
             , IDictionary<int, IList<TextInfo>>> imagesTextData) {
             PdfDocument pdfDocument;
@@ -409,8 +517,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Write parsed data to text file using provided path.</summary>
-        /// <param name="path">String</param>
-        /// <param name="data">String</param>
         private void WriteToTextFile(String path, String data) {
             try {
                 using (TextWriter writer = new StreamWriter(new FileStream(path, FileMode.Create), System.Text.Encoding.UTF8
@@ -424,9 +530,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Validate image format and perform OCR specifying output format.</summary>
-        /// <param name="inputImage">File</param>
-        /// <param name="outputFormat">OutputFormat</param>
-        /// <returns>String</returns>
         private String DoOCRForImages(FileInfo inputImage, IOcrReader.OutputFormat outputFormat) {
             String data = null;
             if (IsValidImageFormat(inputImage)) {
@@ -436,8 +539,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Validate image format and perform OCR using hOCR output format.</summary>
-        /// <param name="inputImage">File</param>
-        /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
         private IDictionary<int, IList<TextInfo>> DoOCRForImages(FileInfo inputImage) {
             IDictionary<int, IList<TextInfo>> data = new LinkedDictionary<int, IList<TextInfo>>();
             if (IsValidImageFormat(inputImage)) {
@@ -511,11 +612,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add image and text to canvas.</summary>
-        /// <param name="pdfDocument">PdfDocument</param>
-        /// <param name="defaultFont">PdfFont</param>
-        /// <param name="imageSize">PageSize</param>
-        /// <param name="pageText">List<textinfo></param>
-        /// <param name="imageData">ImageData</param>
         internal virtual void AddToCanvas(PdfDocument pdfDocument, PdfFont defaultFont, Rectangle imageSize, IList
             <TextInfo> pageText, ImageData imageData) {
             Rectangle rectangleSize = GetScaleMode() == IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE ? imageSize : GetPageSize
@@ -537,7 +633,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Retrieve image data from the file.</summary>
-        /// <param name="inputImage">input file</param>
         /// <returns>list of ImageData objects (in case of multipage tiff)</returns>
         private IList<ImageData> GetImageData(FileInfo inputImage) {
             IList<ImageData> images = new List<ImageData>();
@@ -587,9 +682,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add image to canvas to background.</summary>
-        /// <param name="imageData">imageData</param>
-        /// <param name="imageSize">calculated size of the image</param>
-        /// <param name="pdfCanvas">pdfCanvas</param>
         private void AddImageToCanvas(ImageData imageData, Rectangle imageSize, PdfCanvas pdfCanvas) {
             if (imageData != null) {
                 if (GetScaleMode() == IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE) {
@@ -605,12 +697,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add retrieved text to canvas.</summary>
-        /// <param name="imageSize">calculated image size</param>
-        /// <param name="data">List<textinfo></param>
-        /// <param name="pdfCanvas">PdfCanvas</param>
-        /// <param name="defaultFont">PdfFont</param>
-        /// <param name="multiplier">how image was scaled</param>
-        /// <param name="pageMediaBox">Rectangle</param>
         private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> data, PdfCanvas pdfCanvas, PdfFont defaultFont
             , float multiplier, Rectangle pageMediaBox) {
             if (data == null || data.Count == 0) {
@@ -657,10 +743,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Calculate appropriate font size to fit bbox's width and height.</summary>
-        /// <param name="line">text line</param>
-        /// <param name="defaultFont">default font</param>
-        /// <param name="bboxHeightPt">bbox height</param>
-        /// <returns>float</returns>
         private float CalculateFontSize(String line, PdfFont defaultFont, float bboxHeightPt) {
             float fontSize = bboxHeightPt;
             bool textScaled = false;
@@ -685,10 +767,7 @@ namespace iText.Ocr {
         }
 
         /// <summary>Calculate image coordinates on the page.</summary>
-        /// <param name="size">size of the page</param>
-        /// <param name="imageSize">calculates size of the image</param>
-        /// <param name="pageScaleMode">page scale mode</param>
-        /// <returns>Pair<float, float> containing x and y coordinates</returns>
+        /// <returns>List<float> containing 2 elements: x and y coordinates</returns>
         private IList<float> CalculateImageCoordinates(Rectangle size, Rectangle imageSize, IPdfRenderer.ScaleMode
              pageScaleMode) {
             float x = 0;

@@ -10,13 +10,10 @@ namespace iText.Ocr {
     /// <remarks>
     /// Tesseract Library Reader class.
     /// (extends TesseractReader class)
-    /// <para />
     /// This class provides possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems)
-    /// <para />
     /// This class provides possibility to perform OCR, read data from input files
     /// and return contained text in the described format
-    /// <para />
     /// This class provides possibilities to set type of current os,
     /// required languages for OCR for input images,
     /// set path to directory with tess data.
@@ -29,20 +26,26 @@ namespace iText.Ocr {
         /// </remarks>
         private TesseractEngine tesseractInstance = null;
 
-        /// <summary>TesseractLibReader constructor with path to tess data directory.</summary>
-        /// <param name="tessDataPath">String</param>
+        /// <summary>Create new TesseractLibReader.</summary>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public TesseractLibReader(String tessDataPath) {
             SetOsType(IdentifyOSType());
             SetTesseractInstance();
             SetPathToTessData(tessDataPath);
         }
 
-        /// <summary>
-        /// TesseractLibReader constructor with path to tess data directory,
-        /// list of languages and path to tess data directory.
-        /// </summary>
-        /// <param name="languagesList">List<string></param>
-        /// <param name="tessDataPath">String</param>
+        /// <summary>Create new TesseractLibReader.</summary>
+        /// <param name="languagesList">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public TesseractLibReader(String tessDataPath, IList<String> languagesList) {
             SetOsType(IdentifyOSType());
             SetTesseractInstance();
@@ -60,7 +63,10 @@ namespace iText.Ocr {
         /// Get tesseract instance depending on the OS type.
         /// If instance is null, it will be initialized with parameters
         /// </remarks>
-        /// <returns>ITesseract</returns>
+        /// <returns>
+        /// 
+        /// <see cref="Tesseract.TesseractEngine"/>
+        /// </returns>
         public virtual TesseractEngine GetTesseractInstance() {
             if (tesseractInstance == null || TesseractUtil.IsTesseractInstanceDisposed(tesseractInstance)) {
                 tesseractInstance = TesseractUtil.InitializeTesseractInstanceWithParameters(GetTessData(), GetLanguagesAsString
@@ -70,7 +76,10 @@ namespace iText.Ocr {
         }
 
         /// <summary>Initialize instance of tesseract and set all the required properties.</summary>
-        /// <param name="outputFormat">OutputFormat</param>
+        /// <param name="outputFormat">
+        /// 
+        /// <see cref="OutputFormat"/>
+        /// </param>
         public virtual void InitializeTesseract(IOcrReader.OutputFormat outputFormat) {
             SetTesseractInstance();
             GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(IOcrReader.OutputFormat.HOCR
@@ -86,16 +95,28 @@ namespace iText.Ocr {
         }
 
         /// <summary>Perform tesseract OCR.</summary>
-        /// <param name="inputImage">- input image file</param>
-        /// <param name="outputFiles">- list of output file (one for each page)</param>
-        /// <param name="outputFormat">- output format</param>
-        /// <param name="pageNumber">- int</param>
+        /// <param name="inputImage">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// input image file
+        /// </param>
+        /// <param name="outputFiles">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of output file
+        /// (one for each page)
+        /// </param>
+        /// <param name="outputFormat">
+        /// 
+        /// <see cref="OutputFormat"/>
+        /// </param>
+        /// <param name="pageNumber">int</param>
         public override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, IOcrReader.OutputFormat
              outputFormat, int pageNumber) {
             try {
                 ValidateLanguages(GetLanguagesAsList());
                 InitializeTesseract(outputFormat);
-                // if proprocessing is not needed and provided image is tiff,
+                // if preprocessing is not needed and provided image is tiff,
                 // the image will be paginated and separate pages will be OCRed
                 IList<String> resultList = new List<String>();
                 if (!IsPreprocessingImages() && ImageUtil.IsTiffImage(inputImage)) {
@@ -149,9 +170,6 @@ namespace iText.Ocr {
         /// and return result ad list fo strings for each page.
         /// (this method is used when preprocessing is not needed)
         /// </remarks>
-        /// <param name="inputImage">File</param>
-        /// <param name="outputFormat">OutputFormat</param>
-        /// <returns>List<string></returns>
         private IList<String> GetOCRResultForMultiPage(FileInfo inputImage, IOcrReader.OutputFormat outputFormat) {
             IList<String> resultList = new List<String>();
             try {
@@ -166,7 +184,7 @@ namespace iText.Ocr {
                 }
             }
             catch (TesseractException e) {
-                String msg = String.Format(LogMessageConstant.TESSERACT_FAILED, e.Message);
+                String msg = MessageFormatUtil.Format(LogMessageConstant.TESSERACT_FAILED, e.Message);
                 LogManager.GetLogger(GetType()).Error(msg);
                 throw new OCRException(OCRException.TESSERACT_FAILED);
             }
@@ -177,10 +195,6 @@ namespace iText.Ocr {
         /// Get ocr result from provided single page image
         /// and preprocess it if needed.
         /// </summary>
-        /// <param name="inputImage">File</param>
-        /// <param name="outputFormat">OutputFormat</param>
-        /// <param name="pageNumber">int</param>
-        /// <returns>String</returns>
         private String GetOCRResultForSinglePage(FileInfo inputImage, IOcrReader.OutputFormat outputFormat, int pageNumber
             ) {
             String result = null;
@@ -223,7 +237,8 @@ namespace iText.Ocr {
                 }
             }
             catch (TesseractException e) {
-                LogManager.GetLogger(GetType()).Error(String.Format(LogMessageConstant.TESSERACT_FAILED, e.Message));
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(LogMessageConstant.TESSERACT_FAILED, e.Message
+                    ));
                 throw new OCRException(OCRException.TESSERACT_FAILED);
             }
             finally {

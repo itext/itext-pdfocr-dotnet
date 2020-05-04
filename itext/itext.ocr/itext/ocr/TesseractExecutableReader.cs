@@ -9,18 +9,14 @@ namespace iText.Ocr {
     /// <remarks>
     /// Tesseract Executable Reader class.
     /// (extends Tesseract Reader class)
-    /// <para />
     /// This class provides possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems)
-    /// <para />
     /// This class provides possibility to perform OCR, read data from input files
     /// and return contained text in the described format
-    /// <para />
     /// This class provides possibilities to set type of current os,
     /// required languages for OCR for input images,
     /// set path to directory with tess data and set path
     /// to the tesseract executable
-    /// <para />
     /// Please note that It's assumed that "tesseract" is already
     /// installed in the system
     /// </remarks>
@@ -35,33 +31,45 @@ namespace iText.Ocr {
         /// </remarks>
         private String pathToExecutable;
 
-        /// <summary>TesseractExecutableReader constructor with path to tess data directory.</summary>
-        /// <param name="tessDataPath">String</param>
+        /// <summary>Create new TesseractExecutableReader.</summary>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public TesseractExecutableReader(String tessDataPath) {
             SetPathToExecutable("tesseract");
             SetOsType(IdentifyOSType());
             SetPathToTessData(tessDataPath);
         }
 
-        /// <summary>
-        /// TesseractExecutableReader constructor with path to executable and
-        /// path to tess data directory.
-        /// </summary>
-        /// <param name="executablePath">String</param>
-        /// <param name="tessDataPath">String</param>
+        /// <summary>Create new TesseractExecutableReader.</summary>
+        /// <param name="executablePath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public TesseractExecutableReader(String executablePath, String tessDataPath) {
             SetPathToExecutable(executablePath);
             SetOsType(IdentifyOSType());
             SetPathToTessData(tessDataPath);
         }
 
-        /// <summary>
-        /// TesseractExecutableReader constructor with path to executable,
-        /// list of languages and path to tess data directory.
-        /// </summary>
-        /// <param name="path">String</param>
-        /// <param name="languagesList">List<string></param>
-        /// <param name="tessDataPath">String</param>
+        /// <summary>Create new TesseractExecutableReader.</summary>
+        /// <param name="path">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
+        /// <param name="languagesList">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public TesseractExecutableReader(String path, String tessDataPath, IList<String> languagesList) {
             SetPathToExecutable(path);
             SetLanguages(JavaCollectionsUtil.UnmodifiableList<String>(languagesList));
@@ -74,37 +82,58 @@ namespace iText.Ocr {
         /// Set path to tesseract executable.
         /// By default it's assumed that "tesseract" already exists in the PATH
         /// </remarks>
-        /// <param name="path">String</param>
+        /// <param name="path">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public void SetPathToExecutable(String path) {
             pathToExecutable = path;
         }
 
         /// <summary>Get path to tesseract executable.</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public String GetPathToExecutable() {
             return pathToExecutable;
         }
 
         /// <summary>Set path to script.</summary>
-        /// <param name="path">String</param>
+        /// <param name="path">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public void SetPathToScript(String path) {
             pathToScript = path;
         }
 
         /// <summary>Get path to script.</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public String GetPathToScript() {
             return pathToScript;
         }
 
         /// <summary>Perform tesseract OCR.</summary>
-        /// <param name="inputImage">- input image file</param>
+        /// <param name="inputImage">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
         /// <param name="outputFiles">
-        /// - list of output files (one for each page)
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of output files
+        /// (one for each page)
         /// for tesseract executable only the first file is required
         /// </param>
-        /// <param name="outputFormat">- output format</param>
-        /// <param name="pageNumber">- number of page to be OCRed</param>
+        /// <param name="outputFormat">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="pageNumber">int, number of page to be OCRed</param>
         public override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, IOcrReader.OutputFormat
              outputFormat, int pageNumber) {
             IList<String> command = new List<String>();
@@ -149,7 +178,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add path to tesseract executable.</summary>
-        /// <param name="command">List<string></param>
         private void AddPathToExecutable(IList<String> command) {
             // path to tesseract executable cannot be uninitialized
             if (GetPathToExecutable() == null || String.IsNullOrEmpty(GetPathToExecutable())) {
@@ -161,14 +189,12 @@ namespace iText.Ocr {
         }
 
         /// <summary>Set hocr output format.</summary>
-        /// <param name="command">List<string></param>
         private void SetHocrOutput(IList<String> command) {
             command.Add("-c");
             command.Add("tessedit_create_hocr=1");
         }
 
         /// <summary>Add path to script.</summary>
-        /// <param name="command">List<string></param>
         private void AddPathToScript(IList<String> command) {
             if (GetPathToScript() != null && !String.IsNullOrEmpty(GetPathToScript())) {
                 command.Add(AddQuotes(GetPathToScript()));
@@ -176,7 +202,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add path to user-words file for tesseract executable.</summary>
-        /// <param name="command">List<string></param>
         private void AddUserWords(IList<String> command) {
             if (GetUserWordsFilePath() != null && !String.IsNullOrEmpty(GetUserWordsFilePath())) {
                 command.Add("--user-words");
@@ -187,7 +212,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add path to tess data.</summary>
-        /// <param name="command">List<string></param>
         private void AddTessData(IList<String> command) {
             if (GetPathToTessData() != null && !String.IsNullOrEmpty(GetPathToTessData())) {
                 command.Add("--tessdata-dir");
@@ -196,7 +220,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add select Page Segmentation Mode as parameter.</summary>
-        /// <param name="command">List<string></param>
         private void AddPageSegMode(IList<String> command) {
             if (GetPageSegMode() != null) {
                 command.Add("--psm");
@@ -205,7 +228,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Add list pf selected languages as parameter.</summary>
-        /// <param name="command">List<string></param>
         private void AddLanguages(IList<String> command) {
             if (GetLanguagesAsList().Count > 0) {
                 command.Add("-l");
@@ -214,16 +236,11 @@ namespace iText.Ocr {
         }
 
         /// <summary>Preprocess input image (if needed) and add path to this file.</summary>
-        /// <param name="command">List<string></param>
-        /// <param name="imagePath">path to file</param>
         private void AddInputFile(IList<String> command, String imagePath) {
             command.Add(AddQuotes(imagePath));
         }
 
         /// <summary>Add path to temporary output file.</summary>
-        /// <param name="command">List<string></param>
-        /// <param name="outputFile">output file</param>
-        /// <param name="outputFormat">output format</param>
         private void AddOutputFile(IList<String> command, FileInfo outputFile, IOcrReader.OutputFormat outputFormat
             ) {
             String extension = outputFormat.Equals(IOcrReader.OutputFormat.HOCR) ? ".hocr" : ".txt";
@@ -235,16 +252,22 @@ namespace iText.Ocr {
         }
 
         /// <summary>Surrounds given string with quotes.</summary>
-        /// <param name="value">String</param>
-        /// <returns>String in quotes</returns>
         private String AddQuotes(String value) {
             return "\"" + value + "\"";
         }
 
         /// <summary>Preprocess given image if it is needed.</summary>
-        /// <param name="inputImage">original input image</param>
-        /// <param name="pageNumber">number of page to be OCRed</param>
-        /// <returns>path to output image</returns>
+        /// <param name="inputImage">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// original input image
+        /// </param>
+        /// <param name="pageNumber">int, number of page to be OCRed</param>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// path to output image
+        /// </returns>
         private String PreprocessImage(FileInfo inputImage, int pageNumber) {
             String path = inputImage.FullName;
             if (IsPreprocessingImages()) {

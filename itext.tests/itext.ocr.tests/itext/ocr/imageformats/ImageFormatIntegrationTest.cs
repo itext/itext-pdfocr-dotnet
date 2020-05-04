@@ -65,6 +65,14 @@ namespace iText.Ocr.Imageformats {
         }
 
         [NUnit.Framework.Test]
+        public virtual void TestTextFromJPE() {
+            String path = testImagesDirectory + "numbers_01.jpe";
+            String expectedOutput = "619121";
+            String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path));
+            NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
+        }
+
+        [NUnit.Framework.Test]
         public virtual void TestTextFromTIF() {
             String path = testImagesDirectory + "numbers_01.tif";
             String expectedOutput = "619121";
@@ -182,16 +190,14 @@ namespace iText.Ocr.Imageformats {
         [LogMessage(LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputWrongFormat() {
-            try {
+            NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "example.txt");
                 String realOutput = GetTextFromPdf(tesseractReader, file);
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            catch (OCRException e) {
-                String expectedMsg = MessageFormatUtil.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, "txt");
-                NUnit.Framework.Assert.AreEqual(expectedMsg, e.Message);
-            }
+            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, "txt")))
+;
         }
 
         [NUnit.Framework.Test]

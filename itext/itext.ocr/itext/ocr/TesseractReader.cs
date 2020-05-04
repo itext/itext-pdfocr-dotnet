@@ -9,13 +9,10 @@ namespace iText.Ocr {
     /// <summary>Tesseract reader class.</summary>
     /// <remarks>
     /// Tesseract reader class.
-    /// <para />
     /// This class provides possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems)
-    /// <para />
     /// This class provides possibility to perform OCR, read data from input files
     /// and return contained text in the described format
-    /// <para />
     /// This class provides possibilities to set type of current os,
     /// required languages for OCR for input images,
     /// set path to directory with tess data.
@@ -58,21 +55,39 @@ namespace iText.Ocr {
         private String userWordsFile = null;
 
         /// <summary>Perform tesseract OCR.</summary>
-        /// <param name="inputImage">- input image file</param>
-        /// <param name="outputFiles">- list of output file (one per each page)</param>
-        /// <param name="outputFormat">- output format</param>
-        /// <param name="pageNumber">- int</param>
+        /// <param name="inputImage">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// input image file
+        /// </param>
+        /// <param name="outputFiles">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// list of output file
+        /// (one per each page)
+        /// </param>
+        /// <param name="outputFormat">
+        /// 
+        /// <see cref="OutputFormat"/>
+        /// </param>
+        /// <param name="pageNumber">int</param>
         public abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, IOcrReader.OutputFormat
              outputFormat, int pageNumber);
 
         /// <summary>Set list of languages required for provided images.</summary>
-        /// <param name="requiredLanguages">List<string></param>
+        /// <param name="requiredLanguages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
         public void SetLanguages(IList<String> requiredLanguages) {
             languages = JavaCollectionsUtil.UnmodifiableList<String>(requiredLanguages);
         }
 
         /// <summary>Get list of languages required for provided images.</summary>
-        /// <returns>List<string></returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </returns>
         public IList<String> GetLanguagesAsList() {
             return new List<String>(languages);
         }
@@ -81,7 +96,10 @@ namespace iText.Ocr {
         /// Get list of languages converted to a string
         /// in format required by tesseract.
         /// </summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public String GetLanguagesAsString() {
             if (GetLanguagesAsList().Count > 0) {
                 return String.Join("+", GetLanguagesAsList());
@@ -92,37 +110,56 @@ namespace iText.Ocr {
         }
 
         /// <summary>Set path to directory with tess data.</summary>
-        /// <param name="tessData">String</param>
+        /// <param name="tessData">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public void SetPathToTessData(String tessData) {
             tessDataDir = tessData;
         }
 
         /// <summary>Get path to directory with tess data.</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public String GetPathToTessData() {
             return tessDataDir;
         }
 
         /// <summary>Set Page Segmentation Mode.</summary>
-        /// <param name="mode">Integer</param>
+        /// <param name="mode">
+        /// 
+        /// <see cref="int?"/>
+        /// </param>
         public void SetPageSegMode(int? mode) {
             pageSegMode = mode;
         }
 
         /// <summary>Get Page Segmentation Mode.</summary>
-        /// <returns>Integer pageSegMode</returns>
+        /// <returns>
+        /// 
+        /// <see cref="int?"/>
+        /// pageSegMode
+        /// </returns>
         public int? GetPageSegMode() {
             return pageSegMode;
         }
 
         /// <summary>Set type of current OS.</summary>
-        /// <param name="os">String</param>
+        /// <param name="os">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
         public void SetOsType(String os) {
             osType = os;
         }
 
         /// <summary>Get type of current OS.</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public String GetOsType() {
             return osType;
         }
@@ -139,12 +176,18 @@ namespace iText.Ocr {
         }
 
         /// <summary>Set text positioning (by lines or by words).</summary>
-        /// <param name="positioning">TextPositioning</param>
+        /// <param name="positioning">
+        /// 
+        /// <see cref="TextPositioning"/>
+        /// </param>
         public void SetTextPositioning(IOcrReader.TextPositioning positioning) {
             textPositioning = positioning;
         }
 
-        /// <returns>text positioning</returns>
+        /// <returns>
+        /// 
+        /// <see cref="TextPositioning"/>
+        /// </returns>
         public IOcrReader.TextPositioning GetTextPositioning() {
             return textPositioning;
         }
@@ -153,16 +196,23 @@ namespace iText.Ocr {
         /// Reads data from the provided input image file and
         /// returns retrieved data as a string.
         /// </summary>
-        /// <param name="input">File</param>
+        /// <param name="input">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
         /// <param name="outputFormat">
-        /// OutputFormat
+        /// 
+        /// <see cref="OutputFormat"/>
         /// "txt" output format:
         /// tesseract performs ocr and returns output in txt format
         /// "hocr" output format:
         /// tesseract performs ocr and returns output in hocr format,
         /// then result text is extracted
         /// </param>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public sealed override String ReadDataFromInput(FileInfo input, IOcrReader.OutputFormat outputFormat) {
             IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, outputFormat);
             if (result != null && result.Count > 0) {
@@ -195,11 +245,16 @@ namespace iText.Ocr {
         /// retrieved data in the following format:
         /// Map<Integer, List&lt;textinfo>&gt;:
         /// key: number of page,
-        /// value: list of TextInfo objects where each list element
+        /// value: list of
+        /// <see cref="TextInfo"/>
+        /// objects where each list element
         /// Map.Entry<String, List&lt;float>&gt; contains word or line as a key
         /// and its 4 coordinates(bbox) as a values.
         /// </summary>
-        /// <param name="input">File</param>
+        /// <param name="input">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
         /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
         public sealed override IDictionary<int, IList<TextInfo>> ReadDataFromInput(FileInfo input) {
             IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, IOcrReader.OutputFormat
@@ -214,13 +269,21 @@ namespace iText.Ocr {
         }
 
         /// <summary>Reads data from the provided input image file.</summary>
-        /// <param name="input">File</param>
-        /// <param name="outputFormat">OutputFormat</param>
+        /// <param name="input">
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="outputFormat">
+        /// 
+        /// <see cref="OutputFormat"/>
+        /// </param>
         /// <returns>
-        /// Pair<Map&lt;Integer, List&lt;textinfo>&gt;, String&gt;
+        /// Map<String, Map&lt;Integer, List&lt;textinfo>&gt;&gt;
         /// if output format is txt,
         /// result is key of the returned map(String),
-        /// otherwise - the value (Map<Integer, List&lt;textinfo>)
+        /// otherwise - the value (Map&lt;Integer, List
+        /// <see cref="TextInfo"/>
+        /// &gt;)
         /// </returns>
         internal virtual IDictionary<String, IDictionary<int, IList<TextInfo>>> ProcessInputFiles(FileInfo input, 
             IOcrReader.OutputFormat outputFormat) {
@@ -281,8 +344,14 @@ namespace iText.Ocr {
         /// ends with a new line character. Train data for provided language
         /// should exist in specified tess data directory.
         /// </remarks>
-        /// <param name="language">String</param>
-        /// <param name="userWords">List<string></param>
+        /// <param name="language">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
+        /// <param name="userWords">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
         public virtual void SetUserWords(String language, IList<String> userWords) {
             if (userWords == null || userWords.Count == 0) {
                 userWordsFile = null;
@@ -320,8 +389,14 @@ namespace iText.Ocr {
         /// a new line character. Train data for provided language
         /// should exist in specified tess data directory.
         /// </remarks>
-        /// <param name="language">String</param>
-        /// <param name="inputStream">InputStream</param>
+        /// <param name="language">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
+        /// <param name="inputStream">
+        /// 
+        /// <see cref="System.IO.Stream"/>
+        /// </param>
         public virtual void SetUserWords(String language, Stream inputStream) {
             String userWordsFileName = TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + language +
                  "." + DEFAULT_USER_WORDS_SUFFIX;
@@ -355,13 +430,19 @@ namespace iText.Ocr {
         }
 
         /// <summary>Return path to the user words file if exists, otherwise null.</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public String GetUserWordsFilePath() {
             return userWordsFile;
         }
 
         /// <summary>Get path to provided tess data directory or return default one.</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         internal virtual String GetTessData() {
             if (GetPathToTessData() != null && !String.IsNullOrEmpty(GetPathToTessData())) {
                 return GetPathToTessData();
@@ -381,7 +462,10 @@ namespace iText.Ocr {
         }
 
         /// <summary>Check type of current OS and return it (mac, win, linux).</summary>
-        /// <returns>String</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
         public virtual String IdentifyOSType() {
             String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
                 ) : Environment.GetEnvironmentVariable("os.name");
@@ -392,7 +476,10 @@ namespace iText.Ocr {
         /// Validate provided languages and
         /// check if they exist in provided tess data directory.
         /// </summary>
-        /// <param name="languagesList">List<string></param>
+        /// <param name="languagesList">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// </param>
         public virtual void ValidateLanguages(IList<String> languagesList) {
             String suffix = ".traineddata";
             if (languagesList.Count == 0) {
@@ -410,8 +497,14 @@ namespace iText.Ocr {
         }
 
         /// <summary>Create temporary file with given extension.</summary>
-        /// <param name="extension">String</param>
-        /// <returns>File</returns>
+        /// <param name="extension">
+        /// 
+        /// <see cref="System.String"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="System.IO.FileInfo"/>
+        /// </returns>
         private FileInfo CreateTempFile(String extension) {
             String tmpFileName = TesseractUtil.GetTempDir() + Guid.NewGuid().ToString() + extension;
             return new FileInfo(tmpFileName);

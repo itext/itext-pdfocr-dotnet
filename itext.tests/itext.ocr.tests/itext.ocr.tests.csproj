@@ -96,7 +96,6 @@
     <Compile Include="itext\ocr\tessdata\TessDataIntegrationExecutableTest.cs" />
     <Compile Include="itext\ocr\tessdata\TessDataIntegrationLibTest.cs" />
     <Compile Include="itext\ocr\TesseractExecutableIntegrationTest.cs" />
-    <Compile Include="itext\ocr\TesseractLibIntegrationTest.cs" />
     <Compile Include="itext\ocr\TestUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

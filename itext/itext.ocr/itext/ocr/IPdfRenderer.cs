@@ -16,11 +16,18 @@ namespace iText.Ocr {
     /// and to perform OCR using given images and return PDFDocument as result
     /// </remarks>
     public abstract class IPdfRenderer {
+        /// <summary>Enum describing possible scale modes for images.</summary>
+        /// <remarks>
+        /// Enum describing possible scale modes for images.
+        /// <see cref="KEEP_ORIGINAL_SIZE"/>
+        /// <see cref="SCALE_WIDTH"/>
+        /// <see cref="SCALE_HEIGHT"/>
+        /// <see cref="SCALE_TO_FIT"/>
+        /// </remarks>
         public enum ScaleMode {
             /// <summary>KEEP_ORIGINAL_SIZE (default value).</summary>
             /// <remarks>
             /// KEEP_ORIGINAL_SIZE (default value).
-            /// <para />
             /// the size of every page of
             /// the output PDF document will match the size of the
             /// corresponding input image
@@ -29,21 +36,18 @@ namespace iText.Ocr {
             /// <summary>SCALE_WIDTH.</summary>
             /// <remarks>
             /// SCALE_WIDTH.
-            /// <para />
             /// Only width of the image will be proportionally scaled
             /// </remarks>
             SCALE_WIDTH,
             /// <summary>SCALE_HEIGHT.</summary>
             /// <remarks>
             /// SCALE_HEIGHT.
-            /// <para />
             /// Only height of the image will be proportionally scaled
             /// </remarks>
             SCALE_HEIGHT,
             /// <summary>SCALE_TO_FIT.</summary>
             /// <remarks>
             /// SCALE_TO_FIT.
-            /// <para />
             /// the size of every page of the output PDF document
             /// will match the values set using "setPdfSize()" method
             /// </remarks>
