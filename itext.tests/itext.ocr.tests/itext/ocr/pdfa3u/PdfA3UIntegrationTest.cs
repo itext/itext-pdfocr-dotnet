@@ -124,7 +124,7 @@ namespace iText.Ocr.Pdfa3u {
             DeleteFile(pdfPath);
         }
 
-        [LogMessage(LogMessageConstant.CANNOT_READ_PROVIDED_FONT, Count = 1)]
+        [LogMessage(LogMessageConstant.CannotReadProvidedFont, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidFont() {
             String path = testImagesDirectory + "numbers_01.jpg";

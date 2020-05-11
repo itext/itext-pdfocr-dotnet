@@ -4,45 +4,47 @@ using iText.Test.Attributes;
 
 namespace iText.Ocr {
     public class TesseractExecutableIntegrationTest : AbstractIntegrationTest {
-        [LogMessage(OCRException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE, Count = 1)]
+        [LogMessage(OcrException.CannotFindPathToTesseractExecutable, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNullPathToTesseractExecutable() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
-                GetTextFromPdf(new TesseractExecutableReader(null, null), file);
+                TesseractExecutableReader tesseractExecutableReader = new TesseractExecutableReader(null);
+                tesseractExecutableReader.SetPathToExecutable(null);
+                GetTextFromPdf(tesseractExecutableReader, file);
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(OCRException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(OcrException.CannotFindPathToTesseractExecutable))
 ;
         }
 
-        [LogMessage(OCRException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE, Count = 1)]
+        [LogMessage(OcrException.CannotFindPathToTesseractExecutable, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestEmptyPathToTesseractExecutable() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
                 GetTextFromPdf(new TesseractExecutableReader("", ""), file);
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(OCRException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(OcrException.CannotFindPathToTesseractExecutable))
 ;
         }
 
-        [LogMessage(LogMessageConstant.TESSERACT_FAILED, Count = 1)]
+        [LogMessage(LogMessageConstant.TesseractFailed, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCLTesseractWithWrongCommand() {
             NUnit.Framework.Assert.That(() =>  {
                 TesseractUtil.RunCommand(JavaUtil.ArraysAsList("tesseract", "random.jpg"), false);
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>())
+            , NUnit.Framework.Throws.InstanceOf<OcrException>())
 ;
         }
 
-        [LogMessage(LogMessageConstant.TESSERACT_FAILED, Count = 1)]
+        [LogMessage(LogMessageConstant.TesseractFailed, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCLTesseractWithNullCommand() {
             NUnit.Framework.Assert.That(() =>  {
                 TesseractUtil.RunCommand(null, false);
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>())
+            , NUnit.Framework.Throws.InstanceOf<OcrException>())
 ;
         }
     }

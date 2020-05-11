@@ -6,201 +6,283 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 
 namespace iText.Ocr {
-    /// <summary>Interface for PDF Renderer classes.</summary>
+    /// <summary>
+    /// <see cref="IPdfRenderer"/>
+    /// interface is used for instantiating
+    /// new
+    /// <see cref="PdfRenderer"/>
+    /// objects.
+    /// </summary>
     /// <remarks>
-    /// Interface for PDF Renderer classes.
-    /// <para />
-    /// The IPdfRenderer provides possibilities to set list of input images
-    /// to be used for OCR, to set scaling mode for images, color of text in output
-    /// PDF document,  set fixed size of the PDF document
-    /// and to perform OCR using given images and return PDFDocument as result
+    /// <see cref="IPdfRenderer"/>
+    /// interface is used for instantiating
+    /// new
+    /// <see cref="PdfRenderer"/>
+    /// objects.
+    /// <see cref="IPdfRenderer"/>
+    /// provides possibilities to set list of input images
+    /// to be used for OCR, to set scaling mode for images, to set color of text in
+    /// output PDF document, to set fixed size of the PDF document and
+    /// to perform OCR using given images and to return
+    /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+    /// as result.
     /// </remarks>
     public abstract class IPdfRenderer {
-        /// <summary>Enum describing possible scale modes for images.</summary>
-        /// <remarks>
-        /// Enum describing possible scale modes for images.
-        /// <see cref="KEEP_ORIGINAL_SIZE"/>
-        /// <see cref="SCALE_WIDTH"/>
-        /// <see cref="SCALE_HEIGHT"/>
-        /// <see cref="SCALE_TO_FIT"/>
-        /// </remarks>
-        public enum ScaleMode {
-            /// <summary>KEEP_ORIGINAL_SIZE (default value).</summary>
-            /// <remarks>
-            /// KEEP_ORIGINAL_SIZE (default value).
-            /// the size of every page of
-            /// the output PDF document will match the size of the
-            /// corresponding input image
-            /// </remarks>
-            KEEP_ORIGINAL_SIZE,
-            /// <summary>SCALE_WIDTH.</summary>
-            /// <remarks>
-            /// SCALE_WIDTH.
-            /// Only width of the image will be proportionally scaled
-            /// </remarks>
-            SCALE_WIDTH,
-            /// <summary>SCALE_HEIGHT.</summary>
-            /// <remarks>
-            /// SCALE_HEIGHT.
-            /// Only height of the image will be proportionally scaled
-            /// </remarks>
-            SCALE_HEIGHT,
-            /// <summary>SCALE_TO_FIT.</summary>
-            /// <remarks>
-            /// SCALE_TO_FIT.
-            /// the size of every page of the output PDF document
-            /// will match the values set using "setPdfSize()" method
-            /// </remarks>
-            SCALE_TO_FIT
-        }
-
-        /// <summary>Set list of input images for OCR.</summary>
-        /// <param name="images">
-        /// a
-        /// <see cref="System.Collections.IList{E}"/>
-        /// object.
-        /// </param>
-        public abstract void SetInputImages(IList<FileInfo> images);
-
-        /// <summary>Get list of provided input images for OCR.</summary>
+        /// <summary>Gets list of provided input images for OCR.</summary>
         /// <returns>
-        /// a
+        /// 
         /// <see cref="System.Collections.IList{E}"/>
-        /// object.
+        /// of given input images
         /// </returns>
         public abstract IList<FileInfo> GetInputImages();
 
-        /// <summary>Set text color (should be CMYK) in output PDF document.</summary>
-        /// <param name="newColor">
-        /// a
-        /// <see cref="iText.Kernel.Colors.Color"/>
-        /// object.
+        /// <summary>Sets list of input images for OCR.</summary>
+        /// <param name="images">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of input images
         /// </param>
-        public abstract void SetTextColor(Color newColor);
+        public abstract void SetInputImages(IList<FileInfo> images);
 
-        /// <summary>Get text color in output PDF document.</summary>
+        /// <summary>Gets text color in output PDF document.</summary>
         /// <returns>
-        /// a
+        /// set text
         /// <see cref="iText.Kernel.Colors.Color"/>
-        /// object.
         /// </returns>
         public abstract Color GetTextColor();
 
-        /// <summary>
-        /// Set scale mode for input images using available options
-        /// from ScaleMode enum.
-        /// </summary>
-        /// <param name="mode">
-        /// a
-        /// <see cref="ScaleMode"/>
-        /// object.
+        /// <summary>Sets text color in output PDF document.</summary>
+        /// <param name="color">
+        /// required text
+        /// <see cref="iText.Kernel.Colors.Color"/>
         /// </param>
-        public abstract void SetScaleMode(IPdfRenderer.ScaleMode mode);
+        public abstract void SetTextColor(Color color);
 
-        /// <summary>Get scale mode for input images.</summary>
+        /// <summary>Gets scale mode for input images.</summary>
         /// <returns>
-        /// a
+        /// selected
         /// <see cref="ScaleMode"/>
-        /// object.
         /// </returns>
         public abstract IPdfRenderer.ScaleMode GetScaleMode();
 
-        /// <summary>Set fixed size for output PDF document.</summary>
-        /// <remarks>
-        /// Set fixed size for output PDF document.
-        /// (this parameter is used only is ScaleMode is set as "fitToSize")
-        /// </remarks>
-        /// <param name="pdfSize">
-        /// a
-        /// <see cref="iText.Kernel.Geom.Rectangle"/>
-        /// object.
+        /// <summary>
+        /// Sets scale mode for input images using available options
+        /// from
+        /// <see cref="ScaleMode"/>
+        /// enumeration.
+        /// </summary>
+        /// <param name="scaleMode">
+        /// selected
+        /// <see cref="ScaleMode"/>
         /// </param>
-        public abstract void SetPageSize(Rectangle pdfSize);
+        public abstract void SetScaleMode(IPdfRenderer.ScaleMode scaleMode);
 
-        /// <summary>Get size for output document.</summary>
+        /// <summary>Gets required size for output PDF document.</summary>
+        /// <remarks>
+        /// Gets required size for output PDF document. Real size of the page will
+        /// be calculated according to the selected
+        /// <see cref="ScaleMode"/>
+        /// </remarks>
         /// <returns>
-        /// a
+        /// required page size as
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
-        /// object.
         /// </returns>
         public abstract Rectangle GetPageSize();
 
-        /// <summary>Set name for the image layer.</summary>
+        /// <summary>Sets required size for output PDF document.</summary>
         /// <remarks>
-        /// Set name for the image layer.
-        /// (of by default it is "Image layer")
+        /// Sets required size for output PDF document. Real size of the page will
+        /// be calculated according to the selected
+        /// <see cref="ScaleMode"/>.
         /// </remarks>
-        /// <param name="name">layer's name</param>
-        public abstract void SetImageLayerName(String name);
+        /// <param name="pageSize">
+        /// required page
+        /// size as
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// </param>
+        public abstract void SetPageSize(Rectangle pageSize);
 
-        /// <summary>Get name of image layer.</summary>
+        /// <summary>Gets name of image layer.</summary>
         /// <returns>
-        /// layer's name that was manually set or
-        /// the default one (="Image layer")
+        /// image layer's name as
+        /// <see cref="System.String"/>
+        /// if it was
+        /// manually set, otherwise - the default name ("Image layer")
         /// </returns>
         public abstract String GetImageLayerName();
 
-        /// <summary>Set name for the text layer.</summary>
+        /// <summary>Sets name for the image layer.</summary>
         /// <remarks>
-        /// Set name for the text layer.
-        /// (of by default it is "Text layer")
+        /// Sets name for the image layer.
+        /// (by default its name is "Image layer")
         /// </remarks>
-        /// <param name="name">layer's name</param>
-        public abstract void SetTextLayerName(String name);
+        /// <param name="layerName">
+        /// name of the image layer
+        /// as
+        /// <see cref="System.String"/>
+        /// </param>
+        public abstract void SetImageLayerName(String layerName);
 
+        /// <summary>Gets name of text layer.</summary>
         /// <returns>
-        /// layer's name that was manually set or
-        /// the default one (="Text layer")
+        /// text layer's name as
+        /// <see cref="System.String"/>
+        /// if it was
+        /// manually set, otherwise - the default name ("Text layer")
         /// </returns>
         public abstract String GetTextLayerName();
 
-        /// <summary>Specify pdf natural language, and optionally locale.</summary>
-        /// <param name="lang">String</param>
-        public abstract void SetPdfLang(String lang);
+        /// <summary>Sets name for the text layer.</summary>
+        /// <remarks>
+        /// Sets name for the text layer.
+        /// (by default it is "Text layer")
+        /// </remarks>
+        /// <param name="layerName">
+        /// of the text layer as
+        /// <see cref="System.String"/>
+        /// </param>
+        public abstract void SetTextLayerName(String layerName);
 
-        /// <returns>pdf document lang</returns>
+        /// <summary>Gets pdf language.</summary>
+        /// <returns>
+        /// pdf document language as
+        /// <see cref="System.String"/>
+        /// </returns>
         public abstract String GetPdfLang();
 
-        /// <summary>Set pdf document title.</summary>
-        /// <param name="name">String</param>
-        public abstract void SetTitle(String name);
+        /// <summary>Specify pdf natural language, and optionally locale.</summary>
+        /// <remarks>
+        /// Specify pdf natural language, and optionally locale.
+        /// For the content usage dictionary use
+        /// <see cref="iText.Kernel.Pdf.PdfName.Language"/>
+        /// </remarks>
+        /// <param name="language">
+        /// pdf document language as
+        /// <see cref="System.String"/>
+        /// ,
+        /// e.g. "en-US", etc.
+        /// </param>
+        public abstract void SetPdfLang(String language);
 
-        /// <returns>pdf document title</returns>
+        /// <summary>Gets pdf document title.</summary>
+        /// <returns>
+        /// pdf title as
+        /// <see cref="System.String"/>
+        /// </returns>
         public abstract String GetTitle();
 
-        /// <summary>Set path to font to be used in pdf document.</summary>
-        /// <param name="name">String</param>
-        public abstract void SetFontPath(String name);
+        /// <summary>Sets pdf document title.</summary>
+        /// <param name="title">
+        /// pdf title as
+        /// <see cref="System.String"/>
+        /// </param>
+        public abstract void SetTitle(String title);
 
-        /// <returns>path to font</returns>
+        /// <summary>Returns path to font to be used in pdf document.</summary>
+        /// <returns>path to the required font</returns>
         public abstract String GetFontPath();
 
-        /// <summary>Perform OCR using provided pdfWriter and pdfOutputIntent.</summary>
+        /// <summary>Sets path to font to be used in pdf document.</summary>
+        /// <param name="path">path to the required font</param>
+        public abstract void SetFontPath(String path);
+
+        /// <summary>
+        /// Performs OCR with set parameters and create pdf using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
+        /// </summary>
         /// <remarks>
-        /// Perform OCR using provided pdfWriter and pdfOutputIntent.
-        /// PDF/A-3u document will be created if pdfOutputIntent is not null
+        /// Performs OCR with set parameters and create pdf using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
+        /// PDF/A-3u document will be created if
+        /// provided
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// is not null.
         /// </remarks>
-        /// <param name="pdfWriter">PdfWriter</param>
-        /// <param name="pdfOutputIntent">PdfOutputIntent</param>
+        /// <param name="pdfWriter">
+        /// the
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// object
+        /// to write final pdf document to
+        /// </param>
+        /// <param name="pdfOutputIntent">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// for PDF/A-3u document
+        /// </param>
         /// <returns>
-        /// a
+        /// result PDF/A-3u
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// object - PDF/A-3u document
+        /// object
         /// </returns>
         public abstract PdfDocument DoPdfOcr(PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent);
 
-        /// <summary>Perform OCR using provided pdfWriter.</summary>
-        /// <param name="pdfWriter">provided pdfWriter</param>
+        /// <summary>
+        /// Performs OCR using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
+        /// </summary>
+        /// <param name="pdfWriter">
+        /// the
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// object
+        /// to write final pdf document to
+        /// </param>
         /// <returns>
-        /// a
+        /// result
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// object
         /// </returns>
         public abstract PdfDocument DoPdfOcr(PdfWriter pdfWriter);
 
-        /// <summary>Perform OCR using provided pdfWriter.</summary>
-        /// <param name="path">path to text file to be created</param>
+        /// <summary>
+        /// Performs OCR for the given list of input images and saves output to a
+        /// text file using provided path.
+        /// </summary>
+        /// <param name="path">
+        /// path as
+        /// <see cref="System.String"/>
+        /// to file to be
+        /// created
+        /// </param>
         public abstract void DoPdfOcr(String path);
+
+        /// <summary>Enumeration of the possible scale modes for input images.</summary>
+        public enum ScaleMode {
+            /// <summary>
+            /// Size of every page of the output PDF document will match the size
+            /// of the corresponding input image.
+            /// </summary>
+            /// <remarks>
+            /// Size of every page of the output PDF document will match the size
+            /// of the corresponding input image.
+            /// (default value)
+            /// </remarks>
+            KEEP_ORIGINAL_SIZE,
+            /// <summary>
+            /// Only width of the image will be proportionally scaled to fit
+            /// required size that is set using
+            /// <see cref="IPdfRenderer.SetPageSize(Rectangle)"/>
+            /// method.
+            /// </summary>
+            SCALE_WIDTH,
+            /// <summary>
+            /// Only height of the image will be proportionally scaled to fit
+            /// required size that is set using
+            /// <see cref="IPdfRenderer.SetPageSize(Rectangle)"/>
+            /// method.
+            /// </summary>
+            SCALE_HEIGHT,
+            /// <summary>
+            /// Size of every page of the output PDF document will match the
+            /// values set using
+            /// <see cref="IPdfRenderer.SetPageSize(Rectangle)"/>
+            /// method.
+            /// </summary>
+            SCALE_TO_FIT
+        }
     }
 
     public static class IPdfRendererConstants {

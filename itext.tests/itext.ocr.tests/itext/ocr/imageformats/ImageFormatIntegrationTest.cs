@@ -187,7 +187,7 @@ namespace iText.Ocr.Imageformats {
             tesseractReader.SetPreprocessingImages(preprocess);
         }
 
-        [LogMessage(LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
+        [LogMessage(LogMessageConstant.CannotReadInputImage, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputWrongFormat() {
             NUnit.Framework.Assert.That(() =>  {
@@ -196,7 +196,7 @@ namespace iText.Ocr.Imageformats {
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.INCORRECT_INPUT_IMAGE_FORMAT, "txt")))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.IncorrectInputImageFormat, "txt")))
 ;
         }
 

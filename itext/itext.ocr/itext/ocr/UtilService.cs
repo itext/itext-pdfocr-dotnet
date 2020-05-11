@@ -13,30 +13,36 @@ using iText.StyledXmlParser.Jsoup.Select;
 namespace iText.Ocr {
     /// <summary>Helper class.</summary>
     public sealed class UtilService {
-        /// <summary>Constants for points per inch (for tests).</summary>
-        private const float POINTS_PER_INCH = 72.0f;
-
-        /// <summary>UtilService logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.UtilService));
-
-        /// <summary>Encoding UTF-8 string.</summary>
-        private const String encodingUTF8 = "UTF-8";
-
-        /// <summary>Constant to convert pixels to points (for tests).</summary>
+        /// <summary>The Constant to convert pixels to points.</summary>
         internal const float PX_TO_PT = 3f / 4f;
 
-        /// <summary>Private constructor for util class.</summary>
+        /// <summary>The Constant for points per inch.</summary>
+        private const float POINTS_PER_INCH = 72.0f;
+
+        /// <summary>The logger.</summary>
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.UtilService));
+
+        /// <summary>The Constant ENCODING_UTF_8.</summary>
+        private const String ENCODING_UTF_8 = "UTF-8";
+
+        /// <summary>
+        /// Creates a new
+        /// <see cref="UtilService"/>
+        /// instance.
+        /// </summary>
         private UtilService() {
         }
 
-        /// <summary>Read text file to string.</summary>
+        /// <summary>Reads from text file to string.</summary>
         /// <param name="txtFile">
-        /// 
+        /// input
         /// <see cref="System.IO.FileInfo"/>
+        /// to be read
         /// </param>
         /// <returns>
-        /// 
+        /// result
         /// <see cref="System.String"/>
+        /// from provided text file
         /// </returns>
         public static String ReadTxtFile(FileInfo txtFile) {
             String content = null;
@@ -45,62 +51,62 @@ namespace iText.Ocr {
                     .UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_READ_FILE, txtFile.FullName, e.Message));
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadFile, txtFile.FullName, e.Message));
             }
             return content;
         }
 
-        /// <summary>Convert from pixels to points.</summary>
-        /// <param name="pixels">float</param>
-        /// <returns>float</returns>
+        /// <summary>Converts value from pixels to points.</summary>
+        /// <param name="pixels">input value in pixels</param>
+        /// <returns>result value in points</returns>
         public static float GetPoints(float pixels) {
             return pixels * PX_TO_PT;
         }
 
-        /// <summary>Delete file using provided path.</summary>
-        /// <param name="pathToFile">String</param>
+        /// <summary>Deletes file using provided path.</summary>
+        /// <param name="pathToFile">path to the file to be deleted</param>
         public static void DeleteFile(String pathToFile) {
-            if (pathToFile != null && !String.IsNullOrEmpty(pathToFile) && File.Exists(System.IO.Path.Combine(pathToFile
-                ))) {
-                try {
+            try {
+                if (pathToFile != null && !String.IsNullOrEmpty(pathToFile) && File.Exists(System.IO.Path.Combine(pathToFile
+                    ))) {
                     File.Delete(System.IO.Path.Combine(pathToFile));
                 }
-                catch (System.IO.IOException e) {
-                    LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message));
-                }
+            }
+            catch (Exception e) {
+                LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.CannotDeleteFile, pathToFile, e.Message));
             }
         }
 
         /// <summary>
-        /// Parse `hocr` file, retrieve text, and return in the format
-        /// described below.
+        /// Parses each hocr file from the provided list, retrieves text, and
+        /// returns data in the format described below.
         /// </summary>
-        /// <remarks>
-        /// Parse `hocr` file, retrieve text, and return in the format
-        /// described below.
-        /// Map<Integer, List&lt;textinfo>&gt;:
-        /// key: number of the page,
-        /// value: list of
-        /// <see cref="TextInfo"/>
-        /// elements where
-        /// each
-        /// <see cref="TextInfo"/>
-        /// element contains a word or a line
-        /// and its 4 coordinates(bbox).
-        /// </remarks>
         /// <param name="inputFiles">list of input files</param>
         /// <param name="textPositioning">
         /// 
         /// <see cref="TextPositioning"/>
         /// </param>
-        /// <returns>Map<Integer, List&lt;textinfo>&gt;</returns>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="TextInfo"/>
+        /// elements where each
+        /// <see cref="TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
         public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IOcrReader.TextPositioning
              textPositioning) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             foreach (FileInfo inputFile in inputFiles) {
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
                     Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read
-                        ), encodingUTF8, inputFile.FullName);
+                        ), ENCODING_UTF_8, inputFile.FullName);
                     Elements pages = doc.GetElementsByClass("ocr_page");
                     Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*");
                     Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
@@ -149,20 +155,25 @@ namespace iText.Ocr {
         }
 
         /// <summary>
-        /// Calculate the size of the PDF document page
-        /// should transform pixels to points and according to image resolution.
+        /// Calculates the size of the PDF document page according to the provided
+        /// <see cref="ScaleMode"/>.
         /// </summary>
         /// <param name="imageData">
-        /// 
+        /// input image or its one page as
         /// <see cref="iText.IO.Image.ImageData"/>
         /// </param>
         /// <param name="scaleMode">
-        /// 
+        /// required
         /// <see cref="ScaleMode"/>
+        /// that could be
+        /// set using
+        /// <see cref="PdfRenderer.SetScaleMode(ScaleMode)"/>
+        /// method
         /// </param>
         /// <param name="requiredSize">
-        /// 
-        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// size of the page that could be using
+        /// <see cref="PdfRenderer.SetPageSize(iText.Kernel.Geom.Rectangle)"/>
+        /// method
         /// </param>
         /// <returns>
         /// 

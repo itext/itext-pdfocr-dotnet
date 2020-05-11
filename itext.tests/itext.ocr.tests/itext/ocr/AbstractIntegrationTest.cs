@@ -20,9 +20,6 @@ namespace iText.Ocr {
     public class AbstractIntegrationTest : ExtendedITextTest {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Ocr.AbstractIntegrationTest));
 
-        // path to hocr script for tesseract executable
-        protected internal static String pathToHocrScript = null;
-
         // directory with trained data for tests
         protected internal static String langTessDataDirectory = null;
 
@@ -82,9 +79,6 @@ namespace iText.Ocr {
             if (scriptTessDataDirectory == null) {
                 scriptTessDataDirectory = path + "tessdata" + System.IO.Path.DirectorySeparatorChar + "script";
             }
-            if (pathToHocrScript == null) {
-                pathToHocrScript = path + "hocr" + System.IO.Path.DirectorySeparatorChar;
-            }
             if (testFontsDirectory == null) {
                 testFontsDirectory = path + "fonts" + System.IO.Path.DirectorySeparatorChar;
                 UpdateFonts();
@@ -127,10 +121,6 @@ namespace iText.Ocr {
 
         protected internal static String GetTessDataDirectory() {
             return langTessDataDirectory;
-        }
-
-        protected internal static String GetPathToHocrScript() {
-            return pathToHocrScript;
         }
 
         /// <summary>Retrieve image from given pdf document.</summary>
@@ -258,8 +248,8 @@ namespace iText.Ocr {
         /// <param name="input"/>
         /// <param name="languages"/>
         /// <returns/>
-        protected internal virtual String GetOCRedTextFromTextFile(TesseractReader tesseractReader, String input, 
-            IList<String> languages) {
+        protected internal virtual String GetRecognizedTextFromTextFile(TesseractReader tesseractReader, String input
+            , IList<String> languages) {
             String result = null;
             String txtPath = null;
             try {
@@ -283,8 +273,9 @@ namespace iText.Ocr {
         /// <param name="tesseractReader"/>
         /// <param name="input"/>
         /// <returns/>
-        protected internal virtual String GetOCRedTextFromTextFile(TesseractReader tesseractReader, String input) {
-            return GetOCRedTextFromTextFile(tesseractReader, input, null);
+        protected internal virtual String GetRecognizedTextFromTextFile(TesseractReader tesseractReader, String input
+            ) {
+            return GetRecognizedTextFromTextFile(tesseractReader, input, null);
         }
 
         /// <summary>
@@ -337,19 +328,20 @@ namespace iText.Ocr {
             if (color != null) {
                 pdfRenderer.SetTextColor(color);
             }
-            PdfDocument doc = null;
-            try {
-                doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath));
-            }
-            catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
-            }
             if (languages != null) {
                 NUnit.Framework.Assert.AreEqual(languages.Count, tesseractReader.GetLanguagesAsList().Count);
             }
-            NUnit.Framework.Assert.IsNotNull(doc);
-            if (!doc.IsClosed()) {
-                doc.Close();
+            try {
+                using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
+                    PdfDocument doc = pdfRenderer.DoPdfOcr(pdfWriter);
+                    NUnit.Framework.Assert.IsNotNull(doc);
+                    if (!doc.IsClosed()) {
+                        doc.Close();
+                    }
+                }
+            }
+            catch (System.IO.IOException e) {
+                LOGGER.Error(e.Message);
             }
         }
 

@@ -5,28 +5,32 @@ using iText.IO.Image;
 using iText.IO.Source;
 
 namespace iText.Ocr {
-    /// <summary>Image Util class.</summary>
+    /// <summary>Utilities class to work with images.</summary>
     /// <remarks>
-    /// Image Util class.
-    /// Class provides tool for basic image preprocessing.
+    /// Utilities class to work with images.
+    /// Class provides tools for basic image preprocessing.
     /// </remarks>
     public sealed class ImageUtil {
-        /// <summary>Private constructor for util class.</summary>
+        /// <summary>
+        /// Creates a new
+        /// <see cref="ImageUtil"/>
+        /// instance.
+        /// </summary>
         private ImageUtil() {
         }
 
         /// <summary>Performs basic image preprocessing using buffered image (if provided).</summary>
         /// <remarks>
         /// Performs basic image preprocessing using buffered image (if provided).
-        /// Preprocessed image file will be saved in temporary directory
+        /// Preprocessed image will be saved in temporary directory.
         /// </remarks>
         /// <param name="inputFile">
-        /// 
+        /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
-        /// <param name="pageNumber">int</param>
+        /// <param name="pageNumber">number of page to be preprocessed</param>
         /// <returns>
-        /// 
+        /// path to the created preprocessed image file as
         /// <see cref="System.String"/>
         /// </returns>
         public static String PreprocessImage(FileInfo inputFile, int pageNumber) {
@@ -39,20 +43,17 @@ namespace iText.Ocr {
                 pix = TesseractUtil.ReadPix(inputFile);
             }
             if (pix == null) {
-                throw new OCRException(OCRException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile.FullName);
+                throw new OcrException(OcrException.CannotReadProvidedImage).SetMessageParams(inputFile.FullName);
             }
             return TesseractUtil.PreprocessPixAndSave(pix);
         }
 
-        /// <summary>
-        /// Return true if provided image has 'tiff'
-        /// or 'tif' extension, otherwise - false.
-        /// </summary>
+        /// <summary>Checks whether image format is TIFF.</summary>
         /// <param name="inputImage">
-        /// 
+        /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
-        /// <returns>boolean</returns>
+        /// <returns>true if provided image has 'tiff' or 'tif' extension</returns>
         public static bool IsTiffImage(FileInfo inputImage) {
             int index = inputImage.FullName.LastIndexOf('.');
             if (index > 0) {
@@ -63,12 +64,12 @@ namespace iText.Ocr {
             return false;
         }
 
-        /// <summary>Count number of page in provided tiff image.</summary>
+        /// <summary>Counts number of pages in the provided tiff image.</summary>
         /// <param name="inputImage">
-        /// 
+        /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
-        /// <returns>int</returns>
+        /// <returns>number of pages in the provided TIFF image</returns>
         public static int GetNumberOfPageTiff(FileInfo inputImage) {
             RandomAccessFileOrArray raf = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateBestSource
                 (inputImage.FullName));
@@ -77,28 +78,36 @@ namespace iText.Ocr {
             return numOfPages;
         }
 
-        /// <summary>Read image file from input stream from using provided file.</summary>
+        /// <summary>Reads provided image file using stream.</summary>
         /// <param name="inputFile">
-        /// 
+        /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
         /// <returns>
-        /// 
+        /// returns a
         /// <see cref="System.Drawing.Bitmap"/>
+        /// as the result
         /// </returns>
         public static System.Drawing.Bitmap ReadImageFromFile(FileInfo inputFile) {
             return (System.Drawing.Bitmap)System.Drawing.Image.FromStream(new FileStream(inputFile.FullName, FileMode.Open
                 , FileAccess.Read));
         }
 
-        /// <summary>Reading file a Leptonica pix and converting it to image.</summary>
+        /// <summary>
+        /// Reads input file as Leptonica
+        /// <see cref="Tesseract.Pix"/>
+        /// and
+        /// converts it to
+        /// <see cref="System.Drawing.Bitmap"/>.
+        /// </summary>
         /// <param name="inputImage">
-        /// 
+        /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
         /// <returns>
-        /// 
+        /// returns a
         /// <see cref="System.Drawing.Bitmap"/>
+        /// as the result
         /// </returns>
         public static System.Drawing.Bitmap ReadAsPixAndConvertToBufferedImage(FileInfo inputImage) {
             Pix pix = Tesseract.Pix.LoadFromFile(inputImage.FullName);

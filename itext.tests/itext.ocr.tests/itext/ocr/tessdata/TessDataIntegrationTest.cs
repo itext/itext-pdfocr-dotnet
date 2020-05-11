@@ -82,8 +82,8 @@ namespace iText.Ocr.Tessdata {
         public virtual void TextGreekOutputFromTxtFile() {
             String imgPath = testImagesDirectory + "greek_01.jpg";
             String expected = "ΟΜΟΛΟΓΙΑ";
-            String result = GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<String
-                >("ell"));
+            String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
+                String>("ell"));
             // correct result with specified greek language
             NUnit.Framework.Assert.IsTrue(result.Contains(expected));
         }
@@ -92,8 +92,8 @@ namespace iText.Ocr.Tessdata {
         public virtual void TextJapaneseOutputFromTxtFile() {
             String imgPath = testImagesDirectory + "japanese_01.png";
             String expected = "日 本 語文法";
-            String result = GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<String
-                >("jpn"));
+            String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
+                String>("jpn"));
             result = iText.IO.Util.StringUtil.ReplaceAll(result, "[\f\n]", "");
             // correct result with specified japanese language
             NUnit.Framework.Assert.IsTrue(result.Contains(expected));
@@ -103,20 +103,20 @@ namespace iText.Ocr.Tessdata {
         public virtual void TestFrenchOutputFromTxtFile() {
             String imgPath = testImagesDirectory + "french_01.png";
             String expectedFr = "RESTEZ\nCALME\nPARLEZ EN\nFRANÇAIS";
-            String result = GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<String
-                >("fra"));
+            String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
+                String>("fra"));
             result = iText.IO.Util.StringUtil.ReplaceAll(result, "(?:\\n\\f)+", "").Trim();
             result = iText.IO.Util.StringUtil.ReplaceAll(result, "\\n\\n", "\n").Trim();
             // correct result with specified spanish language
             NUnit.Framework.Assert.IsTrue(result.EndsWith(expectedFr));
             // incorrect result when languages are not specified
             // or languages were specified in the wrong order
-            NUnit.Framework.Assert.IsFalse(GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList
-                <String>("eng")).EndsWith(expectedFr));
-            NUnit.Framework.Assert.AreNotEqual(expectedFr, GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
+            NUnit.Framework.Assert.IsFalse(GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
+                .SingletonList<String>("eng")).EndsWith(expectedFr));
+            NUnit.Framework.Assert.AreNotEqual(expectedFr, GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
                 .SingletonList<String>("spa")));
-            NUnit.Framework.Assert.AreNotEqual(expectedFr, GetOCRedTextFromTextFile(tesseractReader, imgPath, new List
-                <String>()));
+            NUnit.Framework.Assert.AreNotEqual(expectedFr, GetRecognizedTextFromTextFile(tesseractReader, imgPath, new 
+                List<String>()));
         }
 
         [NUnit.Framework.Test]
@@ -124,18 +124,18 @@ namespace iText.Ocr.Tessdata {
             String imgPath = testImagesDirectory + "arabic_02.png";
             // First sentence
             String expected = "اللغة العربية";
-            String result = GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<String
-                >("ara"));
+            String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
+                String>("ara"));
             // correct result with specified arabic language
             NUnit.Framework.Assert.IsTrue(result.StartsWith(expected));
             // incorrect result when languages are not specified
             // or languages were specified in the wrong order
-            NUnit.Framework.Assert.AreNotEqual(expected, GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
+            NUnit.Framework.Assert.AreNotEqual(expected, GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
                 .SingletonList<String>("eng")));
-            NUnit.Framework.Assert.AreNotEqual(expected, GetOCRedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
+            NUnit.Framework.Assert.AreNotEqual(expected, GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
                 .SingletonList<String>("spa")));
-            NUnit.Framework.Assert.AreNotEqual(expected, GetOCRedTextFromTextFile(tesseractReader, imgPath, new List<String
-                >()));
+            NUnit.Framework.Assert.AreNotEqual(expected, GetRecognizedTextFromTextFile(tesseractReader, imgPath, new List
+                <String>()));
         }
 
         [NUnit.Framework.Test]
@@ -419,7 +419,7 @@ namespace iText.Ocr.Tessdata {
             IList<String> userWords = JavaUtil.ArraysAsList("he23llo", "qwetyrtyqpwe-rty");
             tesseractReader.SetLanguages(JavaUtil.ArraysAsList("fra"));
             tesseractReader.SetUserWords("fra", userWords);
-            String result = GetOCRedTextFromTextFile(tesseractReader, imgPath);
+            String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
             NUnit.Framework.Assert.IsTrue(result.Contains(userWords[0]) || result.Contains(userWords[1]));
             NUnit.Framework.Assert.AreEqual(TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "fra.user-words"
                 , tesseractReader.GetUserWordsFilePath());
@@ -434,7 +434,7 @@ namespace iText.Ocr.Tessdata {
             try {
                 tesseractReader.SetLanguages(JavaUtil.ArraysAsList("fra", "eng"));
                 tesseractReader.SetUserWords("eng", JavaUtil.ArraysAsList("b1adeb1ab1a"));
-                String result = GetOCRedTextFromTextFile(tesseractReader, imgPath);
+                String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
                 result = result.Replace("\n", "").Replace("\f", "");
                 result = iText.IO.Util.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
                 NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
@@ -454,7 +454,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetUserWords("spa", new FileStream(userWords, FileMode.Open, FileAccess.Read));
                 tesseractReader.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa")))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.LanguageIsNotInTheList, "spa")))
 ;
         }
 
@@ -464,7 +464,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetUserWords("eng1", JavaUtil.ArraysAsList("word1", "word2"));
                 tesseractReader.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1")))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.LanguageIsNotInTheList, "eng1")))
 ;
         }
 
@@ -475,7 +475,7 @@ namespace iText.Ocr.Tessdata {
                 tesseractReader.SetUserWords("test", new FileStream(userWords, FileMode.Open, FileAccess.Read));
                 tesseractReader.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<OCRException>().With.Message.EqualTo(MessageFormatUtil.Format(OCRException.LANGUAGE_IS_NOT_IN_THE_LIST, "test")))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.LanguageIsNotInTheList, "test")))
 ;
         }
     }

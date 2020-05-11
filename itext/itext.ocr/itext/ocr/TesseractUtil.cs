@@ -19,11 +19,11 @@ namespace iText.Ocr
         public const String FONT_RESOURCE_PATH = "iText.Ocr.font.";
 
         /// <summary>List of page of processing image.</summary>
-        private static IList<Pix> imagePages = new List<Pix>();
+        private IList<Pix> imagePages = new List<Pix>();
 
         /// <summary>Retrieve list of pages from provided image.</summary>
         /// <param name="inputFile">File</param>
-        public static void InitializeImagesListFromTiff(FileInfo inputFile)
+        public void InitializeImagesListFromTiff(FileInfo inputFile)
         {
             try
             {
@@ -39,15 +39,22 @@ namespace iText.Ocr
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                    .Error(MessageFormatUtil.Format(LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE, e.Message));
+                    .Error(MessageFormatUtil.Format(LogMessageConstant.CannotRetrievePagesFromImage, e.Message));
             }
         }
 
-        /// <summary>Get list of page of processing image.</summary>
+        /// <summary>Gets list of page of processing image.</summary>
         /// <returns>List<bufferedimage></returns>
-        public static IList<Pix> GetListOfPages()
+        public IList<Pix> GetListOfPages()
         {
             return new List<Pix>(imagePages);
+        }
+
+        /// <summary>Sets list of page of processing image.</summary>
+        /// <returns>List<bufferedimage></returns>
+        public void SetListOfPages(IList<Pix> pages)
+        {
+            imagePages = JavaCollectionsUtil.UnmodifiableList<Pix>(pages);
         }
 
         /// <summary>Run given command in command line.</summary>
@@ -90,16 +97,16 @@ namespace iText.Ocr
                 bool cmdSucceeded = process.WaitForExit(3 * 60 * 60 * 1000);
                 if (!cmdSucceeded)
                 {
-                    throw new OCRException(OCRException.TESSERACT_FAILED)
+                    throw new OcrException(OcrException.TesseractFailed)
                         .SetMessageParams(String.Join(" ", command));
                 }
             }
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                    .Error(MessageFormatUtil.Format(LogMessageConstant.TESSERACT_FAILED,
+                    .Error(MessageFormatUtil.Format(LogMessageConstant.TesseractFailed,
                                 e.Message));
-                throw new OCRException(OCRException.TESSERACT_FAILED)
+                throw new OcrException(OcrException.TesseractFailed)
                     .SetMessageParams(e.Message);
             }
         }
@@ -126,7 +133,7 @@ namespace iText.Ocr
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
                     .Info(MessageFormatUtil.Format(
-                        LogMessageConstant.READING_IMAGE_AS_PIX,
+                        LogMessageConstant.ReadingImageAsPix,
                         inputFile.FullName,
                         e.Message));
                 try
@@ -137,7 +144,7 @@ namespace iText.Ocr
                 {
                     LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
                         .Info(MessageFormatUtil.Format(
-                            LogMessageConstant.CANNOT_READ_FILE,
+                            LogMessageConstant.CannotReadFile,
                             inputFile.FullName,
                             ex.Message));
                 }
@@ -159,7 +166,7 @@ namespace iText.Ocr
             {
                 LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
                     .Info(MessageFormatUtil.Format(
-                        LogMessageConstant.PAGE_NUMBER_IS_INCORRECT, 
+                        LogMessageConstant.PageNumberIsIncorrect,
                         pageNumber,
                         inputFile.FullName));
                 return null;
@@ -210,7 +217,6 @@ namespace iText.Ocr
         /// <returns>Pix output pix</returns>
         public static Pix ConvertToGrayscale(Pix pix)
         {
-            // Leptonica instance = Leptonica.INSTANCE;
             if (pix != null)
             {
                 int depth = pix.Depth;
@@ -221,7 +227,7 @@ namespace iText.Ocr
                 else
                 {
                     LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                        .Info(MessageFormatUtil.Format(LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_GRAYSCALE, depth));
+                        .Info(MessageFormatUtil.Format(LogMessageConstant.CannotConvertImageToGrayscale, depth));
                     return pix;
                 }
             }
@@ -238,9 +244,6 @@ namespace iText.Ocr
         {
             if (pix != null)
             {
-                // pix = pix.BinarizeOtsuAdaptiveThreshold();
-                //PointerByReference pointer = new PointerByReference();
-                //Leptonica.INSTANCE.PixOtsuAdaptiveThreshold(pix, pix.w, pix.h, 0, 0, 0, null, pointer);
                 Pix thresholdPix = null;
                 if (pix.Depth == 8)
                 {
@@ -257,7 +260,7 @@ namespace iText.Ocr
                 else
                 {
                     LogManager.GetLogger(typeof(iText.Ocr.TesseractUtil))
-                        .Info(MessageFormatUtil.Format(LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
+                        .Info(MessageFormatUtil.Format(LogMessageConstant.CannotBinarizeImage, pix.Depth));
                     return pix;
                 }
             }
@@ -323,7 +326,7 @@ namespace iText.Ocr
         /// <param name="image">BufferedImage</param>
         /// <param name="outputFormat">OutputFormat</param>
         /// <returns>String</returns>
-        public static String GetOcrResultAsString(TesseractEngine tesseractInstance, System.Drawing.Bitmap image,
+        public String GetOcrResultAsString(TesseractEngine tesseractInstance, System.Drawing.Bitmap image,
             IOcrReader.OutputFormat outputFormat)
         {
             Page page = tesseractInstance.Process(image);
@@ -345,7 +348,7 @@ namespace iText.Ocr
         /// <param name="image">File</param>
         /// <param name="outputFormat">OutputFormat</param>
         /// <returns>String</returns>
-        public static String GetOcrResultAsString(TesseractEngine tesseractInstance, FileInfo image, IOcrReader.OutputFormat
+        public String GetOcrResultAsString(TesseractEngine tesseractInstance, FileInfo image, IOcrReader.OutputFormat
              outputFormat)
         {
             Pix pix = Pix.LoadFromFile(image.FullName);
@@ -360,7 +363,7 @@ namespace iText.Ocr
         /// <param name="pix">Pix</param>
         /// <param name="outputFormat">OutputFormat</param>
         /// <returns>String</returns>
-        public static String GetOcrResultAsString(TesseractEngine tesseractInstance, Pix pix, IOcrReader.OutputFormat
+        public String GetOcrResultAsString(TesseractEngine tesseractInstance, Pix pix, IOcrReader.OutputFormat
              outputFormat)
         {
             Page page = tesseractInstance.Process(pix);
