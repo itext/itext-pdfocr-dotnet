@@ -15,12 +15,19 @@
       <group targetFramework="net40">
         <dependency id="itext7" version="7.1.12-SNAPSHOT" />
         <dependency id="Common.Logging" version="3.4.1" />
-        <dependency id="Genesis.Tesseract4" version="4.0.2.11" />
       </group>
     </dependencies>
+    <references>
+      <reference file="itext.ocr.dll" />
+      <reference file="Tesseract.dll" />
+    </references>
   </metadata>
   <files>
     <file src="itext\itext.ocr\bin\Release\net40\itext.ocr.dll" target="lib\net40" />
     <file src="itext\itext.ocr\bin\Release\net40\itext.ocr.xml" target="lib\net40" />
+    <file src="itext7.pdfocr.targets" target="build" />
+    <file src="lib\Tesseract.dll" target="lib\net40" />
+    <file src="lib\x64\*.dll" target="runtimes\x64" />
+    <file src="lib\x86\*.dll" target="runtimes\x86" />
   </files>
 </package>

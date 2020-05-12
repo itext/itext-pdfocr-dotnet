@@ -11,6 +11,11 @@
   <PropertyGroup>
     <TargetFramework>net40</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -22,6 +27,9 @@
      <Project>{0c4ceb00-9a56-4547-a925-5974a85a6048}</Project>
      <Name>itext</Name>
    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="itext.snk" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="itext7">
