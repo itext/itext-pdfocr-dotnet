@@ -1,101 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup Label="Configuration">
+    <RootNamespace></RootNamespace>
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.ocr.xml</DocumentationFile>
+  </PropertyGroup>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0C4CEB00-9A56-4547-A925-5974A85A6048}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>
-    </RootNamespace>
+    <OutputType>library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyName>itext.ocr</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
-    <DocumentationFile>bin\Debug\itext.ocr.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
-    <DocumentationFile>bin\Release\itext.ocr.xml</DocumentationFile>
+    <RootNamespace />
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\Portable.BouncyCastle.1.8.6.7\lib\net40\BouncyCastle.Crypto.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="itext.io, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.io.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itext.kernel, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.kernel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itext.layout, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.layout.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itext.pdfa, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.pdfa.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="itext.styledxmlparser, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.12-SNAPSHOT\lib\net40\itext.styledxmlparser.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="Tesseract, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\lib\net45\Tesseract.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="itext\ocr\ImageUtil.cs" />
-    <Compile Include="itext\ocr\IOcrReader.cs" />
-    <Compile Include="itext\ocr\IPdfRenderer.cs" />
-    <Compile Include="itext\ocr\LogMessageConstant.cs" />
-    <Compile Include="itext\ocr\OCRException.cs" />
-    <Compile Include="itext\ocr\PdfRenderer.cs" />
-    <Compile Include="itext\ocr\TesseractExecutableReader.cs" />
-    <Compile Include="itext\ocr\TesseractLibReader.cs" />
-    <Compile Include="itext\ocr\TesseractReader.cs" />
-    <Compile Include="itext\ocr\TesseractUtil.cs" />
-    <Compile Include="itext\ocr\TextInfo.cs" />
-    <Compile Include="itext\ocr\UtilService.cs" />
-    <Compile Include="PdfOcrExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
     <EmbeddedResource Include="resources\com\itextpdf\ocr\fonts\LiberationSans-Regular.ttf">
       <LogicalName>iText.Ocr.font.LiberationSans-Regular.ttf</LogicalName>
     </EmbeddedResource>
@@ -103,8 +26,11 @@
     <EmbeddedResource Include="resources\com\itextpdf\ocr\tessdata\osd.traineddata" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resources\com\itextpdf\ocr\fonts\NOTICE.txt" />
+    <PackageReference Include="Genesis.Tesseract4">
+      <Version>4.0.2.11</Version>
+    </PackageReference>
+    <PackageReference Include="itext7">
+      <Version>7.1.12-SNAPSHOT</Version>
+    </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\build\Genesis.Tesseract4.targets" Condition="Exists('$(SolutionDir)\packages\Genesis.Tesseract4.4.0.2.11\build\Genesis.Tesseract4.targets')" />
 </Project>

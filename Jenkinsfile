@@ -38,7 +38,8 @@ pipeline {
                         [pattern: 'http-cache', type: 'INCLUDE'],
                         [pattern: 'plugins-cache', type: 'INCLUDE'],
                         [pattern: '**/obj', type: 'INCLUDE'],
-                        [pattern: '**/bin', type: 'INCLUDE']
+                        [pattern: '**/bin', type: 'INCLUDE'],
+                        [pattern: '**/*.nupkg', type: 'INCLUDE']
                 ]
             }
         }
@@ -75,6 +76,8 @@ pipeline {
                     script {
                         createRunTestDllsFile(findFiles(glob: '**/itext.*.tests.dll'))
                         load 'runTestDlls.groovy'
+                        createRunTestCsProjsFile(findFiles(glob: '**/itext.*.tests.csproj'))
+                        load 'runTestCsProjs.groovy'
                     }
                 }
             }

@@ -11,7 +11,7 @@ namespace iText.Ocr {
         /// <returns>String</returns>
         public static String GetCurrentDirectory() {
             string appRoot = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            var dir = new DirectoryInfo(appRoot).Parent.Parent;
+            var dir = new DirectoryInfo(appRoot).Parent.Parent.Parent;
             return dir.FullName + @"\resources\" + testDirectory;
         }
     }
