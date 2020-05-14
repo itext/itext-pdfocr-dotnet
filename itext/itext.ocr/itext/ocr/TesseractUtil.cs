@@ -300,7 +300,7 @@ namespace iText.Ocr
         /// <summary>Create teseract instance without parameters.</summary>
         /// <param name="isWindows">boolean</param>
         /// <returns>ITesseract</returns>
-        public static TesseractEngine CreateTesseractInstance(bool isWindows)
+        public static TesseractEngine InitializeTesseractInstance(bool isWindows)
         {
             return null;
         }
@@ -311,7 +311,7 @@ namespace iText.Ocr
         /// <param name="isWindows">boolean</param>
         /// <param name="userWordsFilePath">String</param>
         /// <returns>ITesseract</returns>
-        public static TesseractEngine InitializeTesseractInstanceWithParameters(String tessData, String languages,
+        public static TesseractEngine InitializeTesseractInstance(String tessData, String languages,
             bool isWindows, String userWordsFilePath)
         {
             return new TesseractEngine(tessData, languages,

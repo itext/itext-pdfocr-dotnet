@@ -29,6 +29,11 @@ namespace iText.Ocr {
         /// </remarks>
         public const String DEFAULT_USER_WORDS_SUFFIX = "user-words";
 
+        /// <summary>Supported image formats.</summary>
+        private static readonly ICollection<String> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet(
+            new HashSet<String>(JavaUtil.ArraysAsList("bmp", "png", "pnm", "pgm", "ppm", "pbm", "tiff", "tif", "jpeg"
+            , "jpg", "jpe", "jfif")));
+
         /// <summary>List of languages required for ocr for provided images.</summary>
         private IList<String> languages = JavaCollectionsUtil.EmptyList<String>();
 
@@ -239,8 +244,8 @@ namespace iText.Ocr {
         }
 
         /// <summary>
-        /// Reads data from the provided input image file and returns retrieved data
-        /// in the format described below.
+        /// Reads data from the provided input image file and returns retrieved
+        /// data in the format described below.
         /// </summary>
         /// <param name="input">
         /// input image
@@ -260,21 +265,22 @@ namespace iText.Ocr {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        public sealed override IDictionary<int, IList<TextInfo>> ReadDataFromInput(FileInfo input) {
-            IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, IOcrReader.OutputFormat
-                .HOCR);
-            if (result != null && result.Count > 0) {
-                IList<String> keys = new List<String>(result.Keys);
-                return result.Get(keys[0]);
+        public sealed override IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
+            IDictionary<int, IList<TextInfo>> result = new LinkedDictionary<int, IList<TextInfo>>();
+            if (IsValidImageFormat(input)) {
+                IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, IOcrReader.OutputFormat
+                    .HOCR);
+                if (processedData != null && processedData.Count > 0) {
+                    IList<String> keys = new List<String>(processedData.Keys);
+                    result = processedData.Get(keys[0]);
+                }
             }
-            else {
-                return new LinkedDictionary<int, IList<TextInfo>>();
-            }
+            return result;
         }
 
         /// <summary>
-        /// Reads data from the provided input image file and returns retrieved data
-        /// as string.
+        /// Reads data from the provided input image file and returns retrieved
+        /// data as string.
         /// </summary>
         /// <param name="input">
         /// input image
@@ -293,31 +299,33 @@ namespace iText.Ocr {
         /// that is
         /// returned after processing the given image
         /// </returns>
-        public sealed override String ReadDataFromInput(FileInfo input, IOcrReader.OutputFormat outputFormat) {
-            IDictionary<String, IDictionary<int, IList<TextInfo>>> result = ProcessInputFiles(input, outputFormat);
-            if (result != null && result.Count > 0) {
-                IList<String> keys = new List<String>(result.Keys);
-                if (outputFormat.Equals(IOcrReader.OutputFormat.TXT)) {
-                    return keys[0];
-                }
-                else {
-                    StringBuilder outputText = new StringBuilder();
-                    IDictionary<int, IList<TextInfo>> outputMap = result.Get(keys[0]);
-                    foreach (int page in outputMap.Keys) {
-                        StringBuilder pageText = new StringBuilder();
-                        foreach (TextInfo textInfo in outputMap.Get(page)) {
-                            pageText.Append(textInfo.GetText());
-                            pageText.Append(Environment.NewLine);
-                        }
-                        outputText.Append(pageText);
-                        outputText.Append(Environment.NewLine);
+        public sealed override String DoImageOcr(FileInfo input, IOcrReader.OutputFormat outputFormat) {
+            String result = "";
+            if (IsValidImageFormat(input)) {
+                IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, outputFormat
+                    );
+                if (processedData != null && processedData.Count > 0) {
+                    IList<String> keys = new List<String>(processedData.Keys);
+                    if (outputFormat.Equals(IOcrReader.OutputFormat.TXT)) {
+                        result = keys[0];
                     }
-                    return outputText.ToString();
+                    else {
+                        StringBuilder outputText = new StringBuilder();
+                        IDictionary<int, IList<TextInfo>> outputMap = processedData.Get(keys[0]);
+                        foreach (int page in outputMap.Keys) {
+                            StringBuilder pageText = new StringBuilder();
+                            foreach (TextInfo textInfo in outputMap.Get(page)) {
+                                pageText.Append(textInfo.GetText());
+                                pageText.Append(Environment.NewLine);
+                            }
+                            outputText.Append(pageText);
+                            outputText.Append(Environment.NewLine);
+                        }
+                        result = outputText.ToString();
+                    }
                 }
             }
-            else {
-                return "";
-            }
+            return result;
         }
 
         /// <summary>
@@ -572,6 +580,39 @@ namespace iText.Ocr {
         private FileInfo CreateTempFile(String extension) {
             String tmpFileName = TesseractUtil.GetTempDir() + Guid.NewGuid().ToString() + extension;
             return new FileInfo(tmpFileName);
+        }
+
+        /// <summary>Validates input image format.</summary>
+        /// <remarks>
+        /// Validates input image format.
+        /// Allowed image formats are listed
+        /// in
+        /// <see cref="SUPPORTED_IMAGE_FORMATS"/>
+        /// </remarks>
+        /// <param name="image">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <returns>true if image extension is valid, false - if not</returns>
+        private bool IsValidImageFormat(FileInfo image) {
+            bool isValid = false;
+            String extension = "incorrect extension";
+            int index = image.FullName.LastIndexOf('.');
+            if (index > 0) {
+                extension = new String(image.FullName.ToCharArray(), index + 1, image.FullName.Length - index - 1);
+                foreach (String format in SUPPORTED_IMAGE_FORMATS) {
+                    if (format.Equals(extension.ToLowerInvariant())) {
+                        isValid = true;
+                        break;
+                    }
+                }
+            }
+            if (!isValid) {
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadInputImage, image
+                    .FullName));
+                throw new OcrException(OcrException.IncorrectInputImageFormat).SetMessageParams(extension);
+            }
+            return isValid;
         }
     }
 }

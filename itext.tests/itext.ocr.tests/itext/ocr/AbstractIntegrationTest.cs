@@ -129,12 +129,13 @@ namespace iText.Ocr {
         /// <param name="scaleMode"/>
         /// <param name="pageSize"/>
         /// <returns/>
-        protected internal virtual Image GetImageFromPdf(TesseractReader tesseractReader, FileInfo file, IPdfRenderer.ScaleMode
+        protected internal virtual Image GetImageFromPdf(TesseractReader tesseractReader, FileInfo file, ScaleMode
              scaleMode, Rectangle pageSize) {
-            IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
-                ), scaleMode);
-            pdfRenderer.SetPageSize(pageSize);
-            PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter());
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetScaleMode(scaleMode);
+            properties.SetPageSize(pageSize);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter());
             Image image = null;
             NUnit.Framework.Assert.IsNotNull(doc);
             if (!doc.IsClosed()) {
@@ -291,9 +292,8 @@ namespace iText.Ocr {
             if (languages != null) {
                 tesseractReader.SetLanguages(languages);
             }
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(new 
-                FileInfo(imgPath)));
-            pdfRenderer.DoPdfOcr(txtPath);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties());
+            pdfRenderer.CreateTxt(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath)), txtPath);
             if (languages != null) {
                 NUnit.Framework.Assert.AreEqual(languages.Count, tesseractReader.GetLanguagesAsList().Count);
             }
@@ -319,21 +319,21 @@ namespace iText.Ocr {
             if (languages != null) {
                 tesseractReader.SetLanguages(languages);
             }
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(new 
-                FileInfo(imgPath)));
-            pdfRenderer.SetScaleMode(IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE);
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             if (fontPath != null && !String.IsNullOrEmpty(fontPath)) {
-                pdfRenderer.SetFontPath(fontPath);
+                properties.SetFontPath(fontPath);
             }
             if (color != null) {
-                pdfRenderer.SetTextColor(color);
+                properties.SetTextColor(color);
             }
             if (languages != null) {
                 NUnit.Framework.Assert.AreEqual(languages.Count, tesseractReader.GetLanguagesAsList().Count);
             }
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
             try {
                 using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
-                    PdfDocument doc = pdfRenderer.DoPdfOcr(pdfWriter);
+                    PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath))
+                        , pdfWriter);
                     NUnit.Framework.Assert.IsNotNull(doc);
                     if (!doc.IsClosed()) {
                         doc.Close();
@@ -430,13 +430,28 @@ namespace iText.Ocr {
         /// <param name="file"/>
         /// <returns/>
         protected internal virtual String GetTextFromTextFile(FileInfo file) {
-            return UtilService.ReadTxtFile(file);
+            String content = null;
+            try {
+                content = iText.IO.Util.JavaUtil.GetStringForBytes(System.IO.File.ReadAllBytes(file.FullName), System.Text.Encoding
+                    .UTF8);
+            }
+            catch (System.IO.IOException e) {
+                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadFile, file.FullName, e.Message));
+            }
+            return content;
         }
 
         /// <summary>Delete file using provided path.</summary>
         /// <param name="filePath"/>
         protected internal virtual void DeleteFile(String filePath) {
-            UtilService.DeleteFile(filePath);
+            try {
+                if (filePath != null && !String.IsNullOrEmpty(filePath) && File.Exists(System.IO.Path.Combine(filePath))) {
+                    File.Delete(System.IO.Path.Combine(filePath));
+                }
+            }
+            catch (Exception e) {
+                LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.CannotDeleteFile, filePath, e.Message));
+            }
         }
 
         /// <summary>Do OCR for given image and compare result etxt file with expected one.</summary>
@@ -523,6 +538,13 @@ namespace iText.Ocr {
         protected internal virtual PdfOutputIntent GetRGBPdfOutputIntent() {
             Stream @is = new FileStream(defaultRGBColorProfilePath, FileMode.Open, FileAccess.Read);
             return new PdfOutputIntent("", "", "", "sRGB IEC61966-2.1", @is);
+        }
+
+        /// <summary>Converts value from pixels to points.</summary>
+        /// <param name="pixels">input value in pixels</param>
+        /// <returns>result value in points</returns>
+        protected internal virtual float GetPoints(float pixels) {
+            return pixels * 3f / 4f;
         }
 
         /// <summary>Create pdfWriter.</summary>

@@ -14,5 +14,12 @@ namespace iText.Ocr {
             var dir = new DirectoryInfo(appRoot).Parent.Parent.Parent;
             return dir.FullName + @"\resources\" + testDirectory;
         }
+
+        /// <summary>Get system temporary directory.</summary>
+        /// <returns>String</returns>
+        public static String GetTempDir()
+        {
+            return System.IO.Path.GetTempPath();
+        }
     }
 }

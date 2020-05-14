@@ -12,7 +12,7 @@ using iText.StyledXmlParser.Jsoup.Select;
 
 namespace iText.Ocr {
     /// <summary>Helper class.</summary>
-    public sealed class UtilService {
+    internal sealed class UtilService {
         /// <summary>The Constant to convert pixels to points.</summary>
         internal const float PX_TO_PT = 3f / 4f;
 
@@ -44,7 +44,7 @@ namespace iText.Ocr {
         /// <see cref="System.String"/>
         /// from provided text file
         /// </returns>
-        public static String ReadTxtFile(FileInfo txtFile) {
+        internal static String ReadTxtFile(FileInfo txtFile) {
             String content = null;
             try {
                 content = iText.IO.Util.JavaUtil.GetStringForBytes(System.IO.File.ReadAllBytes(txtFile.FullName), System.Text.Encoding
@@ -59,13 +59,13 @@ namespace iText.Ocr {
         /// <summary>Converts value from pixels to points.</summary>
         /// <param name="pixels">input value in pixels</param>
         /// <returns>result value in points</returns>
-        public static float GetPoints(float pixels) {
+        internal static float GetPoints(float pixels) {
             return pixels * PX_TO_PT;
         }
 
         /// <summary>Deletes file using provided path.</summary>
         /// <param name="pathToFile">path to the file to be deleted</param>
-        public static void DeleteFile(String pathToFile) {
+        internal static void DeleteFile(String pathToFile) {
             try {
                 if (pathToFile != null && !String.IsNullOrEmpty(pathToFile) && File.Exists(System.IO.Path.Combine(pathToFile
                     ))) {
@@ -100,13 +100,14 @@ namespace iText.Ocr {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IOcrReader.TextPositioning
+        internal static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IOcrReader.TextPositioning
              textPositioning) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             foreach (FileInfo inputFile in inputFiles) {
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
-                    Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read
-                        ), ENCODING_UTF_8, inputFile.FullName);
+                    FileStream fileInputStream = new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read);
+                    Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(fileInputStream, ENCODING_UTF_8, inputFile.FullName
+                        );
                     Elements pages = doc.GetElementsByClass("ocr_page");
                     Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*");
                     Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
@@ -149,6 +150,7 @@ namespace iText.Ocr {
                             imageData.Put(pageNumber, textData);
                         }
                     }
+                    fileInputStream.Dispose();
                 }
             }
             return imageData;
@@ -167,20 +169,20 @@ namespace iText.Ocr {
         /// <see cref="ScaleMode"/>
         /// that could be
         /// set using
-        /// <see cref="PdfRenderer.SetScaleMode(ScaleMode)"/>
+        /// <see cref="OcrPdfCreatorProperties.SetScaleMode(ScaleMode)"/>
         /// method
         /// </param>
         /// <param name="requiredSize">
         /// size of the page that could be using
-        /// <see cref="PdfRenderer.SetPageSize(iText.Kernel.Geom.Rectangle)"/>
+        /// <see cref="OcrPdfCreatorProperties.SetPageSize(iText.Kernel.Geom.Rectangle)"/>
         /// method
         /// </param>
         /// <returns>
         /// 
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
         /// </returns>
-        internal static Rectangle CalculateImageSize(ImageData imageData, IPdfRenderer.ScaleMode scaleMode, Rectangle
-             requiredSize) {
+        internal static Rectangle CalculateImageSize(ImageData imageData, ScaleMode scaleMode, Rectangle requiredSize
+            ) {
             // Adjust image size and dpi
             // The resolution of a PDF file is 72pt per inch
             float dotsPerPointX = 1.0f;
@@ -192,34 +194,31 @@ namespace iText.Ocr {
             if (imageData != null) {
                 float imgWidthPt = GetPoints(imageData.GetWidth());
                 float imgHeightPt = GetPoints(imageData.GetHeight());
-                LOGGER.Info("Original image size in pixels: (" + imageData.GetWidth() + ", " + imageData.GetHeight() + ")"
-                    );
-                if (scaleMode == IPdfRenderer.ScaleMode.KEEP_ORIGINAL_SIZE) {
-                    Rectangle size = new Rectangle(imgWidthPt, imgHeightPt);
-                    LOGGER.Info("Final size in points: (" + size.GetWidth() + ", " + size.GetHeight() + ")");
-                    return size;
+                // page size will be equal to the image size if page size or
+                // scale mode are not set
+                if (requiredSize == null || scaleMode == null) {
+                    return new Rectangle(imgWidthPt, imgHeightPt);
                 }
                 else {
                     Rectangle size = new Rectangle(requiredSize.GetWidth(), requiredSize.GetHeight());
                     // scale image according to the page size and scale mode
-                    if (scaleMode == IPdfRenderer.ScaleMode.SCALE_HEIGHT) {
+                    if (scaleMode == ScaleMode.SCALE_HEIGHT) {
                         float newHeight = imgHeightPt * requiredSize.GetWidth() / imgWidthPt;
                         size.SetHeight(newHeight);
                     }
                     else {
-                        if (scaleMode == IPdfRenderer.ScaleMode.SCALE_WIDTH) {
+                        if (scaleMode == ScaleMode.SCALE_WIDTH) {
                             float newWidth = imgWidthPt * requiredSize.GetHeight() / imgHeightPt;
                             size.SetWidth(newWidth);
                         }
                         else {
-                            if (scaleMode == IPdfRenderer.ScaleMode.SCALE_TO_FIT) {
+                            if (scaleMode == ScaleMode.SCALE_TO_FIT) {
                                 float ratio = Math.Min(requiredSize.GetWidth() / imgWidthPt, requiredSize.GetHeight() / imgHeightPt);
                                 size.SetWidth(imgWidthPt * ratio);
                                 size.SetHeight(imgHeightPt * ratio);
                             }
                         }
                     }
-                    LOGGER.Info("Final size in points: (" + size.GetWidth() + ", " + size.GetHeight() + ")");
                     return size;
                 }
             }

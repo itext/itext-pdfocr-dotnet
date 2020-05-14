@@ -41,7 +41,7 @@ namespace iText.Ocr {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        public abstract IDictionary<int, IList<TextInfo>> ReadDataFromInput(FileInfo input);
+        public abstract IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input);
 
         /// <summary>
         /// Reads data from the provided input image file and returns retrieved data
@@ -64,7 +64,7 @@ namespace iText.Ocr {
         /// that is
         /// returned after processing the given image
         /// </returns>
-        public abstract String ReadDataFromInput(FileInfo input, IOcrReader.OutputFormat outputFormat);
+        public abstract String DoImageOcr(FileInfo input, IOcrReader.OutputFormat outputFormat);
 
         /// <summary>Enumeration of the possible types of text positioning.</summary>
         /// <remarks>
@@ -74,7 +74,8 @@ namespace iText.Ocr {
         /// selected type of item.
         /// For tesseract this value makes sense only if selected
         /// <see cref="OutputFormat"/>
-        /// is HOCR.
+        /// is
+        /// <see cref="OutputFormat.HOCR"/>.
         /// </remarks>
         public enum TextPositioning {
             /// <summary>Text will be located by lines retrieved from hocr file.</summary>

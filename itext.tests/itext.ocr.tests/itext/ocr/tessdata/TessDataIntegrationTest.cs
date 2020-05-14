@@ -12,6 +12,14 @@ namespace iText.Ocr.Tessdata {
 
         internal String parameter;
 
+        [NUnit.Framework.SetUp]
+        public virtual void InitTessDataPath() {
+            tesseractReader.SetPreprocessingImages(true);
+            tesseractReader.SetPathToTessData(GetTessDataDirectory());
+            tesseractReader.SetLanguages(new List<String>());
+            tesseractReader.SetUserWords("eng", new List<String>());
+        }
+
         public TessDataIntegrationTest(String type) {
             parameter = type;
             tesseractReader = GetTesseractReader(type);
@@ -22,6 +30,9 @@ namespace iText.Ocr.Tessdata {
             String imgPath = testImagesDirectory + "greek_01.jpg";
             FileInfo file = new FileInfo(imgPath);
             String expected = "ΟΜΟΛΟΓΙΑ";
+            if ("executable".Equals(parameter)) {
+                tesseractReader.SetPreprocessingImages(false);
+            }
             String real = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("ell"), notoSansFontPath);
             // correct result with specified greek language
             NUnit.Framework.Assert.IsTrue(real.Contains(expected));
@@ -60,13 +71,19 @@ namespace iText.Ocr.Tessdata {
             String filename = "scanned_spa_01";
             String expectedPdfPath = testDocumentsDirectory + filename + parameter + ".pdf";
             String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
+            IList<String> languages = JavaUtil.ArraysAsList("spa", "spa_old");
             if ("executable".Equals(parameter)) {
+                tesseractReader = new TesseractExecutableReader(GetTesseractDirectory(), GetTessDataDirectory(), languages
+                    );
                 tesseractReader.SetPreprocessingImages(false);
+            }
+            else {
+                tesseractReader = new TesseractLibReader(GetTessDataDirectory(), languages);
             }
             // locate text by words
             tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
-            DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".png", resultPdfPath, JavaUtil.ArraysAsList
-                ("spa", "spa_old"), DeviceCmyk.BLACK);
+            DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".png", resultPdfPath, languages, 
+                DeviceCmyk.BLACK);
             try {
                 new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
             }
@@ -82,6 +99,9 @@ namespace iText.Ocr.Tessdata {
         public virtual void TextGreekOutputFromTxtFile() {
             String imgPath = testImagesDirectory + "greek_01.jpg";
             String expected = "ΟΜΟΛΟΓΙΑ";
+            if ("executable".Equals(parameter)) {
+                tesseractReader.SetPreprocessingImages(false);
+            }
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
                 String>("ell"));
             // correct result with specified greek language
@@ -91,7 +111,7 @@ namespace iText.Ocr.Tessdata {
         [NUnit.Framework.Test]
         public virtual void TextJapaneseOutputFromTxtFile() {
             String imgPath = testImagesDirectory + "japanese_01.png";
-            String expected = "日 本 語文法";
+            String expected = "日本語文法";
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
                 String>("jpn"));
             result = iText.IO.Util.StringUtil.ReplaceAll(result, "[\f\n]", "");
@@ -421,7 +441,7 @@ namespace iText.Ocr.Tessdata {
             tesseractReader.SetUserWords("fra", userWords);
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
             NUnit.Framework.Assert.IsTrue(result.Contains(userWords[0]) || result.Contains(userWords[1]));
-            NUnit.Framework.Assert.AreEqual(TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "fra.user-words"
+            NUnit.Framework.Assert.AreEqual(TestUtils.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "fra.user-words"
                 , tesseractReader.GetUserWordsFilePath());
             tesseractReader.SetUserWords("eng", new List<String>());
             tesseractReader.SetLanguages(new List<String>());
@@ -438,7 +458,7 @@ namespace iText.Ocr.Tessdata {
                 result = result.Replace("\n", "").Replace("\f", "");
                 result = iText.IO.Util.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
                 NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
-                NUnit.Framework.Assert.AreEqual(TesseractUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "eng.user-words"
+                NUnit.Framework.Assert.AreEqual(TestUtils.GetTempDir() + System.IO.Path.DirectorySeparatorChar + "eng.user-words"
                     , tesseractReader.GetUserWordsFilePath());
             }
             finally {

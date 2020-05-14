@@ -38,8 +38,8 @@ namespace iText.Ocr {
         /// <param name="tessDataPath">path to tess data directory</param>
         public TesseractLibReader(String tessDataPath) {
             SetOsType(IdentifyOsType());
-            SetTesseractInstance();
             SetPathToTessData(tessDataPath);
+            TesseractUtil.InitializeTesseractInstance(IsWindows());
         }
 
         /// <summary>
@@ -51,15 +51,16 @@ namespace iText.Ocr {
         /// <param name="tessDataPath">path to tess data directory</param>
         public TesseractLibReader(String tessDataPath, IList<String> languagesList) {
             SetOsType(IdentifyOsType());
-            SetTesseractInstance();
             SetPathToTessData(tessDataPath);
             SetLanguages(JavaCollectionsUtil.UnmodifiableList<String>(languagesList));
+            TesseractUtil.InitializeTesseractInstance(IsWindows());
         }
 
         /// <summary>Gets tesseract instance depending on the OS type.</summary>
         /// <remarks>
         /// Gets tesseract instance depending on the OS type.
-        /// If instance is null, it will be initialized with parameters
+        /// If instance is null or it was already disposed, it will be initialized
+        /// with parameters.
         /// </remarks>
         /// <returns>
         /// initialized
@@ -68,13 +69,17 @@ namespace iText.Ocr {
         /// </returns>
         public virtual TesseractEngine GetTesseractInstance() {
             if (tesseractInstance == null || TesseractUtil.IsTesseractInstanceDisposed(tesseractInstance)) {
-                tesseractInstance = TesseractUtil.InitializeTesseractInstanceWithParameters(GetTessData(), GetLanguagesAsString
-                    (), IsWindows(), GetUserWordsFilePath());
+                tesseractInstance = TesseractUtil.InitializeTesseractInstance(GetTessData(), GetLanguagesAsString(), IsWindows
+                    (), GetUserWordsFilePath());
             }
             return tesseractInstance;
         }
 
-        /// <summary>Initializes instance of tesseract and sets all the required properties.</summary>
+        /// <summary>
+        /// Initializes instance of tesseract if it haven't been already
+        /// initialized or it have been disposed and sets all the required
+        /// properties.
+        /// </summary>
         /// <param name="outputFormat">
         /// selected
         /// <see cref="OutputFormat"/>
@@ -82,9 +87,9 @@ namespace iText.Ocr {
         /// tesseract
         /// </param>
         public virtual void InitializeTesseract(IOcrReader.OutputFormat outputFormat) {
-            SetTesseractInstance();
             GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(IOcrReader.OutputFormat.HOCR
                 ) ? "1" : "0");
+            GetTesseractInstance().SetVariable("user_defined_dpi", "300");
             if (GetUserWordsFilePath() != null) {
                 GetTesseractInstance().SetVariable("load_system_dawg", "0");
                 GetTesseractInstance().SetVariable("load_freq_dawg", "0");
@@ -95,7 +100,10 @@ namespace iText.Ocr {
                 (), GetUserWordsFilePath());
         }
 
-        /// <summary>Performs tesseract OCR.</summary>
+        /// <summary>
+        /// Performs tesseract OCR using command line tool for the selected page
+        /// of input image (by default 1st).
+        /// </summary>
         /// <param name="inputImage">
         /// input image
         /// <see cref="System.IO.FileInfo"/>
@@ -146,9 +154,6 @@ namespace iText.Ocr {
                             throw new OcrException(OcrException.TesseractFailed);
                         }
                     }
-                    else {
-                        LogManager.GetLogger(GetType()).Info("OCR result is NULL for " + inputImage.FullName);
-                    }
                 }
             }
             catch (OcrException e) {
@@ -163,11 +168,6 @@ namespace iText.Ocr {
                     UtilService.DeleteFile(GetUserWordsFilePath());
                 }
             }
-        }
-
-        /// <summary>Sets tesseract instance depending on the OS type.</summary>
-        private void SetTesseractInstance() {
-            tesseractInstance = TesseractUtil.CreateTesseractInstance(IsWindows());
         }
 
         /// <summary>
@@ -251,20 +251,22 @@ namespace iText.Ocr {
                             bufferedImage = ImageUtil.ReadImageFromFile(inputImage);
                         }
                         catch (Exception ex) {
-                            LogManager.GetLogger(GetType()).Info("Cannot create a buffered image " + "from the input image: " + ex.Message
-                                );
+                            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(LogMessageConstant.CannotCreateBufferedImage
+                                , ex.Message));
                             bufferedImage = ImageUtil.ReadAsPixAndConvertToBufferedImage(inputImage);
                         }
                     }
                     catch (System.IO.IOException ex) {
-                        LogManager.GetLogger(GetType()).Info("Cannot read image: " + ex.Message);
+                        LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(LogMessageConstant.CannotReadInputImage, ex.
+                            Message));
                     }
                     if (bufferedImage != null) {
                         try {
                             result = new TesseractUtil().GetOcrResultAsString(GetTesseractInstance(), bufferedImage, outputFormat);
                         }
                         catch (TesseractException e) {
-                            LogManager.GetLogger(GetType()).Info("Cannot process image: " + e.Message);
+                            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(LogMessageConstant.CannotProcessImage, e.Message
+                                ));
                         }
                     }
                     if (result == null) {

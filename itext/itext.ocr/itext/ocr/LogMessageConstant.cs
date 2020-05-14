@@ -26,6 +26,8 @@ namespace iText.Ocr {
 
         public const String CannotDeleteFile = "File {0} cannot be deleted: {1}";
 
+        public const String CannotProcessImage = "Cannot process " + "image: {0}";
+
         /*
         INFO messages
         */
@@ -42,5 +44,7 @@ namespace iText.Ocr {
         public const String CannotConvertImageToGrayscale = "Cannot convert to gray image with depth {0}";
 
         public const String CannotBinarizeImage = "Cannot binarize image with depth {0}";
+
+        public const String CannotCreateBufferedImage = "Cannot create a buffered image from the input image: {0}";
     }
 }

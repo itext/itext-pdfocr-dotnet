@@ -21,15 +21,13 @@ namespace iText.Ocr.Pdflayers {
         public virtual void TestPdfLayersWithDefaultNames() {
             String path = testImagesDirectory + "numbers_01.jpg";
             FileInfo file = new FileInfo(path);
-            IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-            pdfRenderer.SetInputImages(JavaCollectionsUtil.SingletonList<FileInfo>(file));
-            PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter());
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter());
             NUnit.Framework.Assert.IsNotNull(doc);
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
             NUnit.Framework.Assert.AreEqual(2, layers.Count);
             NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
             NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
-            NUnit.Framework.Assert.AreEqual(1, pdfRenderer.GetInputImages().Count);
             doc.Close();
         }
 
@@ -37,13 +35,11 @@ namespace iText.Ocr.Pdflayers {
         public virtual void TestPdfLayersWithCustomNames() {
             String path = testImagesDirectory + "numbers_01.jpg";
             FileInfo file = new FileInfo(path);
-            IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-            pdfRenderer.SetInputImages(JavaCollectionsUtil.SingletonList<FileInfo>(file));
-            pdfRenderer.SetImageLayerName("name image 1");
-            pdfRenderer.SetTextLayerName("name text 1");
-            PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter());
-            // setting layer's name after ocr was done, name shouldn't change
-            pdfRenderer.SetImageLayerName("name image 100500");
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetImageLayerName("name image 1");
+            properties.SetTextLayerName("name text 1");
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter());
             NUnit.Framework.Assert.IsNotNull(doc);
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
             NUnit.Framework.Assert.AreEqual(2, layers.Count);
@@ -51,7 +47,6 @@ namespace iText.Ocr.Pdflayers {
             NUnit.Framework.Assert.IsTrue(layers[0].IsOn());
             NUnit.Framework.Assert.AreEqual("name text 1", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
             NUnit.Framework.Assert.IsTrue(layers[1].IsOn());
-            NUnit.Framework.Assert.AreEqual(1, pdfRenderer.GetInputImages().Count);
             doc.Close();
         }
 
@@ -61,9 +56,9 @@ namespace iText.Ocr.Pdflayers {
             String pdfPath = testDocumentsDirectory + Guid.NewGuid().ToString() + ".pdf";
             FileInfo file = new FileInfo(path);
             try {
-                IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
+                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
+                PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
                     ));
-                PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath));
                 NUnit.Framework.Assert.IsNotNull(doc);
                 IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
                 NUnit.Framework.Assert.AreEqual(2, layers.Count);
@@ -91,9 +86,9 @@ namespace iText.Ocr.Pdflayers {
             FileInfo file = new FileInfo(path);
             try {
                 tesseractReader.SetPreprocessingImages(false);
-                IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, JavaCollectionsUtil.SingletonList<FileInfo>(file
+                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
+                PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
                     ));
-                PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath));
                 NUnit.Framework.Assert.IsNotNull(doc);
                 int numOfPages = doc.GetNumberOfPages();
                 IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
@@ -120,10 +115,11 @@ namespace iText.Ocr.Pdflayers {
             IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(testImagesDirectory + "german_01.jpg"), new FileInfo
                 (testImagesDirectory + "noisy_01.png"), new FileInfo(testImagesDirectory + "numbers_01.jpg"), new FileInfo
                 (testImagesDirectory + "example_04.png"));
-            IPdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, files);
-            pdfRenderer.SetImageLayerName("image");
-            pdfRenderer.SetTextLayerName("text");
-            PdfDocument doc = pdfRenderer.DoPdfOcr(GetPdfWriter(pdfPath));
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetImageLayerName("image");
+            properties.SetTextLayerName("text");
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
+            PdfDocument doc = pdfRenderer.CreatePdf(files, GetPdfWriter(pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
             int numOfPages = doc.GetNumberOfPages();
             NUnit.Framework.Assert.AreEqual(numOfPages, files.Count);
@@ -137,7 +133,6 @@ namespace iText.Ocr.Pdflayers {
             String expectedOutput = "619121";
             NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "text", 3));
             NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "image", 3));
-            NUnit.Framework.Assert.AreEqual(4, pdfRenderer.GetInputImages().Count);
             DeleteFile(pdfPath);
         }
     }

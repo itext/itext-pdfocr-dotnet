@@ -84,7 +84,10 @@ namespace iText.Ocr {
             pathToExecutable = path;
         }
 
-        /// <summary>Performs tesseract OCR using command line tool.</summary>
+        /// <summary>
+        /// Performs tesseract OCR using command line tool for the selected page
+        /// of input image (by default 1st).
+        /// </summary>
         /// <param name="inputImage">
         /// input image
         /// <see cref="System.IO.FileInfo"/>
@@ -123,6 +126,8 @@ namespace iText.Ocr {
                 AddPageSegMode(command);
                 // add user words if needed
                 AddUserWords(command);
+                // set default user defined dpi
+                AddDefaultDpi(command);
                 // required languages
                 AddLanguages(command);
                 if (outputFormat.Equals(IOcrReader.OutputFormat.HOCR)) {
@@ -185,6 +190,13 @@ namespace iText.Ocr {
                 command.Add("--oem");
                 command.Add("0");
             }
+        }
+
+        /// <summary>Set default DPI for image.</summary>
+        /// <param name="command">result command as list of strings</param>
+        private void AddDefaultDpi(IList<String> command) {
+            command.Add("--dpi");
+            command.Add("300");
         }
 
         /// <summary>Adds path to tess data to the command list.</summary>
