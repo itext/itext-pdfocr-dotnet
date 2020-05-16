@@ -1,7 +1,9 @@
+using iText.Ocr;
+
 namespace iText.Ocr.Tessdata {
     public class TessDataIntegrationLibTest : TessDataIntegrationTest {
         public TessDataIntegrationLibTest()
-            : base("lib") {
+            : base(AbstractIntegrationTest.ReaderType.LIB) {
         }
     }
 }

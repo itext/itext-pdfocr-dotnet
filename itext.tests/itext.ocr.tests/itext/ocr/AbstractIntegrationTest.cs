@@ -58,6 +58,11 @@ namespace iText.Ocr {
 
         protected internal static float delta = 1e-4f;
 
+        public enum ReaderType {
+            LIB,
+            EXECUTABLE
+        }
+
         internal static TesseractLibReader tesseractLibReader = null;
 
         internal static TesseractExecutableReader tesseractExecutableReader = null;
@@ -102,8 +107,8 @@ namespace iText.Ocr {
             freeSansFontPath = testFontsDirectory + "FreeSans.ttf";
         }
 
-        protected internal static TesseractReader GetTesseractReader(String type) {
-            if ("lib".Equals(type)) {
+        protected internal static TesseractReader GetTesseractReader(AbstractIntegrationTest.ReaderType type) {
+            if (type.Equals(AbstractIntegrationTest.ReaderType.LIB)) {
                 return tesseractLibReader;
             }
             else {
@@ -124,11 +129,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Retrieve image from given pdf document.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <param name="scaleMode"/>
-        /// <param name="pageSize"/>
-        /// <returns/>
         protected internal virtual Image GetImageFromPdf(TesseractReader tesseractReader, FileInfo file, ScaleMode
              scaleMode, Rectangle pageSize) {
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
@@ -152,13 +152,18 @@ namespace iText.Ocr {
             return image;
         }
 
+        /// <summary>Retrieve image BBox rectangle from the first page from given pdf document.</summary>
+        protected internal virtual Rectangle GetImageBBoxRectangleFromPdf(String path) {
+            PdfDocument doc = new PdfDocument(new PdfReader(path));
+            AbstractIntegrationTest.ExtractionStrategy extractionStrategy = new AbstractIntegrationTest.ExtractionStrategy
+                ("Image Layer");
+            PdfCanvasProcessor processor = new PdfCanvasProcessor(extractionStrategy);
+            processor.ProcessPageContent(doc.GetFirstPage());
+            doc.Close();
+            return extractionStrategy.GetImageBBoxRectangle();
+        }
+
         /// <summary>Retrieve text from specified page from given pdf document.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <param name="page"/>
-        /// <param name="languages"/>
-        /// <param name="fontPath"/>
-        /// <returns/>
         protected internal virtual String GetTextFromPdf(TesseractReader tesseractReader, FileInfo file, int page, 
             IList<String> languages, String fontPath) {
             String result = null;
@@ -178,59 +183,29 @@ namespace iText.Ocr {
         }
 
         /// <summary>Retrieve text from the first page of given pdf document setting font.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <param name="languages"/>
-        /// <param name="fontPath"/>
-        /// <returns/>
         protected internal virtual String GetTextFromPdf(TesseractReader tesseractReader, FileInfo file, IList<String
             > languages, String fontPath) {
             return GetTextFromPdf(tesseractReader, file, 1, languages, fontPath);
         }
 
         /// <summary>Retrieve text from the first page of given pdf document.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <param name="languages"/>
-        /// <returns/>
         protected internal virtual String GetTextFromPdf(TesseractReader tesseractReader, FileInfo file, IList<String
             > languages) {
             return GetTextFromPdf(tesseractReader, file, 1, languages, null);
         }
 
         /// <summary>Retrieve text from the required page of given pdf document.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <param name="page"/>
-        /// <param name="languages"/>
-        /// <returns/>
         protected internal virtual String GetTextFromPdf(TesseractReader tesseractReader, FileInfo file, int page, 
             IList<String> languages) {
             return GetTextFromPdf(tesseractReader, file, page, languages, null);
         }
 
-        /// <summary>Retrieve text from specified page from given pdf document.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <param name="page"/>
-        /// <returns/>
-        protected internal virtual String GetTextFromPdf(TesseractReader tesseractReader, FileInfo file, int page) {
-            return GetTextFromPdf(tesseractReader, file, page, null, null);
-        }
-
         /// <summary>Retrieve text from the first page of given pdf document.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <returns/>
         protected internal virtual String GetTextFromPdf(TesseractReader tesseractReader, FileInfo file) {
             return GetTextFromPdf(tesseractReader, file, 1, null, null);
         }
 
         /// <summary>Get text from layer specified by name from page.</summary>
-        /// <param name="pdfPath"/>
-        /// <param name="layerName"/>
-        /// <param name="page"/>
-        /// <returns/>
         protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             AbstractIntegrationTest.ExtractionStrategy textExtractionStrategy = new AbstractIntegrationTest.ExtractionStrategy
@@ -245,10 +220,6 @@ namespace iText.Ocr {
         /// Perform OCR using provided path to image (imgPath),
         /// save to file and get text from file.
         /// </summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="input"/>
-        /// <param name="languages"/>
-        /// <returns/>
         protected internal virtual String GetRecognizedTextFromTextFile(TesseractReader tesseractReader, String input
             , IList<String> languages) {
             String result = null;
@@ -271,9 +242,6 @@ namespace iText.Ocr {
         /// Perform OCR using provided path to image (imgPath),
         /// save to file and get text from file.
         /// </summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="input"/>
-        /// <returns/>
         protected internal virtual String GetRecognizedTextFromTextFile(TesseractReader tesseractReader, String input
             ) {
             return GetRecognizedTextFromTextFile(tesseractReader, input, null);
@@ -283,10 +251,6 @@ namespace iText.Ocr {
         /// Perform OCR using provided path to image (imgPath)
         /// and save result to text file.
         /// </summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="txtPath"/>
-        /// <param name="languages"/>
         protected internal virtual void DoOcrAndSaveToTextFile(TesseractReader tesseractReader, String imgPath, String
              txtPath, IList<String> languages) {
             if (languages != null) {
@@ -308,12 +272,6 @@ namespace iText.Ocr {
         /// and save result pdf document to "pdfPath".
         /// (Method is used for compare tool)
         /// </remarks>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="pdfPath"/>
-        /// <param name="languages"/>
-        /// <param name="fontPath"/>
-        /// <param name="color"/>
         protected internal virtual void DoOcrAndSavePdfToPath(TesseractReader tesseractReader, String imgPath, String
              pdfPath, IList<String> languages, String fontPath, Color color) {
             if (languages != null) {
@@ -335,9 +293,7 @@ namespace iText.Ocr {
                     PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath))
                         , pdfWriter);
                     NUnit.Framework.Assert.IsNotNull(doc);
-                    if (!doc.IsClosed()) {
-                        doc.Close();
-                    }
+                    doc.Close();
                 }
             }
             catch (System.IO.IOException e) {
@@ -349,11 +305,6 @@ namespace iText.Ocr {
         /// Perform OCR using provided path to image (imgPath)
         /// and save result pdf document to "pdfPath".
         /// </summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="pdfPath"/>
-        /// <param name="languages"/>
-        /// <param name="color"/>
         protected internal virtual void DoOcrAndSavePdfToPath(TesseractReader tesseractReader, String imgPath, String
              pdfPath, IList<String> languages, Color color) {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, null, color);
@@ -368,45 +319,9 @@ namespace iText.Ocr {
         /// and save result pdf document to "pdfPath".
         /// (Text will be invisible)
         /// </remarks>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="pdfPath"/>
-        /// <param name="languages"/>
-        /// <param name="fontPath"/>
         protected internal virtual void DoOcrAndSavePdfToPath(TesseractReader tesseractReader, String imgPath, String
              pdfPath, IList<String> languages, String fontPath) {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fontPath, null);
-        }
-
-        /// <summary>
-        /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
-        /// </summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="pdfPath"/>
-        /// <param name="fontPath"/>
-        protected internal virtual void DoOcrAndSavePdfToPath(TesseractReader tesseractReader, String imgPath, String
-             pdfPath, String fontPath) {
-            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, null, fontPath, null);
-        }
-
-        /// <summary>
-        /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
-        /// </summary>
-        /// <remarks>
-        /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
-        /// (Method uses default font path)
-        /// </remarks>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="pdfPath"/>
-        /// <param name="languages"/>
-        protected internal virtual void DoOcrAndSavePdfToPath(TesseractReader tesseractReader, String imgPath, String
-             pdfPath, IList<String> languages) {
-            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, null, null);
         }
 
         /// <summary>
@@ -418,17 +333,12 @@ namespace iText.Ocr {
         /// and save result pdf document to "pdfPath".
         /// (Method is used for compare tool)
         /// </remarks>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="pdfPath"/>
         protected internal virtual void DoOcrAndSavePdfToPath(TesseractReader tesseractReader, String imgPath, String
              pdfPath) {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, null, null, null);
         }
 
         /// <summary>Retrieve text from given txt file.</summary>
-        /// <param name="file"/>
-        /// <returns/>
         protected internal virtual String GetTextFromTextFile(FileInfo file) {
             String content = null;
             try {
@@ -442,7 +352,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Delete file using provided path.</summary>
-        /// <param name="filePath"/>
         protected internal virtual void DeleteFile(String filePath) {
             try {
                 if (filePath != null && !String.IsNullOrEmpty(filePath) && File.Exists(System.IO.Path.Combine(filePath))) {
@@ -455,11 +364,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Do OCR for given image and compare result etxt file with expected one.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="imgPath"/>
-        /// <param name="expectedPath"/>
-        /// <param name="languages"/>
-        /// <returns/>
         protected internal virtual bool DoOcrAndCompareTxtFiles(TesseractReader tesseractReader, String imgPath, String
              expectedPath, IList<String> languages) {
             bool result = false;
@@ -476,9 +380,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Compare two text files using provided paths.</summary>
-        /// <param name="expectedFilePath"/>
-        /// <param name="resultFilePath"/>
-        /// <returns/>
         protected internal virtual bool CompareTxtFiles(String expectedFilePath, String resultFilePath) {
             bool areEqual = true;
             try {
@@ -511,22 +412,12 @@ namespace iText.Ocr {
             return areEqual;
         }
 
-        /// <summary>Create pdfWriter using provided ByteArrayOutputStream.</summary>
-        /// <param name="baos"/>
-        /// <returns/>
-        protected internal virtual PdfWriter GetPdfWriter(ByteArrayOutputStream baos) {
-            return new PdfWriter(baos, new WriterProperties().AddUAXmpMetadata());
-        }
-
         /// <summary>Create pdfWriter using provided path to destination file.</summary>
-        /// <param name="pdfPath"/>
-        /// <returns/>
         protected internal virtual PdfWriter GetPdfWriter(String pdfPath) {
             return new PdfWriter(pdfPath, new WriterProperties().AddUAXmpMetadata());
         }
 
         /// <summary>Creates pdf cmyk output intent for tests.</summary>
-        /// <returns/>
         protected internal virtual PdfOutputIntent GetCMYKPdfOutputIntent() {
             Stream @is = new FileStream(defaultCMYKColorProfilePath, FileMode.Open, FileAccess.Read);
             return new PdfOutputIntent("Custom", "", "http://www.color.org", "Coated FOGRA27 (ISO 12647 - 2:2004)", @is
@@ -534,7 +425,6 @@ namespace iText.Ocr {
         }
 
         /// <summary>Creates pdf rgb output intent for tests.</summary>
-        /// <returns/>
         protected internal virtual PdfOutputIntent GetRGBPdfOutputIntent() {
             Stream @is = new FileStream(defaultRGBColorProfilePath, FileMode.Open, FileAccess.Read);
             return new PdfOutputIntent("", "", "", "sRGB IEC61966-2.1", @is);
@@ -548,12 +438,13 @@ namespace iText.Ocr {
         }
 
         /// <summary>Create pdfWriter.</summary>
-        /// <returns/>
         protected internal virtual PdfWriter GetPdfWriter() {
             return new PdfWriter(new ByteArrayOutputStream(), new WriterProperties().AddUAXmpMetadata());
         }
 
         public class ExtractionStrategy : LocationTextExtractionStrategy {
+            private Rectangle imageBBoxRectangle;
+
             private Color fillColor;
 
             private String layerName;
@@ -581,9 +472,11 @@ namespace iText.Ocr {
                 return pdfFont;
             }
 
+            public virtual Rectangle GetImageBBoxRectangle() {
+                return this.imageBBoxRectangle;
+            }
+
             protected override bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
-                String cur = chunk.GetText();
-                String prev = previousChunk.GetText();
                 ITextChunkLocation curLoc = chunk.GetLocation();
                 ITextChunkLocation prevLoc = previousChunk.GetLocation();
                 if (curLoc.GetStartLocation().Equals(curLoc.GetEndLocation()) || prevLoc.GetEndLocation().Equals(prevLoc.GetStartLocation
@@ -595,17 +488,37 @@ namespace iText.Ocr {
             }
 
             public override void EventOccurred(IEventData data, EventType type) {
-                if (EventType.RENDER_TEXT.Equals(type)) {
-                    TextRenderInfo renderInfo = (TextRenderInfo)data;
-                    IList<CanvasTag> tagHierarchy = renderInfo.GetCanvasTagHierarchy();
+                IList<CanvasTag> tagHierarchy = null;
+                if (type.Equals(EventType.RENDER_TEXT)) {
+                    TextRenderInfo textRenderInfo = (TextRenderInfo)data;
+                    tagHierarchy = textRenderInfo.GetCanvasTagHierarchy();
+                }
+                else {
+                    if (type.Equals(EventType.RENDER_IMAGE)) {
+                        ImageRenderInfo imageRenderInfo = (ImageRenderInfo)data;
+                        tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
+                    }
+                }
+                if (tagHierarchy != null) {
                     foreach (CanvasTag tag in tagHierarchy) {
                         PdfDictionary dict = tag.GetProperties();
                         String name = dict.Get(PdfName.Name).ToString();
-                        if (layerName.Equals(name)) {
-                            SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
-                            SetPdfFont(renderInfo.GetGraphicsState().GetFont());
-                            base.EventOccurred(data, type);
-                            break;
+                        if (name.Equals(layerName)) {
+                            if (type.Equals(EventType.RENDER_TEXT)) {
+                                TextRenderInfo renderInfo = (TextRenderInfo)data;
+                                SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
+                                SetPdfFont(renderInfo.GetGraphicsState().GetFont());
+                                base.EventOccurred(data, type);
+                                break;
+                            }
+                            else {
+                                if (type.Equals(EventType.RENDER_IMAGE)) {
+                                    ImageRenderInfo renderInfo = (ImageRenderInfo)data;
+                                    Matrix ctm = renderInfo.GetImageCtm();
+                                    this.imageBBoxRectangle = new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4));
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

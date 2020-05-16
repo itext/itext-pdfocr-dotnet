@@ -10,10 +10,7 @@ namespace iText.Ocr.Pdflayers {
     public abstract class PdfLayersIntegrationTest : AbstractIntegrationTest {
         internal TesseractReader tesseractReader;
 
-        internal String parameter;
-
-        public PdfLayersIntegrationTest(String type) {
-            parameter = type;
+        public PdfLayersIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 
@@ -52,66 +49,59 @@ namespace iText.Ocr.Pdflayers {
 
         [NUnit.Framework.Test]
         public virtual void TestTextFromPdfLayers() {
+            String testName = "testTextFromPdfLayers";
             String path = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testDocumentsDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testDocumentsDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            try {
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-                PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
-                    ));
-                NUnit.Framework.Assert.IsNotNull(doc);
-                IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
-                NUnit.Framework.Assert.AreEqual(2, layers.Count);
-                NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
-                NUnit.Framework.Assert.IsTrue(layers[0].IsOn());
-                NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
-                NUnit.Framework.Assert.IsTrue(layers[1].IsOn());
-                doc.Close();
-                // Text layer should contain all text
-                // Image layer shouldn't contain any text
-                String expectedOutput = "619121";
-                NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "Text Layer", 1));
-                NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "Image Layer", 1));
-            }
-            finally {
-                DeleteFile(pdfPath);
-            }
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
+                ));
+            NUnit.Framework.Assert.IsNotNull(doc);
+            IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
+            NUnit.Framework.Assert.AreEqual(2, layers.Count);
+            NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.IsTrue(layers[0].IsOn());
+            NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.IsTrue(layers[1].IsOn());
+            doc.Close();
+            // Text layer should contain all text
+            // Image layer shouldn't contain any text
+            String expectedOutput = "619121";
+            NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "Text Layer", 1));
+            NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "Image Layer", 1));
         }
 
         [NUnit.Framework.Test]
         public virtual void TestTextFromPdfLayersFromMultiPageTiff() {
+            String testName = "testTextFromPdfLayersFromMultiPageTiff";
             bool preprocess = tesseractReader.IsPreprocessingImages();
             String path = testImagesDirectory + "multipage.tiff";
-            String pdfPath = testDocumentsDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testDocumentsDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            try {
-                tesseractReader.SetPreprocessingImages(false);
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-                PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
-                    ));
-                NUnit.Framework.Assert.IsNotNull(doc);
-                int numOfPages = doc.GetNumberOfPages();
-                IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
-                NUnit.Framework.Assert.AreEqual(numOfPages * 2, layers.Count);
-                NUnit.Framework.Assert.AreEqual("Image Layer", layers[2].GetPdfObject().Get(PdfName.Name).ToString());
-                NUnit.Framework.Assert.AreEqual("Text Layer", layers[3].GetPdfObject().Get(PdfName.Name).ToString());
-                doc.Close();
-                // Text layer should contain all text
-                // Image layer shouldn't contain any text
-                String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
-                NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "Text Layer", 5));
-                NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "Image Layer", 5));
-                NUnit.Framework.Assert.IsFalse(tesseractReader.IsPreprocessingImages());
-            }
-            finally {
-                DeleteFile(pdfPath);
-                tesseractReader.SetPreprocessingImages(preprocess);
-            }
+            tesseractReader.SetPreprocessingImages(false);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
+                ));
+            NUnit.Framework.Assert.IsNotNull(doc);
+            int numOfPages = doc.GetNumberOfPages();
+            IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
+            NUnit.Framework.Assert.AreEqual(numOfPages * 2, layers.Count);
+            NUnit.Framework.Assert.AreEqual("Image Layer", layers[2].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.AreEqual("Text Layer", layers[3].GetPdfObject().Get(PdfName.Name).ToString());
+            doc.Close();
+            // Text layer should contain all text
+            // Image layer shouldn't contain any text
+            String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
+            NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "Text Layer", 5));
+            NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "Image Layer", 5));
+            NUnit.Framework.Assert.IsFalse(tesseractReader.IsPreprocessingImages());
+            tesseractReader.SetPreprocessingImages(preprocess);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestTextFromPdfLayersFromMultiPagePdf() {
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String testName = "testTextFromPdfLayersFromMultiPagePdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(testImagesDirectory + "german_01.jpg"), new FileInfo
                 (testImagesDirectory + "noisy_01.png"), new FileInfo(testImagesDirectory + "numbers_01.jpg"), new FileInfo
                 (testImagesDirectory + "example_04.png"));
@@ -133,7 +123,6 @@ namespace iText.Ocr.Pdflayers {
             String expectedOutput = "619121";
             NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "text", 3));
             NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "image", 3));
-            DeleteFile(pdfPath);
         }
     }
 }

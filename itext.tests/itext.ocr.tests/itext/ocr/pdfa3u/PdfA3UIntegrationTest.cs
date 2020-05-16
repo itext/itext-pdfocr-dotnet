@@ -15,19 +15,17 @@ namespace iText.Ocr.Pdfa3u {
     public abstract class PdfA3UIntegrationTest : AbstractIntegrationTest {
         internal TesseractReader tesseractReader;
 
-        internal String parameter;
-
-        public PdfA3UIntegrationTest(String type) {
-            parameter = type;
+        public PdfA3UIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestPdfA3uWithNullIntent() {
+            String testName = "testPdfA3uWithNullIntent";
             String imgPath = testImagesDirectory + "numbers_01.jpg";
             FileInfo file = new FileInfo(imgPath);
             String expected = "619121";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetTextColor(DeviceCmyk.BLACK);
             properties.SetScaleMode(ScaleMode.SCALE_TO_FIT);
@@ -37,7 +35,6 @@ namespace iText.Ocr.Pdfa3u {
             doc.Close();
             String result = GetTextFromPdfLayer(pdfPath, "Text Layer", 1);
             NUnit.Framework.Assert.AreEqual(expected, result);
-            DeleteFile(pdfPath);
         }
 
         [NUnit.Framework.Test]
@@ -57,8 +54,9 @@ namespace iText.Ocr.Pdfa3u {
 
         [NUnit.Framework.Test]
         public virtual void TestDefaultFontInPdf() {
+            String testName = "testDefaultFontInPdf";
             String path = testImagesDirectory + "example_01.BMP";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb
                 .BLACK));
@@ -71,18 +69,18 @@ namespace iText.Ocr.Pdfa3u {
                 );
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
+            pdfDocument.Close();
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
             NUnit.Framework.Assert.IsTrue(fontName.Contains("LiberationSans"));
             NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
-            pdfDocument.Close();
-            DeleteFile(pdfPath);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestCustomFontInPdf() {
+            String testName = "testDefaultFontInPdf";
             String imgPath = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(imgPath);
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetFontPath(freeSansFontPath
                 ));
@@ -95,20 +93,20 @@ namespace iText.Ocr.Pdfa3u {
                 );
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
+            pdfDocument.Close();
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
             NUnit.Framework.Assert.IsTrue(fontName.Contains("FreeSans"));
             NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
             NUnit.Framework.Assert.AreEqual(freeSansFontPath, pdfRenderer.GetOcrPdfCreatorProperties().GetFontPath());
-            pdfDocument.Close();
-            DeleteFile(pdfPath);
         }
 
         [LogMessage(iText.IO.IOException.TypeOfFontIsNotRecognized, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidCustomFontInPdf() {
+            String testName = "testInvalidCustomFontInPdf";
             String path = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetFontPath(path)
                 );
@@ -121,12 +119,11 @@ namespace iText.Ocr.Pdfa3u {
                 );
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
+            pdfDocument.Close();
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
             NUnit.Framework.Assert.IsTrue(fontName.Contains("LiberationSans"));
             NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
-            pdfDocument.Close();
-            DeleteFile(pdfPath);
         }
 
         [LogMessage(LogMessageConstant.CannotReadProvidedFont, Count = 1)]
@@ -143,8 +140,9 @@ namespace iText.Ocr.Pdfa3u {
 
         [NUnit.Framework.Test]
         public virtual void TestPdfDefaultMetadata() {
+            String testName = "testPdfDefaultMetadata";
             String path = testImagesDirectory + "example_04.png";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb
                 .BLACK));
@@ -158,14 +156,14 @@ namespace iText.Ocr.Pdfa3u {
             NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
                 ());
             pdfDocument.Close();
-            DeleteFile(pdfPath);
         }
 
         [NUnit.Framework.Test]
         public virtual void ComparePdfA3uCMYKColorSpaceSpanishJPG() {
+            String testName = "comparePdfA3uCMYKColorSpaceSpanishJPG";
             String filename = "numbers_01";
             String expectedPdfPath = testDocumentsDirectory + filename + "_a3u.pdf";
-            String resultPdfPath = testDocumentsDirectory + filename + "_a3u_created.pdf";
+            String resultPdfPath = testDocumentsDirectory + filename + "_" + testName + "_a3u_created.pdf";
             try {
                 PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
                 tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
@@ -178,7 +176,6 @@ namespace iText.Ocr.Pdfa3u {
                 new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
             }
             finally {
-                DeleteFile(resultPdfPath);
                 NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.BY_WORDS, tesseractReader.GetTextPositioning());
                 tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
@@ -186,51 +183,43 @@ namespace iText.Ocr.Pdfa3u {
 
         [NUnit.Framework.Test]
         public virtual void ComparePdfA3uRGBSpanishJPG() {
+            String testName = "comparePdfA3uRGBSpanishJPG";
             String filename = "spanish_01";
             String expectedPdfPath = testDocumentsDirectory + filename + "_a3u.pdf";
-            String resultPdfPath = testDocumentsDirectory + filename + "_a3u_created.pdf";
+            String resultPdfPath = testDocumentsDirectory + filename + "_" + testName + "_a3u_created.pdf";
             tesseractReader.SetPathToTessData(langTessDataDirectory);
             tesseractReader.SetLanguages(JavaCollectionsUtil.SingletonList<String>("spa"));
-            try {
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb
-                    .BLACK));
-                PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
-                     + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetRGBPdfOutputIntent());
-                NUnit.Framework.Assert.IsNotNull(doc);
-                doc.Close();
-                new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
-            }
-            finally {
-                DeleteFile(resultPdfPath);
-            }
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb
+                .BLACK));
+            PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
+                 + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetRGBPdfOutputIntent());
+            NUnit.Framework.Assert.IsNotNull(doc);
+            doc.Close();
+            new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
         }
 
         [NUnit.Framework.Test]
         public virtual void TestPdfCustomMetadata() {
+            String testName = "testPdfCustomMetadata";
             String path = testImagesDirectory + "numbers_02.jpg";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            try {
-                OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
-                String locale = "nl-BE";
-                properties.SetPdfLang(locale);
-                String title = "Title";
-                properties.SetTitle(title);
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties(properties));
-                PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
-                    ), GetCMYKPdfOutputIntent());
-                NUnit.Framework.Assert.IsNotNull(doc);
-                doc.Close();
-                PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-                NUnit.Framework.Assert.AreEqual(locale, pdfDocument.GetCatalog().GetLang().ToString());
-                NUnit.Framework.Assert.AreEqual(title, pdfDocument.GetDocumentInfo().GetTitle());
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
-                    ());
-                pdfDocument.Close();
-            }
-            finally {
-                DeleteFile(pdfPath);
-            }
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            String locale = "nl-BE";
+            properties.SetPdfLang(locale);
+            String title = "Title";
+            properties.SetTitle(title);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties(properties));
+            PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
+                ), GetCMYKPdfOutputIntent());
+            NUnit.Framework.Assert.IsNotNull(doc);
+            doc.Close();
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
+            NUnit.Framework.Assert.AreEqual(locale, pdfDocument.GetCatalog().GetLang().ToString());
+            NUnit.Framework.Assert.AreEqual(title, pdfDocument.GetDocumentInfo().GetTitle());
+            NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
+                ());
+            pdfDocument.Close();
         }
     }
 }

@@ -10,10 +10,12 @@ namespace iText.Ocr.Imageformats {
     public abstract class ImageFormatIntegrationTest : AbstractIntegrationTest {
         internal TesseractReader tesseractReader;
 
-        internal String parameter;
+        [NUnit.Framework.SetUp]
+        public virtual void RestoreTesseractReaderPreprocessingImagesState() {
+            tesseractReader.SetPreprocessingImages(true);
+        }
 
-        public ImageFormatIntegrationTest(String type) {
-            parameter = type;
+        public ImageFormatIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 
@@ -40,20 +42,13 @@ namespace iText.Ocr.Imageformats {
 
         [NUnit.Framework.Test]
         public virtual void CompareJFIF() {
-            bool preprocess = tesseractReader.IsPreprocessingImages();
+            String testName = "compareJFIF";
             String filename = "example_02";
             String expectedPdfPath = testDocumentsDirectory + filename + ".pdf";
-            String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
+            String resultPdfPath = testDocumentsDirectory + filename + "_" + testName + "_created.pdf";
             DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".JFIF", resultPdfPath, null, DeviceCmyk
                 .MAGENTA);
-            try {
-                new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
-            }
-            finally {
-                DeleteFile(resultPdfPath);
-                tesseractReader.SetPreprocessingImages(preprocess);
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
-            }
+            new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
         }
 
         [NUnit.Framework.Test]
@@ -112,7 +107,6 @@ namespace iText.Ocr.Imageformats {
             tesseractReader.SetPreprocessingImages(false);
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path));
             NUnit.Framework.Assert.AreEqual(realOutputHocr, expectedOutput);
-            tesseractReader.SetPreprocessingImages(true);
         }
 
         [NUnit.Framework.Test]
@@ -157,12 +151,10 @@ namespace iText.Ocr.Imageformats {
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path), JavaCollectionsUtil.SingletonList
                 <String>("eng"));
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
-            tesseractReader.SetPreprocessingImages(true);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestInputMultipagesTIFFWithPreprocessing() {
-            bool preprocess = tesseractReader.IsPreprocessingImages();
             String path = testImagesDirectory + "multipage.tiff";
             String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
             FileInfo file = new FileInfo(path);
@@ -170,12 +162,10 @@ namespace iText.Ocr.Imageformats {
                 ("eng"));
             NUnit.Framework.Assert.IsNotNull(realOutputHocr);
             NUnit.Framework.Assert.AreEqual(expectedOutput, realOutputHocr);
-            tesseractReader.SetPreprocessingImages(preprocess);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestInputMultipagesTIFFWithoutPreprocessing() {
-            bool preprocess = tesseractReader.IsPreprocessingImages();
             String path = testImagesDirectory + "multipage.tiff";
             String expectedOutput = "Multipage\nTIFF\nExample\nPage 3";
             FileInfo file = new FileInfo(path);
@@ -184,7 +174,6 @@ namespace iText.Ocr.Imageformats {
                 ("eng"));
             NUnit.Framework.Assert.IsNotNull(realOutputHocr);
             NUnit.Framework.Assert.AreEqual(expectedOutput, realOutputHocr);
-            tesseractReader.SetPreprocessingImages(preprocess);
         }
 
         [LogMessage(LogMessageConstant.CannotReadInputImage, Count = 1)]
@@ -192,9 +181,7 @@ namespace iText.Ocr.Imageformats {
         public virtual void TestInputWrongFormat() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "example.txt");
-                String realOutput = GetTextFromPdf(tesseractReader, file);
-                NUnit.Framework.Assert.IsNotNull(realOutput);
-                NUnit.Framework.Assert.AreEqual("", realOutput);
+                GetTextFromPdf(tesseractReader, file);
             }
             , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.IncorrectInputImageFormat, "txt")))
 ;
@@ -202,18 +189,14 @@ namespace iText.Ocr.Imageformats {
 
         [NUnit.Framework.Test]
         public virtual void CompareNumbersJPG() {
+            String testName = "compareNumbersJPG";
             String filename = "numbers_01";
             String expectedPdfPath = testDocumentsDirectory + filename + ".pdf";
-            String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
+            String resultPdfPath = testDocumentsDirectory + filename + "_" + testName + "_created.pdf";
             tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
             DoOcrAndSavePdfToPath(tesseractReader, testImagesDirectory + filename + ".jpg", resultPdfPath);
-            try {
-                new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
-            }
-            finally {
-                DeleteFile(resultPdfPath);
-                tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
-            }
+            tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
+            new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
         }
     }
 }

@@ -10,7 +10,9 @@ namespace iText.Ocr.Tessdata {
     public abstract class TessDataIntegrationTest : AbstractIntegrationTest {
         internal TesseractReader tesseractReader;
 
-        internal String parameter;
+        internal String testFileTypeName;
+
+        private bool isExecutableReaderType;
 
         [NUnit.Framework.SetUp]
         public virtual void InitTessDataPath() {
@@ -20,8 +22,14 @@ namespace iText.Ocr.Tessdata {
             tesseractReader.SetUserWords("eng", new List<String>());
         }
 
-        public TessDataIntegrationTest(String type) {
-            parameter = type;
+        public TessDataIntegrationTest(AbstractIntegrationTest.ReaderType type) {
+            isExecutableReaderType = type.Equals(AbstractIntegrationTest.ReaderType.EXECUTABLE);
+            if (isExecutableReaderType) {
+                testFileTypeName = "executable";
+            }
+            else {
+                testFileTypeName = "lib";
+            }
             tesseractReader = GetTesseractReader(type);
         }
 
@@ -30,7 +38,7 @@ namespace iText.Ocr.Tessdata {
             String imgPath = testImagesDirectory + "greek_01.jpg";
             FileInfo file = new FileInfo(imgPath);
             String expected = "ΟΜΟΛΟΓΙΑ";
-            if ("executable".Equals(parameter)) {
+            if (isExecutableReaderType) {
                 tesseractReader.SetPreprocessingImages(false);
             }
             String real = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("ell"), notoSansFontPath);
@@ -67,12 +75,12 @@ namespace iText.Ocr.Tessdata {
 
         [NUnit.Framework.Test]
         public virtual void CompareSpanishPNG() {
-            bool preprocess = tesseractReader.IsPreprocessingImages();
+            String testName = "compareSpanishPNG";
             String filename = "scanned_spa_01";
-            String expectedPdfPath = testDocumentsDirectory + filename + parameter + ".pdf";
-            String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
+            String expectedPdfPath = testDocumentsDirectory + filename + testFileTypeName + ".pdf";
+            String resultPdfPath = testDocumentsDirectory + filename + "_" + testName + "_created.pdf";
             IList<String> languages = JavaUtil.ArraysAsList("spa", "spa_old");
-            if ("executable".Equals(parameter)) {
+            if (isExecutableReaderType) {
                 tesseractReader = new TesseractExecutableReader(GetTesseractDirectory(), GetTessDataDirectory(), languages
                     );
                 tesseractReader.SetPreprocessingImages(false);
@@ -88,9 +96,7 @@ namespace iText.Ocr.Tessdata {
                 new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
             }
             finally {
-                DeleteFile(resultPdfPath);
                 NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.BY_WORDS, tesseractReader.GetTextPositioning());
-                tesseractReader.SetPreprocessingImages(preprocess);
                 tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }
         }
@@ -99,7 +105,7 @@ namespace iText.Ocr.Tessdata {
         public virtual void TextGreekOutputFromTxtFile() {
             String imgPath = testImagesDirectory + "greek_01.jpg";
             String expected = "ΟΜΟΛΟΓΙΑ";
-            if ("executable".Equals(parameter)) {
+            if (isExecutableReaderType) {
                 tesseractReader.SetPreprocessingImages(false);
             }
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
@@ -150,18 +156,21 @@ namespace iText.Ocr.Tessdata {
             NUnit.Framework.Assert.IsTrue(result.StartsWith(expected));
             // incorrect result when languages are not specified
             // or languages were specified in the wrong order
-            NUnit.Framework.Assert.AreNotEqual(expected, GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
-                .SingletonList<String>("eng")));
-            NUnit.Framework.Assert.AreNotEqual(expected, GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil
-                .SingletonList<String>("spa")));
-            NUnit.Framework.Assert.AreNotEqual(expected, GetRecognizedTextFromTextFile(tesseractReader, imgPath, new List
-                <String>()));
+            String engResult = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList
+                <String>("eng"));
+            NUnit.Framework.Assert.IsFalse(engResult.StartsWith(expected));
+            String spaResult = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList
+                <String>("spa"));
+            NUnit.Framework.Assert.IsFalse(spaResult.StartsWith(expected));
+            String langNotSpecifiedResult = GetRecognizedTextFromTextFile(tesseractReader, imgPath, new List<String>()
+                );
+            NUnit.Framework.Assert.IsFalse(langNotSpecifiedResult.StartsWith(expected));
         }
 
         [NUnit.Framework.Test]
         public virtual void TestGermanAndCompareTxtFiles() {
             String imgPath = testImagesDirectory + "german_01.jpg";
-            String expectedTxt = testDocumentsDirectory + "german_01" + parameter + ".txt";
+            String expectedTxt = testDocumentsDirectory + "german_01" + testFileTypeName + ".txt";
             bool result = DoOcrAndCompareTxtFiles(tesseractReader, imgPath, expectedTxt, JavaCollectionsUtil.SingletonList
                 <String>("deu"));
             NUnit.Framework.Assert.IsTrue(result);
@@ -170,7 +179,7 @@ namespace iText.Ocr.Tessdata {
         [NUnit.Framework.Test]
         public virtual void TestMultipageTiffAndCompareTxtFiles() {
             String imgPath = testImagesDirectory + "multipage.tiff";
-            String expectedTxt = testDocumentsDirectory + "multipage_" + parameter + ".txt";
+            String expectedTxt = testDocumentsDirectory + "multipage_" + testFileTypeName + ".txt";
             bool result = DoOcrAndCompareTxtFiles(tesseractReader, imgPath, expectedTxt, JavaCollectionsUtil.SingletonList
                 <String>("eng"));
             NUnit.Framework.Assert.IsTrue(result);
@@ -231,9 +240,10 @@ namespace iText.Ocr.Tessdata {
 
         [NUnit.Framework.Test]
         public virtual void CompareMultiLangImage() {
+            String testName = "compareMultiLangImage";
             String filename = "multilang";
-            String expectedPdfPath = testDocumentsDirectory + filename + "_" + parameter + ".pdf";
-            String resultPdfPath = testDocumentsDirectory + filename + "_created.pdf";
+            String expectedPdfPath = testDocumentsDirectory + filename + "_" + testFileTypeName + ".pdf";
+            String resultPdfPath = testDocumentsDirectory + filename + "_" + testName + "_created.pdf";
             try {
                 tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_WORDS);
                 tesseractReader.SetPathToTessData(GetTessDataDirectory());
@@ -242,7 +252,6 @@ namespace iText.Ocr.Tessdata {
                 new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, testDocumentsDirectory, "diff_");
             }
             finally {
-                DeleteFile(resultPdfPath);
                 NUnit.Framework.Assert.AreEqual(IOcrReader.TextPositioning.BY_WORDS, tesseractReader.GetTextPositioning());
                 tesseractReader.SetTextPositioning(IOcrReader.TextPositioning.BY_LINES);
             }

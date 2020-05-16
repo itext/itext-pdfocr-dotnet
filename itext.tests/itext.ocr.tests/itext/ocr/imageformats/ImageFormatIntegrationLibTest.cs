@@ -1,7 +1,9 @@
+using iText.Ocr;
+
 namespace iText.Ocr.Imageformats {
     public class ImageFormatIntegrationLibTest : ImageFormatIntegrationTest {
         public ImageFormatIntegrationLibTest()
-            : base("lib") {
+            : base(AbstractIntegrationTest.ReaderType.LIB) {
         }
     }
 }

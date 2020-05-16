@@ -19,46 +19,39 @@ namespace iText.Ocr.General {
 
         internal TesseractReader tesseractReader;
 
-        internal String parameter;
-
         [NUnit.Framework.SetUp]
         public virtual void InitTessDataPath() {
             tesseractReader.SetPathToTessData(GetTessDataDirectory());
             tesseractReader.SetLanguages(new List<String>());
         }
 
-        public BasicTesseractIntegrationTest(String type) {
-            parameter = type;
+        public BasicTesseractIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestFontColorInMultiPagePdf() {
+            String testName = "testFontColorInMultiPagePdf";
             String path = testImagesDirectory + "multipage.tiff";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            try {
-                OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
-                ocrPdfCreatorProperties.SetTextLayerName("Text1");
-                Color color = DeviceCmyk.MAGENTA;
-                ocrPdfCreatorProperties.SetTextColor(color);
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, ocrPdfCreatorProperties);
-                PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
-                    ));
-                NUnit.Framework.Assert.IsNotNull(doc);
-                doc.Close();
-                PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-                AbstractIntegrationTest.ExtractionStrategy strategy = new AbstractIntegrationTest.ExtractionStrategy("Text1"
-                    );
-                PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
-                processor.ProcessPageContent(pdfDocument.GetPage(1));
-                Color fillColor = strategy.GetFillColor();
-                NUnit.Framework.Assert.AreEqual(fillColor, color);
-                pdfDocument.Close();
-            }
-            finally {
-                DeleteFile(pdfPath);
-            }
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetTextLayerName("Text1");
+            Color color = DeviceCmyk.MAGENTA;
+            ocrPdfCreatorProperties.SetTextColor(color);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, ocrPdfCreatorProperties);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
+                ));
+            NUnit.Framework.Assert.IsNotNull(doc);
+            doc.Close();
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
+            AbstractIntegrationTest.ExtractionStrategy strategy = new AbstractIntegrationTest.ExtractionStrategy("Text1"
+                );
+            PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
+            processor.ProcessPageContent(pdfDocument.GetPage(1));
+            Color fillColor = strategy.GetFillColor();
+            NUnit.Framework.Assert.AreEqual(fillColor, color);
+            pdfDocument.Close();
         }
 
         [NUnit.Framework.Test]
@@ -68,77 +61,65 @@ namespace iText.Ocr.General {
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
             PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter());
             NUnit.Framework.Assert.IsNotNull(doc);
-            ImageData imageData = null;
-            try {
-                imageData = ImageDataFactory.Create(file.FullName);
-            }
-            catch (UriFormatException e) {
-                LOGGER.Error(e.Message);
-            }
-            if (imageData != null) {
-                float imageWidth = GetPoints(imageData.GetWidth());
-                float imageHeight = GetPoints(imageData.GetHeight());
-                float realWidth = doc.GetFirstPage().GetPageSize().GetWidth();
-                float realHeight = doc.GetFirstPage().GetPageSize().GetHeight();
-                NUnit.Framework.Assert.AreEqual(imageWidth, realWidth, delta);
-                NUnit.Framework.Assert.AreEqual(imageHeight, realHeight, delta);
-            }
-            if (!doc.IsClosed()) {
-                doc.Close();
-            }
+            ImageData imageData = ImageDataFactory.Create(file.FullName);
+            float imageWidth = GetPoints(imageData.GetWidth());
+            float imageHeight = GetPoints(imageData.GetHeight());
+            float realWidth = doc.GetFirstPage().GetPageSize().GetWidth();
+            float realHeight = doc.GetFirstPage().GetPageSize().GetHeight();
+            NUnit.Framework.Assert.AreEqual(imageWidth, realWidth, delta);
+            NUnit.Framework.Assert.AreEqual(imageHeight, realHeight, delta);
+            doc.Close();
         }
 
         [NUnit.Framework.Test]
         public virtual void TestScaleWidthMode() {
-            String filePath = testImagesDirectory + "numbers_01.jpg";
-            FileInfo file = new FileInfo(filePath);
-            ImageData originalImageData = null;
-            try {
-                originalImageData = ImageDataFactory.Create(file.FullName);
-            }
-            catch (UriFormatException e) {
-                LOGGER.Error(e.Message);
-            }
-            float pageWidthPt = 500f;
-            float pageHeightPt = 500f;
+            String testName = "testScaleWidthMode";
+            String srcPath = testImagesDirectory + "numbers_01.jpg";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
+            FileInfo file = new FileInfo(srcPath);
+            float pageWidthPt = 400f;
+            float pageHeightPt = 400f;
             Rectangle pageSize = new Rectangle(pageWidthPt, pageHeightPt);
-            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, ScaleMode.SCALE_WIDTH, pageSize
-                );
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetScaleMode(ScaleMode.SCALE_WIDTH);
+            properties.SetPageSize(pageSize);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
+                ));
+            doc.Close();
+            Rectangle rect = GetImageBBoxRectangleFromPdf(pdfPath);
+            ImageData originalImageData = ImageDataFactory.Create(file.FullName);
             // page size should be equal to the result image size
             // result image height should be equal to the value that
             // was set as page height result image width should be scaled
             // proportionally according to the provided image height
             // and original image size
-            if (originalImageData != null) {
-                float resultPageWidth = pageSize.GetWidth();
-                float resultPageHeight = pageSize.GetHeight();
-                NUnit.Framework.Assert.AreEqual(resultPageWidth, pageWidthPt, delta);
-                NUnit.Framework.Assert.AreEqual(resultPageHeight, pageHeightPt, delta);
-            }
+            NUnit.Framework.Assert.AreEqual(pageHeightPt, rect.GetHeight(), delta);
+            NUnit.Framework.Assert.AreEqual(originalImageData.GetWidth() / originalImageData.GetHeight(), rect.GetWidth
+                () / rect.GetHeight(), delta);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestScaleHeightMode() {
-            String filePath = testImagesDirectory + "numbers_01.jpg";
-            FileInfo file = new FileInfo(filePath);
-            ImageData originalImageData = null;
-            try {
-                originalImageData = ImageDataFactory.Create(file.FullName);
-            }
-            catch (UriFormatException e) {
-                LOGGER.Error(e.Message);
-            }
-            float pageWidthPt = 500f;
-            float pageHeightPt = 500f;
+            String testName = "testScaleHeightMode";
+            String srcPath = testImagesDirectory + "numbers_01.jpg";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
+            FileInfo file = new FileInfo(srcPath);
+            float pageWidthPt = 400f;
+            float pageHeightPt = 400f;
             Rectangle pageSize = new Rectangle(pageWidthPt, pageHeightPt);
-            iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, ScaleMode.SCALE_HEIGHT, pageSize
-                );
-            if (originalImageData != null) {
-                float resultPageWidth = pageSize.GetWidth();
-                float resultPageHeight = pageSize.GetHeight();
-                NUnit.Framework.Assert.AreEqual(resultPageWidth, pageWidthPt, delta);
-                NUnit.Framework.Assert.AreEqual(resultPageHeight, pageHeightPt, delta);
-            }
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetScaleMode(ScaleMode.SCALE_HEIGHT);
+            properties.SetPageSize(pageSize);
+            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
+            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
+                ));
+            doc.Close();
+            Rectangle rect = GetImageBBoxRectangleFromPdf(pdfPath);
+            ImageData originalImageData = ImageDataFactory.Create(file.FullName);
+            NUnit.Framework.Assert.AreEqual(pageWidthPt, rect.GetWidth(), delta);
+            NUnit.Framework.Assert.AreEqual(originalImageData.GetWidth() / originalImageData.GetHeight(), rect.GetWidth
+                () / rect.GetHeight(), delta);
         }
 
         [NUnit.Framework.Test]
@@ -168,8 +149,9 @@ namespace iText.Ocr.General {
 
         [NUnit.Framework.Test]
         public virtual void TestFontColor() {
+            String testName = "testFontColor";
             String path = testImagesDirectory + "numbers_01.jpg";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetTextLayerName("Text1");
@@ -185,32 +167,22 @@ namespace iText.Ocr.General {
                 );
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
-            try {
-                Color fillColor = strategy.GetFillColor();
-                NUnit.Framework.Assert.AreEqual(color, fillColor);
-            }
-            finally {
-                pdfDocument.Close();
-                DeleteFile(pdfPath);
-            }
+            pdfDocument.Close();
+            Color fillColor = strategy.GetFillColor();
+            NUnit.Framework.Assert.AreEqual(color, fillColor);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestImageWithoutText() {
+            String testName = "testImageWithoutText";
             String filePath = testImagesDirectory + "pantone_blue.jpg";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(filePath);
             PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
             PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), new PdfWriter(pdfPath
                 ));
             NUnit.Framework.Assert.IsNotNull(doc);
-            ImageData imageData = null;
-            try {
-                imageData = ImageDataFactory.Create(file.FullName);
-            }
-            catch (UriFormatException e) {
-                LOGGER.Error(e.Message);
-            }
+            ImageData imageData = ImageDataFactory.Create(file.FullName);
             PageSize defaultPageSize = PageSize.A4;
             iText.Layout.Element.Image resultImage = GetImageFromPdf(tesseractReader, file, ScaleMode.SCALE_TO_FIT, defaultPageSize
                 );
@@ -229,18 +201,14 @@ namespace iText.Ocr.General {
             Assert.assertEquals(defaultPageSize.getHeight(), realHeight, delta);
             Assert.assertEquals(defaultPageSize.getWidth(), realWidth, delta);
             }*/
-            if (!doc.IsClosed()) {
-                doc.Close();
-            }
             doc.Close();
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             AbstractIntegrationTest.ExtractionStrategy strategy = new AbstractIntegrationTest.ExtractionStrategy("Text Layer"
                 );
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
-            NUnit.Framework.Assert.AreEqual("", strategy.GetResultantText());
             pdfDocument.Close();
-            DeleteFile(pdfPath);
+            NUnit.Framework.Assert.AreEqual("", strategy.GetResultantText());
         }
 
         [LogMessage(LogMessageConstant.CannotReadInputImage, Count = 1)]
@@ -332,9 +300,10 @@ namespace iText.Ocr.General {
         [LogMessage(LogMessageConstant.CannotReadProvidedFont, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidFont() {
-            String path = testImagesDirectory + "numbers_01.jpg";
+            String testName = "testImageWithoutText";
             String expectedOutput = "619121";
-            String pdfPath = testImagesDirectory + Guid.NewGuid().ToString() + ".pdf";
+            String path = testImagesDirectory + "numbers_01.jpg";
+            String pdfPath = testImagesDirectory + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetFontPath("font.ttf");
@@ -348,7 +317,6 @@ namespace iText.Ocr.General {
             NUnit.Framework.Assert.AreEqual(expectedOutput, result);
             NUnit.Framework.Assert.AreEqual(ScaleMode.SCALE_TO_FIT, pdfRenderer.GetOcrPdfCreatorProperties().GetScaleMode
                 ());
-            DeleteFile(pdfPath);
         }
 
         [LogMessage(OcrException.IncorrectLanguage, Count = 1)]
@@ -424,8 +392,6 @@ namespace iText.Ocr.General {
         }
 
         /// <summary>Parse text from image and compare with expected.</summary>
-        /// <param name="path"/>
-        /// <param name="expectedOutput"/>
         private void TestImageOcrText(TesseractReader tesseractReader, String path, String expectedOutput) {
             FileInfo ex1 = new FileInfo(path);
             String realOutputHocr = GetTextUsingTesseractFromImage(tesseractReader, ex1);
@@ -433,9 +399,6 @@ namespace iText.Ocr.General {
         }
 
         /// <summary>Parse text from given image using tesseract.</summary>
-        /// <param name="tesseractReader"/>
-        /// <param name="file"/>
-        /// <returns/>
         private String GetTextUsingTesseractFromImage(IOcrReader tesseractReader, FileInfo file) {
             int page = 1;
             IDictionary<int, IList<TextInfo>> data = tesseractReader.DoImageOcr(file);
