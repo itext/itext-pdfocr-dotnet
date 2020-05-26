@@ -1,0 +1,32 @@
+using System.IO;
+using iText.Pdfocr.Tesseract4;
+using iText.Test.Attributes;
+
+namespace iText.Pdfocr {
+    public class TesseractExecutableIntegrationTest : AbstractIntegrationTest {
+        [LogMessage(Tesseract4OcrException.CannotFindPathToTesseractExecutable, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestNullPathToTesseractExecutable() {
+            NUnit.Framework.Assert.That(() =>  {
+                FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
+                Tesseract4ExecutableOcrEngine tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
+                    ());
+                tesseractExecutableReader.SetPathToExecutable(null);
+                GetTextFromPdf(tesseractExecutableReader, file);
+            }
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CannotFindPathToTesseractExecutable))
+;
+        }
+
+        [LogMessage(Tesseract4OcrException.CannotFindPathToTesseractExecutable, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestEmptyPathToTesseractExecutable() {
+            NUnit.Framework.Assert.That(() =>  {
+                FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
+                GetTextFromPdf(new Tesseract4ExecutableOcrEngine("", new Tesseract4OcrEngineProperties()), file);
+            }
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CannotFindPathToTesseractExecutable))
+;
+        }
+    }
+}

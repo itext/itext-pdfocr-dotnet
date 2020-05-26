@@ -1,0 +1,5 @@
+Please notice that the following fonts and libraries are used with the mentioned below licenses.
+
+* Tesseract.dll, v4.0.2.11 - Apache License, Version 2.0
+* liblept1760.dll, v4.0.2.11 - Apache License, Version 2.0
+* libtesseract400.dll, v4.0.2.11 - Apache License, Version 2.0
