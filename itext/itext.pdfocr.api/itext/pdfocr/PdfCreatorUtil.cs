@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Common.Logging;
 using iText.IO.Image;
+using iText.IO.Source;
 using iText.IO.Util;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
@@ -102,7 +103,7 @@ namespace iText.Pdfocr {
             if (index > 0) {
                 ext = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index - 1);
                 if ("tiff".Equals(ext.ToLowerInvariant()) || "tif".Equals(ext.ToLowerInvariant())) {
-                    int tiffPages = ImageUtil.GetNumberOfPageTiff(inputImage);
+                    int tiffPages = GetNumberOfPageTiff(inputImage);
                     for (int page = 0; page < tiffPages; page++) {
                         byte[] bytes = System.IO.File.ReadAllBytes(inputImage.FullName);
                         ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
@@ -199,6 +200,20 @@ namespace iText.Pdfocr {
         /// <returns>result value in points</returns>
         internal static float GetPoints(float pixels) {
             return pixels * PX_TO_PT;
+        }
+
+        /// <summary>Counts number of pages in the provided tiff image.</summary>
+        /// <param name="inputImage">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <returns>number of pages in the provided TIFF image</returns>
+        private static int GetNumberOfPageTiff(FileInfo inputImage) {
+            RandomAccessFileOrArray raf = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateBestSource
+                (inputImage.FullName));
+            int numOfPages = TiffImageData.GetNumberOfPages(raf);
+            raf.Close();
+            return numOfPages;
         }
     }
 }

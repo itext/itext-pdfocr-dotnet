@@ -48,7 +48,7 @@ namespace iText.Pdfocr {
         /// Selected
         /// <see cref="IOcrEngine"/>.
         /// </summary>
-        private IOcrEngine ocrReader;
+        private IOcrEngine ocrEngine;
 
         /// <summary>Set of properties.</summary>
         private OcrPdfCreatorProperties ocrPdfCreatorProperties;
@@ -58,13 +58,13 @@ namespace iText.Pdfocr {
         /// <see cref="PdfRenderer"/>
         /// instance.
         /// </summary>
-        /// <param name="ocrReader">
+        /// <param name="ocrEngine">
         /// 
         /// <see cref="IOcrEngine"/>
         /// selected OCR Reader
         /// </param>
-        public PdfRenderer(IOcrEngine ocrReader) {
-            SetOcrReader(ocrReader);
+        public PdfRenderer(IOcrEngine ocrEngine) {
+            SetOcrEngine(ocrEngine);
             SetOcrPdfCreatorProperties(new OcrPdfCreatorProperties());
         }
 
@@ -73,7 +73,7 @@ namespace iText.Pdfocr {
         /// <see cref="PdfRenderer"/>
         /// instance.
         /// </summary>
-        /// <param name="ocrReader">
+        /// <param name="ocrEngine">
         /// selected OCR Reader
         /// <see cref="IOcrEngine"/>
         /// </param>
@@ -81,8 +81,8 @@ namespace iText.Pdfocr {
         /// set of properties for
         /// <see cref="PdfRenderer"/>
         /// </param>
-        public PdfRenderer(IOcrEngine ocrReader, OcrPdfCreatorProperties ocrPdfCreatorProperties) {
-            SetOcrReader(ocrReader);
+        public PdfRenderer(IOcrEngine ocrEngine, OcrPdfCreatorProperties ocrPdfCreatorProperties) {
+            SetOcrEngine(ocrEngine);
             SetOcrPdfCreatorProperties(ocrPdfCreatorProperties);
         }
 
@@ -165,7 +165,7 @@ namespace iText.Pdfocr {
             IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
                 <int, IList<TextInfo>>>();
             foreach (FileInfo inputImage in inputImages) {
-                imagesTextData.Put(inputImage, ocrReader.DoImageOcr(inputImage));
+                imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage));
             }
             // create PdfDocument
             return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData);
@@ -214,8 +214,8 @@ namespace iText.Pdfocr {
         /// <see cref="IOcrEngine"/>
         /// instance
         /// </returns>
-        public IOcrEngine GetOcrReader() {
-            return ocrReader;
+        public IOcrEngine GetOcrEngine() {
+            return ocrEngine;
         }
 
         /// <summary>
@@ -228,8 +228,8 @@ namespace iText.Pdfocr {
         /// <see cref="IOcrEngine"/>
         /// instance
         /// </param>
-        public void SetOcrReader(IOcrEngine reader) {
-            ocrReader = reader;
+        public void SetOcrEngine(IOcrEngine reader) {
+            ocrEngine = reader;
         }
 
         /// <summary>Gets font as a byte array using provided fontp ath or the default one.</summary>

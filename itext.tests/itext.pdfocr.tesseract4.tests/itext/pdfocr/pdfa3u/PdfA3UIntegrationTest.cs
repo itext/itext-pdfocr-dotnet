@@ -25,8 +25,8 @@ namespace iText.Pdfocr.Pdfa3u {
                 PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
                 tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetTextPositioning
                     (TextPositioning.BY_WORDS));
-                NUnit.Framework.Assert.AreEqual(tesseractReader, pdfRenderer.GetOcrReader());
-                pdfRenderer.SetOcrReader(tesseractReader);
+                NUnit.Framework.Assert.AreEqual(tesseractReader, pdfRenderer.GetOcrEngine());
+                pdfRenderer.SetOcrEngine(tesseractReader);
                 PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
                      + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetCMYKPdfOutputIntent());
                 NUnit.Framework.Assert.IsNotNull(doc);

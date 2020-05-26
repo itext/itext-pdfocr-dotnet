@@ -5,7 +5,13 @@ using iText.Pdfocr;
 
 namespace iText.Pdfocr.Helpers {
     public class CustomOcrEngine : IOcrEngine {
+        private OcrEngineProperties ocrEngineProperties;
+
         public CustomOcrEngine() {
+        }
+
+        public CustomOcrEngine(OcrEngineProperties ocrEngineProperties) {
+            this.ocrEngineProperties = new OcrEngineProperties(ocrEngineProperties);
         }
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
@@ -17,6 +23,14 @@ namespace iText.Pdfocr.Helpers {
         }
 
         public virtual void CreateTxt(IList<FileInfo> inputImages, FileInfo txtFile) {
+        }
+
+        public virtual OcrEngineProperties GetOcrEngineProperties() {
+            return ocrEngineProperties;
+        }
+
+        public virtual void SetOcrEngineProperties(OcrEngineProperties ocrEngineProperties) {
+            this.ocrEngineProperties = ocrEngineProperties;
         }
     }
 }

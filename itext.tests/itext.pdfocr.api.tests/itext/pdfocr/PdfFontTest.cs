@@ -11,7 +11,7 @@ namespace iText.Pdfocr {
         [NUnit.Framework.Test]
         public virtual void TestFontColor() {
             String testName = "testFontColor";
-            String path = PdfHelper.GetDefaultImagePath();
+            String path = PdfHelper.GetImagesTestDirectory() + "multipage.tiff";
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();

@@ -13,7 +13,10 @@ namespace iText.Pdfocr {
         public virtual void TestPdfLayersWithDefaultNames() {
             String path = PdfHelper.GetDefaultImagePath();
             FileInfo file = new FileInfo(path);
-            PdfRenderer pdfRenderer = new PdfRenderer(new CustomOcrEngine());
+            OcrEngineProperties ocrEngineProperties = new OcrEngineProperties();
+            ocrEngineProperties.SetLanguages(JavaCollectionsUtil.SingletonList<String>("eng"));
+            CustomOcrEngine engine = new CustomOcrEngine(ocrEngineProperties);
+            PdfRenderer pdfRenderer = new PdfRenderer(engine);
             PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
                 ());
             NUnit.Framework.Assert.IsNotNull(doc);
@@ -22,6 +25,9 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
             NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
             doc.Close();
+            NUnit.Framework.Assert.AreEqual(engine, pdfRenderer.GetOcrEngine());
+            NUnit.Framework.Assert.AreEqual(1, engine.GetOcrEngineProperties().GetLanguages().Count);
+            NUnit.Framework.Assert.AreEqual("eng", engine.GetOcrEngineProperties().GetLanguages()[0]);
         }
 
         [NUnit.Framework.Test]
