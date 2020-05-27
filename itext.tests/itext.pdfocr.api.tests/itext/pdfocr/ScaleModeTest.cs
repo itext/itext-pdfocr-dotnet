@@ -60,8 +60,8 @@ namespace iText.Pdfocr {
         public virtual void TestOriginalSizeScaleMode() {
             String path = PdfHelper.GetDefaultImagePath();
             FileInfo file = new FileInfo(path);
-            PdfRenderer pdfRenderer = new PdfRenderer(new CustomOcrEngine());
-            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine());
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
                 ());
             NUnit.Framework.Assert.IsNotNull(doc);
             ImageData imageData = ImageDataFactory.Create(file.FullName);

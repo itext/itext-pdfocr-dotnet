@@ -32,9 +32,9 @@ namespace iText.Pdfocr.General {
             ocrPdfCreatorProperties.SetTextLayerName("Text1");
             Color color = DeviceCmyk.MAGENTA;
             ocrPdfCreatorProperties.SetTextColor(color);
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, ocrPdfCreatorProperties);
-            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
-                ));
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, ocrPdfCreatorProperties);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(
+                pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
             doc.Close();
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
@@ -78,8 +78,8 @@ namespace iText.Pdfocr.General {
             String filePath = testImagesDirectory + "pantone_blue.jpg";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(filePath);
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-            pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), new PdfWriter(pdfPath)).Close();
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
+            ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), new PdfWriter(pdfPath)).Close();
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             AbstractIntegrationTest.ExtractionStrategy strategy = new AbstractIntegrationTest.ExtractionStrategy("Text Layer"
                 );
@@ -98,8 +98,8 @@ namespace iText.Pdfocr.General {
                 FileInfo file3 = new FileInfo(testImagesDirectory + "numbers_02.jpg");
                 tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPathToTessData
                     (GetTessDataDirectory()));
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-                pdfRenderer.CreatePdf(JavaUtil.ArraysAsList(file3, file1, file2, file3), GetPdfWriter());
+                OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
+                ocrPdfCreator.CreatePdf(JavaUtil.ArraysAsList(file3, file1, file2, file3), GetPdfWriter());
             }
             , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectInputImageFormat, "txt")))
 ;

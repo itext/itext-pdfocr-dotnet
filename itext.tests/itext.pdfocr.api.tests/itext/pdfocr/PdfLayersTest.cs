@@ -16,8 +16,8 @@ namespace iText.Pdfocr {
             OcrEngineProperties ocrEngineProperties = new OcrEngineProperties();
             ocrEngineProperties.SetLanguages(JavaCollectionsUtil.SingletonList<String>("eng"));
             CustomOcrEngine engine = new CustomOcrEngine(ocrEngineProperties);
-            PdfRenderer pdfRenderer = new PdfRenderer(engine);
-            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(engine);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
                 ());
             NUnit.Framework.Assert.IsNotNull(doc);
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
@@ -25,7 +25,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
             NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
             doc.Close();
-            NUnit.Framework.Assert.AreEqual(engine, pdfRenderer.GetOcrEngine());
+            NUnit.Framework.Assert.AreEqual(engine, ocrPdfCreator.GetOcrEngine());
             NUnit.Framework.Assert.AreEqual(1, engine.GetOcrEngineProperties().GetLanguages().Count);
             NUnit.Framework.Assert.AreEqual("eng", engine.GetOcrEngineProperties().GetLanguages()[0]);
         }
@@ -37,8 +37,8 @@ namespace iText.Pdfocr {
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetImageLayerName("name image 1");
             properties.SetTextLayerName("name text 1");
-            PdfRenderer pdfRenderer = new PdfRenderer(new CustomOcrEngine(), properties);
-            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
                 ());
             NUnit.Framework.Assert.IsNotNull(doc);
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
@@ -56,8 +56,8 @@ namespace iText.Pdfocr {
             String path = PdfHelper.GetDefaultImagePath();
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            PdfRenderer pdfRenderer = new PdfRenderer(new CustomOcrEngine());
-            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine());
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
                 (pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();

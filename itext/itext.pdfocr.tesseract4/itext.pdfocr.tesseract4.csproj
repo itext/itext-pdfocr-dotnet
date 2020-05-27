@@ -24,11 +24,6 @@
     <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="itext7">
-      <Version>7.1.11</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Tesseract.dll</TargetPath>

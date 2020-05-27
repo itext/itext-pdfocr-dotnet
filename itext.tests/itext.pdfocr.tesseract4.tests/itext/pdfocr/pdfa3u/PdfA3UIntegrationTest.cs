@@ -22,12 +22,12 @@ namespace iText.Pdfocr.Pdfa3u {
             String expectedPdfPath = testDocumentsDirectory + filename + "_a3u.pdf";
             String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + "_a3u.pdf";
             try {
-                PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
+                OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
                 tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetTextPositioning
                     (TextPositioning.BY_WORDS));
-                NUnit.Framework.Assert.AreEqual(tesseractReader, pdfRenderer.GetOcrEngine());
-                pdfRenderer.SetOcrEngine(tesseractReader);
-                PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
+                NUnit.Framework.Assert.AreEqual(tesseractReader, ocrPdfCreator.GetOcrEngine());
+                ocrPdfCreator.SetOcrEngine(tesseractReader);
+                PdfDocument doc = ocrPdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
                      + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetCMYKPdfOutputIntent());
                 NUnit.Framework.Assert.IsNotNull(doc);
                 doc.Close();
@@ -52,9 +52,9 @@ namespace iText.Pdfocr.Pdfa3u {
             properties.SetPathToTessData(langTessDataDirectory);
             properties.SetLanguages(JavaCollectionsUtil.SingletonList<String>("spa"));
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb
-                .BLACK));
-            PdfDocument doc = pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, new OcrPdfCreatorProperties().SetTextColor
+                (DeviceRgb.BLACK));
+            PdfDocument doc = ocrPdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(testImagesDirectory
                  + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetRGBPdfOutputIntent());
             NUnit.Framework.Assert.IsNotNull(doc);
             doc.Close();

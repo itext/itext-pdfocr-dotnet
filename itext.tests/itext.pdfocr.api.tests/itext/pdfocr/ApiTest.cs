@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
 using iText.Pdfocr.Helpers;
+using iText.Test;
 
 namespace iText.Pdfocr {
-    public class ApiTest {
+    public class ApiTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void TestTextInfo() {
             String path = PdfHelper.GetDefaultImagePath();

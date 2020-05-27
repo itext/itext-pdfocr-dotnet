@@ -24,9 +24,9 @@ namespace iText.Pdfocr.Pdflayers {
             FileInfo file = new FileInfo(path);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
                 (false));
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader);
-            PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(pdfPath
-                ));
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(
+                pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
             int numOfPages = doc.GetNumberOfPages();
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
@@ -54,8 +54,8 @@ namespace iText.Pdfocr.Pdflayers {
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetImageLayerName("image");
             properties.SetTextLayerName("text");
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties);
-            PdfDocument doc = pdfRenderer.CreatePdf(files, GetPdfWriter(pdfPath));
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, properties);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(files, GetPdfWriter(pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
             int numOfPages = doc.GetNumberOfPages();
             NUnit.Framework.Assert.AreEqual(numOfPages, files.Count);

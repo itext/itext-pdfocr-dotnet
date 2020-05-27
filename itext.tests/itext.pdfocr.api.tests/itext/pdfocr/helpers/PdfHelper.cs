@@ -85,10 +85,10 @@ namespace iText.Pdfocr.Helpers {
         /// of properties and save to the given path.
         /// </summary>
         public static void CreatePdf(String pdfPath, FileInfo inputFile, OcrPdfCreatorProperties properties) {
-            PdfRenderer pdfRenderer = new PdfRenderer(new CustomOcrEngine(), properties);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
             try {
                 using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
-                    pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(inputFile), pdfWriter).Close();
+                    ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(inputFile), pdfWriter).Close();
                 }
             }
             catch (System.IO.IOException e) {
@@ -102,11 +102,11 @@ namespace iText.Pdfocr.Helpers {
         /// </summary>
         public static void CreatePdfA(String pdfPath, FileInfo inputFile, OcrPdfCreatorProperties properties, PdfOutputIntent
              outputIntent) {
-            PdfRenderer pdfRenderer = new PdfRenderer(new CustomOcrEngine(), properties);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
             try {
                 using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
-                    pdfRenderer.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(inputFile), pdfWriter, outputIntent).Close
-                        ();
+                    ocrPdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(inputFile), pdfWriter, outputIntent).
+                        Close();
                 }
             }
             catch (System.IO.IOException e) {

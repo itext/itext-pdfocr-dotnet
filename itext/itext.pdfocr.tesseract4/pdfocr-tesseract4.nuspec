@@ -7,14 +7,12 @@
     <authors>iText Software</authors>
     <owners>iText Software</owners>
     <iconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
-    <description>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from the image.</description>
-    <summary>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from the image.</summary>
+    <description>pdfOCR Tesseract 4 is an implementation of iText 7 pdfOCR add-on for C# (.NET) based on Tesseract which lets you parse recognize text from images and create searchable PDF files.</description>
+    <summary>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from images.</summary>
     <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
     <language>en-US</language>
     <dependencies>
       <group targetFramework="net40">
-        <dependency id="itext7" version="7.1.12-SNAPSHOT" />
-        <dependency id="Common.Logging" version="3.4.1" />
         <dependency id="itext7.pdfocr.api" version="0.0.1-SNAPSHOT" />
       </group>
     </dependencies>

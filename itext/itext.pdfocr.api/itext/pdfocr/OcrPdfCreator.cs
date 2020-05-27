@@ -17,32 +17,32 @@ using iText.Pdfa;
 
 namespace iText.Pdfocr {
     /// <summary>
-    /// <see cref="PdfRenderer"/>
+    /// <see cref="OcrPdfCreator"/>
     /// is the class that creates Pdf documents containing input
     /// images and text that was recognized using provided
     /// <see cref="IOcrEngine"/>.
     /// </summary>
     /// <remarks>
-    /// <see cref="PdfRenderer"/>
+    /// <see cref="OcrPdfCreator"/>
     /// is the class that creates Pdf documents containing input
     /// images and text that was recognized using provided
     /// <see cref="IOcrEngine"/>.
-    /// <see cref="PdfRenderer"/>
+    /// <see cref="OcrPdfCreator"/>
     /// provides possibilities to set list of input images to
     /// be used for OCR, to set scaling mode for images, to set color of text in
     /// output PDF document, to set fixed size of the PDF document's page and to
     /// perform OCR using given images and to return
     /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
     /// as result.
-    /// PDFRenderer's OCR is based on the provided
+    /// OCR is based on the provided
     /// <see cref="IOcrEngine"/>
     /// (e.g. tesseract reader). This parameter is obligatory and it should be
     /// provided in constructor
     /// or using setter.
     /// </remarks>
-    public class PdfRenderer {
+    public class OcrPdfCreator {
         /// <summary>The logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.PdfRenderer));
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
 
         /// <summary>
         /// Selected
@@ -55,7 +55,7 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Creates a new
-        /// <see cref="PdfRenderer"/>
+        /// <see cref="OcrPdfCreator"/>
         /// instance.
         /// </summary>
         /// <param name="ocrEngine">
@@ -63,14 +63,13 @@ namespace iText.Pdfocr {
         /// <see cref="IOcrEngine"/>
         /// selected OCR Reader
         /// </param>
-        public PdfRenderer(IOcrEngine ocrEngine) {
-            SetOcrEngine(ocrEngine);
-            SetOcrPdfCreatorProperties(new OcrPdfCreatorProperties());
+        public OcrPdfCreator(IOcrEngine ocrEngine)
+            : this(ocrEngine, new OcrPdfCreatorProperties()) {
         }
 
         /// <summary>
         /// Creates a new
-        /// <see cref="PdfRenderer"/>
+        /// <see cref="OcrPdfCreator"/>
         /// instance.
         /// </summary>
         /// <param name="ocrEngine">
@@ -79,16 +78,16 @@ namespace iText.Pdfocr {
         /// </param>
         /// <param name="ocrPdfCreatorProperties">
         /// set of properties for
-        /// <see cref="PdfRenderer"/>
+        /// <see cref="OcrPdfCreator"/>
         /// </param>
-        public PdfRenderer(IOcrEngine ocrEngine, OcrPdfCreatorProperties ocrPdfCreatorProperties) {
+        public OcrPdfCreator(IOcrEngine ocrEngine, OcrPdfCreatorProperties ocrPdfCreatorProperties) {
             SetOcrEngine(ocrEngine);
             SetOcrPdfCreatorProperties(ocrPdfCreatorProperties);
         }
 
         /// <summary>
         /// Gets properties for
-        /// <see cref="PdfRenderer"/>.
+        /// <see cref="OcrPdfCreator"/>.
         /// </summary>
         /// <returns>
         /// set properties
@@ -100,13 +99,13 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Sets properties for
-        /// <see cref="PdfRenderer"/>.
+        /// <see cref="OcrPdfCreator"/>.
         /// </summary>
         /// <param name="ocrPdfCreatorProperties">
         /// set of properties
         /// <see cref="OcrPdfCreatorProperties"/>
         /// for
-        /// <see cref="PdfRenderer"/>
+        /// <see cref="OcrPdfCreator"/>
         /// </param>
         public void SetOcrPdfCreatorProperties(OcrPdfCreatorProperties ocrPdfCreatorProperties) {
             this.ocrPdfCreatorProperties = ocrPdfCreatorProperties;

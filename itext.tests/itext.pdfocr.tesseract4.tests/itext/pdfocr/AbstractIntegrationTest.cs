@@ -311,11 +311,11 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.AreEqual(languages.Count, tesseractReader.GetTesseract4OcrEngineProperties().GetLanguages
                     ().Count);
             }
-            PdfRenderer pdfRenderer = new PdfRenderer(tesseractReader, properties_1);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, properties_1);
             try {
                 using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
-                    PdfDocument doc = pdfRenderer.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath))
-                        , pdfWriter);
+                    PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath
+                        )), pdfWriter);
                     NUnit.Framework.Assert.IsNotNull(doc);
                     doc.Close();
                 }
