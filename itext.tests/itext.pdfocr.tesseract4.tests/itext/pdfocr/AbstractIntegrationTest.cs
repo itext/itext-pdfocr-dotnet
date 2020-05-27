@@ -69,10 +69,10 @@ namespace iText.Pdfocr {
         public virtual void TestSimpleTextOutput() {
             String imgPath = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
             String expectedOutput = "619121";
-            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(tesseractExecutableReader, imgPath).Contains(expectedOutput
-                ));
-            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(tesseractExecutableReader, imgPath).Contains(expectedOutput
-                ));
+            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(GetTesseractReader(AbstractIntegrationTest.ReaderType
+                .EXECUTABLE), imgPath).Contains(expectedOutput));
+            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(GetTesseractReader(AbstractIntegrationTest.ReaderType
+                .LIB), imgPath).Contains(expectedOutput));
         }
 
         public AbstractIntegrationTest() {

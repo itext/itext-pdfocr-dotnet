@@ -100,7 +100,12 @@ namespace iText.Pdfocr.Tesseract4 {
                     throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE);
                 }
                 else {
-                    execPath = AddQuotes(GetPathToExecutable());
+                    if (IsWindows()) {
+                        execPath = AddQuotes(GetPathToExecutable());
+                    }
+                    else {
+                        execPath = GetPathToExecutable();
+                    }
                 }
                 CheckTesseractInstalled(execPath);
                 // path to tess data
@@ -235,7 +240,13 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="value">string to be wrapped into quotes</param>
         /// <returns>wrapped string</returns>
         private String AddQuotes(String value) {
-            return "\"" + value + "\"";
+            // choosing correct quotes for system
+            if (IsWindows()) {
+                return "\"" + value + "\"";
+            }
+            else {
+                return "'" + value + "'";
+            }
         }
 
         /// <summary>Preprocess given image if it is needed.</summary>
