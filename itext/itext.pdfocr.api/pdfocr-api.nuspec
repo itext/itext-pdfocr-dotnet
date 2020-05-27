@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>itext7.pdfocr.api</id>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <title>iText 7 pdfOcr</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
@@ -22,6 +22,5 @@
     <file src="bin\Release\net40\itext.pdfocr.api.dll" target="lib\net40" />
     <file src="bin\Release\net40\itext.pdfocr.api.xml" target="lib\net40" />
     <file src="NOTICE.txt" target="" />
-    <file src="LICENSE_OFL.txt" target="" />
   </files>
 </package>

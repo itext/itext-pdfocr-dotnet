@@ -142,7 +142,8 @@ namespace iText.Pdfocr {
             freeSansFontPath = testFontsDirectory + "FreeSans.ttf";
         }
 
-        protected internal static Tesseract4OcrEngine GetTesseractReader(AbstractIntegrationTest.ReaderType type) {
+        protected internal static AbstractTesseract4OcrEngine GetTesseractReader(AbstractIntegrationTest.ReaderType
+             type) {
             if (type.Equals(AbstractIntegrationTest.ReaderType.LIB)) {
                 return tesseractLibReader;
             }
@@ -188,8 +189,8 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Retrieve text from specified page from given pdf document.</summary>
-        protected internal virtual String GetTextFromPdf(Tesseract4OcrEngine tesseractReader, FileInfo file, int page
-            , IList<String> languages, String fontPath) {
+        protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
+            , int page, IList<String> languages, String fontPath) {
             String result = null;
             String pdfPath = null;
             try {
@@ -204,25 +205,26 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Retrieve text from the first page of given pdf document setting font.</summary>
-        protected internal virtual String GetTextFromPdf(Tesseract4OcrEngine tesseractReader, FileInfo file, IList
-            <String> languages, String fontPath) {
+        protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
+            , IList<String> languages, String fontPath) {
             return GetTextFromPdf(tesseractReader, file, 1, languages, fontPath);
         }
 
         /// <summary>Retrieve text from the first page of given pdf document.</summary>
-        protected internal virtual String GetTextFromPdf(Tesseract4OcrEngine tesseractReader, FileInfo file, IList
-            <String> languages) {
+        protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
+            , IList<String> languages) {
             return GetTextFromPdf(tesseractReader, file, 1, languages, null);
         }
 
         /// <summary>Retrieve text from the required page of given pdf document.</summary>
-        protected internal virtual String GetTextFromPdf(Tesseract4OcrEngine tesseractReader, FileInfo file, int page
-            , IList<String> languages) {
+        protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
+            , int page, IList<String> languages) {
             return GetTextFromPdf(tesseractReader, file, page, languages, null);
         }
 
         /// <summary>Retrieve text from the first page of given pdf document.</summary>
-        protected internal virtual String GetTextFromPdf(Tesseract4OcrEngine tesseractReader, FileInfo file) {
+        protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
+            ) {
             return GetTextFromPdf(tesseractReader, file, 1, null, null);
         }
 
@@ -241,8 +243,8 @@ namespace iText.Pdfocr {
         /// Perform OCR using provided path to image (imgPath),
         /// save to file and get text from file.
         /// </summary>
-        protected internal virtual String GetRecognizedTextFromTextFile(Tesseract4OcrEngine tesseractReader, String
-             input, IList<String> languages) {
+        protected internal virtual String GetRecognizedTextFromTextFile(AbstractTesseract4OcrEngine tesseractReader
+            , String input, IList<String> languages) {
             String result = null;
             String txtPath = null;
             try {
@@ -260,8 +262,8 @@ namespace iText.Pdfocr {
         /// Perform OCR using provided path to image (imgPath),
         /// save to file and get text from file.
         /// </summary>
-        protected internal virtual String GetRecognizedTextFromTextFile(Tesseract4OcrEngine tesseractReader, String
-             input) {
+        protected internal virtual String GetRecognizedTextFromTextFile(AbstractTesseract4OcrEngine tesseractReader
+            , String input) {
             return GetRecognizedTextFromTextFile(tesseractReader, input, null);
         }
 
@@ -269,8 +271,8 @@ namespace iText.Pdfocr {
         /// Perform OCR using provided path to image (imgPath)
         /// and save result to text file.
         /// </summary>
-        protected internal virtual void DoOcrAndSaveToTextFile(Tesseract4OcrEngine tesseractReader, String imgPath
-            , String txtPath, IList<String> languages) {
+        protected internal virtual void DoOcrAndSaveToTextFile(AbstractTesseract4OcrEngine tesseractReader, String
+             imgPath, String txtPath, IList<String> languages) {
             if (languages != null) {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetLanguages(languages);
@@ -293,8 +295,8 @@ namespace iText.Pdfocr {
         /// and save result pdf document to "pdfPath".
         /// (Method is used for compare tool)
         /// </remarks>
-        protected internal virtual void DoOcrAndSavePdfToPath(Tesseract4OcrEngine tesseractReader, String imgPath, 
-            String pdfPath, IList<String> languages, String fontPath, Color color) {
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath, IList<String> languages, String fontPath, Color color) {
             if (languages != null) {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetLanguages(languages);
@@ -329,8 +331,8 @@ namespace iText.Pdfocr {
         /// Perform OCR using provided path to image (imgPath)
         /// and save result pdf document to "pdfPath".
         /// </summary>
-        protected internal virtual void DoOcrAndSavePdfToPath(Tesseract4OcrEngine tesseractReader, String imgPath, 
-            String pdfPath, IList<String> languages, Color color) {
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath, IList<String> languages, Color color) {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, null, color);
         }
 
@@ -343,8 +345,8 @@ namespace iText.Pdfocr {
         /// and save result pdf document to "pdfPath".
         /// (Text will be invisible)
         /// </remarks>
-        protected internal virtual void DoOcrAndSavePdfToPath(Tesseract4OcrEngine tesseractReader, String imgPath, 
-            String pdfPath, IList<String> languages, String fontPath) {
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath, IList<String> languages, String fontPath) {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fontPath, null);
         }
 
@@ -357,8 +359,8 @@ namespace iText.Pdfocr {
         /// and save result pdf document to "pdfPath".
         /// (Method is used for compare tool)
         /// </remarks>
-        protected internal virtual void DoOcrAndSavePdfToPath(Tesseract4OcrEngine tesseractReader, String imgPath, 
-            String pdfPath) {
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath) {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, null, null, null);
         }
 
@@ -377,8 +379,8 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Do OCR for given image and compare result etxt file with expected one.</summary>
-        protected internal virtual bool DoOcrAndCompareTxtFiles(Tesseract4OcrEngine tesseractReader, String imgPath
-            , String expectedPath, IList<String> languages) {
+        protected internal virtual bool DoOcrAndCompareTxtFiles(AbstractTesseract4OcrEngine tesseractReader, String
+             imgPath, String expectedPath, IList<String> languages) {
             String resultTxtFile = GetTargetDirectory() + GetImageName(imgPath, languages) + ".txt";
             DoOcrAndSaveToTextFile(tesseractReader, imgPath, resultTxtFile, languages);
             return CompareTxtFiles(expectedPath, resultTxtFile);

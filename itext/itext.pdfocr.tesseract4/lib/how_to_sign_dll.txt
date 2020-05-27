@@ -8,3 +8,6 @@ You might need to run your command prompt using “Run as administrator” using
 
 Please note that paths to executables that are used here could differ depending
 on the versions of frameworks that are installed on the machine.
+
+This is based on "Genesis.Tesseract4" nuget package, version 4.0.2.11.
+See more: https://www.nuget.org/packages/Genesis.Tesseract4/4.0.2.11

@@ -19,7 +19,7 @@ namespace iText.Pdfocr.Tesseract4 {
     /// Also there are possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems).
     /// </remarks>
-    public abstract class Tesseract4OcrEngine : IOcrEngine {
+    public abstract class AbstractTesseract4OcrEngine : IOcrEngine {
         /// <summary>Supported image formats.</summary>
         private static readonly ICollection<String> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet(
             new HashSet<String>(JavaUtil.ArraysAsList("bmp", "png", "tiff", "tif", "jpeg", "jpg", "jpe", "jfif")));
@@ -27,7 +27,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Set of properties.</summary>
         private Tesseract4OcrEngineProperties tesseract4OcrEngineProperties;
 
-        public Tesseract4OcrEngine(Tesseract4OcrEngineProperties tesseract4OcrEngineProperties) {
+        public AbstractTesseract4OcrEngine(Tesseract4OcrEngineProperties tesseract4OcrEngineProperties) {
             this.tesseract4OcrEngineProperties = tesseract4OcrEngineProperties;
         }
 
@@ -100,7 +100,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>
         /// Gets properties for
-        /// <see cref="Tesseract4OcrEngine"/>.
+        /// <see cref="AbstractTesseract4OcrEngine"/>.
         /// </summary>
         /// <returns>
         /// set properties
@@ -112,13 +112,13 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>
         /// Sets properties for
-        /// <see cref="Tesseract4OcrEngine"/>.
+        /// <see cref="AbstractTesseract4OcrEngine"/>.
         /// </summary>
         /// <param name="tesseract4OcrEngineProperties">
         /// set of properties
         /// <see cref="Tesseract4OcrEngineProperties"/>
         /// for
-        /// <see cref="Tesseract4OcrEngine"/>
+        /// <see cref="AbstractTesseract4OcrEngine"/>
         /// </param>
         public void SetTesseract4OcrEngineProperties(Tesseract4OcrEngineProperties tesseract4OcrEngineProperties) {
             this.tesseract4OcrEngineProperties = tesseract4OcrEngineProperties;

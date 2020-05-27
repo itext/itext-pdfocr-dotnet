@@ -16,7 +16,7 @@ namespace iText.Pdfocr.General {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.General.BasicTesseractIntegrationTest
             ));
 
-        internal Tesseract4OcrEngine tesseractReader;
+        internal AbstractTesseract4OcrEngine tesseractReader;
 
         public BasicTesseractIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
@@ -221,7 +221,8 @@ namespace iText.Pdfocr.General {
         }
 
         /// <summary>Parse text from image and compare with expected.</summary>
-        private void TestImageOcrText(Tesseract4OcrEngine tesseractReader, String path, String expectedOutput) {
+        private void TestImageOcrText(AbstractTesseract4OcrEngine tesseractReader, String path, String expectedOutput
+            ) {
             FileInfo ex1 = new FileInfo(path);
             String realOutputHocr = GetTextUsingTesseractFromImage(tesseractReader, ex1);
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));

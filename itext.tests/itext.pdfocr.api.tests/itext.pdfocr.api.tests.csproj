@@ -26,9 +26,6 @@
     <None Include="itext.snk" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext7">
-      <Version>7.1.11</Version>
-    </PackageReference>
     <PackageReference Include="itext7.pdftest">
       <Version>7.1.11</Version>
     </PackageReference>

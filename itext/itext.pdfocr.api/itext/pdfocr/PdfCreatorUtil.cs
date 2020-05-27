@@ -65,7 +65,7 @@ namespace iText.Pdfocr {
         /// <param name="size">size of the page</param>
         /// <param name="imageSize">size of the image</param>
         /// <returns>list of two elements (coordinates): first - x, second - y.</returns>
-        internal static IList<float> CalculateImageCoordinates(Rectangle size, Rectangle imageSize) {
+        internal static Point CalculateImageCoordinates(Rectangle size, Rectangle imageSize) {
             float x = 0;
             float y = 0;
             if (size != null) {
@@ -76,7 +76,7 @@ namespace iText.Pdfocr {
                     x = (size.GetWidth() - imageSize.GetWidth()) / 2;
                 }
             }
-            return JavaUtil.ArraysAsList(x, y);
+            return new Point(x, y);
         }
 
         /// <summary>
@@ -151,14 +151,6 @@ namespace iText.Pdfocr {
         /// </returns>
         internal static Rectangle CalculateImageSize(ImageData imageData, ScaleMode scaleMode, Rectangle requiredSize
             ) {
-            // Adjust image size and dpi
-            // The resolution of a PDF file is 72pt per inch
-            float dotsPerPointX = 1.0f;
-            float dotsPerPointY = 1.0f;
-            if (imageData != null && imageData.GetDpiX() > 0 && imageData.GetDpiY() > 0) {
-                dotsPerPointX = imageData.GetDpiX() / POINTS_PER_INCH;
-                dotsPerPointY = imageData.GetDpiY() / POINTS_PER_INCH;
-            }
             if (imageData != null) {
                 float imgWidthPt = GetPoints(imageData.GetWidth());
                 float imgHeightPt = GetPoints(imageData.GetHeight());

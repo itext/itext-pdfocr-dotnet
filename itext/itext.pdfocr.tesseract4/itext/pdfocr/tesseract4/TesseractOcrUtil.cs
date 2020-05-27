@@ -77,6 +77,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 bool cmdSucceeded = process.WaitForExit(3 * 60 * 60 * 1000);
                 if (!cmdSucceeded)
                 {
+                    LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractOcrUtil))
+                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED,
+                                String.Join(" ", command)));
                     throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED)
                         .SetMessageParams(String.Join(" ", command));
                 }
@@ -84,7 +87,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractOcrUtil))
-                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED,
+                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED,
                                 e.Message));
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED)
                     .SetMessageParams(e.Message);

@@ -9,7 +9,7 @@ using iText.Pdfocr.Tesseract4;
 
 namespace iText.Pdfocr.Tessdata {
     public abstract class TessDataIntegrationTest : AbstractIntegrationTest {
-        internal Tesseract4OcrEngine tesseractReader;
+        internal AbstractTesseract4OcrEngine tesseractReader;
 
         internal String testFileTypeName;
 

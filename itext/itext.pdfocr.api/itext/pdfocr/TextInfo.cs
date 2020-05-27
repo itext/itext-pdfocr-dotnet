@@ -4,8 +4,8 @@ using iText.IO.Util;
 
 namespace iText.Pdfocr {
     /// <summary>
-    /// This class describes the way text info retrieved from HOCR file
-    /// is structured.
+    /// This class describes how recognized text is positioned on the image
+    /// providing bbox for each text item (could be a line or a word).
     /// </summary>
     public class TextInfo {
         /// <summary>Contains any text.</summary>

@@ -4,6 +4,8 @@ namespace iText.Pdfocr.Tesseract4 {
     public class Tesseract4LogMessageConstant {
         public const String TESSERACT_FAILED = "Tesseract failed: {0}";
 
+        public const String COMMAND_FAILED = "Command failed: {0}";
+
         public const String CANNOT_READ_FILE = "Cannot read file {0}: {1}";
 
         public const String CANNOT_OCR_INPUT_FILE = "Cannot ocr input file: {1}";

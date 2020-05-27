@@ -411,10 +411,10 @@ namespace iText.Pdfocr {
                     pdfCanvas.AddImage(imageData, imageSize, false);
                 }
                 else {
-                    IList<float> coordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), 
-                        imageSize);
-                    Rectangle rect = new Rectangle(coordinates[0], coordinates[1], imageSize.GetWidth(), imageSize.GetHeight()
+                    Point coordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
                         );
+                    Rectangle rect = new Rectangle((float)coordinates.x, (float)coordinates.y, imageSize.GetWidth(), imageSize
+                        .GetHeight());
                     pdfCanvas.AddImage(imageData, rect, false);
                 }
             }
@@ -436,10 +436,8 @@ namespace iText.Pdfocr {
                 pdfCanvas.BeginText().SetFontAndSize(font, 1);
             }
             else {
-                IList<float> imageCoordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize
-                    (), imageSize);
-                float x = imageCoordinates[0];
-                float y = imageCoordinates[1];
+                Point imageCoordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
+                    );
                 foreach (TextInfo item in pageText) {
                     String line = item.GetText();
                     IList<float> coordinates = item.GetBbox();
@@ -456,7 +454,6 @@ namespace iText.Pdfocr {
                         float lineWidth = font.GetWidth(line, fontSize);
                         float deltaX = PdfCreatorUtil.GetPoints(left);
                         float deltaY = imageSize.GetHeight() - PdfCreatorUtil.GetPoints(bottom);
-                        float descent = font.GetDescent(line, fontSize);
                         iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
                         Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
                         Paragraph paragraph = new Paragraph(text).SetMargin(0).SetMultipliedLeading(1.2f);
@@ -468,7 +465,8 @@ namespace iText.Pdfocr {
                         else {
                             paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
                         }
-                        canvas.ShowTextAligned(paragraph, deltaX + x, deltaY + y, TextAlignment.LEFT);
+                        canvas.ShowTextAligned(paragraph, deltaX + (float)imageCoordinates.x, deltaY + (float)imageCoordinates.y, 
+                            TextAlignment.LEFT);
                         canvas.Close();
                     }
                 }

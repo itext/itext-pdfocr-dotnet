@@ -8,17 +8,17 @@ using iText.IO.Util;
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
     /// The implementation of
-    /// <see cref="Tesseract4OcrEngine"/>
+    /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
     /// </summary>
     /// <remarks>
     /// The implementation of
-    /// <see cref="Tesseract4OcrEngine"/>
+    /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
     /// This class provides possibilities to use features of "tesseract"
     /// using tess4j.
     /// </remarks>
-    public class Tesseract4LibOcrEngine : Tesseract4OcrEngine {
+    public class Tesseract4LibOcrEngine : AbstractTesseract4OcrEngine {
         /// <summary>
         /// <see cref="Tesseract.TesseractEngine"/>
         /// Instance.

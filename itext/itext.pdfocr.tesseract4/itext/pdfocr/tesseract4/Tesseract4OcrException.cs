@@ -13,6 +13,9 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String TESSERACT_FAILED = "Tesseract failed. " + "Please check provided parameters";
 
+        public const String TESSERACT_NOT_FOUND = "Tesseract failed. " + "Please check that tesseract is installed and provided path to "
+             + "tesseract executable directory is correct";
+
         public const String CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE = "Cannot find path to tesseract executable.";
 
         public const String CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY = "Cannot find path to tess data directory";

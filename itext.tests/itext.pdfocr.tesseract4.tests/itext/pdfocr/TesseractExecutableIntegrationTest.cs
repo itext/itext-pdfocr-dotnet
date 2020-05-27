@@ -28,5 +28,18 @@ namespace iText.Pdfocr {
             , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE))
 ;
         }
+
+        [LogMessage(Tesseract4LogMessageConstant.COMMAND_FAILED, Count = 1)]
+        [LogMessage(Tesseract4OcrException.TESSERACT_NOT_FOUND, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestIncorrectPathToTesseractExecutable() {
+            NUnit.Framework.Assert.That(() =>  {
+                FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
+                GetTextFromPdf(new Tesseract4ExecutableOcrEngine("path\\to\\executable\\", new Tesseract4OcrEngineProperties
+                    ()), file);
+            }
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.TESSERACT_NOT_FOUND))
+;
+        }
     }
 }

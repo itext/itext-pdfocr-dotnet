@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>itext7.pdfocr.tesseract4</id>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <title>iText 7 pdfOcr</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
@@ -13,7 +13,7 @@
     <language>en-US</language>
     <dependencies>
       <group targetFramework="net40">
-        <dependency id="itext7.pdfocr.api" version="0.0.1-SNAPSHOT" />
+        <dependency id="itext7.pdfocr.api" version="1.0.0-SNAPSHOT" />
       </group>
     </dependencies>
     <references>
@@ -29,6 +29,5 @@
     <file src="lib\x64\*.dll" target="runtimes\x64" />
     <file src="lib\x86\*.dll" target="runtimes\x86" />
     <file src="NOTICE.txt" target="" />
-    <file src="LICENSE_APACHE.txt" target="" />
   </files>
 </package>

@@ -9,7 +9,7 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Imageformats {
     public abstract class ImageFormatIntegrationTest : AbstractIntegrationTest {
-        internal Tesseract4OcrEngine tesseractReader;
+        internal AbstractTesseract4OcrEngine tesseractReader;
 
         public ImageFormatIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);

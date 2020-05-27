@@ -9,7 +9,7 @@ using iText.Pdfocr.Tesseract4;
 
 namespace iText.Pdfocr.Pdfa3u {
     public abstract class PdfA3UIntegrationTest : AbstractIntegrationTest {
-        internal Tesseract4OcrEngine tesseractReader;
+        internal AbstractTesseract4OcrEngine tesseractReader;
 
         public PdfA3UIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);

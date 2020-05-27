@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("iText.Ocr.Tests")]
+[assembly: AssemblyTitle("iText.Pdfocr.Tesseract4.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
@@ -15,6 +15,6 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("d6a6ea97-1f23-448f-b700-eff62971d234")]
 
-[assembly: AssemblyVersion("0.0.1.0")]
-[assembly: AssemblyFileVersion("0.0.1.0")]
-[assembly: AssemblyInformationalVersion("0.0.1-SNAPSHOT")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0-SNAPSHOT")]

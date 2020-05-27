@@ -53,9 +53,4 @@
       <HintPath>lib\Tesseract.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Tesseract">
-      <HintPath>lib\Tesseract.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

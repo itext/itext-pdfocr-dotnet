@@ -8,19 +8,19 @@ using iText.IO.Util;
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
     /// The implementation of
-    /// <see cref="Tesseract4OcrEngine"/>
+    /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
     /// </summary>
     /// <remarks>
     /// The implementation of
-    /// <see cref="Tesseract4OcrEngine"/>
+    /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
     /// This class provides possibilities to use features of "tesseract" CL tool
     /// (optical character recognition engine for various operating systems).
     /// Please note that it's assumed that "tesseract" has already been
     /// installed locally.
     /// </remarks>
-    public class Tesseract4ExecutableOcrEngine : Tesseract4OcrEngine {
+    public class Tesseract4ExecutableOcrEngine : AbstractTesseract4OcrEngine {
         /// <summary>Path to the tesseract executable.</summary>
         /// <remarks>
         /// Path to the tesseract executable.
@@ -96,6 +96,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 imagePath = inputImage.FullName;
                 // path to tesseract executable
                 AddPathToExecutable(command);
+                CheckTesseractInstalled();
                 // path to tess data
                 AddTessData(command);
                 // validate languages before preprocessing started
@@ -259,6 +260,20 @@ namespace iText.Pdfocr.Tesseract4 {
                 path = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber);
             }
             return path;
+        }
+
+        /// <summary>
+        /// Check whether tesseract executable is installed on the machine and
+        /// provided path to tesseract executable is correct.
+        /// </summary>
+        private void CheckTesseractInstalled() {
+            try {
+                IList<String> cmd = JavaUtil.ArraysAsList(AddQuotes(GetPathToExecutable()), "--version");
+                TesseractOcrUtil.RunCommand(cmd, IsWindows());
+            }
+            catch (Tesseract4OcrException e) {
+                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_NOT_FOUND, e);
+            }
         }
     }
 }
