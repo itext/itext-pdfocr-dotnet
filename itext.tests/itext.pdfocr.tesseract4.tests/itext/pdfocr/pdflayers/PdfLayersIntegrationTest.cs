@@ -19,7 +19,7 @@ namespace iText.Pdfocr.Pdflayers {
         public virtual void TestTextFromPdfLayersFromMultiPageTiff() {
             String testName = "testTextFromPdfLayersFromMultiPageTiff";
             bool preprocess = tesseractReader.GetTesseract4OcrEngineProperties().IsPreprocessingImages();
-            String path = testImagesDirectory + "multipage.tiff";
+            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
@@ -48,9 +48,9 @@ namespace iText.Pdfocr.Pdflayers {
         public virtual void TestTextFromPdfLayersFromMultiPagePdf() {
             String testName = "testTextFromPdfLayersFromMultiPagePdf";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
-            IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(testImagesDirectory + "german_01.jpg"), new FileInfo
-                (testImagesDirectory + "noisy_01.png"), new FileInfo(testImagesDirectory + "numbers_01.jpg"), new FileInfo
-                (testImagesDirectory + "example_04.png"));
+            IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(TEST_IMAGES_DIRECTORY + "german_01.jpg"), new FileInfo
+                (TEST_IMAGES_DIRECTORY + "noisy_01.png"), new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg"), new 
+                FileInfo(TEST_IMAGES_DIRECTORY + "example_04.png"));
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetImageLayerName("image");
             properties.SetTextLayerName("text");

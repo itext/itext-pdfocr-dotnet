@@ -14,6 +14,8 @@ namespace iText.Pdfocr {
 
         public const String NUMBER_OF_PAGES_IN_IMAGE = "Image {0} contains {1} page(s)";
 
+        public const String PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS = "Provided font contains NOTDEF glyphs";
+
         private PdfOcrLogMessageConstant() {
         }
     }

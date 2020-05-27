@@ -53,10 +53,6 @@ namespace iText.Pdfocr.Tesseract4 {
         /// instance
         /// </returns>
         public virtual TesseractEngine GetTesseractInstance() {
-            if (tesseractInstance == null || TesseractOcrUtil.IsTesseractInstanceDisposed(tesseractInstance)) {
-                tesseractInstance = TesseractOcrUtil.InitializeTesseractInstance(IsWindows(), GetTessData(), GetLanguagesAsString
-                    (), GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
-            }
             return tesseractInstance;
         }
 
@@ -71,6 +67,11 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         public virtual void InitializeTesseract(OutputFormat outputFormat) {
+            if (GetTesseractInstance() == null || TesseractOcrUtil.IsTesseractInstanceDisposed(GetTesseractInstance())
+                ) {
+                tesseractInstance = TesseractOcrUtil.InitializeTesseractInstance(IsWindows(), GetTessData(), GetLanguagesAsString
+                    (), GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
+            }
             GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(OutputFormat.HOCR) ? "1" : 
                 "0");
             GetTesseractInstance().SetVariable("user_defined_dpi", "300");
@@ -134,9 +135,8 @@ namespace iText.Pdfocr.Tesseract4 {
                             }
                         }
                         catch (System.IO.IOException e) {
-                            String msg = MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED, "Cannot write to file: "
-                                 + e.Message);
-                            LogManager.GetLogger(GetType()).Error(msg);
+                            LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE
+                                , e.Message));
                             throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
                         }
                     }
@@ -181,24 +181,22 @@ namespace iText.Pdfocr.Tesseract4 {
         private IList<String> GetOcrResultForMultiPage(FileInfo inputImage, OutputFormat outputFormat) {
             IList<String> resultList = new List<String>();
             try {
+                InitializeTesseract(outputFormat);
                 TesseractOcrUtil util = new TesseractOcrUtil();
                 util.InitializeImagesListFromTiff(inputImage);
                 int numOfPages = util.GetListOfPages().Count;
                 for (int i = 0; i < numOfPages; i++) {
-                    try {
-                        InitializeTesseract(outputFormat);
-                        String result = util.GetOcrResultAsString(GetTesseractInstance(), util.GetListOfPages()[i], outputFormat);
-                        resultList.Add(result);
-                    }
-                    finally {
-                        TesseractOcrUtil.DisposeTesseractInstance(GetTesseractInstance());
-                    }
+                    String result = util.GetOcrResultAsString(GetTesseractInstance(), util.GetListOfPages()[i], outputFormat);
+                    resultList.Add(result);
                 }
             }
             catch (TesseractException e) {
                 String msg = MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED, e.Message);
                 LogManager.GetLogger(GetType()).Error(msg);
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+            }
+            finally {
+                TesseractOcrUtil.DisposeTesseractInstance(GetTesseractInstance());
             }
             return resultList;
         }

@@ -11,7 +11,7 @@ using iText.StyledXmlParser.Jsoup.Select;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>Helper class.</summary>
-    internal class TesseractHelper {
+    public class TesseractHelper {
         /// <summary>The logger.</summary>
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelper)
             );
@@ -22,21 +22,6 @@ namespace iText.Pdfocr.Tesseract4 {
         /// instance.
         /// </summary>
         private TesseractHelper() {
-        }
-
-        /// <summary>Deletes file using provided path.</summary>
-        /// <param name="pathToFile">path to the file to be deleted</param>
-        internal static void DeleteFile(String pathToFile) {
-            try {
-                if (pathToFile != null && !String.IsNullOrEmpty(pathToFile) && File.Exists(System.IO.Path.Combine(pathToFile
-                    ))) {
-                    File.Delete(System.IO.Path.Combine(pathToFile));
-                }
-            }
-            catch (Exception e) {
-                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
-                    ));
-            }
         }
 
         /// <summary>
@@ -62,8 +47,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        internal static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, TextPositioning
-             textPositioning) {
+        public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, TextPositioning 
+            textPositioning) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             foreach (FileInfo inputFile in inputFiles) {
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
@@ -118,6 +103,21 @@ namespace iText.Pdfocr.Tesseract4 {
             return imageData;
         }
 
+        /// <summary>Deletes file using provided path.</summary>
+        /// <param name="pathToFile">path to the file to be deleted</param>
+        internal static void DeleteFile(String pathToFile) {
+            try {
+                if (pathToFile != null && !String.IsNullOrEmpty(pathToFile) && File.Exists(System.IO.Path.Combine(pathToFile
+                    ))) {
+                    File.Delete(System.IO.Path.Combine(pathToFile));
+                }
+            }
+            catch (Exception e) {
+                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
+                    ));
+            }
+        }
+
         /// <summary>Reads from text file to string.</summary>
         /// <param name="txtFile">
         /// input
@@ -166,6 +166,30 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (System.IO.IOException e) {
                 LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE, path, e.Message));
+            }
+        }
+
+        /// <summary>Runs given command.</summary>
+        /// <param name="execPath">path to the executable</param>
+        /// <param name="paramsList">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of command line arguments
+        /// </param>
+        internal static void RunCommand(String execPath, IList<String> paramsList) {
+            try {
+                String @params = String.Join(" ", paramsList);
+                bool cmdSucceeded = SystemUtil.RunProcessAndWait(execPath, @params);
+                if (!cmdSucceeded) {
+                    LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, execPath + " " + @params
+                        ));
+                    throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                }
+            }
+            catch (Exception e) {
+                // NOSONAR
+                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
+                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }
         }
     }

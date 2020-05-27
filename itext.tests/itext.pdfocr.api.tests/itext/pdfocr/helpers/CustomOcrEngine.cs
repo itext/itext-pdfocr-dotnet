@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
@@ -15,9 +16,12 @@ namespace iText.Pdfocr.Helpers {
         }
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
-            // mocked data for "numbers_01.jpg" image
             IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>();
-            TextInfo textInfo = new TextInfo("619121", JavaUtil.ArraysAsList(204.0f, 158.0f, 742.0f, 294.0f));
+            String text = "619121";
+            if (input.FullName.Contains(PdfHelper.THAI_IMAGE_NAME)) {
+                text = "ป ระ เท ศ ไ";
+            }
+            TextInfo textInfo = new TextInfo(text, JavaUtil.ArraysAsList(204.0f, 158.0f, 742.0f, 294.0f));
             result.Put(1, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));
             return result;
         }

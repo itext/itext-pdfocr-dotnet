@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Common.Logging;
-using iText.IO.Source;
 using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
@@ -27,72 +26,48 @@ namespace iText.Pdfocr {
             "/test/resources/itext/pdfocr/";
 
         // directory with trained data for tests
-        protected internal static String langTessDataDirectory = null;
+        protected internal static readonly String LANG_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata";
 
         // directory with trained data for tests
-        protected internal static String scriptTessDataDirectory = null;
+        protected internal static readonly String SCRIPT_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata" + System.IO.Path.DirectorySeparatorChar
+             + "script";
 
         // directory with test image files
-        protected internal static String testImagesDirectory = null;
+        protected internal static readonly String TEST_IMAGES_DIRECTORY = TEST_DIRECTORY + "images" + System.IO.Path.DirectorySeparatorChar;
 
         // directory with fonts
-        protected internal static String testFontsDirectory = null;
+        protected internal static readonly String TEST_FONTS_DIRECTORY = TEST_DIRECTORY + "fonts" + System.IO.Path.DirectorySeparatorChar;
 
         // directory with fonts
-        protected internal static String testDocumentsDirectory = null;
-
-        // path to default cmyk color profile
-        protected internal static String defaultCMYKColorProfilePath = null;
-
-        // path to default rgb color profile
-        protected internal static String defaultRGBColorProfilePath = null;
+        protected internal static readonly String TEST_DOCUMENTS_DIRECTORY = TEST_DIRECTORY + "documents" + System.IO.Path.DirectorySeparatorChar;
 
         // path to font for hindi
-        protected internal static String notoSansFontPath = testFontsDirectory + "NotoSans-Regular.ttf";
+        protected internal static readonly String NOTO_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "NotoSans-Regular.ttf";
 
         // path to font for japanese
-        protected internal static String kosugiFontPath = testFontsDirectory + "Kosugi-Regular.ttf";
+        protected internal static readonly String KOSUGI_FONT_PATH = TEST_FONTS_DIRECTORY + "Kosugi-Regular.ttf";
 
         // path to font for chinese
-        protected internal static String notoSansSCFontPath = testFontsDirectory + "NotoSansSC-Regular.otf";
+        protected internal static readonly String NOTO_SANS_SC_FONT_PATH = TEST_FONTS_DIRECTORY + "NotoSansSC-Regular.otf";
 
         // path to font for arabic
-        protected internal static String cairoFontPath = testFontsDirectory + "Cairo-Regular.ttf";
+        protected internal static readonly String CAIRO_FONT_PATH = TEST_FONTS_DIRECTORY + "Cairo-Regular.ttf";
 
         // path to font for georgian
-        protected internal static String freeSansFontPath = testFontsDirectory + "FreeSans.ttf";
-
-        protected internal static float delta = 1e-4f;
+        protected internal static readonly String FREE_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "FreeSans.ttf";
 
         public enum ReaderType {
             LIB,
             EXECUTABLE
         }
 
-        internal static Tesseract4LibOcrEngine tesseractLibReader = null;
+        private static Tesseract4LibOcrEngine tesseractLibReader = null;
 
-        internal static Tesseract4ExecutableOcrEngine tesseractExecutableReader = null;
-
-        [NUnit.Framework.SetUp]
-        public virtual void InitTesseractProperties() {
-            Tesseract4OcrEngineProperties properties = new Tesseract4OcrEngineProperties();
-            properties.SetPreprocessingImages(true);
-            properties.SetPathToTessData(GetTessDataDirectory());
-            properties.SetLanguages(new List<String>());
-            properties.SetUserWords("eng", new List<String>());
-            properties.SetTextPositioning(TextPositioning.BY_LINES);
-            if (tesseractLibReader != null) {
-                tesseractLibReader.SetTesseract4OcrEngineProperties(properties);
-            }
-            if (tesseractExecutableReader != null) {
-                tesseractExecutableReader.SetPathToExecutable(GetTesseractDirectory());
-                tesseractExecutableReader.SetTesseract4OcrEngineProperties(properties);
-            }
-        }
+        private static Tesseract4ExecutableOcrEngine tesseractExecutableReader = null;
 
         [NUnit.Framework.Test]
         public virtual void TestSimpleTextOutput() {
-            String imgPath = testImagesDirectory + "numbers_01.jpg";
+            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
             String expectedOutput = "619121";
             NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(tesseractExecutableReader, imgPath).Contains(expectedOutput
                 ));
@@ -101,45 +76,11 @@ namespace iText.Pdfocr {
         }
 
         public AbstractIntegrationTest() {
-            SetResourceDirectories();
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
             ocrEngineProperties.SetPathToTessData(GetTessDataDirectory());
             tesseractLibReader = new Tesseract4LibOcrEngine(ocrEngineProperties);
             tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), ocrEngineProperties
                 );
-        }
-
-        internal static void SetResourceDirectories() {
-            if (testImagesDirectory == null) {
-                testImagesDirectory = TEST_DIRECTORY + "images" + System.IO.Path.DirectorySeparatorChar;
-            }
-            if (langTessDataDirectory == null) {
-                langTessDataDirectory = TEST_DIRECTORY + "tessdata";
-            }
-            if (scriptTessDataDirectory == null) {
-                scriptTessDataDirectory = TEST_DIRECTORY + "tessdata" + System.IO.Path.DirectorySeparatorChar + "script";
-            }
-            if (testFontsDirectory == null) {
-                testFontsDirectory = TEST_DIRECTORY + "fonts" + System.IO.Path.DirectorySeparatorChar;
-                UpdateFonts();
-            }
-            if (testDocumentsDirectory == null) {
-                testDocumentsDirectory = TEST_DIRECTORY + "documents" + System.IO.Path.DirectorySeparatorChar;
-            }
-            if (defaultCMYKColorProfilePath == null) {
-                defaultCMYKColorProfilePath = TEST_DIRECTORY + "profiles/CoatedFOGRA27.icc";
-            }
-            if (defaultRGBColorProfilePath == null) {
-                defaultRGBColorProfilePath = TEST_DIRECTORY + "profiles/sRGB_CS_profile.icm";
-            }
-        }
-
-        internal static void UpdateFonts() {
-            notoSansFontPath = testFontsDirectory + "NotoSans-Regular.ttf";
-            kosugiFontPath = testFontsDirectory + "Kosugi-Regular.ttf";
-            notoSansSCFontPath = testFontsDirectory + "NotoSansSC-Regular.otf";
-            cairoFontPath = testFontsDirectory + "Cairo-Regular.ttf";
-            freeSansFontPath = testFontsDirectory + "FreeSans.ttf";
         }
 
         protected internal static AbstractTesseract4OcrEngine GetTesseractReader(AbstractIntegrationTest.ReaderType
@@ -174,18 +115,7 @@ namespace iText.Pdfocr {
         }
 
         protected internal static String GetTessDataDirectory() {
-            return langTessDataDirectory;
-        }
-
-        /// <summary>Retrieve image BBox rectangle from the first page from given pdf document.</summary>
-        protected internal virtual Rectangle GetImageBBoxRectangleFromPdf(String path) {
-            PdfDocument doc = new PdfDocument(new PdfReader(path));
-            AbstractIntegrationTest.ExtractionStrategy extractionStrategy = new AbstractIntegrationTest.ExtractionStrategy
-                ("Image Layer");
-            PdfCanvasProcessor processor = new PdfCanvasProcessor(extractionStrategy);
-            processor.ProcessPageContent(doc.GetFirstPage());
-            doc.Close();
-            return extractionStrategy.GetImageBBoxRectangle();
+            return LANG_TESS_DATA_DIRECTORY;
         }
 
         /// <summary>Retrieve text from specified page from given pdf document.</summary>
@@ -378,72 +308,13 @@ namespace iText.Pdfocr {
             return content;
         }
 
-        /// <summary>Do OCR for given image and compare result etxt file with expected one.</summary>
-        protected internal virtual bool DoOcrAndCompareTxtFiles(AbstractTesseract4OcrEngine tesseractReader, String
-             imgPath, String expectedPath, IList<String> languages) {
-            String resultTxtFile = GetTargetDirectory() + GetImageName(imgPath, languages) + ".txt";
-            DoOcrAndSaveToTextFile(tesseractReader, imgPath, resultTxtFile, languages);
-            return CompareTxtFiles(expectedPath, resultTxtFile);
-        }
-
-        /// <summary>Compare two text files using provided paths.</summary>
-        protected internal virtual bool CompareTxtFiles(String expectedFilePath, String resultFilePath) {
-            bool areEqual = true;
-            try {
-                IList<String> expected = System.IO.File.ReadAllLines(System.IO.Path.Combine(expectedFilePath));
-                IList<String> result = System.IO.File.ReadAllLines(System.IO.Path.Combine(resultFilePath));
-                if (expected.Count != result.Count) {
-                    return false;
-                }
-                for (int i = 0; i < expected.Count; i++) {
-                    String exp = expected[i].Replace("\n", "").Replace("\f", "");
-                    exp = iText.IO.Util.StringUtil.ReplaceAll(exp, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
-                    String res = result[i].Replace("\n", "").Replace("\f", "");
-                    res = iText.IO.Util.StringUtil.ReplaceAll(res, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
-                    if (expected[i] == null || result[i] == null) {
-                        areEqual = false;
-                        break;
-                    }
-                    else {
-                        if (!exp.Equals(res)) {
-                            areEqual = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (System.IO.IOException e) {
-                areEqual = false;
-                LOGGER.Error(e.Message);
-            }
-            return areEqual;
-        }
-
         /// <summary>Create pdfWriter using provided path to destination file.</summary>
         protected internal virtual PdfWriter GetPdfWriter(String pdfPath) {
             return new PdfWriter(pdfPath, new WriterProperties().AddUAXmpMetadata());
         }
 
-        /// <summary>Creates pdf cmyk output intent for tests.</summary>
-        protected internal virtual PdfOutputIntent GetCMYKPdfOutputIntent() {
-            Stream @is = new FileStream(defaultCMYKColorProfilePath, FileMode.Open, FileAccess.Read);
-            return new PdfOutputIntent("Custom", "", "http://www.color.org", "Coated FOGRA27 (ISO 12647 - 2:2004)", @is
-                );
-        }
-
-        /// <summary>Creates pdf rgb output intent for tests.</summary>
-        protected internal virtual PdfOutputIntent GetRGBPdfOutputIntent() {
-            Stream @is = new FileStream(defaultRGBColorProfilePath, FileMode.Open, FileAccess.Read);
-            return new PdfOutputIntent("", "", "", "sRGB IEC61966-2.1", @is);
-        }
-
-        /// <summary>Create pdfWriter.</summary>
-        protected internal virtual PdfWriter GetPdfWriter() {
-            return new PdfWriter(new ByteArrayOutputStream(), new WriterProperties().AddUAXmpMetadata());
-        }
-
         /// <summary>Gets image name from path.</summary>
-        private String GetImageName(String path, IList<String> languages) {
+        protected internal virtual String GetImageName(String path, IList<String> languages) {
             String lang = (languages != null && languages.Count > 0) ? "_" + String.Join("", languages) : "";
             String img = path.Substring(path.LastIndexOf(System.IO.Path.DirectorySeparatorChar)).Substring(1).Replace(
                 ".", "_");

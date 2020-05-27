@@ -20,8 +20,6 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_PROCESS_IMAGE = "Cannot process " + "image: {0}";
 
-        public const String READING_IMAGE_AS_PIX = "Trying to read image {0} as pix: {1}";
-
         public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
 
         public const String CREATED_TEMPORARY_FILE = "Created temp file {0}";
@@ -35,6 +33,10 @@ namespace iText.Pdfocr.Tesseract4 {
         public const String START_OCR_FOR_IMAGES = "Starting ocr for {0} image(s)";
 
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image {0}";
+
+        public const String CANNOT_GET_TEMPORARY_DIRECTORY = "Cannot get " + "temporary directory: {0}";
+
+        public const String CANNOT_CONVERT_IMAGE_TO_PIX = "Cannot convert image to pix: {0}";
 
         private Tesseract4LogMessageConstant() {
         }

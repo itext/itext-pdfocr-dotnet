@@ -90,35 +90,41 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="pageNumber">number of page to be processed</param>
         public override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber) {
-            IList<String> command = new List<String>();
+            IList<String> @params = new List<String>();
+            String execPath = null;
             String imagePath = null;
             try {
                 imagePath = inputImage.FullName;
                 // path to tesseract executable
-                AddPathToExecutable(command);
-                CheckTesseractInstalled();
+                if (GetPathToExecutable() == null || String.IsNullOrEmpty(GetPathToExecutable())) {
+                    throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE);
+                }
+                else {
+                    execPath = AddQuotes(GetPathToExecutable());
+                }
+                CheckTesseractInstalled(execPath);
                 // path to tess data
-                AddTessData(command);
+                AddTessData(@params);
                 // validate languages before preprocessing started
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());
                 // preprocess input file if needed and add it
                 imagePath = PreprocessImage(inputImage, pageNumber);
-                AddInputFile(command, imagePath);
+                AddInputFile(@params, imagePath);
                 // output file
-                AddOutputFile(command, outputFiles[0], outputFormat);
+                AddOutputFile(@params, outputFiles[0], outputFormat);
                 // page segmentation mode
-                AddPageSegMode(command);
+                AddPageSegMode(@params);
                 // add user words if needed
-                AddUserWords(command);
+                AddUserWords(@params);
                 // required languages
-                AddLanguages(command);
+                AddLanguages(@params);
                 if (outputFormat.Equals(OutputFormat.HOCR)) {
                     // path to hocr script
-                    SetHocrOutput(command);
+                    SetHocrOutput(@params);
                 }
                 // set default user defined dpi
-                AddDefaultDpi(command);
-                TesseractOcrUtil.RunCommand(command, IsWindows());
+                AddDefaultDpi(@params);
+                TesseractHelper.RunCommand(execPath, @params);
             }
             catch (Tesseract4OcrException e) {
                 LogManager.GetLogger(GetType()).Error(e.Message);
@@ -144,18 +150,6 @@ namespace iText.Pdfocr.Tesseract4 {
                     LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , GetTesseract4OcrEngineProperties().GetPathToUserWordsFile(), e.Message));
                 }
-            }
-        }
-
-        /// <summary>Adds path to tesseract executable to the command.</summary>
-        /// <param name="command">result command as list of strings</param>
-        private void AddPathToExecutable(IList<String> command) {
-            // path to tesseract executable cannot be uninitialized
-            if (GetPathToExecutable() == null || String.IsNullOrEmpty(GetPathToExecutable())) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE);
-            }
-            else {
-                command.Add(AddQuotes(GetPathToExecutable()));
             }
         }
 
@@ -266,10 +260,10 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Check whether tesseract executable is installed on the machine and
         /// provided path to tesseract executable is correct.
         /// </summary>
-        private void CheckTesseractInstalled() {
+        /// <param name="execPath">path to tesseract executable</param>
+        private void CheckTesseractInstalled(String execPath) {
             try {
-                IList<String> cmd = JavaUtil.ArraysAsList(AddQuotes(GetPathToExecutable()), "--version");
-                TesseractOcrUtil.RunCommand(cmd, IsWindows());
+                TesseractHelper.RunCommand(execPath, JavaCollectionsUtil.SingletonList<String>("--version"));
             }
             catch (Tesseract4OcrException e) {
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_NOT_FOUND, e);

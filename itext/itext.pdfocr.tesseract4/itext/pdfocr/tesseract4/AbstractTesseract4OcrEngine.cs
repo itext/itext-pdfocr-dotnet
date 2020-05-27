@@ -59,20 +59,14 @@ namespace iText.Pdfocr.Tesseract4 {
         /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
-        /// <param name="outputFiles">
-        /// 
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of output files
-        /// (one per each page)
-        /// </param>
+        /// <param name="outputFile">output file for the result for the first page</param>
         /// <param name="outputFormat">
         /// selected
         /// <see cref="OutputFormat"/>
         /// for tesseract
         /// </param>
-        public virtual void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            ) {
-            DoTesseractOcr(inputImage, outputFiles, outputFormat, 1);
+        public virtual void DoTesseractOcr(FileInfo inputImage, FileInfo outputFile, OutputFormat outputFormat) {
+            DoTesseractOcr(inputImage, JavaCollectionsUtil.SingletonList<FileInfo>(outputFile), outputFormat, 1);
         }
 
         /// <summary>

@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using iText.IO.Util;
 using iText.Kernel;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Pdfa;
 using iText.Pdfocr.Helpers;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
     public class PdfA3uTest : ExtendedITextTest {
@@ -71,6 +73,32 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
                 ());
             pdfDocument.Close();
+        }
+
+        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestNonCompliantThaiPdfA() {
+            NUnit.Framework.Assert.That(() =>  {
+                String testName = "testNonCompliantThaiPdfA";
+                String path = PdfHelper.GetThaiImagePath();
+                String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
+                PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK
+                    ), PdfHelper.GetRGBPdfOutputIntent());
+            }
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS)))
+;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestCompliantThaiPdfA() {
+            String testName = "testCompliantThaiPdfA";
+            String path = PdfHelper.GetThaiImagePath();
+            String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
+            ocrPdfCreatorProperties.SetFontPath(PdfHelper.GetKanitFontPath());
+            PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
+                ());
         }
     }
 }

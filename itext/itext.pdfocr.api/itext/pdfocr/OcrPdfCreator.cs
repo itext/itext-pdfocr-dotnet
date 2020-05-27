@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Common.Logging;
 using iText.IO.Font;
+using iText.IO.Font.Otf;
 using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel.Font;
@@ -278,13 +279,14 @@ namespace iText.Pdfocr {
         /// input image if it is a single page or its one page if
         /// this is a multi-page image
         /// </param>
+        /// <param name="createPdfA3u">true if Pdf/A3u document is being created</param>
         private void AddToCanvas(PdfDocument pdfDocument, PdfFont font, Rectangle imageSize, IList<TextInfo> pageText
-            , ImageData imageData) {
+            , ImageData imageData, bool createPdfA3u) {
             Rectangle rectangleSize = ocrPdfCreatorProperties.GetPageSize() == null ? imageSize : ocrPdfCreatorProperties
                 .GetPageSize();
             PageSize size = new PageSize(rectangleSize);
             PdfPage pdfPage = pdfDocument.AddNewPage(size);
-            PdfCanvas canvas = new PdfCanvas(pdfPage);
+            PdfCanvas canvas = new OcrPdfCreator.NotDefCheckingPdfCanvas(pdfPage, createPdfA3u);
             PdfLayer imageLayer = new PdfLayer(ocrPdfCreatorProperties.GetImageLayerName(), pdfDocument);
             PdfLayer textLayer = new PdfLayer(ocrPdfCreatorProperties.GetTextLayerName(), pdfDocument);
             canvas.BeginLayer(imageLayer);
@@ -294,7 +296,13 @@ namespace iText.Pdfocr {
             float multiplier = imageData == null ? 1 : imageSize.GetWidth() / PdfCreatorUtil.GetPoints(imageData.GetWidth
                 ());
             canvas.BeginLayer(textLayer);
-            AddTextToCanvas(imageSize, pageText, canvas, font, multiplier, pdfPage.GetMediaBox());
+            try {
+                AddTextToCanvas(imageSize, pageText, canvas, font, multiplier, pdfPage.GetMediaBox());
+            }
+            catch (OcrException e) {
+                LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
+                throw new OcrException(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
+            }
             canvas.EndLayer();
         }
 
@@ -326,7 +334,8 @@ namespace iText.Pdfocr {
         private PdfDocument CreatePdfDocument(PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent, IDictionary<FileInfo
             , IDictionary<int, IList<TextInfo>>> imagesTextData) {
             PdfDocument pdfDocument;
-            if (pdfOutputIntent != null) {
+            bool createPdfA3u = pdfOutputIntent != null;
+            if (createPdfA3u) {
                 pdfDocument = new PdfADocument(pdfWriter, PdfAConformanceLevel.PDF_A_3U, pdfOutputIntent);
             }
             else {
@@ -352,7 +361,7 @@ namespace iText.Pdfocr {
                     throw new OcrException(OcrException.CANNOT_READ_FONT);
                 }
             }
-            AddDataToPdfDocument(imagesTextData, pdfDocument, defaultFont);
+            AddDataToPdfDocument(imagesTextData, pdfDocument, defaultFont, createPdfA3u);
             return pdfDocument;
         }
 
@@ -368,8 +377,9 @@ namespace iText.Pdfocr {
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </param>
         /// <param name="font">font for the placed text (could be custom or default)</param>
+        /// <param name="createPdfA3u">true if Pdf/A3u document is being created</param>
         private void AddDataToPdfDocument(IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData, 
-            PdfDocument pdfDocument, PdfFont font) {
+            PdfDocument pdfDocument, PdfFont font, bool createPdfA3u) {
             foreach (KeyValuePair<FileInfo, IDictionary<int, IList<TextInfo>>> entry in imagesTextData) {
                 try {
                     FileInfo inputImage = entry.Key;
@@ -383,7 +393,7 @@ namespace iText.Pdfocr {
                             Rectangle imageSize = PdfCreatorUtil.CalculateImageSize(imageData, ocrPdfCreatorProperties.GetScaleMode(), 
                                 ocrPdfCreatorProperties.GetPageSize());
                             if (imageTextData.ContainsKey(page + 1)) {
-                                AddToCanvas(pdfDocument, font, imageSize, imageTextData.Get(page + 1), imageData);
+                                AddToCanvas(pdfDocument, font, imageSize, imageTextData.Get(page + 1), imageData, createPdfA3u);
                             }
                         }
                     }
@@ -470,6 +480,48 @@ namespace iText.Pdfocr {
                         canvas.Close();
                     }
                 }
+            }
+        }
+
+        /// <summary>A handler for pdf canvas that validates existing glyphs.</summary>
+        private class NotDefCheckingPdfCanvas : PdfCanvas {
+            private readonly bool createPdfA3u;
+
+            public NotDefCheckingPdfCanvas(PdfPage page, bool createPdfA3u)
+                : base(page) {
+                this.createPdfA3u = createPdfA3u;
+            }
+
+            public override PdfCanvas ShowText(GlyphLine text, IEnumerator<GlyphLine.GlyphLinePart> iterator) {
+                PdfFont currentFont = GetGraphicsState().GetFont();
+                bool notDefGlyphsExists = false;
+                for (int i = text.start; i < text.end; i++) {
+                    if (IsNotDefGlyph(currentFont, text.Get(i))) {
+                        notDefGlyphsExists = true;
+                        if (this.createPdfA3u) {
+                            // exception is thrown only if Pdf/A document is
+                            // being created
+                            throw new OcrException(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS);
+                        }
+                    }
+                }
+                // Warning is logged if not Pdf/A document is being created
+                if (notDefGlyphsExists) {
+                    LOGGER.Warn(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS);
+                }
+                return base.ShowText(text, iterator);
+            }
+
+            private static bool IsNotDefGlyph(PdfFont font, Glyph glyph) {
+                if (font is PdfType0Font || font is PdfTrueTypeFont) {
+                    return glyph.GetCode() == 0;
+                }
+                else {
+                    if (font is PdfType1Font || font is PdfType3Font) {
+                        return glyph.GetCode() == -1;
+                    }
+                }
+                return false;
             }
         }
     }

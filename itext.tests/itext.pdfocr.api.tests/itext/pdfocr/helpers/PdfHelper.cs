@@ -10,6 +10,8 @@ namespace iText.Pdfocr.Helpers {
     public class PdfHelper {
         public const String DEFAULT_IMAGE_NAME = "numbers_01.jpg";
 
+        public const String THAI_IMAGE_NAME = "thai.PNG";
+
         public const String DEFAULT_EXPECTED_RESULT = "619121";
 
         // directory with test files
@@ -31,9 +33,19 @@ namespace iText.Pdfocr.Helpers {
             return GetImagesTestDirectory() + DEFAULT_IMAGE_NAME;
         }
 
+        /// <summary>Returns path to thai test image.</summary>
+        public static String GetThaiImagePath() {
+            return GetImagesTestDirectory() + THAI_IMAGE_NAME;
+        }
+
         /// <summary>Returns path to test font.</summary>
         public static String GetFreeSansFontPath() {
             return TEST_DIRECTORY + "fonts/FreeSans.ttf";
+        }
+
+        /// <summary>Returns path to test font.</summary>
+        public static String GetKanitFontPath() {
+            return TEST_DIRECTORY + "fonts/Kanit-Regular.ttf";
         }
 
         /// <summary>Returns target directory (because target/test could not exist).</summary>
