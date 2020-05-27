@@ -233,7 +233,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     SetUserWords(language, inputStream);
                 }
                 catch (System.IO.IOException e) {
-                    LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotUseUserWords
+                    LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
                         , e.Message));
                 }
             }
@@ -280,7 +280,8 @@ namespace iText.Pdfocr.Tesseract4 {
                     SetLanguages(languagesList);
                 }
                 else {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.LanguageIsNotInTheList).SetMessageParams(language);
+                    throw new Tesseract4OcrException(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST).SetMessageParams(language
+                        );
                 }
             }
             try {
@@ -296,7 +297,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (System.IO.IOException e) {
                 SetPathToUserWordsFile(null);
-                LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotUseUserWords
+                LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
                     , e.Message));
             }
             return this;

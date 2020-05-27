@@ -131,7 +131,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                 }
                 catch (SecurityException e) {
-                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotDeleteFile
+                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , imagePath, e.Message));
                 }
                 try {
@@ -140,7 +140,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                 }
                 catch (SecurityException e) {
-                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotDeleteFile
+                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , GetTesseract4OcrEngineProperties().GetPathToUserWordsFile(), e.Message));
                 }
             }
@@ -151,7 +151,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private void AddPathToExecutable(IList<String> command) {
             // path to tesseract executable cannot be uninitialized
             if (GetPathToExecutable() == null || String.IsNullOrEmpty(GetPathToExecutable())) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CannotFindPathToTesseractExecutable);
+                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE);
             }
             else {
                 command.Add(AddQuotes(GetPathToExecutable()));
@@ -231,7 +231,7 @@ namespace iText.Pdfocr.Tesseract4 {
             String extension = outputFormat.Equals(OutputFormat.HOCR) ? ".hocr" : ".txt";
             String fileName = new String(outputFile.FullName.ToCharArray(), 0, outputFile.FullName.IndexOf(extension, 
                 StringComparison.Ordinal));
-            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CreatedTemporaryFile
+            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CREATED_TEMPORARY_FILE
                 , outputFile.FullName));
             command.Add(AddQuotes(fileName));
         }

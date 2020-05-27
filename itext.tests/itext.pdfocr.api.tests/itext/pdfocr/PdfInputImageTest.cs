@@ -6,7 +6,7 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
     public class PdfInputImageTest : ExtendedITextTest {
-        [LogMessage(LogMessageConstant.CannotReadInputImage, Count = 1)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCorruptedImage() {
             NUnit.Framework.Assert.That(() =>  {
@@ -19,7 +19,7 @@ namespace iText.Pdfocr {
 ;
         }
 
-        [LogMessage(LogMessageConstant.CannotReadInputImage, Count = 1)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCorruptedImageWithoutExtension() {
             NUnit.Framework.Assert.That(() =>  {

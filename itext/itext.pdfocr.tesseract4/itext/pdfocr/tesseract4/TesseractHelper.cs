@@ -16,9 +16,6 @@ namespace iText.Pdfocr.Tesseract4 {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelper)
             );
 
-        /// <summary>The Constant ENCODING_UTF_8.</summary>
-        private const String ENCODING_UTF_8 = "UTF-8";
-
         /// <summary>
         /// Creates a new
         /// <see cref="TesseractHelper"/>
@@ -37,8 +34,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (Exception e) {
-                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotDeleteFile, pathToFile, e.Message)
-                    );
+                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
+                    ));
             }
         }
 
@@ -71,8 +68,8 @@ namespace iText.Pdfocr.Tesseract4 {
             foreach (FileInfo inputFile in inputFiles) {
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
                     FileStream fileInputStream = new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read);
-                    Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(fileInputStream, ENCODING_UTF_8, inputFile.FullName
-                        );
+                    Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(fileInputStream, System.Text.Encoding.UTF8.Name(), 
+                        inputFile.FullName);
                     Elements pages = doc.GetElementsByClass("ocr_page");
                     Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*");
                     Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
@@ -139,7 +136,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     .UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotReadFile, txtFile.FullName, e.Message
+                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, txtFile.FullName, e.Message
                     ));
             }
             return content;
@@ -168,7 +165,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotWriteToFile, path, e.Message));
+                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE, path, e.Message));
             }
         }
     }

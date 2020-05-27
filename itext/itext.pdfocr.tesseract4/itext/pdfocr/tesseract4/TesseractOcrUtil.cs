@@ -77,16 +77,16 @@ namespace iText.Pdfocr.Tesseract4 {
                 bool cmdSucceeded = process.WaitForExit(3 * 60 * 60 * 1000);
                 if (!cmdSucceeded)
                 {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.TesseractFailed)
+                    throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED)
                         .SetMessageParams(String.Join(" ", command));
                 }
             }
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractOcrUtil))
-                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TesseractFailed,
+                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED,
                                 e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.TesseractFailed)
+                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED)
                     .SetMessageParams(e.Message);
             }
         }
@@ -112,7 +112,7 @@ namespace iText.Pdfocr.Tesseract4 {
             {
                 LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractOcrUtil))
                     .Info(MessageFormatUtil.Format(
-                        Tesseract4LogMessageConstant.PageNumberIsIncorrect,
+                        Tesseract4LogMessageConstant.PAGE_NUMBER_IS_INCORRECT,
                         pageNumber,
                         inputFile.FullName));
                 return null;
@@ -197,7 +197,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 else
                 {
                     LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractOcrUtil))
-                        .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotConvertImageToGrayscale, depth));
+                        .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_GRAYSCALE, depth));
                     return pix;
                 }
             }
@@ -232,17 +232,19 @@ namespace iText.Pdfocr.Tesseract4 {
                     thresholdPix = pix.BinarizeOtsuAdaptiveThreshold(pix.Width, pix.Height, 0, 0, 0);
                     if (thresholdPix != null && thresholdPix.Width > 0 && thresholdPix.Height > 0)
                     {
+                        DestroyPix(pix);
                         return thresholdPix;
                     }
                     else
                     {
+                        DestroyPix(thresholdPix);
                         return pix;
                     }
                 }
                 else
                 {
                     LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractOcrUtil))
-                        .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotBinarizeImage, pix.Depth));
+                        .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
                     return pix;
                 }
             }
@@ -318,6 +320,14 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Creates tesseract instance with parameters.
         /// Method is used to initialize tesseract instance with parameters if it
         /// haven't been initialized yet.
+        /// In this method in java 'tessData', 'languages' and 'userWordsFilePath'
+        /// properties are unused as they will be set using setters in
+        /// <see cref="SetTesseractProperties"/> method. In .Net all these properties
+        /// are needed to be provided in tesseract constructor in order to
+        /// initialize tesseract instance.Thus, tesseract initialization takes
+        /// place in <see cref="Tesseract4LibOcrEngine.Tesseract4LibOcrEngine(Tesseract4OcrEngineProperties)"/> constructor in
+        /// java, but in .Net it happens only after all properties are validated,
+        /// i.e. just before OCR process.
         /// </remarks>
         /// <param name="tessData">path to tess data directory</param>
         /// <param name="languages">
@@ -331,25 +341,17 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="Tesseract.TesseractEngine"/>
         /// object
         /// </returns>
-        internal static TesseractEngine InitializeTesseractInstance(String tessData, String languages,
-            bool isWindows, String userWordsFilePath) {
-            return new TesseractEngine(tessData, languages,
-                userWordsFilePath != null ? EngineMode.TesseractOnly : EngineMode.Default);
-        }
-
-        /// <summary>Creates tesseract instance with parameters.</summary>
-        /// <remarks>
-        /// Creates tesseract instance with parameters.
-        /// Method is used to initialize tesseract instance in constructor (in java).
-        /// </remarks>
-        /// <param name="isWindows">true is current os is windows</param>
-        /// <returns>
-        /// initialized
-        /// <see cref="Tesseract.TesseractEngine"/>
-        /// object
-        /// </returns>
-        internal static TesseractEngine InitializeTesseractInstance(bool isWindows) {
-            return null;
+        internal static TesseractEngine InitializeTesseractInstance(bool isWindows, String tessData, String languages, 
+            String userWordsFilePath) {
+            if (tessData == null && languages == null && userWordsFilePath == null) {
+                // this means that properties have not been validated yet 
+                // and Tesseract Engine will be initialized later, just before OCR process itself
+                return null;
+            } else
+            {
+                return new TesseractEngine(tessData, languages,
+                    userWordsFilePath != null ? EngineMode.TesseractOnly : EngineMode.Default);
+            }
         }
 
         /// <summary>Returns true if tesseract instance has been already disposed.</summary>
@@ -437,7 +439,7 @@ namespace iText.Pdfocr.Tesseract4 {
             } catch (Exception e) {
                 LogManager.GetLogger(typeof(TesseractOcrUtil))
                     .Info(MessageFormatUtil.Format(
-                        LogMessageConstant.ReadingImageAsPix,
+                        Tesseract4LogMessageConstant.READING_IMAGE_AS_PIX,
                         inputFile.FullName,
                         e.Message));
                 try {
@@ -445,7 +447,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 } catch (IOException ex) {
                     LogManager.GetLogger(typeof(TesseractOcrUtil))
                         .Info(MessageFormatUtil.Format(
-                            Tesseract4LogMessageConstant.CannotReadFile,
+                            Tesseract4LogMessageConstant.CANNOT_READ_FILE,
                             inputFile.FullName,
                             ex.Message));
                 }
@@ -509,7 +511,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Exception e)
             {
                 LogManager.GetLogger(typeof(TesseractOcrUtil))
-                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotRetrievePagesFromImage, e.Message));
+                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE, e.Message));
             }
         }
 

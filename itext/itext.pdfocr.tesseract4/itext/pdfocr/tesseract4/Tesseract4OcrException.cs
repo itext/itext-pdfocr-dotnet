@@ -3,19 +3,19 @@ using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
     public class Tesseract4OcrException : OcrException {
-        public const String IncorrectInputImageFormat = "{0} format is not supported.";
+        public const String INCORRECT_INPUT_IMAGE_FORMAT = "{0} format is not supported.";
 
-        public const String IncorrectLanguage = "{0} does not exist in {1}";
+        public const String INCORRECT_LANGUAGE = "{0} does not exist in {1}";
 
-        public const String LanguageIsNotInTheList = "Provided list of languages doesn't contain {0} language";
+        public const String LANGUAGE_IS_NOT_IN_THE_LIST = "Provided list of languages doesn't contain {0} language";
 
-        public const String CannotReadProvidedImage = "Cannot read input image {0}";
+        public const String CANNOT_READ_PROVIDED_IMAGE = "Cannot read input image {0}";
 
-        public const String TesseractFailed = "Tesseract failed. " + "Please check provided parameters";
+        public const String TESSERACT_FAILED = "Tesseract failed. " + "Please check provided parameters";
 
-        public const String CannotFindPathToTesseractExecutable = "Cannot find path to tesseract executable.";
+        public const String CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE = "Cannot find path to tesseract executable.";
 
-        public const String CannotFindPathToTessDataDirectory = "Cannot find path to tess data directory";
+        public const String CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY = "Cannot find path to tess data directory";
 
         /// <summary>Creates a new TesseractException.</summary>
         /// <param name="msg">the detail message.</param>

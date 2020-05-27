@@ -88,8 +88,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         /// <param name="txtFile">file to be created</param>
         public virtual void CreateTxt(IList<FileInfo> inputImages, FileInfo txtFile) {
-            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(LogMessageConstant.StartOcrForImages, inputImages
-                .Count));
+            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.START_OCR_FOR_IMAGES
+                , inputImages.Count));
             StringBuilder content = new StringBuilder();
             foreach (FileInfo inputImage in inputImages) {
                 content.Append(DoImageOcr(inputImage, OutputFormat.TXT));
@@ -256,15 +256,15 @@ namespace iText.Pdfocr.Tesseract4 {
             if (languagesList.Count == 0) {
                 if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + GetTesseract4OcrEngineProperties
                     ().GetDefaultLanguage() + suffix).Exists) {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.IncorrectLanguage).SetMessageParams(GetTesseract4OcrEngineProperties
+                    throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_LANGUAGE).SetMessageParams(GetTesseract4OcrEngineProperties
                         ().GetDefaultLanguage() + suffix, GetTessData());
                 }
             }
             else {
                 foreach (String lang in languagesList) {
                     if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix).Exists) {
-                        throw new Tesseract4OcrException(Tesseract4OcrException.IncorrectLanguage).SetMessageParams(lang + suffix, 
-                            GetTessData());
+                        throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_LANGUAGE).SetMessageParams(lang + suffix
+                            , GetTessData());
                     }
                 }
             }
@@ -331,7 +331,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotOcrInputFile
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_OCR_INPUT_FILE
                     , e.Message));
             }
             IDictionary<String, IDictionary<int, IList<TextInfo>>> result = new LinkedDictionary<String, IDictionary<int
@@ -352,7 +352,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 return GetTesseract4OcrEngineProperties().GetPathToTessData();
             }
             else {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CannotFindPathToTessDataDirectory);
+                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY);
             }
         }
 
@@ -397,9 +397,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             if (!isValid) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotReadInputImage
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , image.FullName));
-                throw new Tesseract4OcrException(Tesseract4OcrException.IncorrectInputImageFormat).SetMessageParams(extension
+                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension
                     );
             }
             return isValid;

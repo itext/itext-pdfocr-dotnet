@@ -156,7 +156,7 @@ namespace iText.Pdfocr {
         /// </returns>
         public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent
             ) {
-            LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.StartOcrForImages, inputImages.Count));
+            LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.Count));
             // map contains:
             // keys: image files
             // values:
@@ -240,7 +240,7 @@ namespace iText.Pdfocr {
                     return System.IO.File.ReadAllBytes(System.IO.Path.Combine(ocrPdfCreatorProperties.GetFontPath()));
                 }
                 catch (Exception e) {
-                    LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadProvidedFont, e.Message));
+                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_PROVIDED_FONT, e.Message));
                     return GetDefaultFont();
                 }
             }
@@ -258,7 +258,7 @@ namespace iText.Pdfocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadDefaultFont, e.Message));
+                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT, e.Message));
                 return new byte[0];
             }
         }
@@ -343,13 +343,13 @@ namespace iText.Pdfocr {
                 defaultFont = PdfFontFactory.CreateFont(GetFont(), PdfEncodings.IDENTITY_H, true);
             }
             catch (Exception e) {
-                LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadProvidedFont, e.Message));
+                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_PROVIDED_FONT, e.Message));
                 try {
                     defaultFont = PdfFontFactory.CreateFont(GetDefaultFont(), PdfEncodings.IDENTITY_H, true);
                 }
                 catch (Exception ex) {
-                    LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadDefaultFont, ex.Message));
-                    throw new OcrException(OcrException.CannotReadFont);
+                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT, ex.Message));
+                    throw new OcrException(OcrException.CANNOT_READ_FONT);
                 }
             }
             AddDataToPdfDocument(imagesTextData, pdfDocument, defaultFont);
@@ -374,8 +374,8 @@ namespace iText.Pdfocr {
                 try {
                     FileInfo inputImage = entry.Key;
                     IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage);
-                    LOGGER.Info(MessageFormatUtil.Format(LogMessageConstant.NumberOfPagesInImage, inputImage.ToString(), imageDataList
-                        .Count));
+                    LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
+                        (), imageDataList.Count));
                     IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
                     if (imageTextData.Keys.Count > 0) {
                         for (int page = 0; page < imageDataList.Count; ++page) {
@@ -389,7 +389,8 @@ namespace iText.Pdfocr {
                     }
                 }
                 catch (System.IO.IOException e) {
-                    LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotAddDataToPdfDocument, e.Message));
+                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_ADD_DATA_TO_PDF_DOCUMENT, e.Message)
+                        );
                 }
             }
         }

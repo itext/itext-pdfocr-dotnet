@@ -106,14 +106,14 @@ namespace iText.Pdfocr.Imageformats {
             NUnit.Framework.Assert.AreEqual(expectedOutput, realOutputHocr);
         }
 
-        [LogMessage(Tesseract4LogMessageConstant.CannotReadInputImage, Count = 1)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputWrongFormat() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "example.txt");
                 GetTextFromPdf(tesseractReader, file);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectInputImageFormat, "txt")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT, "txt")))
 ;
         }
 

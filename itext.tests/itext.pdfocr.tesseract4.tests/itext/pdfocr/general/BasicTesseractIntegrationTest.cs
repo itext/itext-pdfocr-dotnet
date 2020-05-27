@@ -89,7 +89,7 @@ namespace iText.Pdfocr.General {
             NUnit.Framework.Assert.AreEqual("", strategy.GetResultantText());
         }
 
-        [LogMessage(Tesseract4LogMessageConstant.CannotReadInputImage, Count = 1)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputInvalidImage() {
             NUnit.Framework.Assert.That(() =>  {
@@ -101,11 +101,11 @@ namespace iText.Pdfocr.General {
                 OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
                 ocrPdfCreator.CreatePdf(JavaUtil.ArraysAsList(file3, file1, file2, file3), GetPdfWriter());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectInputImageFormat, "txt")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT, "txt")))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.CannotFindPathToTessDataDirectory, Count = 1)]
+        [LogMessage(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNullPathToTessData() {
             NUnit.Framework.Assert.That(() =>  {
@@ -114,11 +114,11 @@ namespace iText.Pdfocr.General {
                     (null));
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("eng"));
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CannotFindPathToTessDataDirectory))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.IncorrectLanguage, Count = 1)]
+        [LogMessage(Tesseract4OcrException.INCORRECT_LANGUAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestPathToTessDataWithoutData() {
             NUnit.Framework.Assert.That(() =>  {
@@ -127,11 +127,11 @@ namespace iText.Pdfocr.General {
                     ("test/"));
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("eng"));
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectLanguage, "eng.traineddata", "test/")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_LANGUAGE, "eng.traineddata", "test/")))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.CannotFindPathToTessDataDirectory, Count = 1)]
+        [LogMessage(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectPathToTessData3() {
             NUnit.Framework.Assert.That(() =>  {
@@ -142,7 +142,7 @@ namespace iText.Pdfocr.General {
                 NUnit.Framework.Assert.AreEqual("", tesseractReader.GetTesseract4OcrEngineProperties().GetPathToTessData()
                     );
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CannotFindPathToTessDataDirectory))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY))
 ;
         }
 
@@ -172,29 +172,29 @@ namespace iText.Pdfocr.General {
             }
         }
 
-        [LogMessage(Tesseract4OcrException.IncorrectLanguage, Count = 1)]
+        [LogMessage(Tesseract4OcrException.INCORRECT_LANGUAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectLanguage() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("spa_new"));
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectLanguage, "spa_new.traineddata", langTessDataDirectory)))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_LANGUAGE, "spa_new.traineddata", langTessDataDirectory)))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.IncorrectLanguage, Count = 1)]
+        [LogMessage(Tesseract4OcrException.INCORRECT_LANGUAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestListOfLanguagesWithOneIncorrectLanguage() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(testImagesDirectory + "spanish_01.jpg");
                 GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("spa", "spa_new", "spa_old"));
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectLanguage, "spa_new.traineddata", langTessDataDirectory)))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_LANGUAGE, "spa_new.traineddata", langTessDataDirectory)))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.IncorrectLanguage, Count = 1)]
+        [LogMessage(Tesseract4OcrException.INCORRECT_LANGUAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectScriptsName() {
             NUnit.Framework.Assert.That(() =>  {
@@ -203,11 +203,11 @@ namespace iText.Pdfocr.General {
                     (scriptTessDataDirectory));
                 GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("English"));
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectLanguage, "English.traineddata", scriptTessDataDirectory)))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_LANGUAGE, "English.traineddata", scriptTessDataDirectory)))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.IncorrectLanguage, Count = 1)]
+        [LogMessage(Tesseract4OcrException.INCORRECT_LANGUAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestListOfScriptsWithOneIncorrect() {
             NUnit.Framework.Assert.That(() =>  {
@@ -216,7 +216,7 @@ namespace iText.Pdfocr.General {
                     (scriptTessDataDirectory));
                 GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("Georgian", "Japanese", "English"));
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.IncorrectLanguage, "English.traineddata", scriptTessDataDirectory)))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_LANGUAGE, "English.traineddata", scriptTessDataDirectory)))
 ;
         }
 

@@ -5,9 +5,9 @@ using iText.IO.Util;
 namespace iText.Pdfocr {
     /// <summary>Exception class for custom exceptions.</summary>
     public class OcrException : Exception {
-        public const String CannotReadInputImage = "Cannot read input image";
+        public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
-        public const String CannotReadFont = "Cannot read font";
+        public const String CANNOT_READ_FONT = "Cannot read font";
 
         private IList<String> messageParams;
 

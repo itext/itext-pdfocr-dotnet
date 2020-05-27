@@ -370,7 +370,7 @@ namespace iText.Pdfocr {
                     .UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CannotReadFile, file.FullName, e.Message
+                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message
                     ));
             }
             return content;

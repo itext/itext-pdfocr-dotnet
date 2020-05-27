@@ -116,8 +116,8 @@ namespace iText.Pdfocr {
                         images.Add(imageData);
                     }
                     catch (iText.IO.IOException e) {
-                        LOGGER.Error(MessageFormatUtil.Format(LogMessageConstant.CannotReadInputImage, e.Message));
-                        throw new OcrException(OcrException.CannotReadInputImage);
+                        LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                        throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE);
                     }
                 }
             }

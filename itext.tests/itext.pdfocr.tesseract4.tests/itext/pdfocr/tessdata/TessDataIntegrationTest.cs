@@ -474,7 +474,7 @@ namespace iText.Pdfocr.Tessdata {
                 properties.SetUserWords("spa", new FileStream(userWords, FileMode.Open, FileAccess.Read));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LanguageIsNotInTheList, "spa")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa")))
 ;
         }
 
@@ -485,7 +485,7 @@ namespace iText.Pdfocr.Tessdata {
                 properties.SetUserWords("eng1", JavaUtil.ArraysAsList("word1", "word2"));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LanguageIsNotInTheList, "eng1")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1")))
 ;
         }
 
@@ -497,7 +497,7 @@ namespace iText.Pdfocr.Tessdata {
                 properties.SetUserWords("test", new FileStream(userWords, FileMode.Open, FileAccess.Read));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LanguageIsNotInTheList, "test")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST, "test")))
 ;
         }
     }

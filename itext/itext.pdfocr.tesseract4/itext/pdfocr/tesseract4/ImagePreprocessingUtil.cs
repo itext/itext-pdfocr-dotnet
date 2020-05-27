@@ -111,7 +111,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 pix = TesseractOcrUtil.ReadPix(inputFile);
             }
             if (pix == null) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CannotReadProvidedImage).SetMessageParams(inputFile
+                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile
                     .FullName);
             }
             return TesseractOcrUtil.PreprocessPixAndSave(pix);

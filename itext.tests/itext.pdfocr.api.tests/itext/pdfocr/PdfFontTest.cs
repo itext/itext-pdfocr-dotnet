@@ -24,7 +24,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual(color, fillColor);
         }
 
-        [LogMessage(LogMessageConstant.CannotReadProvidedFont, Count = 1)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_PROVIDED_FONT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidFont() {
             String testName = "testImageWithoutText";
