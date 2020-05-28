@@ -118,7 +118,7 @@ namespace iText.Pdfocr {
             return LANG_TESS_DATA_DIRECTORY;
         }
 
-        /// <summary>Retrieve text from specified page from given pdf document.</summary>
+        /// <summary>Retrieve text from specified page from given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             , int page, IList<String> languages, String fontPath) {
             String result = null;
@@ -134,25 +134,25 @@ namespace iText.Pdfocr {
             return result;
         }
 
-        /// <summary>Retrieve text from the first page of given pdf document setting font.</summary>
+        /// <summary>Retrieve text from the first page of given PDF document setting font.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             , IList<String> languages, String fontPath) {
             return GetTextFromPdf(tesseractReader, file, 1, languages, fontPath);
         }
 
-        /// <summary>Retrieve text from the first page of given pdf document.</summary>
+        /// <summary>Retrieve text from the first page of given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             , IList<String> languages) {
             return GetTextFromPdf(tesseractReader, file, 1, languages, null);
         }
 
-        /// <summary>Retrieve text from the required page of given pdf document.</summary>
+        /// <summary>Retrieve text from the required page of given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             , int page, IList<String> languages) {
             return GetTextFromPdf(tesseractReader, file, page, languages, null);
         }
 
-        /// <summary>Retrieve text from the first page of given pdf document.</summary>
+        /// <summary>Retrieve text from the first page of given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             ) {
             return GetTextFromPdf(tesseractReader, file, 1, null, null);
@@ -218,11 +218,11 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// </summary>
         /// <remarks>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// (Method is used for compare tool)
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
@@ -259,7 +259,7 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// </summary>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
             imgPath, String pdfPath, IList<String> languages, Color color) {
@@ -268,11 +268,11 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// </summary>
         /// <remarks>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// (Text will be invisible)
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
@@ -282,11 +282,11 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// </summary>
         /// <remarks>
         /// Perform OCR using provided path to image (imgPath)
-        /// and save result pdf document to "pdfPath".
+        /// and save result PDF document to "pdfPath".
         /// (Method is used for compare tool)
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 

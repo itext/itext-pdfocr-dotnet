@@ -9,7 +9,7 @@ namespace iText.Pdfocr {
 
         public const String CANNOT_READ_FONT = "Cannot read font";
 
-        public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create " + "Pdf document: {0}";
+        public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create " + "PDF document: {0}";
 
         private IList<String> messageParams;
 

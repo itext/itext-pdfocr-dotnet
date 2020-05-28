@@ -28,7 +28,7 @@ namespace iText.Pdfocr {
         /// font.
         /// </summary>
         /// <param name="document">
-        /// pdf document as a
+        /// PDF document as a
         /// <see cref="iText.Layout.Document"/>
         /// object
         /// </param>
@@ -117,7 +117,7 @@ namespace iText.Pdfocr {
                     }
                     catch (iText.IO.IOException e) {
                         LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                        throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE);
+                        throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
                     }
                 }
             }

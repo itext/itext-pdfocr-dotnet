@@ -15,6 +15,7 @@ namespace iText.Pdfocr {
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetScaleMode(ScaleMode.SCALE_TO_FIT);
             properties.SetTextLayerName("Text1");
             Color color = DeviceCmyk.CYAN;
             properties.SetTextColor(color);

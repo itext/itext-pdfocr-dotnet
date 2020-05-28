@@ -81,7 +81,7 @@ namespace iText.Pdfocr {
             return pixels * 3f / 4f;
         }
 
-        /// <summary>Retrieve image BBox rectangle from the first page from given pdf document.</summary>
+        /// <summary>Retrieve image BBox rectangle from the first page from given PDF document.</summary>
         public static Rectangle GetImageBBoxRectangleFromPdf(String path) {
             ExtractionStrategy extractionStrategy = PdfHelper.GetExtractionStrategy(path, "Image Layer");
             return extractionStrategy.GetImageBBoxRectangle();

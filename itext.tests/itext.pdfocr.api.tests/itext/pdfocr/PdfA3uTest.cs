@@ -75,7 +75,7 @@ namespace iText.Pdfocr {
             pdfDocument.Close();
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 1)]
+        [LogMessage(OcrException.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNonCompliantThaiPdfA() {
             NUnit.Framework.Assert.That(() =>  {
@@ -85,7 +85,7 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK
                     ), PdfHelper.GetRGBPdfOutputIntent());
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS)))
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, 3611))))
 ;
         }
 

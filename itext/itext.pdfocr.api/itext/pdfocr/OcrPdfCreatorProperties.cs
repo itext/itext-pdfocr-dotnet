@@ -54,9 +54,9 @@ namespace iText.Pdfocr {
         /// </remarks>
         private String textLayerName = "Text Layer";
 
-        /// <summary>Pdf Language.</summary>
+        /// <summary>PDF Language.</summary>
         /// <remarks>
-        /// Pdf Language.
+        /// PDF Language.
         /// "en-US" by default.
         /// </remarks>
         private String pdfLang = "en-US";
@@ -261,23 +261,23 @@ namespace iText.Pdfocr {
             return this;
         }
 
-        /// <summary>Gets pdf language.</summary>
+        /// <summary>Gets PDF language.</summary>
         /// <returns>
-        /// pdf document language as
+        /// PDF document language as
         /// <see cref="System.String"/>
         /// </returns>
         public String GetPdfLang() {
             return pdfLang;
         }
 
-        /// <summary>Specify pdf natural language, and optionally locale.</summary>
+        /// <summary>Specify PDF natural language, and optionally locale.</summary>
         /// <remarks>
-        /// Specify pdf natural language, and optionally locale.
+        /// Specify PDF natural language, and optionally locale.
         /// For the content usage dictionary use
         /// <see cref="iText.Kernel.Pdf.PdfName.Language"/>
         /// </remarks>
         /// <param name="language">
-        /// pdf document language as
+        /// PDF document language as
         /// <see cref="System.String"/>
         /// ,
         /// e.g. "en-US", etc.
@@ -292,18 +292,18 @@ namespace iText.Pdfocr {
             return this;
         }
 
-        /// <summary>Gets pdf document title.</summary>
+        /// <summary>Gets PDF document title.</summary>
         /// <returns>
-        /// pdf title as
+        /// PDF title as
         /// <see cref="System.String"/>
         /// </returns>
         public String GetTitle() {
             return title;
         }
 
-        /// <summary>Sets pdf document title.</summary>
+        /// <summary>Sets PDF document title.</summary>
         /// <param name="title">
-        /// pdf title as
+        /// PDF title as
         /// <see cref="System.String"/>
         /// </param>
         /// <returns>
@@ -316,13 +316,13 @@ namespace iText.Pdfocr {
             return this;
         }
 
-        /// <summary>Returns path to the font to be used in pdf document.</summary>
+        /// <summary>Returns path to the font to be used in PDF document.</summary>
         /// <returns>path to the required font</returns>
         public virtual String GetFontPath() {
             return fontPath;
         }
 
-        /// <summary>Sets path to the font to be used in pdf document.</summary>
+        /// <summary>Sets path to the font to be used in PDF document.</summary>
         /// <param name="path">path to the required font</param>
         /// <returns>
         /// the

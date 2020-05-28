@@ -264,7 +264,7 @@ namespace iText.Pdfocr.Tessdata {
             }
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 1)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestHindiTextWithUrdu() {
             String imgPath = TEST_IMAGES_DIRECTORY + "hindi_01.jpg";
@@ -306,7 +306,7 @@ namespace iText.Pdfocr.Tessdata {
                 ));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 1)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestGeorgianText() {
             String imgPath = TEST_IMAGES_DIRECTORY + "georgian_01.jpg";
@@ -330,7 +330,7 @@ namespace iText.Pdfocr.Tessdata {
                 ));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 4)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 4)]
         [NUnit.Framework.Test]
         public virtual void TestBengali() {
             String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
@@ -350,7 +350,7 @@ namespace iText.Pdfocr.Tessdata {
             NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, new List<String>()));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 3)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 3)]
         [NUnit.Framework.Test]
         public virtual void TestChinese() {
             String imgPath = TEST_IMAGES_DIRECTORY + "chinese_01.jpg";
@@ -395,7 +395,7 @@ namespace iText.Pdfocr.Tessdata {
                 ()));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 2)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestBengaliScript() {
             String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
@@ -414,7 +414,7 @@ namespace iText.Pdfocr.Tessdata {
                 >("Bengali"), KOSUGI_FONT_PATH).StartsWith(expected));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 1)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestGeorgianTextWithScript() {
             String imgPath = TEST_IMAGES_DIRECTORY + "georgian_01.jpg";

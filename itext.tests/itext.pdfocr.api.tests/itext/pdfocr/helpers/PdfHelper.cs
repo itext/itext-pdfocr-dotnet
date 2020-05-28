@@ -71,14 +71,14 @@ namespace iText.Pdfocr.Helpers {
             return new PdfWriter(new MemoryStream(), new WriterProperties().AddUAXmpMetadata());
         }
 
-        /// <summary>Creates pdf rgb output intent for tests.</summary>
+        /// <summary>Creates PDF rgb output intent for tests.</summary>
         public static PdfOutputIntent GetRGBPdfOutputIntent() {
             String defaultRGBColorProfilePath = TEST_DIRECTORY + "profiles" + "/sRGB_CS_profile.icm";
             Stream @is = new FileStream(defaultRGBColorProfilePath, FileMode.Open, FileAccess.Read);
             return new PdfOutputIntent("", "", "", "sRGB IEC61966-2.1", @is);
         }
 
-        /// <summary>Creates pdf cmyk output intent for tests.</summary>
+        /// <summary>Creates PDF cmyk output intent for tests.</summary>
         public static PdfOutputIntent GetCMYKPdfOutputIntent() {
             String defaultCMYKColorProfilePath = TEST_DIRECTORY + "profiles/CoatedFOGRA27.icc";
             Stream @is = new FileStream(defaultCMYKColorProfilePath, FileMode.Open, FileAccess.Read);
@@ -126,7 +126,7 @@ namespace iText.Pdfocr.Helpers {
             }
         }
 
-        /// <summary>Retrieve text from specified page from given pdf document.</summary>
+        /// <summary>Retrieve text from specified page from given PDF document.</summary>
         public static String GetTextFromPdf(FileInfo file, String testName) {
             String result = null;
             String pdfPath = null;

@@ -19,13 +19,13 @@ using iText.Pdfa;
 namespace iText.Pdfocr {
     /// <summary>
     /// <see cref="OcrPdfCreator"/>
-    /// is the class that creates Pdf documents containing input
+    /// is the class that creates PDF documents containing input
     /// images and text that was recognized using provided
     /// <see cref="IOcrEngine"/>.
     /// </summary>
     /// <remarks>
     /// <see cref="OcrPdfCreator"/>
-    /// is the class that creates Pdf documents containing input
+    /// is the class that creates PDF documents containing input
     /// images and text that was recognized using provided
     /// <see cref="IOcrEngine"/>.
     /// <see cref="OcrPdfCreator"/>
@@ -116,7 +116,7 @@ namespace iText.Pdfocr {
         /// Performs OCR with set parameters using provided
         /// <see cref="IOcrEngine"/>
         /// and
-        /// creates pdf using provided
+        /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// and
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
@@ -125,7 +125,7 @@ namespace iText.Pdfocr {
         /// Performs OCR with set parameters using provided
         /// <see cref="IOcrEngine"/>
         /// and
-        /// creates pdf using provided
+        /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// and
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
@@ -143,7 +143,7 @@ namespace iText.Pdfocr {
         /// the
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// object
-        /// to write final pdf document to
+        /// to write final PDF document to
         /// </param>
         /// <param name="pdfOutputIntent">
         /// 
@@ -175,7 +175,7 @@ namespace iText.Pdfocr {
         /// Performs OCR with set parameters using provided
         /// <see cref="IOcrEngine"/>
         /// and
-        /// creates pdf using provided
+        /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
         /// </summary>
         /// <param name="inputImages">
@@ -187,7 +187,7 @@ namespace iText.Pdfocr {
         /// the
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// object
-        /// to write final pdf document to
+        /// to write final PDF document to
         /// </param>
         /// <returns>
         /// result
@@ -279,7 +279,7 @@ namespace iText.Pdfocr {
         /// input image if it is a single page or its one page if
         /// this is a multi-page image
         /// </param>
-        /// <param name="createPdfA3u">true if Pdf/A3u document is being created</param>
+        /// <param name="createPdfA3u">true if PDF/A3u document is being created</param>
         private void AddToCanvas(PdfDocument pdfDocument, PdfFont font, Rectangle imageSize, IList<TextInfo> pageText
             , ImageData imageData, bool createPdfA3u) {
             Rectangle rectangleSize = ocrPdfCreatorProperties.GetPageSize() == null ? imageSize : ocrPdfCreatorProperties
@@ -301,20 +301,20 @@ namespace iText.Pdfocr {
             }
             catch (OcrException e) {
                 LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
-                throw new OcrException(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
+                throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message);
             }
             canvas.EndLayer();
         }
 
         /// <summary>
-        /// Creates a new pdf document using provided properties, adds images with
+        /// Creates a new PDF document using provided properties, adds images with
         /// recognized text.
         /// </summary>
         /// <param name="pdfWriter">
         /// the
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// object
-        /// to write final pdf document to
+        /// to write final PDF document to
         /// </param>
         /// <param name="pdfOutputIntent">
         /// 
@@ -377,7 +377,7 @@ namespace iText.Pdfocr {
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </param>
         /// <param name="font">font for the placed text (could be custom or default)</param>
-        /// <param name="createPdfA3u">true if Pdf/A3u document is being created</param>
+        /// <param name="createPdfA3u">true if PDF/A3u document is being created</param>
         private void AddDataToPdfDocument(IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData, 
             PdfDocument pdfDocument, PdfFont font, bool createPdfA3u) {
             foreach (KeyValuePair<FileInfo, IDictionary<int, IList<TextInfo>>> entry in imagesTextData) {
@@ -483,7 +483,7 @@ namespace iText.Pdfocr {
             }
         }
 
-        /// <summary>A handler for pdf canvas that validates existing glyphs.</summary>
+        /// <summary>A handler for PDF canvas that validates existing glyphs.</summary>
         private class NotDefCheckingPdfCanvas : PdfCanvas {
             private readonly bool createPdfA3u;
 
@@ -495,19 +495,24 @@ namespace iText.Pdfocr {
             public override PdfCanvas ShowText(GlyphLine text, IEnumerator<GlyphLine.GlyphLinePart> iterator) {
                 PdfFont currentFont = GetGraphicsState().GetFont();
                 bool notDefGlyphsExists = false;
+                // default value for error message, it'll be updated with the
+                // unicode of the not found glyph
+                String message = PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER;
                 for (int i = text.start; i < text.end; i++) {
                     if (IsNotDefGlyph(currentFont, text.Get(i))) {
                         notDefGlyphsExists = true;
+                        message = MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER
+                            , text.Get(i).GetUnicode());
                         if (this.createPdfA3u) {
-                            // exception is thrown only if Pdf/A document is
+                            // exception is thrown only if PDF/A document is
                             // being created
-                            throw new OcrException(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS);
+                            throw new OcrException(message);
                         }
                     }
                 }
-                // Warning is logged if not Pdf/A document is being created
+                // Warning is logged if not PDF/A document is being created
                 if (notDefGlyphsExists) {
-                    LOGGER.Warn(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS);
+                    LOGGER.Warn(message);
                 }
                 return base.ShowText(text, iterator);
             }

@@ -67,14 +67,14 @@ namespace iText.Pdfocr.Pdfa3u {
             new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, TEST_DOCUMENTS_DIRECTORY, "diff_");
         }
 
-        /// <summary>Creates pdf cmyk output intent for tests.</summary>
+        /// <summary>Creates PDF cmyk output intent for tests.</summary>
         protected internal virtual PdfOutputIntent GetCMYKPdfOutputIntent() {
             Stream @is = new FileStream(DEFAULT_CMYK_COLOR_PROFILE_PATH, FileMode.Open, FileAccess.Read);
             return new PdfOutputIntent("Custom", "", "http://www.color.org", "Coated FOGRA27 (ISO 12647 - 2:2004)", @is
                 );
         }
 
-        /// <summary>Creates pdf rgb output intent for tests.</summary>
+        /// <summary>Creates PDF rgb output intent for tests.</summary>
         protected internal virtual PdfOutputIntent GetRGBPdfOutputIntent() {
             Stream @is = new FileStream(DEFAULT_RGB_COLOR_PROFILE_PATH, FileMode.Open, FileAccess.Read);
             return new PdfOutputIntent("", "", "", "sRGB IEC61966-2.1", @is);
