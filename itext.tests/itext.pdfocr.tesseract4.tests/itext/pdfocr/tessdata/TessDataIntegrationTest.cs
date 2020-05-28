@@ -264,24 +264,16 @@ namespace iText.Pdfocr.Tessdata {
             }
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 4)]
+        [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_CONTAINS_NOTDEF_GLYPHS, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestHindiTextWithUrdu() {
             String imgPath = TEST_IMAGES_DIRECTORY + "hindi_01.jpg";
             FileInfo file = new FileInfo(imgPath);
             String expectedHindi = "हिन्दुस्तानी";
             String expectedUrdu = "وتالی";
-            // correct result with specified arabic+urdu languages
-            // but because of specified font only hindi will be displayed
-            String resultHindiFont = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("hin", "urd"), FREE_SANS_FONT_PATH
-                );
-            NUnit.Framework.Assert.IsTrue(resultHindiFont.StartsWith(expectedHindi));
-            NUnit.Framework.Assert.IsTrue(resultHindiFont.Contains(expectedHindi));
-            NUnit.Framework.Assert.IsFalse(resultHindiFont.Contains(expectedUrdu));
             String resultArabic = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("hin", "urd"), CAIRO_FONT_PATH
                 );
-            // correct result with specified arabic+urdu languages
-            // but because of default font only urdu will be displayed
+            // because of default font only urdu will be displayed
             NUnit.Framework.Assert.IsTrue(resultArabic.Contains(expectedUrdu));
             NUnit.Framework.Assert.IsFalse(resultArabic.Contains(expectedHindi));
             // incorrect result when languages are not specified
@@ -289,8 +281,6 @@ namespace iText.Pdfocr.Tessdata {
             // with different fonts
             NUnit.Framework.Assert.IsTrue(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
                 >("hin"), NOTO_SANS_FONT_PATH).Contains(expectedHindi));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("hin")).Contains(expectedHindi));
             NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
                 >("eng")).Contains(expectedHindi));
             NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file).Contains(expectedHindi));

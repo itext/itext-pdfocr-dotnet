@@ -14,7 +14,6 @@
     <dependencies>
       <group targetFramework="net40">
         <dependency id="itext7" version="7.1.11" />
-        <dependency id="Common.Logging" version="3.4.1" />
       </group>
     </dependencies>
   </metadata>

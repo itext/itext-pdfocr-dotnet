@@ -32,7 +32,7 @@ namespace iText.Pdfocr {
         /// <summary>Size of the PDF document pages.</summary>
         /// <remarks>
         /// Size of the PDF document pages.
-        /// <c>NUll</c> by default.
+        /// <c>null</c> by default.
         /// If this parameter is null, size of the page will be equal to the
         /// input image size. If this parameter is not null, input image will be
         /// scaled according to the selected
