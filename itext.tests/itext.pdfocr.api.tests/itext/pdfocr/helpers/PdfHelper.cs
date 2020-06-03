@@ -143,7 +143,7 @@ namespace iText.Pdfocr.Helpers {
 
         /// <summary>Get extraction strategy for given document.</summary>
         public static ExtractionStrategy GetExtractionStrategy(String pdfPath) {
-            return GetExtractionStrategy(pdfPath, "Text Layer");
+            return GetExtractionStrategy(pdfPath, null);
         }
 
         /// <summary>Get extraction strategy for given document.</summary>

@@ -43,16 +43,20 @@ namespace iText.Pdfocr {
         /// <summary>Name of the image layer.</summary>
         /// <remarks>
         /// Name of the image layer.
-        /// "Image Layer" by default.
+        /// <c>null</c> by default.
+        /// If this parameter is null then image is placed directly in canvas instead of layer.
+        /// If value of imageLayerName is equal to value of textLayerName then image and text placed in one layer.
         /// </remarks>
-        private String imageLayerName = "Image Layer";
+        private String imageLayerName = null;
 
         /// <summary>Name of the text layer.</summary>
         /// <remarks>
         /// Name of the text layer.
-        /// "Text Layer" by default.
+        /// <c>null</c> by default.
+        /// If this parameter is null then text is placed directly in canvas instead of layer.
+        /// If value of textLayerName is equal to value of imageLayerName then text and image placed in one layer.
         /// </remarks>
-        private String textLayerName = "Text Layer";
+        private String textLayerName = null;
 
         /// <summary>PDF Language.</summary>
         /// <remarks>
@@ -205,7 +209,7 @@ namespace iText.Pdfocr {
         /// image layer's name as
         /// <see cref="System.String"/>
         /// if it was
-        /// manually set, otherwise - the default name ("Image layer")
+        /// manually set, otherwise - <c>null</c>
         /// </returns>
         public String GetImageLayerName() {
             return imageLayerName;
@@ -214,7 +218,9 @@ namespace iText.Pdfocr {
         /// <summary>Sets name for the image layer.</summary>
         /// <remarks>
         /// Sets name for the image layer.
-        /// "Image layer" by default.
+        /// <c>null</c> by default.
+        /// If null then image is placed directly in canvas instead of layer.
+        /// If image layer name is equal to text layer name then text and image placed in one layer.
         /// </remarks>
         /// <param name="layerName">
         /// name of the image layer
@@ -236,7 +242,7 @@ namespace iText.Pdfocr {
         /// text layer's name as
         /// <see cref="System.String"/>
         /// if it was
-        /// manually set, otherwise - the default name ("Text layer")
+        /// manually set, otherwise - <c>null</c>
         /// </returns>
         public String GetTextLayerName() {
             return textLayerName;
@@ -245,7 +251,9 @@ namespace iText.Pdfocr {
         /// <summary>Sets name for the text layer.</summary>
         /// <remarks>
         /// Sets name for the text layer.
-        /// "Text layer" by default.
+        /// <c>null</c> by default.
+        /// If null then text is placed directly in canvas instead of layer.
+        /// If text layer name is equal to image layer name then text and image placed in one layer.
         /// </remarks>
         /// <param name="layerName">
         /// of the text layer as

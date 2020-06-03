@@ -36,7 +36,7 @@ namespace iText.Pdfocr {
             properties.SetFontPath("font.ttf");
             properties.SetScaleMode(ScaleMode.SCALE_TO_FIT);
             PdfHelper.CreatePdf(pdfPath, file, properties);
-            String result = PdfHelper.GetTextFromPdfLayer(pdfPath, "Text Layer");
+            String result = PdfHelper.GetTextFromPdfLayer(pdfPath, null);
             NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_EXPECTED_RESULT, result);
             NUnit.Framework.Assert.AreEqual(ScaleMode.SCALE_TO_FIT, properties.GetScaleMode());
         }

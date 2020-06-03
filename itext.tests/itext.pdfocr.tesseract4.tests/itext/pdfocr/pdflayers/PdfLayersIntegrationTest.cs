@@ -24,7 +24,10 @@ namespace iText.Pdfocr.Pdflayers {
             FileInfo file = new FileInfo(path);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
                 (false));
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetTextLayerName("Text Layer");
+            properties.SetImageLayerName("Image Layer");
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, properties);
             PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(
                 pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
@@ -39,6 +42,32 @@ namespace iText.Pdfocr.Pdflayers {
             String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
             NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, "Text Layer", 5));
             NUnit.Framework.Assert.AreEqual("", GetTextFromPdfLayer(pdfPath, "Image Layer", 5));
+            NUnit.Framework.Assert.IsFalse(tesseractReader.GetTesseract4OcrEngineProperties().IsPreprocessingImages());
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
+                (preprocess));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTextFromMultiPageTiff() {
+            String testName = "testTextFromMultiPageTiff";
+            bool preprocess = tesseractReader.GetTesseract4OcrEngineProperties().IsPreprocessingImages();
+            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String pdfPath = GetTargetDirectory() + testName + ".pdf";
+            FileInfo file = new FileInfo(path);
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
+                (false));
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(
+                pdfPath));
+            NUnit.Framework.Assert.IsNotNull(doc);
+            int numOfPages = doc.GetNumberOfPages();
+            IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
+            NUnit.Framework.Assert.AreEqual(0, layers.Count);
+            doc.Close();
+            // Text layer should contain all text
+            // Image layer shouldn't contain any text
+            String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
+            NUnit.Framework.Assert.AreEqual(expectedOutput, GetTextFromPdfLayer(pdfPath, null, 5));
             NUnit.Framework.Assert.IsFalse(tesseractReader.GetTesseract4OcrEngineProperties().IsPreprocessingImages());
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
                 (preprocess));

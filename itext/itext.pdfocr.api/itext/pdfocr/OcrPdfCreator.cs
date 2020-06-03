@@ -287,15 +287,21 @@ namespace iText.Pdfocr {
             PageSize size = new PageSize(rectangleSize);
             PdfPage pdfPage = pdfDocument.AddNewPage(size);
             PdfCanvas canvas = new OcrPdfCreator.NotDefCheckingPdfCanvas(pdfPage, createPdfA3u);
-            PdfLayer imageLayer = new PdfLayer(ocrPdfCreatorProperties.GetImageLayerName(), pdfDocument);
-            PdfLayer textLayer = new PdfLayer(ocrPdfCreatorProperties.GetTextLayerName(), pdfDocument);
-            canvas.BeginLayer(imageLayer);
+            PdfLayer[] layers = CreatePdfLayers(ocrPdfCreatorProperties.GetImageLayerName(), ocrPdfCreatorProperties.GetTextLayerName
+                (), pdfDocument);
+            if (layers[0] != null) {
+                canvas.BeginLayer(layers[0]);
+            }
             AddImageToCanvas(imageData, imageSize, canvas);
-            canvas.EndLayer();
+            if (layers[0] != null && layers[0] != layers[1]) {
+                canvas.EndLayer();
+            }
             // how much the original image size changed
             float multiplier = imageData == null ? 1 : imageSize.GetWidth() / PdfCreatorUtil.GetPoints(imageData.GetWidth
                 ());
-            canvas.BeginLayer(textLayer);
+            if (layers[1] != null && layers[0] != layers[1]) {
+                canvas.BeginLayer(layers[1]);
+            }
             try {
                 AddTextToCanvas(imageSize, pageText, canvas, font, multiplier, pdfPage.GetMediaBox());
             }
@@ -303,7 +309,9 @@ namespace iText.Pdfocr {
                 LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
                 throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message);
             }
-            canvas.EndLayer();
+            if (layers[1] != null) {
+                canvas.EndLayer();
+            }
         }
 
         /// <summary>
@@ -478,6 +486,44 @@ namespace iText.Pdfocr {
                         canvas.ShowTextAligned(paragraph, deltaX + (float)imageCoordinates.x, deltaY + (float)imageCoordinates.y, 
                             TextAlignment.LEFT);
                         canvas.Close();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates layers for image and text according rules set in
+        /// <see cref="OcrPdfCreatorProperties"/>.
+        /// </summary>
+        /// <param name="imageLayerName">name of the image layer</param>
+        /// <param name="textLayerName">name of the text layer</param>
+        /// <param name="pdfDocument">document to add layers to</param>
+        /// <returns>
+        /// array of two layers: first layer is for image, second layer is for text.
+        /// Elements may be null meaning that layer creation is not requested
+        /// </returns>
+        private static PdfLayer[] CreatePdfLayers(String imageLayerName, String textLayerName, PdfDocument pdfDocument
+            ) {
+            if (imageLayerName == null && textLayerName == null) {
+                return new PdfLayer[] { null, null };
+            }
+            else {
+                if (imageLayerName == null) {
+                    return new PdfLayer[] { null, new PdfLayer(textLayerName, pdfDocument) };
+                }
+                else {
+                    if (textLayerName == null) {
+                        return new PdfLayer[] { new PdfLayer(imageLayerName, pdfDocument), null };
+                    }
+                    else {
+                        if (imageLayerName.Equals(textLayerName)) {
+                            PdfLayer pdfLayer = new PdfLayer(imageLayerName, pdfDocument);
+                            return new PdfLayer[] { pdfLayer, pdfLayer };
+                        }
+                        else {
+                            return new PdfLayer[] { new PdfLayer(imageLayerName, pdfDocument), new PdfLayer(textLayerName, pdfDocument
+                                ) };
+                        }
                     }
                 }
             }

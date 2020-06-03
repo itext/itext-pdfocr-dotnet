@@ -21,9 +21,7 @@ namespace iText.Pdfocr {
                 ());
             NUnit.Framework.Assert.IsNotNull(doc);
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
-            NUnit.Framework.Assert.AreEqual(2, layers.Count);
-            NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
-            NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.AreEqual(0, layers.Count);
             doc.Close();
             NUnit.Framework.Assert.AreEqual(engine, ocrPdfCreator.GetOcrEngine());
             NUnit.Framework.Assert.AreEqual(1, engine.GetOcrEngineProperties().GetLanguages().Count);
@@ -56,7 +54,10 @@ namespace iText.Pdfocr {
             String path = PdfHelper.GetDefaultImagePath();
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine());
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetImageLayerName("Image Layer");
+            properties.SetTextLayerName("Text Layer");
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
             PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
                 (pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
@@ -70,6 +71,58 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_EXPECTED_RESULT, PdfHelper.GetTextFromPdfLayer(pdfPath, 
                 "Text Layer"));
             NUnit.Framework.Assert.AreEqual("", PdfHelper.GetTextFromPdfLayer(pdfPath, "Image Layer"));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestPdfLayersWithImageLayerOnly() {
+            String path = PdfHelper.GetDefaultImagePath();
+            FileInfo file = new FileInfo(path);
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetImageLayerName("Image Layer");
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+                ());
+            NUnit.Framework.Assert.IsNotNull(doc);
+            IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
+            NUnit.Framework.Assert.AreEqual(1, layers.Count);
+            NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.IsTrue(layers[0].IsOn());
+            doc.Close();
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestPdfLayersWithTextLayerOnly() {
+            String path = PdfHelper.GetDefaultImagePath();
+            FileInfo file = new FileInfo(path);
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetTextLayerName("Text Layer");
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+                ());
+            NUnit.Framework.Assert.IsNotNull(doc);
+            IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
+            NUnit.Framework.Assert.AreEqual(1, layers.Count);
+            NUnit.Framework.Assert.AreEqual("Text Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.IsTrue(layers[0].IsOn());
+            doc.Close();
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestPdfLayersWithTextAndImageLayerWithTheSameName() {
+            String path = PdfHelper.GetDefaultImagePath();
+            FileInfo file = new FileInfo(path);
+            OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+            properties.SetTextLayerName("Mixed Layer");
+            properties.SetImageLayerName("Mixed Layer");
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
+            PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), PdfHelper.GetPdfWriter
+                ());
+            NUnit.Framework.Assert.IsNotNull(doc);
+            IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
+            NUnit.Framework.Assert.AreEqual(1, layers.Count);
+            NUnit.Framework.Assert.AreEqual("Mixed Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.IsTrue(layers[0].IsOn());
+            doc.Close();
         }
     }
 }

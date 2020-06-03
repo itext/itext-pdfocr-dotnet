@@ -45,36 +45,20 @@ namespace iText.Pdfocr.Helpers {
         }
 
         public override void EventOccurred(IEventData data, EventType type) {
-            IList<CanvasTag> tagHierarchy = null;
-            if (type.Equals(EventType.RENDER_TEXT)) {
-                TextRenderInfo textRenderInfo = (TextRenderInfo)data;
-                tagHierarchy = textRenderInfo.GetCanvasTagHierarchy();
-            }
-            else {
-                if (type.Equals(EventType.RENDER_IMAGE)) {
-                    ImageRenderInfo imageRenderInfo = (ImageRenderInfo)data;
-                    tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
-                }
-            }
-            if (tagHierarchy != null) {
-                foreach (CanvasTag tag in tagHierarchy) {
-                    PdfDictionary dict = tag.GetProperties();
-                    String name = dict.Get(PdfName.Name).ToString();
-                    if (name.Equals(layerName)) {
-                        if (type.Equals(EventType.RENDER_TEXT)) {
-                            TextRenderInfo renderInfo = (TextRenderInfo)data;
-                            SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
-                            SetPdfFont(renderInfo.GetGraphicsState().GetFont());
-                            base.EventOccurred(data, type);
-                            break;
-                        }
-                        else {
-                            if (type.Equals(EventType.RENDER_IMAGE)) {
-                                ImageRenderInfo renderInfo = (ImageRenderInfo)data;
-                                Matrix ctm = renderInfo.GetImageCtm();
-                                this.imageBBoxRectangle = new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4));
-                                break;
-                            }
+            if (type.Equals(EventType.RENDER_TEXT) || type.Equals(EventType.RENDER_IMAGE)) {
+                String tagName = GetTagName(data, type);
+                if ((tagName == null && layerName == null) || (layerName != null && layerName.Equals(tagName))) {
+                    if (type.Equals(EventType.RENDER_TEXT)) {
+                        TextRenderInfo renderInfo = (TextRenderInfo)data;
+                        SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
+                        SetPdfFont(renderInfo.GetGraphicsState().GetFont());
+                        base.EventOccurred(data, type);
+                    }
+                    else {
+                        if (type.Equals(EventType.RENDER_IMAGE)) {
+                            ImageRenderInfo renderInfo = (ImageRenderInfo)data;
+                            Matrix ctm = renderInfo.GetImageCtm();
+                            this.imageBBoxRectangle = new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4));
                         }
                     }
                 }
@@ -90,6 +74,22 @@ namespace iText.Pdfocr.Helpers {
             }
             return curLoc.DistParallelEnd() - prevLoc.DistParallelStart() > (curLoc.GetCharSpaceWidth() + prevLoc.GetCharSpaceWidth
                 ()) / 2.0f;
+        }
+
+        private String GetTagName(IEventData data, EventType type) {
+            IList<CanvasTag> tagHierarchy = null;
+            if (type.Equals(EventType.RENDER_TEXT)) {
+                TextRenderInfo textRenderInfo = (TextRenderInfo)data;
+                tagHierarchy = textRenderInfo.GetCanvasTagHierarchy();
+            }
+            else {
+                if (type.Equals(EventType.RENDER_IMAGE)) {
+                    ImageRenderInfo imageRenderInfo = (ImageRenderInfo)data;
+                    tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
+                }
+            }
+            return (tagHierarchy == null || tagHierarchy.Count == 0) ? null : tagHierarchy[0].GetProperties().Get(PdfName
+                .Name).ToString();
         }
     }
 }
