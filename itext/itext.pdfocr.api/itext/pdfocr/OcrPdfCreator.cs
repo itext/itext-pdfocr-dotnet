@@ -538,29 +538,38 @@ namespace iText.Pdfocr {
                 this.createPdfA3u = createPdfA3u;
             }
 
-            public override PdfCanvas ShowText(GlyphLine text, IEnumerator<GlyphLine.GlyphLinePart> iterator) {
+            public override PdfCanvas ShowText(GlyphLine text) {
+                OcrPdfCreator.ActualTextCheckingGlyphLine glyphLine = new OcrPdfCreator.ActualTextCheckingGlyphLine(text);
                 PdfFont currentFont = GetGraphicsState().GetFont();
                 bool notDefGlyphsExists = false;
                 // default value for error message, it'll be updated with the
                 // unicode of the not found glyph
                 String message = PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER;
-                for (int i = text.start; i < text.end; i++) {
-                    if (IsNotDefGlyph(currentFont, text.Get(i))) {
+                for (int i = glyphLine.start; i < glyphLine.end; i++) {
+                    if (IsNotDefGlyph(currentFont, glyphLine.Get(i))) {
                         notDefGlyphsExists = true;
                         message = MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER
-                            , text.Get(i).GetUnicode());
+                            , glyphLine.Get(i).GetUnicode());
                         if (this.createPdfA3u) {
                             // exception is thrown only if PDF/A document is
                             // being created
                             throw new OcrException(message);
                         }
+                        // setting actual text to NotDef glyph
+                        glyphLine.SetActualTextToGlyph(i, glyphLine.ToUnicodeString(i, i + 1));
+                        // setting a fake unicode deliberately to pass further
+                        // checks for actual text necessity during iterating over
+                        // glyphline chunks with ActualTextIterator
+                        Glyph glyph = new Glyph(glyphLine.Get(i));
+                        glyph.SetUnicode(-1);
+                        glyphLine.Set(i, glyph);
                     }
                 }
                 // Warning is logged if not PDF/A document is being created
                 if (notDefGlyphsExists) {
                     LOGGER.Warn(message);
                 }
-                return base.ShowText(text, iterator);
+                return this.ShowText(glyphLine, new ActualTextIterator(glyphLine));
             }
 
             private static bool IsNotDefGlyph(PdfFont font, Glyph glyph) {
@@ -573,6 +582,23 @@ namespace iText.Pdfocr {
                     }
                 }
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// A handler for GlyphLine that checks existing actual text not to
+        /// overwrite it.
+        /// </summary>
+        private class ActualTextCheckingGlyphLine : GlyphLine {
+            public ActualTextCheckingGlyphLine(GlyphLine other)
+                : base(other) {
+            }
+
+            public virtual void SetActualTextToGlyph(int i, String text) {
+                // set actual text if it doesn't exist for i-th glyph
+                if ((this.actualText == null || this.actualText.Count <= i || this.actualText[i] == null)) {
+                    base.SetActualText(i, i + 1, text);
+                }
             }
         }
     }

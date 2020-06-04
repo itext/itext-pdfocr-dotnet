@@ -267,23 +267,44 @@ namespace iText.Pdfocr.Tessdata {
         [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestHindiTextWithUrdu() {
+            String testName = "testHindiTextWithUrdu";
             String imgPath = TEST_IMAGES_DIRECTORY + "hindi_01.jpg";
             FileInfo file = new FileInfo(imgPath);
+            String pdfPath = GetTargetDirectory() + testName + ".pdf";
             String expectedHindi = "हिन्दुस्तानी";
             String expectedUrdu = "وتالی";
-            String resultArabic = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("hin", "urd"), CAIRO_FONT_PATH
+            DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, JavaUtil.ArraysAsList("hin", "urd"), CAIRO_FONT_PATH
                 );
-            // because of default font only urdu will be displayed
-            NUnit.Framework.Assert.IsTrue(resultArabic.Contains(expectedUrdu));
-            NUnit.Framework.Assert.IsFalse(resultArabic.Contains(expectedHindi));
-            // incorrect result when languages are not specified
-            // or languages were specified in the wrong order
-            // with different fonts
-            NUnit.Framework.Assert.IsTrue(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("hin"), NOTO_SANS_FONT_PATH).Contains(expectedHindi));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("eng")).Contains(expectedHindi));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file).Contains(expectedHindi));
+            String resultWithoutActualText = GetTextFromPdfLayer(pdfPath, null, 1);
+            // because of provided font only urdu will be displayed correctly
+            NUnit.Framework.Assert.IsTrue(resultWithoutActualText.Contains(expectedUrdu));
+            NUnit.Framework.Assert.IsFalse(resultWithoutActualText.Contains(expectedHindi));
+            String resultWithActualText = GetTextFromPdfLayerUsingActualText(pdfPath, null, 1);
+            // actual text should contain all text
+            NUnit.Framework.Assert.IsTrue(resultWithActualText.Contains(expectedUrdu));
+            NUnit.Framework.Assert.IsTrue(resultWithActualText.Contains(expectedHindi));
+        }
+
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Ignore = true
+            )]
+        [NUnit.Framework.Test]
+        public virtual void TestHindiTextWithUrduActualTextWithIncorrectFont() {
+            String testName = "testHindiTextWithUrduActualTextWithIncorrectFont";
+            String imgPath = TEST_IMAGES_DIRECTORY + "hindi_01.jpg";
+            FileInfo file = new FileInfo(imgPath);
+            String pdfPath = GetTargetDirectory() + testName + ".pdf";
+            String expectedHindi = "हिन्दुस्तानी";
+            String expectedUrdu = "وتالی";
+            DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, JavaUtil.ArraysAsList("hin", "urd"), null, 
+                null);
+            String resultWithoutActualText = GetTextFromPdfLayer(pdfPath, null, 1);
+            // because of provided font only urdu will be displayed correctly
+            NUnit.Framework.Assert.IsFalse(resultWithoutActualText.Contains(expectedUrdu));
+            NUnit.Framework.Assert.IsFalse(resultWithoutActualText.Contains(expectedHindi));
+            String resultWithActualText = GetTextFromPdfLayerUsingActualText(pdfPath, null, 1);
+            // actual text should contain all text
+            NUnit.Framework.Assert.IsTrue(resultWithActualText.Contains(expectedUrdu));
+            NUnit.Framework.Assert.IsTrue(resultWithActualText.Contains(expectedHindi));
         }
 
         [NUnit.Framework.Test]
@@ -306,7 +327,6 @@ namespace iText.Pdfocr.Tessdata {
                 ));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestGeorgianText() {
             String imgPath = TEST_IMAGES_DIRECTORY + "georgian_01.jpg";
@@ -320,17 +340,25 @@ namespace iText.Pdfocr.Tessdata {
             result = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("kat", "kat_old"), FREE_SANS_FONT_PATH
                 );
             NUnit.Framework.Assert.AreEqual(expected, result);
-            // incorrect result when languages are not specified
-            // or languages were specified in the wrong order
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("kat")).Contains(expected));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("eng")).Contains(expected));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, new List<String>()).Contains(expected
-                ));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 4)]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestGeorgianActualTextWithDefaultFont() {
+            String testName = "testGeorgianActualTextWithDefaultFont";
+            String pdfPath = GetTargetDirectory() + testName + ".pdf";
+            String imgPath = TEST_IMAGES_DIRECTORY + "georgian_01.jpg";
+            FileInfo file = new FileInfo(imgPath);
+            // First sentence
+            String expected = "ღმერთი";
+            DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, JavaCollectionsUtil.SingletonList<String>("kat"
+                ), null, null);
+            String resultWithoutActualText = GetTextFromPdfLayer(pdfPath, null, 1);
+            NUnit.Framework.Assert.AreNotEqual(expected, resultWithoutActualText);
+            String resultWithActualText = GetTextFromPdfLayerUsingActualText(pdfPath, null, 1);
+            NUnit.Framework.Assert.AreEqual(expected, resultWithActualText);
+        }
+
         [NUnit.Framework.Test]
         public virtual void TestBengali() {
             String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
@@ -341,13 +369,24 @@ namespace iText.Pdfocr.Tessdata {
             // correct result with specified spanish language
             NUnit.Framework.Assert.AreEqual(expected, GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList
                 <String>("ben"), FREE_SANS_FONT_PATH));
-            // incorrect result when languages are not specified
-            // or languages were specified in the wrong order
-            NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList
-                <String>("ben")));
-            NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList
-                <String>("ben"), KOSUGI_FONT_PATH));
-            NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, new List<String>()));
+        }
+
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 2)]
+        [NUnit.Framework.Test]
+        public virtual void TestBengaliActualTextWithDefaultFont() {
+            String testName = "testBengaliActualTextWithDefaultFont";
+            String pdfPath = GetTargetDirectory() + testName + ".pdf";
+            String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
+            FileInfo file = new FileInfo(imgPath);
+            String expected = "ইংরজে\nশখো";
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetTextPositioning
+                (TextPositioning.BY_WORDS));
+            DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, JavaCollectionsUtil.SingletonList<String>("ben"
+                ), null, null);
+            String resultWithoutActualText = GetTextFromPdfLayer(pdfPath, null, 1);
+            NUnit.Framework.Assert.AreNotEqual(expected, resultWithoutActualText);
+            String resultWithActualText = GetTextFromPdfLayerUsingActualText(pdfPath, null, 1);
+            NUnit.Framework.Assert.AreEqual(expected, resultWithActualText);
         }
 
         [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 3)]
@@ -395,7 +434,6 @@ namespace iText.Pdfocr.Tessdata {
                 ()));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestBengaliScript() {
             String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
@@ -406,15 +444,8 @@ namespace iText.Pdfocr.Tessdata {
             // correct result with specified spanish language
             NUnit.Framework.Assert.IsTrue(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
                 >("Bengali"), FREE_SANS_FONT_PATH).StartsWith(expected));
-            // incorrect result when languages are not specified
-            // or languages were specified in the wrong order
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("Bengali")).StartsWith(expected));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("Bengali"), KOSUGI_FONT_PATH).StartsWith(expected));
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestGeorgianTextWithScript() {
             String imgPath = TEST_IMAGES_DIRECTORY + "georgian_01.jpg";
@@ -426,12 +457,6 @@ namespace iText.Pdfocr.Tessdata {
             // correct result with specified georgian+eng language
             NUnit.Framework.Assert.IsTrue(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
                 >("Georgian"), FREE_SANS_FONT_PATH).StartsWith(expected));
-            // incorrect result when languages are not specified
-            // or languages were specified in the wrong order
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("Georgian")).Contains(expected));
-            NUnit.Framework.Assert.IsFalse(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
-                >("Japanese")).Contains(expected));
         }
 
         [NUnit.Framework.Test]

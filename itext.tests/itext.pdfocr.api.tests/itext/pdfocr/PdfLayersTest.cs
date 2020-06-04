@@ -68,8 +68,8 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
             NUnit.Framework.Assert.IsTrue(layers[1].IsOn());
             doc.Close();
-            NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_EXPECTED_RESULT, PdfHelper.GetTextFromPdfLayer(pdfPath, 
-                "Text Layer"));
+            NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_TEXT, PdfHelper.GetTextFromPdfLayer(pdfPath, "Text Layer"
+                ));
             NUnit.Framework.Assert.AreEqual("", PdfHelper.GetTextFromPdfLayer(pdfPath, "Image Layer"));
         }
 

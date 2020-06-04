@@ -159,14 +159,31 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Get text from layer specified by name from page.</summary>
-        protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page) {
+        protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page, bool useActualText
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             AbstractIntegrationTest.ExtractionStrategy textExtractionStrategy = new AbstractIntegrationTest.ExtractionStrategy
                 (layerName);
+            textExtractionStrategy.SetUseActualText(useActualText);
             PdfCanvasProcessor processor = new PdfCanvasProcessor(textExtractionStrategy);
             processor.ProcessPageContent(pdfDocument.GetPage(page));
             pdfDocument.Close();
             return textExtractionStrategy.GetResultantText();
+        }
+
+        /// <summary>Get text from layer specified by name from page.</summary>
+        protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page) {
+            return GetTextFromPdfLayer(pdfPath, layerName, page, false);
+        }
+
+        /// <summary>
+        /// Get text from layer specified by name from page
+        /// removing unnecessary space that were added after each glyph in
+        /// <see cref="iText.Kernel.Pdf.Canvas.Parser.Listener.LocationTextExtractionStrategy.GetResultantText()"/>.
+        /// </summary>
+        protected internal virtual String GetTextFromPdfLayerUsingActualText(String pdfPath, String layerName, int
+             page) {
+            return GetTextFromPdfLayer(pdfPath, layerName, page, true).Replace(" ", "");
         }
 
         /// <summary>
@@ -355,6 +372,10 @@ namespace iText.Pdfocr {
                 return this.imageBBoxRectangle;
             }
 
+            public virtual void SetImageBBoxRectangle(Rectangle imageBBoxRectangle) {
+                this.imageBBoxRectangle = imageBBoxRectangle;
+            }
+
             protected override bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
                 ITextChunkLocation curLoc = chunk.GetLocation();
                 ITextChunkLocation prevLoc = previousChunk.GetLocation();
@@ -380,7 +401,7 @@ namespace iText.Pdfocr {
                             if (type.Equals(EventType.RENDER_IMAGE)) {
                                 ImageRenderInfo renderInfo = (ImageRenderInfo)data;
                                 Matrix ctm = renderInfo.GetImageCtm();
-                                this.imageBBoxRectangle = new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4));
+                                SetImageBBoxRectangle(new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4)));
                             }
                         }
                     }
@@ -399,7 +420,8 @@ namespace iText.Pdfocr {
                         tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
                     }
                 }
-                return (tagHierarchy == null || tagHierarchy.Count == 0) ? null : tagHierarchy[0].GetProperties().Get(PdfName
+                return (tagHierarchy == null || tagHierarchy.Count == 0
+                    || tagHierarchy[0].GetProperties().Get(PdfName.Name) == null) ? null : tagHierarchy[0].GetProperties().Get(PdfName
                     .Name).ToString();
             }
         }

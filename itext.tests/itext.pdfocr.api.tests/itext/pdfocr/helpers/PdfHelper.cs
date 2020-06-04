@@ -10,9 +10,11 @@ namespace iText.Pdfocr.Helpers {
     public class PdfHelper {
         public const String DEFAULT_IMAGE_NAME = "numbers_01.jpg";
 
+        public const String DEFAULT_TEXT = "619121";
+
         public const String THAI_IMAGE_NAME = "thai.PNG";
 
-        public const String DEFAULT_EXPECTED_RESULT = "619121";
+        public const String THAI_TEXT = "ป ระ เท ศ ไ";
 
         // directory with test files
         public static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
@@ -88,7 +90,13 @@ namespace iText.Pdfocr.Helpers {
 
         /// <summary>Get text from layer specified by name from the first page.</summary>
         public static String GetTextFromPdfLayer(String pdfPath, String layerName) {
-            ExtractionStrategy textExtractionStrategy = GetExtractionStrategy(pdfPath, layerName);
+            ExtractionStrategy textExtractionStrategy = GetExtractionStrategy(pdfPath, layerName, false);
+            return textExtractionStrategy.GetResultantText();
+        }
+
+        /// <summary>Get text from layer specified by name from the first page.</summary>
+        public static String GetTextFromPdfLayerUseActualText(String pdfPath, String layerName) {
+            ExtractionStrategy textExtractionStrategy = GetExtractionStrategy(pdfPath, layerName, true);
             return textExtractionStrategy.GetResultantText();
         }
 
@@ -147,9 +155,21 @@ namespace iText.Pdfocr.Helpers {
         }
 
         /// <summary>Get extraction strategy for given document.</summary>
+        public static ExtractionStrategy GetExtractionStrategy(String pdfPath, bool useActualText) {
+            return GetExtractionStrategy(pdfPath, "Text Layer", useActualText);
+        }
+
+        /// <summary>Get extraction strategy for given document.</summary>
         public static ExtractionStrategy GetExtractionStrategy(String pdfPath, String layerName) {
+            return GetExtractionStrategy(pdfPath, layerName, false);
+        }
+
+        /// <summary>Get extraction strategy for given document.</summary>
+        public static ExtractionStrategy GetExtractionStrategy(String pdfPath, String layerName, bool useActualText
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             ExtractionStrategy strategy = new ExtractionStrategy(layerName);
+            strategy.SetUseActualText(useActualText);
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
             pdfDocument.Close();

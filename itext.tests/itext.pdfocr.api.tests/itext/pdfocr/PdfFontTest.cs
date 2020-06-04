@@ -37,7 +37,7 @@ namespace iText.Pdfocr {
             properties.SetScaleMode(ScaleMode.SCALE_TO_FIT);
             PdfHelper.CreatePdf(pdfPath, file, properties);
             String result = PdfHelper.GetTextFromPdfLayer(pdfPath, null);
-            NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_EXPECTED_RESULT, result);
+            NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_TEXT, result);
             NUnit.Framework.Assert.AreEqual(ScaleMode.SCALE_TO_FIT, properties.GetScaleMode());
         }
 
@@ -85,6 +85,22 @@ namespace iText.Pdfocr {
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
             NUnit.Framework.Assert.IsTrue(fontName.Contains("FreeSans"));
             NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
+        }
+
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestThaiImageWithNotDefGlyphs() {
+            String testName = "testThaiImageWithNotDefGlyphs";
+            String path = PdfHelper.GetThaiImagePath();
+            String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
+            PdfHelper.CreatePdf(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK
+                ));
+            String resultWithActualText = PdfHelper.GetTextFromPdfLayerUseActualText(pdfPath, null);
+            NUnit.Framework.Assert.AreEqual(PdfHelper.THAI_TEXT.Replace(" ", ""), resultWithActualText.Replace(" ", ""
+                ));
+            String resultWithoutUseActualText = PdfHelper.GetTextFromPdfLayer(pdfPath, null);
+            NUnit.Framework.Assert.AreNotEqual(PdfHelper.THAI_TEXT, resultWithoutUseActualText);
+            NUnit.Framework.Assert.AreNotEqual(resultWithoutUseActualText, resultWithActualText);
         }
     }
 }

@@ -17,9 +17,9 @@ namespace iText.Pdfocr.Helpers {
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
             IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>();
-            String text = "619121";
+            String text = PdfHelper.DEFAULT_TEXT;
             if (input.FullName.Contains(PdfHelper.THAI_IMAGE_NAME)) {
-                text = "ป ระ เท ศ ไ";
+                text = PdfHelper.THAI_TEXT;
             }
             TextInfo textInfo = new TextInfo(text, JavaUtil.ArraysAsList(204.0f, 158.0f, 742.0f, 294.0f));
             result.Put(1, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));

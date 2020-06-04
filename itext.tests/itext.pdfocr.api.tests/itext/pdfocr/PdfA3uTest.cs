@@ -21,7 +21,7 @@ namespace iText.Pdfocr {
             properties.SetScaleMode(ScaleMode.SCALE_TO_FIT);
             PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), properties, null);
             String result = PdfHelper.GetTextFromPdfLayer(pdfPath, null);
-            NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_EXPECTED_RESULT, result);
+            NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_TEXT, result);
             NUnit.Framework.Assert.AreEqual(ScaleMode.SCALE_TO_FIT, properties.GetScaleMode());
         }
 
@@ -99,6 +99,11 @@ namespace iText.Pdfocr {
             ocrPdfCreatorProperties.SetFontPath(PdfHelper.GetKanitFontPath());
             PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
                 ());
+            String resultWithActualText = PdfHelper.GetTextFromPdfLayerUseActualText(pdfPath, null);
+            NUnit.Framework.Assert.AreEqual(PdfHelper.THAI_TEXT, resultWithActualText);
+            String resultWithoutUseActualText = PdfHelper.GetTextFromPdfLayer(pdfPath, null);
+            NUnit.Framework.Assert.AreEqual(PdfHelper.THAI_TEXT, resultWithoutUseActualText);
+            NUnit.Framework.Assert.AreEqual(resultWithoutUseActualText, resultWithActualText);
         }
     }
 }

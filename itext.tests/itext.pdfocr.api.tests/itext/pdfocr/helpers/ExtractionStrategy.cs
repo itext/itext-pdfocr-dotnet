@@ -44,6 +44,10 @@ namespace iText.Pdfocr.Helpers {
             return this.imageBBoxRectangle;
         }
 
+        public virtual void SetImageBBoxRectangle(Rectangle imageBBoxRectangle) {
+            this.imageBBoxRectangle = imageBBoxRectangle;
+        }
+
         public override void EventOccurred(IEventData data, EventType type) {
             if (type.Equals(EventType.RENDER_TEXT) || type.Equals(EventType.RENDER_IMAGE)) {
                 String tagName = GetTagName(data, type);
@@ -58,7 +62,7 @@ namespace iText.Pdfocr.Helpers {
                         if (type.Equals(EventType.RENDER_IMAGE)) {
                             ImageRenderInfo renderInfo = (ImageRenderInfo)data;
                             Matrix ctm = renderInfo.GetImageCtm();
-                            this.imageBBoxRectangle = new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4));
+                            SetImageBBoxRectangle(new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4)));
                         }
                     }
                 }
@@ -88,7 +92,9 @@ namespace iText.Pdfocr.Helpers {
                     tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
                 }
             }
-            return (tagHierarchy == null || tagHierarchy.Count == 0) ? null : tagHierarchy[0].GetProperties().Get(PdfName
+            return (tagHierarchy == null || tagHierarchy.Count == 0
+                    || tagHierarchy[0].GetProperties().Get(PdfName.Name) == null)
+                     ? null : tagHierarchy[0].GetProperties().Get(PdfName
                 .Name).ToString();
         }
     }
