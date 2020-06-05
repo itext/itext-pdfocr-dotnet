@@ -93,6 +93,10 @@ namespace iText.Pdfocr {
             }
         }
 
+        protected internal static Tesseract4LibOcrEngine GetTesseract4LibOcrEngine() {
+            return tesseractLibReader;
+        }
+
         protected internal static String GetTesseractDirectory() {
             String tesseractDir = Environment.GetEnvironmentVariable("tesseractDir");
             String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
@@ -114,8 +118,8 @@ namespace iText.Pdfocr {
             return TARGET_FOLDER;
         }
 
-        protected internal static String GetTessDataDirectory() {
-            return LANG_TESS_DATA_DIRECTORY;
+        protected internal static FileInfo GetTessDataDirectory() {
+            return new FileInfo(LANG_TESS_DATA_DIRECTORY);
         }
 
         /// <summary>Retrieve text from specified page from given PDF document.</summary>

@@ -58,6 +58,8 @@ namespace iText.Pdfocr.Imageformats {
         public virtual void TestTextFromJPG() {
             String path = TEST_IMAGES_DIRECTORY + "numbers_02.jpg";
             String expectedOutput = "0123456789";
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
+                (false));
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path));
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
         }

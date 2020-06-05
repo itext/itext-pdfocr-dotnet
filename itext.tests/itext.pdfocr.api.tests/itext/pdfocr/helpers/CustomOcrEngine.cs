@@ -32,9 +32,5 @@ namespace iText.Pdfocr.Helpers {
         public virtual OcrEngineProperties GetOcrEngineProperties() {
             return ocrEngineProperties;
         }
-
-        public virtual void SetOcrEngineProperties(OcrEngineProperties ocrEngineProperties) {
-            this.ocrEngineProperties = ocrEngineProperties;
-        }
     }
 }

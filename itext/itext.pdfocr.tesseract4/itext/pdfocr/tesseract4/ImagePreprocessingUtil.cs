@@ -156,12 +156,55 @@ namespace iText.Pdfocr.Tesseract4 {
                 try {
                     pix = Tesseract.Pix.LoadFromFile(inputFile.FullName);
                 }
-                catch (ArgumentException e) {
+                catch (Exception e) {
+                    // NOSONAR
                     LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
                         (Tesseract4LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_PIX, inputFile.FullName, e.Message));
                 }
             }
             return pix;
+        }
+
+        /// <summary>
+        /// Reads input image as a
+        /// <see cref="System.Drawing.Bitmap"/>.
+        /// </summary>
+        /// <remarks>
+        /// Reads input image as a
+        /// <see cref="System.Drawing.Bitmap"/>.
+        /// If it is not possible to read
+        /// <see cref="System.Drawing.Bitmap"/>
+        /// from
+        /// input file, image will be read as a
+        /// <see cref="Tesseract.Pix"/>
+        /// and then converted to
+        /// <see cref="System.Drawing.Bitmap"/>.
+        /// </remarks>
+        /// <param name="inputImage">original input image</param>
+        /// <returns>
+        /// input image as a
+        /// <see cref="System.Drawing.Bitmap"/>
+        /// </returns>
+        internal static System.Drawing.Bitmap ReadImage(FileInfo inputImage) {
+            System.Drawing.Bitmap bufferedImage = null;
+            try {
+                bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadImageFromFile(inputImage);
+            }
+            catch (Exception ex) {
+                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
+            }
+            if (bufferedImage == null) {
+                try {
+                    bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadAsPixAndConvertToBufferedImage(inputImage
+                        );
+                }
+                catch (System.IO.IOException ex) {
+                    LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
+                        (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
+                }
+            }
+            return bufferedImage;
         }
     }
 }

@@ -55,7 +55,7 @@ namespace iText.Pdfocr.Pdfa3u {
             String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + "_a3u.pdf";
             Tesseract4OcrEngineProperties properties = new Tesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties
                 ());
-            properties.SetPathToTessData(LANG_TESS_DATA_DIRECTORY);
+            properties.SetPathToTessData(GetTessDataDirectory());
             properties.SetLanguages(JavaCollectionsUtil.SingletonList<String>("spa"));
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, new OcrPdfCreatorProperties().SetTextColor

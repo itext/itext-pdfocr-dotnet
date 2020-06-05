@@ -225,36 +225,24 @@ namespace iText.Pdfocr.Tesseract4 {
                     preprocessed = new FileInfo(ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber));
                 }
                 if (!GetTesseract4OcrEngineProperties().IsPreprocessingImages() || preprocessed == null) {
-                    // try to open as buffered image if it's not a tiff image
-                    System.Drawing.Bitmap bufferedImage = null;
-                    try {
-                        try {
-                            bufferedImage = ImagePreprocessingUtil.ReadImageFromFile(inputImage);
-                        }
-                        catch (Exception ex) {
-                            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE
-                                , ex.Message));
-                            bufferedImage = ImagePreprocessingUtil.ReadAsPixAndConvertToBufferedImage(inputImage);
-                        }
-                    }
-                    catch (System.IO.IOException ex) {
-                        LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
-                            , ex.Message));
-                    }
+                    System.Drawing.Bitmap bufferedImage = ImagePreprocessingUtil.ReadImage(inputImage);
                     if (bufferedImage != null) {
                         try {
                             result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), bufferedImage, outputFormat);
                         }
-                        catch (TesseractException e) {
+                        catch (Exception e) {
+                            // NOSONAR
                             LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE
                                 , e.Message));
                         }
                     }
                     if (result == null) {
+                        // perform ocr using original input image
                         result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), inputImage, outputFormat);
                     }
                 }
                 else {
+                    // perform ocr using preprocessed image
                     result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), preprocessed, outputFormat);
                 }
             }

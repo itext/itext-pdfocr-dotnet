@@ -22,7 +22,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private const String DEFAULT_LANGUAGE = "eng";
 
         /// <summary>Path to directory with tess data.</summary>
-        private String tessDataDir;
+        private FileInfo tessDataDir;
 
         /// <summary>Page Segmentation Mode.</summary>
         private int? pageSegMode;
@@ -94,22 +94,25 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Gets path to directory with tess data.</summary>
         /// <returns>path to directory with tess data</returns>
-        public String GetPathToTessData() {
+        public FileInfo GetPathToTessData() {
             return tessDataDir;
         }
 
         /// <summary>Sets path to directory with tess data.</summary>
         /// <param name="tessData">
         /// path to train directory as
-        /// <see cref="System.String"/>
+        /// <see cref="System.IO.FileInfo"/>
         /// </param>
         /// <returns>
         /// the
         /// <see cref="Tesseract4OcrEngineProperties"/>
         /// instance
         /// </returns>
-        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToTessData(String tessData) {
-            tessDataDir = tessData;
+        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToTessData(FileInfo tessData) {
+            if (tessData == null || !FileUtil.DirectoryExists(tessData.FullName)) {
+                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID);
+            }
+            this.tessDataDir = tessData;
             return this;
         }
 

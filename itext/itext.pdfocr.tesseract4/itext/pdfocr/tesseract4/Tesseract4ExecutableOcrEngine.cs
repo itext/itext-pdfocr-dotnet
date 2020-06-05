@@ -187,11 +187,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Adds path to tess data to the command list.</summary>
         /// <param name="command">result command as list of strings</param>
         private void AddTessData(IList<String> command) {
-            if (GetTesseract4OcrEngineProperties().GetPathToTessData() != null && !String.IsNullOrEmpty(GetTesseract4OcrEngineProperties
-                ().GetPathToTessData())) {
-                command.Add("--tessdata-dir");
-                command.Add(AddQuotes(GetTessData()));
-            }
+            command.Add("--tessdata-dir");
+            command.Add(AddQuotes(GetTessData()));
         }
 
         /// <summary>Adds selected Page Segmentation Mode as parameter.</summary>

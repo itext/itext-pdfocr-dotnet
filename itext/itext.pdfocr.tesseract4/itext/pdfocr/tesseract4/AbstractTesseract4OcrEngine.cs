@@ -160,13 +160,12 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         public IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
             IDictionary<int, IList<TextInfo>> result = new LinkedDictionary<int, IList<TextInfo>>();
-            if (IsValidImageFormat(input)) {
-                IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, OutputFormat
-                    .HOCR);
-                if (processedData != null && processedData.Count > 0) {
-                    IList<String> keys = new List<String>(processedData.Keys);
-                    result = processedData.Get(keys[0]);
-                }
+            VerifyImageFormatValidity(input);
+            IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, OutputFormat
+                .HOCR);
+            if (processedData != null && processedData.Count > 0) {
+                IList<String> keys = new List<String>(processedData.Keys);
+                result = processedData.Get(keys[0]);
             }
             return result;
         }
@@ -192,28 +191,27 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         public String DoImageOcr(FileInfo input, OutputFormat outputFormat) {
             String result = "";
-            if (IsValidImageFormat(input)) {
-                IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, outputFormat
-                    );
-                if (processedData != null && processedData.Count > 0) {
-                    IList<String> keys = new List<String>(processedData.Keys);
-                    if (outputFormat.Equals(OutputFormat.TXT)) {
-                        result = keys[0];
-                    }
-                    else {
-                        StringBuilder outputText = new StringBuilder();
-                        IDictionary<int, IList<TextInfo>> outputMap = processedData.Get(keys[0]);
-                        foreach (int page in outputMap.Keys) {
-                            StringBuilder pageText = new StringBuilder();
-                            foreach (TextInfo textInfo in outputMap.Get(page)) {
-                                pageText.Append(textInfo.GetText());
-                                pageText.Append(Environment.NewLine);
-                            }
-                            outputText.Append(pageText);
-                            outputText.Append(Environment.NewLine);
+            VerifyImageFormatValidity(input);
+            IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, outputFormat
+                );
+            if (processedData != null && processedData.Count > 0) {
+                IList<String> keys = new List<String>(processedData.Keys);
+                if (outputFormat.Equals(OutputFormat.TXT)) {
+                    result = keys[0];
+                }
+                else {
+                    StringBuilder outputText = new StringBuilder();
+                    IDictionary<int, IList<TextInfo>> outputMap = processedData.Get(keys[0]);
+                    foreach (int page in outputMap.Keys) {
+                        StringBuilder pageText = new StringBuilder();
+                        foreach (TextInfo textInfo in outputMap.Get(page)) {
+                            pageText.Append(textInfo.GetText());
+                            pageText.Append(Environment.NewLine);
                         }
-                        result = outputText.ToString();
+                        outputText.Append(pageText);
+                        outputText.Append(Environment.NewLine);
                     }
+                    result = outputText.ToString();
                 }
             }
             return result;
@@ -338,15 +336,13 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <returns>
         /// path to provided tess data directory as
         /// <see cref="System.String"/>
-        /// , otherwise - the default one
         /// </returns>
         internal virtual String GetTessData() {
-            if (GetTesseract4OcrEngineProperties().GetPathToTessData() != null && !String.IsNullOrEmpty(GetTesseract4OcrEngineProperties
-                ().GetPathToTessData())) {
-                return GetTesseract4OcrEngineProperties().GetPathToTessData();
+            if (GetTesseract4OcrEngineProperties().GetPathToTessData() == null) {
+                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET);
             }
             else {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY);
+                return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
             }
         }
 
@@ -376,8 +372,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
-        /// <returns>true if image extension is valid, false - if not</returns>
-        private bool IsValidImageFormat(FileInfo image) {
+        private void VerifyImageFormatValidity(FileInfo image) {
             bool isValid = false;
             String extension = "incorrect extension";
             int index = image.FullName.LastIndexOf('.');
@@ -396,7 +391,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension
                     );
             }
-            return isValid;
         }
     }
 }

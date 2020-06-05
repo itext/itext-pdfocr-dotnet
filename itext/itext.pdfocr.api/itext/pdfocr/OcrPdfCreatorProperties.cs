@@ -190,7 +190,7 @@ namespace iText.Pdfocr {
         /// <see cref="ScaleMode"/>.
         /// </remarks>
         /// <param name="pageSize">
-        /// required page
+        /// requested page
         /// size as
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
         /// </param>

@@ -253,6 +253,7 @@ namespace iText.Pdfocr.Tessdata {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetTextPositioning(TextPositioning.BY_WORDS);
                 properties.SetPathToTessData(GetTessDataDirectory());
+                properties.SetPageSegMode(3);
                 tesseractReader.SetTesseract4OcrEngineProperties(properties);
                 DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".png", resultPdfPath, JavaUtil.ArraysAsList
                     ("eng", "deu", "spa"), DeviceCmyk.BLACK);
@@ -261,6 +262,8 @@ namespace iText.Pdfocr.Tessdata {
             finally {
                 NUnit.Framework.Assert.AreEqual(TextPositioning.BY_WORDS, tesseractReader.GetTesseract4OcrEngineProperties
                     ().GetTextPositioning());
+                NUnit.Framework.Assert.AreEqual(3, tesseractReader.GetTesseract4OcrEngineProperties().GetPageSegMode().Value
+                    );
             }
         }
 
@@ -440,7 +443,7 @@ namespace iText.Pdfocr.Tessdata {
             FileInfo file = new FileInfo(imgPath);
             String expected = "ইংরজে";
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPathToTessData
-                (SCRIPT_TESS_DATA_DIRECTORY));
+                (new FileInfo(SCRIPT_TESS_DATA_DIRECTORY)));
             // correct result with specified spanish language
             NUnit.Framework.Assert.IsTrue(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
                 >("Bengali"), FREE_SANS_FONT_PATH).StartsWith(expected));
@@ -453,7 +456,7 @@ namespace iText.Pdfocr.Tessdata {
             // First sentence
             String expected = "ღმერთი";
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPathToTessData
-                (SCRIPT_TESS_DATA_DIRECTORY));
+                (new FileInfo(SCRIPT_TESS_DATA_DIRECTORY)));
             // correct result with specified georgian+eng language
             NUnit.Framework.Assert.IsTrue(GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String
                 >("Georgian"), FREE_SANS_FONT_PATH).StartsWith(expected));
@@ -465,7 +468,7 @@ namespace iText.Pdfocr.Tessdata {
             FileInfo file = new FileInfo(imgPath);
             String expected = "日 本 語\n文法";
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPathToTessData
-                (SCRIPT_TESS_DATA_DIRECTORY));
+                (new FileInfo(SCRIPT_TESS_DATA_DIRECTORY)));
             // correct result with specified japanese language
             String result = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("Japanese"), KOSUGI_FONT_PATH);
             NUnit.Framework.Assert.AreEqual(expected, result);
@@ -525,15 +528,11 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
-        public virtual void TestIncorrectLanguageForUserWordsAsInputStream() {
-            NUnit.Framework.Assert.That(() =>  {
-                String userWords = TEST_DOCUMENTS_DIRECTORY + "userwords.txt";
-                Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
-                properties.SetUserWords("test", new FileStream(userWords, FileMode.Open, FileAccess.Read));
-                properties.SetLanguages(new List<String>());
-            }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST, "test")))
-;
+        public virtual void TestUserWordsWithDefaultLanguageNotInList() {
+            String userWords = TEST_DOCUMENTS_DIRECTORY + "userwords.txt";
+            Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
+            properties.SetUserWords("eng", new FileStream(userWords, FileMode.Open, FileAccess.Read));
+            properties.SetLanguages(new List<String>());
         }
 
         /// <summary>Do OCR for given image and compare result etxt file with expected one.</summary>

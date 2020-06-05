@@ -18,7 +18,11 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE = "Cannot find path to tesseract executable.";
 
-        public const String CANNOT_FIND_PATH_TO_TESS_DATA_DIRECTORY = "Cannot find path to tess data directory";
+        public const String PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID = "Provided path to tess data directory does not exist or it is "
+             + "an invalid directory";
+
+        public const String PATH_TO_TESS_DATA_IS_NOT_SET = "Path to tess data directory cannot be null and must be set "
+             + "to a valid directory";
 
         /// <summary>Creates a new TesseractException.</summary>
         /// <param name="msg">the detail message.</param>
