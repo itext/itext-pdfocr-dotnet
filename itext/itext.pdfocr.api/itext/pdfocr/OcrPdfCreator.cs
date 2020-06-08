@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Common.Logging;
-using iText.IO.Font;
 using iText.IO.Font.Otf;
 using iText.IO.Image;
 using iText.IO.Util;
@@ -13,6 +12,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Layer;
 using iText.Layout;
 using iText.Layout.Element;
+using iText.Layout.Font;
 using iText.Layout.Properties;
 using iText.Pdfa;
 
@@ -232,44 +232,11 @@ namespace iText.Pdfocr {
             ocrEngine = reader;
         }
 
-        /// <summary>Gets font as a byte array using provided fontp ath or the default one.</summary>
-        /// <returns>selected font as byte[]</returns>
-        private byte[] GetFont() {
-            if (ocrPdfCreatorProperties.GetFontPath() != null && !String.IsNullOrEmpty(ocrPdfCreatorProperties.GetFontPath
-                ())) {
-                try {
-                    return System.IO.File.ReadAllBytes(System.IO.Path.Combine(ocrPdfCreatorProperties.GetFontPath()));
-                }
-                catch (Exception e) {
-                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_PROVIDED_FONT, e.Message));
-                    return GetDefaultFont();
-                }
-            }
-            else {
-                return GetDefaultFont();
-            }
-        }
-
-        /// <summary>Gets default font as a byte array.</summary>
-        /// <returns>default font as byte[]</returns>
-        private byte[] GetDefaultFont() {
-            try {
-                using (Stream stream = ResourceUtil.GetResourceStream(GetOcrPdfCreatorProperties().GetDefaultFontName())) {
-                    return StreamUtil.InputStreamToArray(stream);
-                }
-            }
-            catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT, e.Message));
-                return new byte[0];
-            }
-        }
-
         /// <summary>Adds image (or its one page) and text that was found there to canvas.</summary>
         /// <param name="pdfDocument">
         /// result
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </param>
-        /// <param name="font">font for the placed text (could be custom or default)</param>
         /// <param name="imageSize">
         /// size of the image according to the selected
         /// <see cref="ScaleMode"/>
@@ -280,8 +247,8 @@ namespace iText.Pdfocr {
         /// this is a multi-page image
         /// </param>
         /// <param name="createPdfA3u">true if PDF/A3u document is being created</param>
-        private void AddToCanvas(PdfDocument pdfDocument, PdfFont font, Rectangle imageSize, IList<TextInfo> pageText
-            , ImageData imageData, bool createPdfA3u) {
+        private void AddToCanvas(PdfDocument pdfDocument, Rectangle imageSize, IList<TextInfo> pageText, ImageData
+             imageData, bool createPdfA3u) {
             Rectangle rectangleSize = ocrPdfCreatorProperties.GetPageSize() == null ? imageSize : ocrPdfCreatorProperties
                 .GetPageSize();
             PageSize size = new PageSize(rectangleSize);
@@ -303,7 +270,7 @@ namespace iText.Pdfocr {
                 canvas.BeginLayer(layers[1]);
             }
             try {
-                AddTextToCanvas(imageSize, pageText, canvas, font, multiplier, pdfPage.GetMediaBox());
+                AddTextToCanvas(imageSize, pageText, canvas, multiplier, pdfPage.GetMediaBox());
             }
             catch (OcrException e) {
                 LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
@@ -354,22 +321,9 @@ namespace iText.Pdfocr {
             pdfDocument.GetCatalog().SetViewerPreferences(new PdfViewerPreferences().SetDisplayDocTitle(true));
             PdfDocumentInfo info = pdfDocument.GetDocumentInfo();
             info.SetTitle(ocrPdfCreatorProperties.GetTitle());
-            // create PdfFont
-            PdfFont defaultFont = null;
-            try {
-                defaultFont = PdfFontFactory.CreateFont(GetFont(), PdfEncodings.IDENTITY_H, true);
-            }
-            catch (Exception e) {
-                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_PROVIDED_FONT, e.Message));
-                try {
-                    defaultFont = PdfFontFactory.CreateFont(GetDefaultFont(), PdfEncodings.IDENTITY_H, true);
-                }
-                catch (Exception ex) {
-                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT, ex.Message));
-                    throw new OcrException(OcrException.CANNOT_READ_FONT);
-                }
-            }
-            AddDataToPdfDocument(imagesTextData, pdfDocument, defaultFont, createPdfA3u);
+            // reset passed font provider
+            ocrPdfCreatorProperties.GetFontProvider().Reset();
+            AddDataToPdfDocument(imagesTextData, pdfDocument, createPdfA3u);
             return pdfDocument;
         }
 
@@ -384,10 +338,9 @@ namespace iText.Pdfocr {
         /// result
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </param>
-        /// <param name="font">font for the placed text (could be custom or default)</param>
         /// <param name="createPdfA3u">true if PDF/A3u document is being created</param>
         private void AddDataToPdfDocument(IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData, 
-            PdfDocument pdfDocument, PdfFont font, bool createPdfA3u) {
+            PdfDocument pdfDocument, bool createPdfA3u) {
             foreach (KeyValuePair<FileInfo, IDictionary<int, IList<TextInfo>>> entry in imagesTextData) {
                 try {
                     FileInfo inputImage = entry.Key;
@@ -401,7 +354,7 @@ namespace iText.Pdfocr {
                             Rectangle imageSize = PdfCreatorUtil.CalculateImageSize(imageData, ocrPdfCreatorProperties.GetScaleMode(), 
                                 ocrPdfCreatorProperties.GetPageSize());
                             if (imageTextData.ContainsKey(page + 1)) {
-                                AddToCanvas(pdfDocument, font, imageSize, imageTextData.Get(page + 1), imageData, createPdfA3u);
+                                AddToCanvas(pdfDocument, imageSize, imageTextData.Get(page + 1), imageData, createPdfA3u);
                             }
                         }
                     }
@@ -445,15 +398,11 @@ namespace iText.Pdfocr {
         /// </param>
         /// <param name="pageText">text that was found on this image (or on this page)</param>
         /// <param name="pdfCanvas">canvas to place the text</param>
-        /// <param name="font">font for the placed text (could be custom or default)</param>
         /// <param name="multiplier">coefficient to adjust text placing on canvas</param>
         /// <param name="pageMediaBox">page parameters</param>
-        private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> pageText, PdfCanvas pdfCanvas, PdfFont font
-            , float multiplier, Rectangle pageMediaBox) {
-            if (pageText == null || pageText.Count == 0) {
-                pdfCanvas.BeginText().SetFontAndSize(font, 1);
-            }
-            else {
+        private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> pageText, PdfCanvas pdfCanvas, float multiplier
+            , Rectangle pageMediaBox) {
+            if (pageText != null && pageText.Count > 0) {
                 Point imageCoordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
                     );
                 foreach (TextInfo item in pageText) {
@@ -465,17 +414,21 @@ namespace iText.Pdfocr {
                     float bottom = (coordinates[3] + 1) * multiplier - 1;
                     float bboxWidthPt = PdfCreatorUtil.GetPoints(right - left);
                     float bboxHeightPt = PdfCreatorUtil.GetPoints(bottom - top);
+                    FontProvider fontProvider = GetOcrPdfCreatorProperties().GetFontProvider();
+                    String fontFamily = GetOcrPdfCreatorProperties().GetDefaultFontFamily();
                     if (!String.IsNullOrEmpty(line) && bboxHeightPt > 0 && bboxWidthPt > 0) {
+                        Document document = new Document(pdfCanvas.GetDocument());
+                        document.SetFontProvider(fontProvider);
                         // Scale the text width to fit the OCR bbox
-                        float fontSize = PdfCreatorUtil.CalculateFontSize(new Document(pdfCanvas.GetDocument()), line, font, bboxHeightPt
-                            , bboxWidthPt);
-                        float lineWidth = font.GetWidth(line, fontSize);
+                        float fontSize = PdfCreatorUtil.CalculateFontSize(document, line, fontFamily, bboxHeightPt, bboxWidthPt);
+                        float lineWidth = PdfCreatorUtil.GetRealLineWidth(document, line, fontFamily, fontSize);
                         float deltaX = PdfCreatorUtil.GetPoints(left);
                         float deltaY = imageSize.GetHeight() - PdfCreatorUtil.GetPoints(bottom);
                         iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
+                        canvas.SetFontProvider(fontProvider);
                         Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
                         Paragraph paragraph = new Paragraph(text).SetMargin(0).SetMultipliedLeading(1.2f);
-                        paragraph.SetFont(font).SetFontSize(fontSize);
+                        paragraph.SetFontFamily(fontFamily).SetFontSize(fontSize);
                         paragraph.SetWidth(bboxWidthPt * 1.5f);
                         if (ocrPdfCreatorProperties.GetTextColor() != null) {
                             paragraph.SetFontColor(ocrPdfCreatorProperties.GetTextColor());

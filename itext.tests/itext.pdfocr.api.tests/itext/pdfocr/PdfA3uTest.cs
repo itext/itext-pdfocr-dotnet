@@ -3,7 +3,9 @@ using System.IO;
 using iText.IO.Util;
 using iText.Kernel;
 using iText.Kernel.Colors;
+using iText.Kernel.Font;
 using iText.Kernel.Pdf;
+using iText.Layout.Font;
 using iText.Pdfa;
 using iText.Pdfocr.Helpers;
 using iText.Test;
@@ -96,7 +98,10 @@ namespace iText.Pdfocr {
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
             ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
-            ocrPdfCreatorProperties.SetFontPath(PdfHelper.GetKanitFontPath());
+            FontProvider fontProvider = new FontProvider("Kanit");
+            fontProvider.AddFont(PdfHelper.GetKanitFontPath());
+            PdfOcrFontProvider pdfOcrFontProvider = new PdfOcrFontProvider(fontProvider.GetFontSet(), "Kanit");
+            ocrPdfCreatorProperties.SetFontProvider(pdfOcrFontProvider);
             PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
                 ());
             String resultWithActualText = PdfHelper.GetTextFromPdfLayerUseActualText(pdfPath, null);
@@ -104,6 +109,11 @@ namespace iText.Pdfocr {
             String resultWithoutUseActualText = PdfHelper.GetTextFromPdfLayer(pdfPath, null);
             NUnit.Framework.Assert.AreEqual(PdfHelper.THAI_TEXT, resultWithoutUseActualText);
             NUnit.Framework.Assert.AreEqual(resultWithoutUseActualText, resultWithActualText);
+            ExtractionStrategy strategy = PdfHelper.GetExtractionStrategy(pdfPath);
+            PdfFont font = strategy.GetPdfFont();
+            String fontName = font.GetFontProgram().GetFontNames().GetFontName();
+            NUnit.Framework.Assert.IsTrue(fontName.Contains("Kanit"));
+            NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
         }
     }
 }

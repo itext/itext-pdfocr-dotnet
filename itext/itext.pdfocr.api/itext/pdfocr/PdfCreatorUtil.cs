@@ -5,7 +5,6 @@ using Common.Logging;
 using iText.IO.Image;
 using iText.IO.Source;
 using iText.IO.Util;
-using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Layout;
 using iText.Layout.Element;
@@ -33,32 +32,59 @@ namespace iText.Pdfocr {
         /// object
         /// </param>
         /// <param name="line">text line</param>
-        /// <param name="font">font for the placed text (could be custom or default)</param>
+        /// <param name="fontFamily">default font family</param>
         /// <param name="bboxHeightPt">height of bbox calculated by OCR Reader</param>
         /// <param name="bboxWidthPt">width of bbox calculated by OCR Reader</param>
         /// <returns>font size</returns>
-        internal static float CalculateFontSize(Document document, String line, PdfFont font, float bboxHeightPt, 
-            float bboxWidthPt) {
+        internal static float CalculateFontSize(Document document, String line, String fontFamily, float bboxHeightPt
+            , float bboxWidthPt) {
             Rectangle bbox = new Rectangle(bboxWidthPt * 1.5f, bboxHeightPt * 1.5f);
-            Paragraph paragraph = new Paragraph(line);
-            paragraph.SetWidth(bboxWidthPt);
-            paragraph.SetFont(font);
             // setting minimum and maximum (approx.) values for font size
             float fontSize = 1;
-            float maxFontSize = bboxHeightPt * 2;
-            while (Math.Abs(fontSize - maxFontSize) > 1e-1) {
-                float curFontSize = (fontSize + maxFontSize) / 2;
-                paragraph.SetFontSize(curFontSize);
-                IRenderer renderer = paragraph.CreateRendererSubTree().SetParent(document.GetRenderer());
-                LayoutContext context = new LayoutContext(new LayoutArea(1, bbox));
-                if (renderer.Layout(context).GetStatus() == LayoutResult.FULL) {
-                    fontSize = curFontSize;
-                }
-                else {
-                    maxFontSize = curFontSize;
+            float maxFontSize = bbox.GetHeight();
+            try {
+                Paragraph paragraph = new Paragraph(line);
+                paragraph.SetWidth(bbox.GetWidth());
+                paragraph.SetFontFamily(fontFamily);
+                while (Math.Abs(fontSize - maxFontSize) > 1e-1) {
+                    float curFontSize = (fontSize + maxFontSize) / 2;
+                    paragraph.SetFontSize(curFontSize);
+                    IRenderer renderer = paragraph.CreateRendererSubTree().SetParent(document.GetRenderer());
+                    LayoutContext context = new LayoutContext(new LayoutArea(1, bbox));
+                    if (renderer.Layout(context).GetStatus() == LayoutResult.FULL) {
+                        fontSize = curFontSize;
+                    }
+                    else {
+                        maxFontSize = curFontSize;
+                    }
                 }
             }
+            catch (InvalidOperationException e) {
+                LOGGER.Error(PdfOcrLogMessageConstant.PROVIDED_FONT_PROVIDER_IS_INVALID);
+                throw new OcrException(OcrException.CANNOT_RESOLVE_PROVIDED_FONTS, e);
+            }
             return fontSize;
+        }
+
+        /// <summary>
+        /// Calculated real width of a paragraph with given text line, font provider
+        /// and font size.
+        /// </summary>
+        /// <param name="document">
+        /// PDF document as a
+        /// <see cref="iText.Layout.Document"/>
+        /// object
+        /// </param>
+        /// <param name="line">text line</param>
+        /// <param name="fontFamily">default font family</param>
+        /// <param name="fontSize">calculated font size</param>
+        /// <returns>real width of text line in paragraph</returns>
+        internal static float GetRealLineWidth(Document document, String line, String fontFamily, float fontSize) {
+            Paragraph paragraph = new Paragraph(line);
+            paragraph.SetFontFamily(fontFamily);
+            paragraph.SetFontSize(fontSize);
+            IRenderer renderer = paragraph.CreateRendererSubTree().SetParent(document.GetRenderer());
+            return ((ParagraphRenderer)renderer).GetMinMaxWidth().GetMaxWidth();
         }
 
         /// <summary>Calculates image coordinates on the page.</summary>

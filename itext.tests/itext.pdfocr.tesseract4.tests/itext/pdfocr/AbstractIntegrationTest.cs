@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Common.Logging;
+using iText.IO.Font;
 using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
@@ -11,6 +12,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using iText.Layout.Font;
 using iText.Pdfocr.Tesseract4;
 using iText.Test;
 
@@ -55,6 +57,21 @@ namespace iText.Pdfocr {
 
         // path to font for georgian
         protected internal static readonly String FREE_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "FreeSans.ttf";
+
+        private sealed class _Dictionary_78 : Dictionary<String, String> {
+            public _Dictionary_78() {
+ {
+                    this.Put(iText.Pdfocr.AbstractIntegrationTest.NOTO_SANS_FONT_PATH, "NotoSans");
+                    this.Put(iText.Pdfocr.AbstractIntegrationTest.KOSUGI_FONT_PATH, "Kosugi");
+                    this.Put(iText.Pdfocr.AbstractIntegrationTest.NOTO_SANS_SC_FONT_PATH, "NotoSansSC");
+                    this.Put(iText.Pdfocr.AbstractIntegrationTest.CAIRO_FONT_PATH, "Cairo");
+                    this.Put(iText.Pdfocr.AbstractIntegrationTest.FREE_SANS_FONT_PATH, "FreeSans");
+                }
+            }
+        }
+
+        protected internal static readonly IDictionary<String, String> FONT_PATH_TO_FONT_NAME_MAP = new _Dictionary_78
+            ();
 
         public enum ReaderType {
             LIB,
@@ -124,18 +141,25 @@ namespace iText.Pdfocr {
 
         /// <summary>Retrieve text from specified page from given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
-            , int page, IList<String> languages, String fontPath) {
+            , int page, IList<String> languages, IList<String> fonts) {
             String result = null;
             String pdfPath = null;
             try {
                 pdfPath = GetTargetDirectory() + GetImageName(file.FullName, languages) + ".pdf";
-                DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, languages, fontPath);
+                DoOcrAndSavePdfToPath(tesseractReader, file.FullName, pdfPath, languages, fonts);
                 result = GetTextFromPdfLayer(pdfPath, null, page);
             }
             catch (System.IO.IOException e) {
                 LOGGER.Error(e.Message);
             }
             return result;
+        }
+
+        /// <summary>Retrieve text from specified page from given PDF document.</summary>
+        protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
+            , int page, IList<String> languages, String fontPath) {
+            return GetTextFromPdf(tesseractReader, file, page, languages, JavaCollectionsUtil.SingletonList<String>(fontPath
+                ));
         }
 
         /// <summary>Retrieve text from the first page of given PDF document setting font.</summary>
@@ -147,19 +171,19 @@ namespace iText.Pdfocr {
         /// <summary>Retrieve text from the first page of given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             , IList<String> languages) {
-            return GetTextFromPdf(tesseractReader, file, 1, languages, null);
+            return GetTextFromPdf(tesseractReader, file, 1, languages, new List<String>());
         }
 
         /// <summary>Retrieve text from the required page of given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             , int page, IList<String> languages) {
-            return GetTextFromPdf(tesseractReader, file, page, languages, null);
+            return GetTextFromPdf(tesseractReader, file, page, languages, new List<String>());
         }
 
         /// <summary>Retrieve text from the first page of given PDF document.</summary>
         protected internal virtual String GetTextFromPdf(AbstractTesseract4OcrEngine tesseractReader, FileInfo file
             ) {
-            return GetTextFromPdf(tesseractReader, file, 1, null, null);
+            return GetTextFromPdf(tesseractReader, file, 1, null, new List<String>());
         }
 
         /// <summary>Get text from layer specified by name from page.</summary>
@@ -247,15 +271,20 @@ namespace iText.Pdfocr {
         /// (Method is used for compare tool)
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
-            imgPath, String pdfPath, IList<String> languages, String fontPath, Color color) {
+            imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color) {
             if (languages != null) {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetLanguages(languages);
                 tesseractReader.SetTesseract4OcrEngineProperties(properties);
             }
             OcrPdfCreatorProperties properties_1 = new OcrPdfCreatorProperties();
-            if (fontPath != null && !String.IsNullOrEmpty(fontPath)) {
-                properties_1.SetFontPath(fontPath);
+            if (fonts != null && fonts.Count > 0) {
+                FontProvider fontProvider = new FontProvider();
+                foreach (String fontPath in fonts) {
+                    String name = FONT_PATH_TO_FONT_NAME_MAP.Get(fontPath);
+                    fontProvider.GetFontSet().AddFont(fontPath, PdfEncodings.IDENTITY_H, name);
+                }
+                properties_1.SetFontProvider(fontProvider);
             }
             if (color != null) {
                 properties_1.SetTextColor(color);
@@ -297,8 +326,8 @@ namespace iText.Pdfocr {
         /// (Text will be invisible)
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
-            imgPath, String pdfPath, IList<String> languages, String fontPath) {
-            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fontPath, null);
+            imgPath, String pdfPath, IList<String> languages, IList<String> fonts) {
+            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fonts, null);
         }
 
         /// <summary>
@@ -424,9 +453,8 @@ namespace iText.Pdfocr {
                         tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
                     }
                 }
-                return (tagHierarchy == null || tagHierarchy.Count == 0
-                    || tagHierarchy[0].GetProperties().Get(PdfName.Name) == null) ? null : tagHierarchy[0].GetProperties().Get(PdfName
-                    .Name).ToString();
+                return (tagHierarchy == null || tagHierarchy.Count == 0 || tagHierarchy[0].GetProperties().Get(PdfName.Name
+                    ) == null) ? null : tagHierarchy[0].GetProperties().Get(PdfName.Name).ToString();
             }
         }
     }

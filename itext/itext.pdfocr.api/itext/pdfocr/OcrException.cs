@@ -7,7 +7,7 @@ namespace iText.Pdfocr {
     public class OcrException : Exception {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
-        public const String CANNOT_READ_FONT = "Cannot read font";
+        public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve " + "any of provided fonts. Please check provided FontProvider.";
 
         public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create " + "PDF document: {0}";
 

@@ -11,8 +11,11 @@ namespace iText.Pdfocr.Imageformats {
     public abstract class ImageFormatIntegrationTest : AbstractIntegrationTest {
         internal AbstractTesseract4OcrEngine tesseractReader;
 
+        internal String testType;
+
         public ImageFormatIntegrationTest(AbstractIntegrationTest.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
+            this.testType = type.ToString().ToLowerInvariant();
         }
 
         [NUnit.Framework.SetUp]
@@ -20,6 +23,19 @@ namespace iText.Pdfocr.Imageformats {
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
             ocrEngineProperties.SetPathToTessData(GetTessDataDirectory());
             tesseractReader.SetTesseract4OcrEngineProperties(ocrEngineProperties);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CompareBmp() {
+            String testName = "compareBmp";
+            String fileName = "example_01";
+            String path = TEST_IMAGES_DIRECTORY + fileName + ".BMP";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + fileName + "_" + testType + ".pdf";
+            String resultPdfPath = GetTargetDirectory() + fileName + "_" + testName + "_" + testType + ".pdf";
+            DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, JavaCollectionsUtil.SingletonList<String>("eng"
+                ), DeviceCmyk.MAGENTA);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -31,6 +47,19 @@ namespace iText.Pdfocr.Imageformats {
             realOutputHocr = iText.IO.Util.StringUtil.ReplaceAll(realOutputHocr, "[\n]", " ");
             realOutputHocr = iText.IO.Util.StringUtil.ReplaceAll(realOutputHocr, "[‘]", "");
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains((expectedOutput)));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CompareBmp02() {
+            String testName = "compareBmp02";
+            String fileName = "englishText";
+            String path = TEST_IMAGES_DIRECTORY + fileName + ".bmp";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + fileName + "_" + testType + ".pdf";
+            String resultPdfPath = GetTargetDirectory() + fileName + "_" + testName + "_" + testType + ".pdf";
+            DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, JavaCollectionsUtil.SingletonList<String>("eng"
+                ), DeviceCmyk.MAGENTA);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -51,7 +80,21 @@ namespace iText.Pdfocr.Imageformats {
             String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".JFIF", resultPdfPath, null, DeviceCmyk
                 .MAGENTA);
-            new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, TEST_DOCUMENTS_DIRECTORY, "diff_");
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CompareJpg() {
+            String testName = "compareJpg";
+            String fileName = "numbers_02";
+            String path = TEST_IMAGES_DIRECTORY + fileName + ".jpg";
+            String pdfName = fileName + "_" + testName + "_" + testType + ".pdf";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + pdfName;
+            String resultPdfPath = GetTargetDirectory() + pdfName;
+            DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, null, DeviceCmyk.BLACK);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -65,11 +108,37 @@ namespace iText.Pdfocr.Imageformats {
         }
 
         [NUnit.Framework.Test]
+        public virtual void CompareJpe() {
+            String testName = "compareJpe";
+            String fileName = "numbers_01";
+            String path = TEST_IMAGES_DIRECTORY + fileName + ".jpe";
+            String pdfName = fileName + "_" + testName + "_" + testType + ".pdf";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + pdfName;
+            String resultPdfPath = GetTargetDirectory() + pdfName;
+            DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, null, DeviceCmyk.BLACK);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
+        }
+
+        [NUnit.Framework.Test]
         public virtual void TestTextFromJPE() {
             String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpe";
             String expectedOutput = "619121";
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path));
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CompareTif() {
+            String testName = "compareTif";
+            String fileName = "numbers_01";
+            String path = TEST_IMAGES_DIRECTORY + fileName + ".tif";
+            String pdfName = fileName + "_" + testName + "_" + testType + ".pdf";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + pdfName;
+            String resultPdfPath = GetTargetDirectory() + pdfName;
+            DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, null, DeviceCmyk.BLACK);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -89,6 +158,19 @@ namespace iText.Pdfocr.Imageformats {
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path), JavaCollectionsUtil.SingletonList
                 <String>("eng"));
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CompareMultipagesTIFFWithPreprocessing() {
+            String testName = "compareMultipagesTIFFWithPreprocessing";
+            String fileName = "multipage";
+            String path = TEST_IMAGES_DIRECTORY + fileName + ".tiff";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + fileName + "_" + testType + ".pdf";
+            String resultPdfPath = GetTargetDirectory() + fileName + "_" + testName + "_" + testType + ".pdf";
+            DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, JavaCollectionsUtil.SingletonList<String>("eng"
+                ), DeviceCmyk.BLACK);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -137,7 +219,8 @@ namespace iText.Pdfocr.Imageformats {
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetTextPositioning
                 (TextPositioning.BY_LINES));
-            new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, TEST_DOCUMENTS_DIRECTORY, "diff_");
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
     }
 }

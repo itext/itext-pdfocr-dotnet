@@ -4,7 +4,8 @@ namespace iText.Pdfocr {
     public class PdfOcrLogMessageConstant {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image {0}";
 
-        public const String CANNOT_READ_PROVIDED_FONT = "Cannot read given font or it was not provided: {0}";
+        public const String PROVIDED_FONT_PROVIDER_IS_INVALID = "Provided FontProvider is invalid. Please check that it contains "
+             + "valid fonts and default font family name.";
 
         public const String CANNOT_READ_DEFAULT_FONT = "Cannot default read font: {0}";
 

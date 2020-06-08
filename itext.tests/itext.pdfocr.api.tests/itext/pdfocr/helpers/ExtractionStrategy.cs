@@ -92,10 +92,8 @@ namespace iText.Pdfocr.Helpers {
                     tagHierarchy = imageRenderInfo.GetCanvasTagHierarchy();
                 }
             }
-            return (tagHierarchy == null || tagHierarchy.Count == 0
-                    || tagHierarchy[0].GetProperties().Get(PdfName.Name) == null)
-                     ? null : tagHierarchy[0].GetProperties().Get(PdfName
-                .Name).ToString();
+            return (tagHierarchy == null || tagHierarchy.Count == 0 || tagHierarchy[0].GetProperties().Get(PdfName.Name
+                ) == null) ? null : tagHierarchy[0].GetProperties().Get(PdfName.Name).ToString();
         }
     }
 }

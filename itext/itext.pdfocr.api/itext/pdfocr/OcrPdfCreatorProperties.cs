@@ -1,6 +1,7 @@
 using System;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
+using iText.Layout.Font;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -8,8 +9,24 @@ namespace iText.Pdfocr {
     /// <see cref="OcrPdfCreator"/>.
     /// </summary>
     public class OcrPdfCreatorProperties {
-        /// <summary>Path to the default font.</summary>
-        private const String DEFAULT_FONT_PATH = "iText.Pdfocr.Api.font.LiberationSans-Regular.ttf";
+        /// <summary>Font provider.</summary>
+        /// <remarks>
+        /// Font provider.
+        /// By default it is
+        /// <see cref="PdfOcrFontProvider"/>
+        /// object with default font
+        /// family
+        /// <see cref="PdfOcrFontProvider.GetDefaultFontFamily()"/>.
+        /// </remarks>
+        private FontProvider fontProvider = null;
+
+        /// <summary>Default font family.</summary>
+        /// <remarks>
+        /// Default font family.
+        /// <see cref="PdfOcrFontProvider.GetDefaultFontFamily()"/>
+        /// by default.
+        /// </remarks>
+        private String defaultFontFamily = null;
 
         /// <summary>Color of the text in the output PDF document.</summary>
         /// <remarks>
@@ -72,13 +89,6 @@ namespace iText.Pdfocr {
         /// </remarks>
         private String title = "";
 
-        /// <summary>Path to the used font.</summary>
-        /// <remarks>
-        /// Path to the used font.
-        /// It should be set explicitly or the default font will be used.
-        /// </remarks>
-        private String fontPath;
-
         /// <summary>
         /// Creates a new
         /// <see cref="OcrPdfCreatorProperties"/>
@@ -109,7 +119,8 @@ namespace iText.Pdfocr {
             this.textColor = other.textColor;
             this.pdfLang = other.pdfLang;
             this.title = other.title;
-            this.fontPath = other.fontPath;
+            this.fontProvider = other.fontProvider;
+            this.defaultFontFamily = other.defaultFontFamily;
         }
 
         /// <summary>Gets text color in output PDF document.</summary>
@@ -324,32 +335,88 @@ namespace iText.Pdfocr {
             return this;
         }
 
-        /// <summary>Returns path to the font to be used in PDF document.</summary>
-        /// <returns>path to the required font</returns>
-        public virtual String GetFontPath() {
-            return fontPath;
+        /// <summary>
+        /// Returns FontProvider that was set previously or if it is
+        /// <c>null<code/> a new instance of
+        /// <see cref="PdfOcrFontProvider"/>
+        /// is
+        /// returned.
+        /// </summary>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Layout.Font.FontProvider"/>
+        /// object
+        /// </returns>
+        public virtual FontProvider GetFontProvider() {
+            if (fontProvider == null) {
+                fontProvider = new PdfOcrFontProvider();
+            }
+            return fontProvider;
         }
 
-        /// <summary>Sets path to the font to be used in PDF document.</summary>
-        /// <param name="path">path to the required font</param>
+        /// <summary>Sets font provider.</summary>
+        /// <remarks>
+        /// Sets font provider.
+        /// Please note that passed FontProvider is not to be used in multithreaded
+        /// environments or for any parallel processing.
+        /// There will be set the following default font family:
+        /// <see cref="PdfOcrFontProvider.GetDefaultFontFamily()"/>
+        /// </remarks>
+        /// <param name="fontProvider">
+        /// selected
+        /// <see cref="iText.Layout.Font.FontProvider"/>
+        /// instance
+        /// </param>
         /// <returns>
         /// the
         /// <see cref="OcrPdfCreatorProperties"/>
         /// instance
         /// </returns>
-        public virtual iText.Pdfocr.OcrPdfCreatorProperties SetFontPath(String path) {
-            fontPath = path;
+        public virtual iText.Pdfocr.OcrPdfCreatorProperties SetFontProvider(FontProvider fontProvider) {
+            this.fontProvider = fontProvider;
             return this;
         }
 
-        /// <summary>Gets path to the default font.</summary>
+        /// <summary>Sets font provider and default font family.</summary>
+        /// <remarks>
+        /// Sets font provider and default font family.
+        /// Please note that passed FontProvider is not to be used in multithreaded
+        /// environments or for any parallel processing.
+        /// </remarks>
+        /// <param name="fontProvider">
+        /// selected
+        /// <see cref="iText.Layout.Font.FontProvider"/>
+        /// instance
+        /// </param>
+        /// <param name="defaultFontFamily">
+        /// preferred font family to be used when selecting
+        /// font from
+        /// <see cref="iText.Layout.Font.FontProvider"/>.
+        /// </param>
         /// <returns>
-        /// 
-        /// <see cref="System.String"/>
-        /// path to default font
+        /// the
+        /// <see cref="OcrPdfCreatorProperties"/>
+        /// instance
         /// </returns>
-        public virtual String GetDefaultFontName() {
-            return iText.Pdfocr.OcrPdfCreatorProperties.DEFAULT_FONT_PATH;
+        public virtual iText.Pdfocr.OcrPdfCreatorProperties SetFontProvider(FontProvider fontProvider, String defaultFontFamily
+            ) {
+            this.fontProvider = fontProvider;
+            this.defaultFontFamily = defaultFontFamily;
+            return this;
+        }
+
+        /// <summary>
+        /// Gets preferred font family to be used when selecting font from
+        /// <see cref="iText.Layout.Font.FontProvider"/>.
+        /// </summary>
+        /// <returns>
+        /// if default font family is not set or it is null or empty
+        /// <see cref="PdfOcrFontProvider.GetDefaultFontFamily()"/>
+        /// is returned
+        /// </returns>
+        public virtual String GetDefaultFontFamily() {
+            return defaultFontFamily == null || defaultFontFamily.Length == 0 ? GetFontProvider().GetDefaultFontFamily
+                () : defaultFontFamily;
         }
     }
 }

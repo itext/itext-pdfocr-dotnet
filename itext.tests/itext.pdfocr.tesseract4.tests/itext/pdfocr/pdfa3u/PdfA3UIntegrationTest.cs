@@ -22,8 +22,8 @@ namespace iText.Pdfocr.Pdfa3u {
         }
 
         [NUnit.Framework.Test]
-        public virtual void ComparePdfA3uCMYKColorSpaceSpanishJPG() {
-            String testName = "comparePdfA3uCMYKColorSpaceSpanishJPG";
+        public virtual void ComparePdfA3uCMYKColorSpaceJPG() {
+            String testName = "comparePdfA3uCMYKColorSpaceJPG";
             String filename = "numbers_01";
             String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + filename + "_a3u.pdf";
             String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + "_a3u.pdf";
@@ -37,7 +37,8 @@ namespace iText.Pdfocr.Pdfa3u {
                      + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetCMYKPdfOutputIntent());
                 NUnit.Framework.Assert.IsNotNull(doc);
                 doc.Close();
-                new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, TEST_DOCUMENTS_DIRECTORY, "diff_");
+                NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                    (), "diff_"));
             }
             finally {
                 NUnit.Framework.Assert.AreEqual(TextPositioning.BY_WORDS, tesseractReader.GetTesseract4OcrEngineProperties
@@ -64,7 +65,8 @@ namespace iText.Pdfocr.Pdfa3u {
                  + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetRGBPdfOutputIntent());
             NUnit.Framework.Assert.IsNotNull(doc);
             doc.Close();
-            new CompareTool().CompareByContent(expectedPdfPath, resultPdfPath, TEST_DOCUMENTS_DIRECTORY, "diff_");
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
         }
 
         /// <summary>Creates PDF cmyk output intent for tests.</summary>
