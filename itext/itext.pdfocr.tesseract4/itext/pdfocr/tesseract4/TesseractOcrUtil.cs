@@ -304,8 +304,17 @@ namespace iText.Pdfocr.Tesseract4 {
                 return null;
             } else
             {
-                return new TesseractEngine(tessData, languages,
-                    userWordsFilePath != null ? EngineMode.TesseractOnly : EngineMode.Default);
+                try
+                {
+                    return new TesseractEngine(tessData, languages,
+                        userWordsFilePath != null ? EngineMode.TesseractOnly : EngineMode.Default);
+                }
+                catch (Exception e)
+                {
+                    throw new Tesseract4OcrException(isWindows ?
+                        Tesseract4OcrException.TESSERACT_LIB_NOT_INSTALLED_WIN :
+                        Tesseract4OcrException.TESSERACT_LIB_NOT_INSTALLED, e);
+                }
             }
         }
 
