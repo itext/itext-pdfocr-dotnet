@@ -81,7 +81,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// of images to be OCRed
         /// </param>
         /// <param name="txtFile">file to be created</param>
-        public virtual void CreateTxt(IList<FileInfo> inputImages, FileInfo txtFile) {
+        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
             LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.START_OCR_FOR_IMAGES
                 , inputImages.Count));
             StringBuilder content = new StringBuilder();

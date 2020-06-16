@@ -57,8 +57,10 @@ namespace iText.Pdfocr {
             String path = PdfHelper.GetDefaultImagePath();
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            PdfHelper.CreatePdfA(pdfPath, file, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK), PdfHelper
-                .GetRGBPdfOutputIntent());
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
+            ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
+            PdfHelper.CreatePdfA(pdfPath, file, ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent());
             ExtractionStrategy strategy = PdfHelper.GetExtractionStrategy(pdfPath);
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
@@ -72,8 +74,10 @@ namespace iText.Pdfocr {
             String path = PdfHelper.GetDefaultImagePath();
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            PdfHelper.CreatePdfA(pdfPath, file, new OcrPdfCreatorProperties().SetFontProvider(new PdfOcrFontProvider()
-                ), PdfHelper.GetCMYKPdfOutputIntent());
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
+            ocrPdfCreatorProperties.SetFontProvider(new PdfOcrFontProvider());
+            PdfHelper.CreatePdfA(pdfPath, file, ocrPdfCreatorProperties, PdfHelper.GetCMYKPdfOutputIntent());
             ExtractionStrategy strategy = PdfHelper.GetExtractionStrategy(pdfPath);
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
@@ -89,8 +93,10 @@ namespace iText.Pdfocr {
             FileInfo file = new FileInfo(path);
             FontProvider fontProvider = new FontProvider("FreeSans");
             fontProvider.GetFontSet().AddFont(PdfHelper.GetFreeSansFontPath(), PdfEncodings.IDENTITY_H, "FreeSans");
-            PdfHelper.CreatePdfA(pdfPath, file, new OcrPdfCreatorProperties().SetFontProvider(fontProvider, "FreeSans"
-                ), PdfHelper.GetCMYKPdfOutputIntent());
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
+            ocrPdfCreatorProperties.SetFontProvider(fontProvider, "FreeSans");
+            PdfHelper.CreatePdfA(pdfPath, file, ocrPdfCreatorProperties, PdfHelper.GetCMYKPdfOutputIntent());
             ExtractionStrategy strategy = PdfHelper.GetExtractionStrategy(pdfPath);
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
@@ -125,6 +131,7 @@ namespace iText.Pdfocr {
             fontProvider.AddFont(PdfHelper.GetFreeSansFontPath());
             PdfOcrFontProvider pdfOcrFontProvider = new PdfOcrFontProvider(fontProvider.GetFontSet(), "FreeSans");
             OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
             ocrPdfCreatorProperties.SetFontProvider(pdfOcrFontProvider);
             PdfHelper.CreatePdfA(pdfPathA3u, file, ocrPdfCreatorProperties, PdfHelper.GetCMYKPdfOutputIntent());
             PdfHelper.CreatePdf(pdfPath, file, ocrPdfCreatorProperties);

@@ -8,7 +8,7 @@ using System.Reflection;
 using iText.Pdfocr;
 
 
-public static class PdfOcrExtensions
+internal static class PdfOcrExtensions
 {
     public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> col, TKey key)
     {
@@ -26,11 +26,6 @@ public static class PdfOcrExtensions
         TValue oldVal = col.Get(key);
         col[key] = value;
         return oldVal;
-    }
-
-    public static byte[] GetBytes(this String str)
-    {
-        return System.Text.Encoding.UTF8.GetBytes(str);
     }
 
 }

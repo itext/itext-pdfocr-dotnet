@@ -76,18 +76,14 @@ namespace iText.Pdfocr {
         private String textLayerName = null;
 
         /// <summary>PDF Language.</summary>
-        /// <remarks>
-        /// PDF Language.
-        /// "en-US" by default.
-        /// </remarks>
-        private String pdfLang = "en-US";
+        private String pdfLang = "";
 
         /// <summary>Title of the created document.</summary>
         /// <remarks>
         /// Title of the created document.
-        /// It is empty by default.
+        /// It is not set by default.
         /// </remarks>
-        private String title = "";
+        private String title = null;
 
         /// <summary>
         /// Creates a new
@@ -133,6 +129,10 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Sets text color in output PDF document.</summary>
+        /// <remarks>
+        /// Sets text color in output PDF document.
+        /// Text will be transparent by default.
+        /// </remarks>
         /// <param name="textColor">
         /// required text
         /// <see cref="iText.Kernel.Colors.Color"/>
@@ -195,11 +195,6 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Sets required size for output PDF document.</summary>
-        /// <remarks>
-        /// Sets required size for output PDF document. Real size of the page will
-        /// be calculated according to the selected
-        /// <see cref="ScaleMode"/>.
-        /// </remarks>
         /// <param name="pageSize">
         /// requested page
         /// size as
@@ -292,8 +287,8 @@ namespace iText.Pdfocr {
         /// <summary>Specify PDF natural language, and optionally locale.</summary>
         /// <remarks>
         /// Specify PDF natural language, and optionally locale.
-        /// For the content usage dictionary use
-        /// <see cref="iText.Kernel.Pdf.PdfName.Language"/>
+        /// Language identifier shall either be the empty text string, to indicate that the language is unknown,
+        /// or a Language-Tag as defined in BCP 47 (2009), Tags for the Identification of Languages.
         /// </remarks>
         /// <param name="language">
         /// PDF document language as

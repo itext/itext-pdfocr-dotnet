@@ -44,6 +44,11 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Sets list of languages to be recognized in provided images.</summary>
+        /// <remarks>
+        /// Sets list of languages to be recognized in provided images.
+        /// Consult with documentation of specific engine implementations
+        /// to check on which format to give the language in.
+        /// </remarks>
         /// <param name="requiredLanguages">
         /// 
         /// <see cref="System.Collections.IList{E}"/>

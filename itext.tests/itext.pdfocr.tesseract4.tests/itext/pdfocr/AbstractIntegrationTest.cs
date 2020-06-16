@@ -253,7 +253,7 @@ namespace iText.Pdfocr {
                 properties.SetLanguages(languages);
                 tesseractReader.SetTesseract4OcrEngineProperties(properties);
             }
-            tesseractReader.CreateTxt(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath)), new FileInfo
+            tesseractReader.CreateTxtFile(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath)), new FileInfo
                 (txtPath));
             if (languages != null) {
                 NUnit.Framework.Assert.AreEqual(languages.Count, tesseractReader.GetTesseract4OcrEngineProperties().GetLanguages
@@ -278,6 +278,8 @@ namespace iText.Pdfocr {
                 tesseractReader.SetTesseract4OcrEngineProperties(properties);
             }
             OcrPdfCreatorProperties properties_1 = new OcrPdfCreatorProperties();
+            properties_1.SetPdfLang("en-US");
+            properties_1.SetTitle("");
             if (fonts != null && fonts.Count > 0) {
                 FontProvider fontProvider = new FontProvider();
                 foreach (String fontPath in fonts) {

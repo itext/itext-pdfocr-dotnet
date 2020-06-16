@@ -47,12 +47,20 @@ namespace iText.Pdfocr {
         /// for the given list of
         /// input images and saves output to a text file using provided path.
         /// </summary>
+        /// <remarks>
+        /// Performs OCR using provided
+        /// <see cref="IOcrEngine"/>
+        /// for the given list of
+        /// input images and saves output to a text file using provided path.
+        /// Note that a human reading order is not guaranteed
+        /// due to possible specifics of input images (multi column layout, tables etc)
+        /// </remarks>
         /// <param name="inputImages">
         /// 
         /// <see cref="System.Collections.IList{E}"/>
         /// of images to be OCRed
         /// </param>
         /// <param name="txtFile">file to be created</param>
-        void CreateTxt(IList<FileInfo> inputImages, FileInfo txtFile);
+        void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile);
     }
 }

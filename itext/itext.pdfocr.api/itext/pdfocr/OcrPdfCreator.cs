@@ -316,11 +316,25 @@ namespace iText.Pdfocr {
             else {
                 pdfDocument = new PdfDocument(pdfWriter);
             }
+            // pdfLang should be set in PDF/A mode
+            bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !ocrPdfCreatorProperties.GetPdfLang
+                ().Equals("");
+            if (createPdfA3u && !hasPdfLangProperty) {
+                LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET
+                    ));
+                throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(PdfOcrLogMessageConstant.
+                    PDF_LANGUAGE_PROPERTY_IS_NOT_SET);
+            }
             // add metadata
-            pdfDocument.GetCatalog().SetLang(new PdfString(ocrPdfCreatorProperties.GetPdfLang()));
-            pdfDocument.GetCatalog().SetViewerPreferences(new PdfViewerPreferences().SetDisplayDocTitle(true));
-            PdfDocumentInfo info = pdfDocument.GetDocumentInfo();
-            info.SetTitle(ocrPdfCreatorProperties.GetTitle());
+            if (hasPdfLangProperty) {
+                pdfDocument.GetCatalog().SetLang(new PdfString(ocrPdfCreatorProperties.GetPdfLang()));
+            }
+            // set title if it is not empty
+            if (ocrPdfCreatorProperties.GetTitle() != null) {
+                pdfDocument.GetCatalog().SetViewerPreferences(new PdfViewerPreferences().SetDisplayDocTitle(true));
+                PdfDocumentInfo info = pdfDocument.GetDocumentInfo();
+                info.SetTitle(ocrPdfCreatorProperties.GetTitle());
+            }
             // reset passed font provider
             ocrPdfCreatorProperties.GetFontProvider().Reset();
             AddDataToPdfDocument(imagesTextData, pdfDocument, createPdfA3u);

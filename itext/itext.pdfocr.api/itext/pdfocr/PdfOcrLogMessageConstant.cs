@@ -18,6 +18,8 @@ namespace iText.Pdfocr {
         public const String COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER = "Could not find a glyph corresponding to Unicode character {0} "
              + "in any of the fonts";
 
+        public const String PDF_LANGUAGE_PROPERTY_IS_NOT_SET = "PDF language property is not set";
+
         private PdfOcrLogMessageConstant() {
         }
     }

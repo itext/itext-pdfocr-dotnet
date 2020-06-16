@@ -41,12 +41,7 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseractInstance = TesseractOcrUtil.InitializeTesseractInstance(IsWindows(), null, null, null);
         }
 
-        /// <summary>Gets tesseract instance depending on the OS type.</summary>
-        /// <remarks>
-        /// Gets tesseract instance depending on the OS type.
-        /// If instance is null or it was already disposed, it will be initialized
-        /// with parameters.
-        /// </remarks>
+        /// <summary>Gets tesseract instance.</summary>
         /// <returns>
         /// initialized
         /// <see cref="Tesseract.TesseractEngine"/>

@@ -49,9 +49,10 @@ namespace iText.Pdfocr {
                 while (Math.Abs(fontSize - maxFontSize) > 1e-1) {
                     float curFontSize = (fontSize + maxFontSize) / 2;
                     paragraph.SetFontSize(curFontSize);
-                    IRenderer renderer = paragraph.CreateRendererSubTree().SetParent(document.GetRenderer());
+                    ParagraphRenderer renderer = (ParagraphRenderer)paragraph.CreateRendererSubTree().SetParent(document.GetRenderer
+                        ());
                     LayoutContext context = new LayoutContext(new LayoutArea(1, bbox));
-                    if (renderer.Layout(context).GetStatus() == LayoutResult.FULL) {
+                    if (renderer.Layout(context).GetStatus() == LayoutResult.FULL && renderer.GetLines().Count == 1) {
                         fontSize = curFontSize;
                     }
                     else {

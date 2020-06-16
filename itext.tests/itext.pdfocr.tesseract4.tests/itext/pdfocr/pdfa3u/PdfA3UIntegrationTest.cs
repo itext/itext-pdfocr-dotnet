@@ -28,7 +28,10 @@ namespace iText.Pdfocr.Pdfa3u {
             String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + filename + "_a3u.pdf";
             String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + "_a3u.pdf";
             try {
-                OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
+                OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+                ocrPdfCreatorProperties.SetPdfLang("en-US");
+                ocrPdfCreatorProperties.SetTitle("");
+                OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, ocrPdfCreatorProperties);
                 tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetTextPositioning
                     (TextPositioning.BY_WORDS));
                 NUnit.Framework.Assert.AreEqual(tesseractReader, ocrPdfCreator.GetOcrEngine());
@@ -59,8 +62,11 @@ namespace iText.Pdfocr.Pdfa3u {
             properties.SetPathToTessData(GetTessDataDirectory());
             properties.SetLanguages(JavaCollectionsUtil.SingletonList<String>("spa"));
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, new OcrPdfCreatorProperties().SetTextColor
-                (DeviceRgb.BLACK));
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
+            ocrPdfCreatorProperties.SetTitle("");
+            ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, ocrPdfCreatorProperties);
             PdfDocument doc = ocrPdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(TEST_IMAGES_DIRECTORY
                  + filename + ".jpg")), GetPdfWriter(resultPdfPath), GetRGBPdfOutputIntent());
             NUnit.Framework.Assert.IsNotNull(doc);

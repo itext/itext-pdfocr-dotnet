@@ -33,8 +33,11 @@ namespace iText.Pdfocr {
                 String testName = "testIncompatibleOutputIntentAndFontColorSpaceException";
                 String path = PdfHelper.GetDefaultImagePath();
                 String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
-                PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceCmyk.BLACK
-                    ), PdfHelper.GetRGBPdfOutputIntent());
+                OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+                ocrPdfCreatorProperties.SetPdfLang("en-US");
+                ocrPdfCreatorProperties.SetTextColor(DeviceCmyk.BLACK);
+                PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
+                    ());
             }
             , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfAConformanceException.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT))
 ;
@@ -46,11 +49,13 @@ namespace iText.Pdfocr {
             String path = PdfHelper.GetDefaultImagePath();
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
-            PdfHelper.CreatePdfA(pdfPath, file, new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK), PdfHelper
-                .GetRGBPdfOutputIntent());
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
+            ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
+            PdfHelper.CreatePdfA(pdfPath, file, ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent());
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             NUnit.Framework.Assert.AreEqual("en-US", pdfDocument.GetCatalog().GetLang().ToString());
-            NUnit.Framework.Assert.AreEqual("", pdfDocument.GetDocumentInfo().GetTitle());
+            NUnit.Framework.Assert.AreEqual(null, pdfDocument.GetDocumentInfo().GetTitle());
             NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
                 ());
             pdfDocument.Close();
@@ -84,8 +89,11 @@ namespace iText.Pdfocr {
                 String testName = "testNonCompliantThaiPdfA";
                 String path = PdfHelper.GetThaiImagePath();
                 String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
-                PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK
-                    ), PdfHelper.GetRGBPdfOutputIntent());
+                OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+                ocrPdfCreatorProperties.SetPdfLang("en-US");
+                ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
+                PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
+                    ());
             }
             , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, 3611))))
 ;
@@ -97,6 +105,7 @@ namespace iText.Pdfocr {
             String path = PdfHelper.GetThaiImagePath();
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetPdfLang("en-US");
             ocrPdfCreatorProperties.SetTextColor(DeviceRgb.BLACK);
             FontProvider fontProvider = new FontProvider("Kanit");
             fontProvider.AddFont(PdfHelper.GetKanitFontPath());
@@ -114,6 +123,20 @@ namespace iText.Pdfocr {
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();
             NUnit.Framework.Assert.IsTrue(fontName.Contains("Kanit"));
             NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
+        }
+
+        [LogMessage(OcrException.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
+        [NUnit.Framework.Test]
+        public virtual void TestPdfACreateWithoutPdfLangProperty() {
+            NUnit.Framework.Assert.That(() =>  {
+                String testName = "testPdfACreateWithoutPdfLangProperty";
+                String path = PdfHelper.GetThaiImagePath();
+                String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
+                PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties(), PdfHelper.GetRGBPdfOutputIntent
+                    ());
+            }
+            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET)))
+;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace iText.Pdfocr.Helpers {
             return result;
         }
 
-        public virtual void CreateTxt(IList<FileInfo> inputImages, FileInfo txtFile) {
+        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
         }
 
         public virtual OcrEngineProperties GetOcrEngineProperties() {
