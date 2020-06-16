@@ -105,7 +105,7 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         /// <summary>
-        /// Performs tesseract OCR using command line tool for the selected page
+        /// Performs tesseract OCR using wrapper for Tesseract OCR API for the selected page
         /// of input image (by default 1st).
         /// </summary>
         /// <param name="inputImage">
@@ -124,7 +124,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        public override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
+        internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber) {
             try {
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());

@@ -110,7 +110,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        public override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
+        internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber) {
             IList<String> @params = new List<String>();
             String execPath = null;

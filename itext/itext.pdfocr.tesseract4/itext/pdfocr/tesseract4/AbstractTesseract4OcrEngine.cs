@@ -73,7 +73,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        public abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
+        internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber);
 
         /// <summary>Performs tesseract OCR for the first (or for the only) image page.</summary>
