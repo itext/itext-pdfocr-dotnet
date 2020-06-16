@@ -1,25 +1,25 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2020 iText Group NV
+Authors: iText Software.
 
-    This program is offered under a commercial and under the AGPL license.
-    For commercial licensing, contact us at https://itextpdf.com/sales.  For AGPL licensing, see below.
+This program is offered under a commercial and under the AGPL license.
+For commercial licensing, contact us at https://itextpdf.com/sales.  For AGPL licensing, see below.
 
-    AGPL licensing:
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+AGPL licensing:
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,8 +80,8 @@ namespace iText.Pdfocr {
         // path to font for georgian
         protected internal static readonly String FREE_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "FreeSans.ttf";
 
-        private sealed class _Dictionary_78 : Dictionary<String, String> {
-            public _Dictionary_78() {
+        private sealed class _Dictionary_100 : Dictionary<String, String> {
+            public _Dictionary_100() {
  {
                     this.Put(iText.Pdfocr.AbstractIntegrationTest.NOTO_SANS_FONT_PATH, "NotoSans");
                     this.Put(iText.Pdfocr.AbstractIntegrationTest.KOSUGI_FONT_PATH, "Kosugi");
@@ -92,7 +92,7 @@ namespace iText.Pdfocr {
             }
         }
 
-        protected internal static readonly IDictionary<String, String> FONT_PATH_TO_FONT_NAME_MAP = new _Dictionary_78
+        protected internal static readonly IDictionary<String, String> FONT_PATH_TO_FONT_NAME_MAP = new _Dictionary_100
             ();
 
         public enum ReaderType {
