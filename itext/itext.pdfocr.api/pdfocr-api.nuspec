@@ -21,5 +21,6 @@
     <file src="bin\Release\net40\itext.pdfocr.api.dll" target="lib\net40" />
     <file src="bin\Release\net40\itext.pdfocr.api.xml" target="lib\net40" />
     <file src="NOTICE.txt" target="" />
+    <file src="ITSC-avatar.png" target="" />
   </files>
 </package>

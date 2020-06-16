@@ -29,5 +29,6 @@
     <file src="lib\x64\*.dll" target="runtimes\x64" />
     <file src="lib\x86\*.dll" target="runtimes\x86" />
     <file src="NOTICE.txt" target="" />
+    <file src="ITSC-avatar.png" target="" />
   </files>
 </package>
