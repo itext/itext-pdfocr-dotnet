@@ -26,6 +26,19 @@ pipeline {
     }
 
     stages {
+        stage('Wait for blocking jobs') {
+            steps {
+                script {
+                    properties[[
+                            $class         : 'BuildBlockerProperty',
+                            blockLevel     : 'GLOBAL',
+                            blockingJobs   : "^iText_7_Java/itextcore/$env.JOB_BASE_NAME\$",
+                            scanQueueFor   : 'ALL',
+                            useBuildBlocker: true
+                    ]]
+                }
+            }
+        }
         stage('Clean workspace') {
             options {
                 timeout(time: 5, unit: 'MINUTES')
