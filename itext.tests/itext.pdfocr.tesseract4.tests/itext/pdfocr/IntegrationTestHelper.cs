@@ -39,8 +39,8 @@ using iText.Pdfocr.Tesseract4;
 using iText.Test;
 
 namespace iText.Pdfocr {
-    public class AbstractIntegrationTest : ExtendedITextTest {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.AbstractIntegrationTest));
+    public class IntegrationTestHelper : ExtendedITextTest {
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.IntegrationTestHelper));
 
         // directory with test files
         public static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
@@ -83,11 +83,11 @@ namespace iText.Pdfocr {
         private sealed class _Dictionary_100 : Dictionary<String, String> {
             public _Dictionary_100() {
  {
-                    this.Put(iText.Pdfocr.AbstractIntegrationTest.NOTO_SANS_FONT_PATH, "NotoSans");
-                    this.Put(iText.Pdfocr.AbstractIntegrationTest.KOSUGI_FONT_PATH, "Kosugi");
-                    this.Put(iText.Pdfocr.AbstractIntegrationTest.NOTO_SANS_SC_FONT_PATH, "NotoSansSC");
-                    this.Put(iText.Pdfocr.AbstractIntegrationTest.CAIRO_FONT_PATH, "Cairo");
-                    this.Put(iText.Pdfocr.AbstractIntegrationTest.FREE_SANS_FONT_PATH, "FreeSans");
+                    this.Put(iText.Pdfocr.IntegrationTestHelper.NOTO_SANS_FONT_PATH, "NotoSans");
+                    this.Put(iText.Pdfocr.IntegrationTestHelper.KOSUGI_FONT_PATH, "Kosugi");
+                    this.Put(iText.Pdfocr.IntegrationTestHelper.NOTO_SANS_SC_FONT_PATH, "NotoSansSC");
+                    this.Put(iText.Pdfocr.IntegrationTestHelper.CAIRO_FONT_PATH, "Cairo");
+                    this.Put(iText.Pdfocr.IntegrationTestHelper.FREE_SANS_FONT_PATH, "FreeSans");
                 }
             }
         }
@@ -104,17 +104,7 @@ namespace iText.Pdfocr {
 
         private static Tesseract4ExecutableOcrEngine tesseractExecutableReader = null;
 
-        [NUnit.Framework.Test]
-        public virtual void TestSimpleTextOutput() {
-            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
-            String expectedOutput = "619121";
-            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(GetTesseractReader(AbstractIntegrationTest.ReaderType
-                .EXECUTABLE), imgPath).Contains(expectedOutput));
-            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(GetTesseractReader(AbstractIntegrationTest.ReaderType
-                .LIB), imgPath).Contains(expectedOutput));
-        }
-
-        public AbstractIntegrationTest() {
+        public IntegrationTestHelper() {
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
             ocrEngineProperties.SetPathToTessData(GetTessDataDirectory());
             tesseractLibReader = new Tesseract4LibOcrEngine(ocrEngineProperties);
@@ -122,9 +112,9 @@ namespace iText.Pdfocr {
                 );
         }
 
-        protected internal static AbstractTesseract4OcrEngine GetTesseractReader(AbstractIntegrationTest.ReaderType
-             type) {
-            if (type.Equals(AbstractIntegrationTest.ReaderType.LIB)) {
+        protected internal static AbstractTesseract4OcrEngine GetTesseractReader(IntegrationTestHelper.ReaderType
+            type) {
+            if (type.Equals(IntegrationTestHelper.ReaderType.LIB)) {
                 return tesseractLibReader;
             }
             else {
@@ -212,7 +202,7 @@ namespace iText.Pdfocr {
         protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page, bool useActualText
             ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-            AbstractIntegrationTest.ExtractionStrategy textExtractionStrategy = new AbstractIntegrationTest.ExtractionStrategy
+            IntegrationTestHelper.ExtractionStrategy textExtractionStrategy = new IntegrationTestHelper.ExtractionStrategy
                 (layerName);
             textExtractionStrategy.SetUseActualText(useActualText);
             PdfCanvasProcessor processor = new PdfCanvasProcessor(textExtractionStrategy);

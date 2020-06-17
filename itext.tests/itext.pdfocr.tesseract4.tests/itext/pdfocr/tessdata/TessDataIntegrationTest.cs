@@ -33,7 +33,7 @@ using iText.Pdfocr.Tesseract4;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
-    public abstract class TessDataIntegrationTest : AbstractIntegrationTest {
+    public abstract class TessDataIntegrationTest : IntegrationTestHelper {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tessdata.TessDataIntegrationTest
             ));
 
@@ -43,8 +43,8 @@ namespace iText.Pdfocr.Tessdata {
 
         private bool isExecutableReaderType;
 
-        public TessDataIntegrationTest(AbstractIntegrationTest.ReaderType type) {
-            isExecutableReaderType = type.Equals(AbstractIntegrationTest.ReaderType.EXECUTABLE);
+        public TessDataIntegrationTest(IntegrationTestHelper.ReaderType type) {
+            isExecutableReaderType = type.Equals(IntegrationTestHelper.ReaderType.EXECUTABLE);
             if (isExecutableReaderType) {
                 testFileTypeName = "executable";
             }

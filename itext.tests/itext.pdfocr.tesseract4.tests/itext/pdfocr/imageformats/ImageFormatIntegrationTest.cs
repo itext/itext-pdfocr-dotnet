@@ -30,12 +30,12 @@ using iText.Pdfocr.Tesseract4;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Imageformats {
-    public abstract class ImageFormatIntegrationTest : AbstractIntegrationTest {
+    public abstract class ImageFormatIntegrationTest : IntegrationTestHelper {
         internal AbstractTesseract4OcrEngine tesseractReader;
 
         internal String testType;
 
-        public ImageFormatIntegrationTest(AbstractIntegrationTest.ReaderType type) {
+        public ImageFormatIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
             this.testType = type.ToString().ToLowerInvariant();
         }

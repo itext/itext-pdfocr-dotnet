@@ -25,7 +25,7 @@ using iText.Pdfocr.Tesseract4;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
-    public class TesseractExecutableIntegrationTest : AbstractIntegrationTest {
+    public class TesseractExecutableIntegrationTest : IntegrationTestHelper {
         [LogMessage(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNullPathToTesseractExecutable() {

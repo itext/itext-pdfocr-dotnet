@@ -30,7 +30,7 @@ using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
 
 namespace iText.Pdfocr.Pdfa3u {
-    public abstract class PdfA3UIntegrationTest : AbstractIntegrationTest {
+    public abstract class PdfA3UIntegrationTest : IntegrationTestHelper {
         // path to default cmyk color profile
         private static readonly String DEFAULT_CMYK_COLOR_PROFILE_PATH = TEST_DIRECTORY + "profiles/CoatedFOGRA27.icc";
 
@@ -39,7 +39,7 @@ namespace iText.Pdfocr.Pdfa3u {
 
         internal AbstractTesseract4OcrEngine tesseractReader;
 
-        public PdfA3UIntegrationTest(AbstractIntegrationTest.ReaderType type) {
+        public PdfA3UIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 

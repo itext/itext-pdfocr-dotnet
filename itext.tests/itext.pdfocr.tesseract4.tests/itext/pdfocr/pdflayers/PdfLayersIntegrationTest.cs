@@ -30,10 +30,10 @@ using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
 
 namespace iText.Pdfocr.Pdflayers {
-    public abstract class PdfLayersIntegrationTest : AbstractIntegrationTest {
+    public abstract class PdfLayersIntegrationTest : IntegrationTestHelper {
         internal AbstractTesseract4OcrEngine tesseractReader;
 
-        public PdfLayersIntegrationTest(AbstractIntegrationTest.ReaderType type) {
+        public PdfLayersIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 

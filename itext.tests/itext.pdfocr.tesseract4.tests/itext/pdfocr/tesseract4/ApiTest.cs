@@ -27,7 +27,7 @@ using iText.Pdfocr;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
-    public class ApiTest : AbstractIntegrationTest {
+    public class ApiTest : IntegrationTestHelper {
         [NUnit.Framework.Test]
         public virtual void TestTesseract4OcrForPix() {
             String path = TEST_IMAGES_DIRECTORY + "numbers_02.jpg";

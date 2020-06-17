@@ -34,10 +34,10 @@ using iText.Pdfocr.Tesseract4;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.General {
-    public abstract class BasicTesseractIntegrationTest : AbstractIntegrationTest {
+    public abstract class BasicTesseractIntegrationTest : IntegrationTestHelper {
         internal AbstractTesseract4OcrEngine tesseractReader;
 
-        public BasicTesseractIntegrationTest(AbstractIntegrationTest.ReaderType type) {
+        public BasicTesseractIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 
@@ -64,8 +64,7 @@ namespace iText.Pdfocr.General {
             NUnit.Framework.Assert.IsNotNull(doc);
             doc.Close();
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-            AbstractIntegrationTest.ExtractionStrategy strategy = new AbstractIntegrationTest.ExtractionStrategy("Text1"
-                );
+            IntegrationTestHelper.ExtractionStrategy strategy = new IntegrationTestHelper.ExtractionStrategy("Text1");
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetPage(1));
             Color fillColor = strategy.GetFillColor();
@@ -107,7 +106,7 @@ namespace iText.Pdfocr.General {
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
             ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), new PdfWriter(pdfPath)).Close();
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-            AbstractIntegrationTest.ExtractionStrategy strategy = new AbstractIntegrationTest.ExtractionStrategy("Text Layer"
+            IntegrationTestHelper.ExtractionStrategy strategy = new IntegrationTestHelper.ExtractionStrategy("Text Layer"
                 );
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetFirstPage());
@@ -267,6 +266,14 @@ namespace iText.Pdfocr.General {
             tesseractReader.DoTesseractOcr(imgFile, outputFile, OutputFormat.TXT);
             String result = GetTextFromTextFile(outputFile);
             NUnit.Framework.Assert.IsTrue(result.Contains(expected));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestSimpleTextOutput() {
+            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
+            String expectedOutput = "619121";
+            NUnit.Framework.Assert.IsTrue(GetRecognizedTextFromTextFile(tesseractReader, imgPath).Contains(expectedOutput
+                ));
         }
 
         /// <summary>Parse text from image and compare with expected.</summary>
