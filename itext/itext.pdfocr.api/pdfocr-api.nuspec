@@ -7,8 +7,8 @@
     <authors>iText Software</authors>
     <owners>iText Software</owners>
     <icon>ITSC-avatar.png</icon>
-    <description>pdfOCR is an iText 7 add-on for C# (.NET) that lets you recognize text from images and create searchable PDF files. This package contains API for implementations based on different OCR engines.</description>
-    <summary>pdfOcr is an iText 7 add-on for C# (.NET) that allows you to retrieve text from images.</summary>
+    <description>pdfOCR is an iText 7 add-on for C# (.NET) to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
+    <summary>pdfOCR is an iText 7 add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
     <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
     <language>en-US</language>
     <dependencies>
