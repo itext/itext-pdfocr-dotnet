@@ -80,20 +80,17 @@ namespace iText.Pdfocr {
         // path to font for georgian
         protected internal static readonly String FREE_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "FreeSans.ttf";
 
-        private sealed class _Dictionary_100 : Dictionary<String, String> {
-            public _Dictionary_100() {
- {
-                    this.Put(iText.Pdfocr.IntegrationTestHelper.NOTO_SANS_FONT_PATH, "NotoSans");
-                    this.Put(iText.Pdfocr.IntegrationTestHelper.KOSUGI_FONT_PATH, "Kosugi");
-                    this.Put(iText.Pdfocr.IntegrationTestHelper.NOTO_SANS_SC_FONT_PATH, "NotoSansSC");
-                    this.Put(iText.Pdfocr.IntegrationTestHelper.CAIRO_FONT_PATH, "Cairo");
-                    this.Put(iText.Pdfocr.IntegrationTestHelper.FREE_SANS_FONT_PATH, "FreeSans");
-                }
-            }
-        }
+        protected internal static readonly IDictionary<String, String> FONT_PATH_TO_FONT_NAME_MAP;
 
-        protected internal static readonly IDictionary<String, String> FONT_PATH_TO_FONT_NAME_MAP = new _Dictionary_100
-            ();
+        static IntegrationTestHelper() {
+            IDictionary<String, String> fontPathToNameMap = new Dictionary<String, String>();
+            fontPathToNameMap.Put(NOTO_SANS_FONT_PATH, "NotoSans");
+            fontPathToNameMap.Put(KOSUGI_FONT_PATH, "Kosugi");
+            fontPathToNameMap.Put(NOTO_SANS_SC_FONT_PATH, "NotoSansSC");
+            fontPathToNameMap.Put(CAIRO_FONT_PATH, "Cairo");
+            fontPathToNameMap.Put(FREE_SANS_FONT_PATH, "FreeSans");
+            FONT_PATH_TO_FONT_NAME_MAP = JavaCollectionsUtil.UnmodifiableMap(fontPathToNameMap);
+        }
 
         public enum ReaderType {
             LIB,
@@ -112,7 +109,7 @@ namespace iText.Pdfocr {
                 );
         }
 
-        protected internal static AbstractTesseract4OcrEngine GetTesseractReader(IntegrationTestHelper.ReaderType
+        protected internal static AbstractTesseract4OcrEngine GetTesseractReader(IntegrationTestHelper.ReaderType 
             type) {
             if (type.Equals(IntegrationTestHelper.ReaderType.LIB)) {
                 return tesseractLibReader;
