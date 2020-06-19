@@ -176,7 +176,7 @@ namespace iText.Pdfocr.Imageformats {
             String path = TEST_IMAGES_DIRECTORY + "example_03_10MB.tiff";
             String expectedOutput = "Image File Format";
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
-                (false));
+                (false).SetPageSegMode(null));
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path), JavaCollectionsUtil.SingletonList
                 <String>("eng"));
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));

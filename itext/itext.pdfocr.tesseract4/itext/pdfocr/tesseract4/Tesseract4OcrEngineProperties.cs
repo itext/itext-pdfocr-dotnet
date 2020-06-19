@@ -47,7 +47,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private FileInfo tessDataDir;
 
         /// <summary>Page Segmentation Mode.</summary>
-        private int? pageSegMode;
+        private int? pageSegMode = 3;
 
         /// <summary>"True" - if images need to be preprocessed, otherwise - false.</summary>
         /// <remarks>
@@ -152,6 +152,10 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Sets Page Segmentation Mode.
         /// More detailed explanation about psm modes could be found
         /// here https://github.com/tesseract-ocr/tesseract/blob/master/doc/tesseract.1.asc#options
+        /// Note that in documentation it is stated that default value of PSM is 3.
+        /// This is true for tesseract executable,
+        /// but for tesseract lib it is -1 which has negative impact on some documents.
+        /// That's why in the code we set it explicitly to 3.
         /// </remarks>
         /// <param name="mode">
         /// psm mode as
