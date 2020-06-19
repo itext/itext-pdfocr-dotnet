@@ -41,7 +41,7 @@ namespace iText.Pdfocr.Pdflayers {
         public virtual void TestTextFromPdfLayersFromMultiPageTiff() {
             String testName = "testTextFromPdfLayersFromMultiPageTiff";
             bool preprocess = tesseractReader.GetTesseract4OcrEngineProperties().IsPreprocessingImages();
-            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String path = TEST_IMAGES_DIRECTORY + "multîpage.tiff";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
@@ -73,7 +73,7 @@ namespace iText.Pdfocr.Pdflayers {
         public virtual void TestTextFromMultiPageTiff() {
             String testName = "testTextFromMultiPageTiff";
             bool preprocess = tesseractReader.GetTesseract4OcrEngineProperties().IsPreprocessingImages();
-            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String path = TEST_IMAGES_DIRECTORY + "multîpage.tiff";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
@@ -100,7 +100,7 @@ namespace iText.Pdfocr.Pdflayers {
             String testName = "testTextFromPdfLayersFromMultiPagePdf";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
             IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(TEST_IMAGES_DIRECTORY + "german_01.jpg"), new FileInfo
-                (TEST_IMAGES_DIRECTORY + "noisy_01.png"), new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg"), new 
+                (TEST_IMAGES_DIRECTORY + "tèst/noisy_01.png"), new FileInfo(TEST_IMAGES_DIRECTORY + "nümbérs.jpg"), new 
                 FileInfo(TEST_IMAGES_DIRECTORY + "example_04.png"));
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetImageLayerName("image");

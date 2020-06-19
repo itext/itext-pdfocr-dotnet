@@ -197,7 +197,7 @@ namespace iText.Pdfocr.Imageformats {
 
         [NUnit.Framework.Test]
         public virtual void TestInputMultipagesTIFFWithPreprocessing() {
-            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String path = TEST_IMAGES_DIRECTORY + "multîpage.tiff";
             String expectedOutput = "Multipage\nTIFF\nExample\nPage 5";
             FileInfo file = new FileInfo(path);
             String realOutputHocr = GetTextFromPdf(tesseractReader, file, 5, JavaCollectionsUtil.SingletonList<String>
@@ -208,7 +208,7 @@ namespace iText.Pdfocr.Imageformats {
 
         [NUnit.Framework.Test]
         public virtual void TestInputMultipagesTIFFWithoutPreprocessing() {
-            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String path = TEST_IMAGES_DIRECTORY + "multîpage.tiff";
             String expectedOutput = "Multipage\nTIFF\nExample\nPage 3";
             FileInfo file = new FileInfo(path);
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
@@ -231,11 +231,22 @@ namespace iText.Pdfocr.Imageformats {
         }
 
         [NUnit.Framework.Test]
+        public virtual void TestJpgWithoutPreprocessing() {
+            String path = TEST_IMAGES_DIRECTORY + "nümbérs.jpg";
+            String expectedOutput = "619121";
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
+                (false));
+            String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path), JavaCollectionsUtil.SingletonList
+                <String>("eng"));
+            NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
+        }
+
+        [NUnit.Framework.Test]
         public virtual void CompareNumbersJPG() {
             String testName = "compareNumbersJPG";
-            String filename = "numbers_01";
-            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + filename + ".pdf";
-            String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
+            String filename = "nümbérs";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + "numbers_01.pdf";
+            String resultPdfPath = GetTargetDirectory() + "numbers_01_" + testName + ".pdf";
             tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetTextPositioning
                 (TextPositioning.BY_WORDS));
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath);

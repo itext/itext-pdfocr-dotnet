@@ -122,10 +122,10 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         /// <param name="pageNumber">number of page to be preprocessed</param>
         /// <returns>
-        /// path to the created preprocessed image file as
-        /// <see cref="System.String"/>
+        /// created preprocessed image as
+        /// <see cref="Tesseract.Pix"/>
         /// </returns>
-        internal static String PreprocessImage(FileInfo inputFile, int pageNumber) {
+        internal static Pix PreprocessImage(FileInfo inputFile, int pageNumber) {
             Pix pix = null;
             // read image
             if (IsTiffImage(inputFile)) {
@@ -138,7 +138,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile
                     .FullName);
             }
-            return TesseractOcrUtil.PreprocessPixAndSave(pix);
+            return TesseractOcrUtil.PreprocessPix(pix);
         }
 
         /// <summary>

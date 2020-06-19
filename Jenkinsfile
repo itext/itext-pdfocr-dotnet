@@ -96,8 +96,6 @@ pipeline {
                     script {
                         createRunTestDllsFile(findFiles(glob: '**/itext.*.tests.dll'))
                         load 'runTestDlls.groovy'
-                        createRunTestCsProjsFile(findFiles(glob: '**/itext.*.tests.csproj'))
-                        load 'runTestCsProjs.groovy'
                     }
                 }
             }

@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using Common.Logging;
+using Tesseract;
 using iText.IO.Util;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -94,6 +95,16 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Performs tesseract OCR using command line tool for the selected page
         /// of input image (by default 1st).
         /// </summary>
+        /// <remarks>
+        /// Performs tesseract OCR using command line tool for the selected page
+        /// of input image (by default 1st).
+        /// Please note that list of output files is accepted instead of a single file because
+        /// page number parameter is not respected in case of TIFF images not requiring preprocessing.
+        /// In other words, if the passed image is the TIFF image and according to the
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// no preprocessing is needed, each page of the TIFF image is OCRed and the number of output files in the list
+        /// is expected to be same as number of pages in the image, otherwise, only one file is expected
+        /// </remarks>
         /// <param name="inputImage">
         /// input image
         /// <see cref="System.IO.FileInfo"/>
@@ -128,6 +139,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     else {
                         execPath = GetPathToExecutable();
                     }
+                    @params.Add(execPath);
                 }
                 CheckTesseractInstalled(execPath);
                 // path to tess data
@@ -137,12 +149,15 @@ namespace iText.Pdfocr.Tesseract4 {
                 // preprocess input file if needed and add it
                 imagePath = PreprocessImage(inputImage, pageNumber);
                 AddInputFile(@params, imagePath);
+                // move to image directory as tesseract cannot parse non ascii
+                // characters in input path
+                IList<String> moveToDirectoryParams = MoveToImageDirectory(imagePath);
                 // output file
-                AddOutputFile(@params, outputFiles[0], outputFormat);
+                AddOutputFile(@params, outputFiles[0], outputFormat, imagePath);
                 // page segmentation mode
                 AddPageSegMode(@params);
                 // add user words if needed
-                AddUserWords(@params);
+                AddUserWords(@params, imagePath);
                 // required languages
                 AddLanguages(@params);
                 if (outputFormat.Equals(OutputFormat.HOCR)) {
@@ -151,7 +166,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 // set default user defined dpi
                 AddDefaultDpi(@params);
-                TesseractHelper.RunCommand(execPath, @params);
+                TesseractHelper.RunCommand(IsWindows() ? "cmd" : "bash", CreateCommandList(moveToDirectoryParams, @params)
+                    );
             }
             catch (Tesseract4OcrException e) {
                 LogManager.GetLogger(GetType()).Error(e.Message);
@@ -159,8 +175,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             finally {
                 try {
-                    if (imagePath != null && GetTesseract4OcrEngineProperties().IsPreprocessingImages() && !inputImage.FullName
-                        .Equals(imagePath)) {
+                    if (imagePath != null && !inputImage.FullName.Equals(imagePath)) {
                         TesseractHelper.DeleteFile(imagePath);
                     }
                 }
@@ -180,6 +195,57 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
+        /// <summary>Creates joint command list of two commands passed as parameters.</summary>
+        /// <param name="moveToDirectoryParams">
+        /// first command is responsible for moving
+        /// to the directory
+        /// </param>
+        /// <param name="tesseractParams">
+        /// second command is responsible for tesseract
+        /// parameters
+        /// </param>
+        /// <returns>joint command list</returns>
+        private IList<String> CreateCommandList(IList<String> moveToDirectoryParams, IList<String> tesseractParams
+            ) {
+            // create list of several lists with commands
+            IList<String> @params = new List<String>();
+            @params.Add(IsWindows() ? "/c" : "-c");
+            @params.Add(IsWindows() ? "\"" : "'");
+            foreach (String p in moveToDirectoryParams) {
+                @params.Add(p);
+            }
+            @params.Add("&&");
+            foreach (String p in tesseractParams) {
+                @params.Add(p);
+            }
+            @params.Add(IsWindows() ? "\"" : "'");
+            return @params;
+        }
+
+        /// <summary>
+        /// Create list of parameters for command moving to the image parent
+        /// directory.
+        /// </summary>
+        /// <param name="imagePath">path to input image</param>
+        /// <returns>command list</returns>
+        private IList<String> MoveToImageDirectory(String imagePath) {
+            // go the image parent directory
+            IList<String> @params = new List<String>();
+            String parent = TesseractOcrUtil.GetParentDirectory(imagePath);
+            String replacement = IsWindows() ? "" : "/";
+            parent = parent.Replace("file:///", replacement).Replace("file:/", replacement);
+            // Use "/d" parameter to handle cases when the current directory on Windows
+            // is located on a different drive compared to the directory we move to
+            if (IsWindows()) {
+                @params.Add("cd /d");
+            }
+            else {
+                @params.Add("cd");
+            }
+            @params.Add(AddQuotes(parent));
+            return @params;
+        }
+
         /// <summary>Sets hocr output format.</summary>
         /// <param name="command">result command as list of strings</param>
         private void SetHocrOutput(IList<String> command) {
@@ -189,11 +255,17 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Add path to user-words file for tesseract executable.</summary>
         /// <param name="command">result command as list of strings</param>
-        private void AddUserWords(IList<String> command) {
+        private void AddUserWords(IList<String> command, String imgPath) {
             if (GetTesseract4OcrEngineProperties().GetPathToUserWordsFile() != null && !String.IsNullOrEmpty(GetTesseract4OcrEngineProperties
                 ().GetPathToUserWordsFile())) {
+                FileInfo userWordsFile = new FileInfo(GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
+                // Workaround for a non-ASCII characters in path
+                // Currently works only if the user words (or output files) reside in the same directory as the input image
+                // Leaves only a filename in this case, otherwise - absolute path to output file
+                String filePath = AreEqualParentDirectories(imgPath, userWordsFile.FullName) ? userWordsFile.Name : userWordsFile
+                    .FullName;
                 command.Add("--user-words");
-                command.Add(AddQuotes(GetTesseract4OcrEngineProperties().GetPathToUserWordsFile()));
+                command.Add(AddQuotes(filePath));
                 command.Add("--oem");
                 command.Add("0");
             }
@@ -235,7 +307,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="command">result command as list of strings</param>
         /// <param name="imagePath">path to the input image file as string</param>
         private void AddInputFile(IList<String> command, String imagePath) {
-            command.Add(AddQuotes(imagePath));
+            command.Add(AddQuotes(new FileInfo(imagePath).Name));
         }
 
         /// <summary>Adds path to temporary output file with result.</summary>
@@ -246,13 +318,25 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="OutputFormat"/>
         /// for tesseract
         /// </param>
-        private void AddOutputFile(IList<String> command, FileInfo outputFile, OutputFormat outputFormat) {
+        private void AddOutputFile(IList<String> command, FileInfo outputFile, OutputFormat outputFormat, String inputImagePath
+            ) {
             String extension = outputFormat.Equals(OutputFormat.HOCR) ? ".hocr" : ".txt";
-            String fileName = new String(outputFile.FullName.ToCharArray(), 0, outputFile.FullName.IndexOf(extension, 
-                StringComparison.Ordinal));
-            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CREATED_TEMPORARY_FILE
-                , outputFile.FullName));
-            command.Add(AddQuotes(fileName));
+            try {
+                // Workaround for a non-ASCII characters in path
+                // Currently works only if the user words (or output files) reside in the same directory as the input image
+                // Leaves only a filename in this case, otherwise - absolute path to output file
+                String filePath = AreEqualParentDirectories(inputImagePath, outputFile.FullName) ? outputFile.Name : outputFile
+                    .FullName;
+                String fileName = new String(filePath.ToCharArray(), 0, filePath.IndexOf(extension, StringComparison.Ordinal
+                    ));
+                LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CREATED_TEMPORARY_FILE
+                    , outputFile.FullName));
+                command.Add(AddQuotes(fileName));
+            }
+            catch (Exception) {
+                // NOSONAR
+                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+            }
         }
 
         /// <summary>Surrounds given string with quotes.</summary>
@@ -279,9 +363,30 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="System.String"/>
         /// </returns>
         private String PreprocessImage(FileInfo inputImage, int pageNumber) {
+            String tmpFileName = TesseractOcrUtil.GetTempFilePath(Guid.NewGuid().ToString(), GetExtension(inputImage));
             String path = inputImage.FullName;
-            if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
-                path = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber);
+            try {
+                if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
+                    Pix pix = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber);
+                    TesseractOcrUtil.SavePixToTempPngFile(tmpFileName, pix);
+                    if (!File.Exists(System.IO.Path.Combine(tmpFileName))) {
+                        System.Drawing.Bitmap img = TesseractOcrUtil.ConvertPixToImage(pix);
+                        if (img != null) {
+                            TesseractOcrUtil.SaveImageToTempPngFile(tmpFileName, img);
+                        }
+                    }
+                }
+                if (!GetTesseract4OcrEngineProperties().IsPreprocessingImages() || !File.Exists(System.IO.Path.Combine(tmpFileName
+                    ))) {
+                    TesseractOcrUtil.CreateTempFileCopy(path, tmpFileName);
+                }
+                if (File.Exists(System.IO.Path.Combine(tmpFileName))) {
+                    path = tmpFileName;
+                }
+            }
+            catch (System.IO.IOException e) {
+                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
+                    , e.Message));
             }
             return path;
         }
@@ -298,6 +403,34 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Tesseract4OcrException e) {
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_NOT_FOUND, e);
             }
+        }
+
+        /// <summary>Gets input image file extension.</summary>
+        /// <param name="inputImage">input  file</param>
+        /// <returns>
+        /// file extension as a
+        /// <see cref="System.String"/>
+        /// </returns>
+        private String GetExtension(FileInfo inputImage) {
+            if (inputImage != null) {
+                int index = inputImage.FullName.LastIndexOf('.');
+                if (index > 0) {
+                    String extension = new String(inputImage.FullName.ToCharArray(), index, inputImage.FullName.Length - index
+                        );
+                    return extension.ToLowerInvariant();
+                }
+            }
+            return ".png";
+        }
+
+        /// <summary>Checks whether parent directories are equal for the passed file paths.</summary>
+        /// <param name="firstPath">path to the first file</param>
+        /// <param name="secondPath">path to the second file</param>
+        /// <returns>true if parent directories are equal, otherwise - false</returns>
+        private bool AreEqualParentDirectories(String firstPath, String secondPath) {
+            String firstParentDir = TesseractOcrUtil.GetParentDirectory(firstPath);
+            String secondParentDir = TesseractOcrUtil.GetParentDirectory(secondPath);
+            return firstParentDir != null && firstParentDir.Equals(secondParentDir);
         }
     }
 }

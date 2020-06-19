@@ -53,29 +53,6 @@ namespace iText.Pdfocr.Tesseract4 {
             this.tesseract4OcrEngineProperties = tesseract4OcrEngineProperties;
         }
 
-        /// <summary>
-        /// Performs tesseract OCR using command line tool
-        /// or a wrapper for Tesseract OCR API.
-        /// </summary>
-        /// <param name="inputImage">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
-        /// </param>
-        /// <param name="outputFiles">
-        /// 
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of output files
-        /// (one per each page)
-        /// </param>
-        /// <param name="outputFormat">
-        /// selected
-        /// <see cref="OutputFormat"/>
-        /// for tesseract
-        /// </param>
-        /// <param name="pageNumber">number of page to be processed</param>
-        internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber);
-
         /// <summary>Performs tesseract OCR for the first (or for the only) image page.</summary>
         /// <param name="inputImage">
         /// input image
@@ -284,6 +261,39 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
+        /// <summary>
+        /// Performs tesseract OCR using command line tool
+        /// or a wrapper for Tesseract OCR API.
+        /// </summary>
+        /// <remarks>
+        /// Performs tesseract OCR using command line tool
+        /// or a wrapper for Tesseract OCR API.
+        /// Please note that list of output files is accepted instead of a single file because
+        /// page number parameter is not respected in case of TIFF images not requiring preprocessing.
+        /// In other words, if the passed image is the TIFF image and according to the
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// no preprocessing is needed, each page of the TIFF image is OCRed and the number of output files in the list
+        /// is expected to be same as number of pages in the image, otherwise, only one file is expected
+        /// </remarks>
+        /// <param name="inputImage">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="outputFiles">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of output files
+        /// (one per each page)
+        /// </param>
+        /// <param name="outputFormat">
+        /// selected
+        /// <see cref="OutputFormat"/>
+        /// for tesseract
+        /// </param>
+        /// <param name="pageNumber">number of page to be processed</param>
+        internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
+            , int pageNumber);
+
         /// <summary>Reads data from the provided input image file.</summary>
         /// <param name="input">
         /// input image
@@ -308,6 +318,7 @@ namespace iText.Pdfocr.Tesseract4 {
             OutputFormat outputFormat) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             StringBuilder data = new StringBuilder();
+            IList<FileInfo> tempFiles = new List<FileInfo>();
             try {
                 // image needs to be paginated only if it's tiff
                 // or preprocessing isn't required
@@ -316,7 +327,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 int numOfPages = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? realNumOfPages : 1;
                 int numOfFiles = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? 1 : realNumOfPages;
                 for (int page = 1; page <= numOfPages; page++) {
-                    IList<FileInfo> tempFiles = new List<FileInfo>();
                     String extension = outputFormat.Equals(OutputFormat.HOCR) ? ".hocr" : ".txt";
                     for (int i = 0; i < numOfFiles; i++) {
                         tempFiles.Add(CreateTempFile(extension));
@@ -339,14 +349,16 @@ namespace iText.Pdfocr.Tesseract4 {
                             }
                         }
                     }
-                    foreach (FileInfo file in tempFiles) {
-                        TesseractHelper.DeleteFile(file.FullName);
-                    }
                 }
             }
             catch (System.IO.IOException e) {
                 LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_OCR_INPUT_FILE
                     , e.Message));
+            }
+            finally {
+                foreach (FileInfo file in tempFiles) {
+                    TesseractHelper.DeleteFile(file.FullName);
+                }
             }
             IDictionary<String, IDictionary<int, IList<TextInfo>>> result = new LinkedDictionary<String, IDictionary<int
                 , IList<TextInfo>>>();
@@ -370,7 +382,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Creates a temporary file with given extension.</summary>
         /// <param name="extension">
-        /// file extesion for a new file
+        /// file extension for a new file
         /// <see cref="System.String"/>
         /// </param>
         /// <returns>
@@ -379,7 +391,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// instance
         /// </returns>
         private FileInfo CreateTempFile(String extension) {
-            String tmpFileName = TesseractOcrUtil.GetTempDir() + Guid.NewGuid().ToString() + extension;
+            String tmpFileName = TesseractOcrUtil.GetTempFilePath(Guid.NewGuid().ToString(), extension);
             return new FileInfo(tmpFileName);
         }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
     This file is part of the iText (R) project.
     Copyright (c) 1998-2020 iText Group NV
     Authors: iText Software.
@@ -23,6 +23,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using Common.Logging;
 using iText.IO.Util;
@@ -43,7 +45,7 @@ namespace iText.Pdfocr.Tesseract4 {
     internal sealed class TesseractOcrUtil {
 
         /// <summary>List of pages of the image that is being processed.</summary>
-        private IList<Pix> imagePages = new List<Pix>();
+        private IList<Bitmap> imagePages = new List<Bitmap>();
 
         /// <summary>
         /// Creates a new
@@ -66,55 +68,21 @@ namespace iText.Pdfocr.Tesseract4 {
         /// given image
         /// </returns>
         internal static Pix ReadPixPageFromTiff(FileInfo inputFile, int pageNumber) {
+            // copy selected pix form pixa
             Pix pix = null;
-            PixArray pixa = null;
-            try {
-                // read image
-                pixa = PixArray.LoadMultiPageTiffFromFile(inputFile.FullName);
-                int size = pixa.Count;
-                // in case page number is incorrect
-                if (pageNumber >= size)
-                {
-                    LogManager.GetLogger(typeof(TesseractOcrUtil))
-                        .Warn(MessageFormatUtil.Format(
-                            Tesseract4LogMessageConstant.PAGE_NUMBER_IS_INCORRECT,
-                            pageNumber,
-                            inputFile.FullName));
-                    return null;
-                }
-                pix = pixa.GetPix(pageNumber);
-            } finally {
-                DestroyPixa(pixa);
+            try
+            {
+                Bitmap img = GetImagePage(inputFile, pageNumber);
+                pix = ConvertImageToPix(img);
+            }
+            catch (IOException e)
+            {
+                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format(
+                        Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE,
+                        e.Message));
             }
             // return required page to be preprocessed
             return pix;
-        }
-
-        /// <summary>
-        /// Performs default image preprocessing and saves result to a temporary
-        /// file.
-        /// </summary>
-        /// <param name="pix">
-        /// 
-        /// <see cref="Tesseract.Pix"/>
-        /// object to be processed
-        /// </param>
-        /// <returns>
-        /// path to a created preprocessed image file
-        /// as
-        /// <see cref="System.String"/>
-        /// </returns>
-        internal static String PreprocessPixAndSave(Pix pix) {
-            String tmpFileName = GetTempDir() + System.Guid.NewGuid().ToString() + ".png";
-            try {
-                // preprocess image
-                pix = PreprocessPix(pix);
-                // save preprocessed file
-                pix.Save(tmpFileName, ImageFormat.Png);
-            } finally {
-                DestroyPix(pix);
-            }
-            return tmpFileName;
         }
 
         /// <summary>Performs default image preprocessing.</summary>
@@ -242,21 +210,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// object to be destroyed
         /// </param>
         internal static void DestroyPix(Pix pix) {
-            pix.Dispose();
-        }
-
-        /// <summary>
-        /// Destroys
-        /// <see cref="Net.Sourceforge.Lept4j.Pixa"/>
-        /// object.
-        /// </summary>
-        /// <param name="pixa">
-        /// 
-        /// <see cref="Net.Sourceforge.Lept4j.Pixa"/>
-        /// object to be destroyed
-        /// </param>
-        internal static void DestroyPixa(PixArray pixa) {
-            pixa.Dispose();
+            if (pix != null) {
+                pix.Dispose();
+            }
         }
 
         /// <summary>Sets tesseract properties.</summary>
@@ -391,7 +347,11 @@ namespace iText.Pdfocr.Tesseract4 {
         /// object
         /// </returns>
         internal static Pix ConvertImageToPix(System.Drawing.Bitmap bufferedImage) {
-            return PixConverter.ToPix(bufferedImage);
+            if (bufferedImage != null)
+            {
+                return new BitmapToPixConverter().Convert(bufferedImage);
+            }
+            return null;
         }
 
         /// <summary>
@@ -414,13 +374,29 @@ namespace iText.Pdfocr.Tesseract4 {
         /// object
         /// </returns>
         internal static System.Drawing.Bitmap ConvertPixToImage(Pix pix) {
-            return PixConverter.ToBitmap(pix);
+            // tesseract restrictions
+            // should be improved in further tesseract versions
+            if (pix != null && pix.Depth != 1 && pix.Depth != 8 && pix.Depth != 16 && pix.Depth != 32)
+            {
+                return new PixToBitmapConverter().Convert(pix);
+            }
+            return null;
         }
 
         /// <summary>Gets current system temporary directory.</summary>
+        /// <param name="name">file name</param>
+        /// <param name="suffix">file suffix</param>
         /// <returns>path to system temporary directory</returns>
-        internal static String GetTempDir() {
-            return System.IO.Path.GetTempPath();
+        internal static String GetTempFilePath(string name, string suffix) {
+            return System.IO.Path.GetTempPath() + name + suffix;
+        }
+
+        /// <summary>Returns parent directory for the passed path.</summary>
+        /// <param name="path">path path to file</param>
+        /// <returns>parent directory where the file is located</returns>
+        internal static String GetParentDirectory(string path)
+        {
+            return Directory.GetParent(path).FullName;
         }
 
         /// <summary>
@@ -435,27 +411,75 @@ namespace iText.Pdfocr.Tesseract4 {
         /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
-        internal void InitializeImagesListFromTiff(FileInfo inputFile) {
+        internal void InitializeImagesListFromTiff(FileInfo inputFile)
+        {
             try
             {
-                IList<Pix> pages = new List<Pix>();
-                PixArray pixa = null;
-                try {
-                    pixa = PixArray.LoadMultiPageTiffFromFile(inputFile.FullName);
-                    for (int i = 0; i < pixa.Count; i++)
-                    {
-                        pages.Add(pixa.GetPix(i));
-                    }
-                    SetListOfPages(pages);
-                } finally {
-                    DestroyPixa(pixa);
+                Image originalImage = Image.FromFile(inputFile.FullName);
+                List<Bitmap> bitmapList = new List<Bitmap>();
+                var xResolution = originalImage.HorizontalResolution;
+                var yResolution = originalImage.VerticalResolution;
+
+                FrameDimension frameDimension = new FrameDimension(originalImage.FrameDimensionsList[0]);
+                int frameCount = originalImage.GetFrameCount(FrameDimension.Page);
+                for (int i = 0; i < frameCount; ++i)
+                {
+                    originalImage.SelectActiveFrame(frameDimension, i);
+                    Bitmap temp = new Bitmap(originalImage);
+                    temp.SetResolution(2 * xResolution, 2 * yResolution);
+                    bitmapList.Add(temp);
                 }
-            }
-            catch (Exception e)
+                SetListOfPages(bitmapList);
+            } catch (Exception e)
             {
                 LogManager.GetLogger(typeof(TesseractOcrUtil))
-                    .Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE, e.Message));
+                    .Error(MessageFormatUtil.Format(
+                        Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE,
+                        inputFile.FullName,
+                        e.Message));
             }
+        }
+
+        /// <summary>
+        /// Gets requested image page from the provided image.
+        /// </summary>
+        /// <param name="inputFile">
+        /// input image
+        /// </param>
+        /// <param name="page">
+        /// requested image page
+        /// </param>
+        /// <returns>
+        /// requested image page as a
+        /// <see cref="System.Drawing.Bitmap"/>
+        /// </returns>
+        internal static Bitmap GetImagePage(FileInfo input, int page)
+        {
+            Bitmap img = null;
+            try
+            {
+                Image image = Image.FromFile(input.FullName);
+                int pages = image.GetFrameCount(FrameDimension.Page);
+                if (page >= pages)
+                {
+                    LogManager.GetLogger(typeof(TesseractOcrUtil))
+                        .Warn(MessageFormatUtil.Format(
+                            Tesseract4LogMessageConstant.PAGE_NUMBER_IS_INCORRECT,
+                            page,
+                            input.FullName));
+                    return null;
+                }
+                image.SelectActiveFrame(FrameDimension.Page, page);
+                img = new Bitmap(image);
+            } catch (Exception e)
+            {
+                LogManager.GetLogger(typeof(TesseractOcrUtil))
+                    .Error(MessageFormatUtil.Format(
+                        Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE,
+                        input.FullName,
+                        e.Message));
+            }
+            return img;
         }
 
         /// <summary>
@@ -468,8 +492,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="System.Collections.IList{E}"/>
         /// of pages
         /// </returns>
-        internal IList<Pix> GetListOfPages() {
-            return new List<Pix>(imagePages);
+        internal IList<Bitmap> GetListOfPages() {
+            return new List<Bitmap>(imagePages);
         }
 
         /// <summary>
@@ -483,8 +507,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for
         /// each page.
         /// </param>
-        internal void SetListOfPages(IList<Pix> pages) {
-            imagePages = JavaCollectionsUtil.UnmodifiableList<Pix>(pages);
+        internal void SetListOfPages(IList<Bitmap> pages) {
+            imagePages = JavaCollectionsUtil.UnmodifiableList<Bitmap>(pages);
         }
 
         /// <summary>
@@ -522,17 +546,19 @@ namespace iText.Pdfocr.Tesseract4 {
         internal String GetOcrResultAsString(TesseractEngine tesseractInstance, System.Drawing.Bitmap image,
             OutputFormat outputFormat) {
             String result = null;
-            Page page = null;
-            try {
-                page = tesseractInstance.Process(image);
-                if (outputFormat.Equals(OutputFormat.HOCR)) {
-                    result = page.GetHOCRText(0);
-                } else {
-                    result = page.GetText();
-                }
-            } finally {
-                if (page != null) {
-                    page.Dispose();
+            if (image != null) {
+                Page page = null;
+                try {
+                    page = tesseractInstance.Process(image);
+                    if (outputFormat.Equals(OutputFormat.HOCR)) {
+                        result = page.GetHOCRText(0);
+                    } else {
+                        result = page.GetText();
+                    }
+                } finally {
+                    if (page != null) {
+                        page.Dispose();
+                    }
                 }
             }
             return result;
@@ -573,8 +599,12 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal String GetOcrResultAsString(TesseractEngine tesseractInstance, FileInfo image, OutputFormat
              outputFormat) {
-            Pix pix = Pix.LoadFromFile(image.FullName);
-            return GetOcrResultAsString(tesseractInstance, pix, outputFormat);
+            if (image != null)
+            {
+                Pix pix = Pix.LoadFromFile(image.FullName);
+                return GetOcrResultAsString(tesseractInstance, pix, outputFormat);
+            }
+            return null;
         }
 
         /// <summary>
@@ -612,26 +642,96 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal String GetOcrResultAsString(TesseractEngine tesseractInstance, Pix pix, OutputFormat outputFormat) {
             String result = null;
-            Page page = null;
-            try
-            {
-                page = tesseractInstance.Process(pix);
-                if (outputFormat.Equals(OutputFormat.HOCR))
+            if (pix != null) {
+                Page page = null;
+                try
                 {
-                    result = page.GetHOCRText(0);
-                }
-                else
+                    page = tesseractInstance.Process(pix);
+                    if (outputFormat.Equals(OutputFormat.HOCR))
+                    {
+                        result = page.GetHOCRText(0);
+                    }
+                    else
+                    {
+                        result = page.GetText();
+                    }
+                } finally
                 {
-                    result = page.GetText();
+                    if (page != null) {
+                        page.Dispose();
+                    }
+                    DestroyPix(pix);
                 }
-            } finally
-            {
-                if (page != null) {
-                    page.Dispose();
-                }
-                DestroyPix(pix);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Saves passed <see cref="System.Drawing.Bitmap"/> to given path
+        /// </summary>
+        /// <param name="tmpFileName">
+        /// provided file path to save the <see cref="System.Drawing.Bitmap"/>
+        /// </param>
+        /// <param name="image">
+        /// provided <see cref="System.Drawing.Bitmap"/> to be saved
+        /// </param>
+        internal static void SaveImageToTempPngFile(string tmpFileName, Bitmap image)
+        {
+            if (image != null) {
+                try
+                {
+                    image.Save(tmpFileName, System.Drawing.Imaging.ImageFormat.Png);
+                }
+                catch (Exception e)
+                {
+                    LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format(
+                            Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE,
+                            e.Message));
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Saves passed<see cref="Tesseract.Pix"/> to given path
+        /// </summary>
+        /// <param name="tmpFileName">
+        /// provided file path to save the <see cref="Tesseract.Pix"/>
+        /// </param>
+        /// <param name="pix">
+        /// provided <see cref="Tesseract.Pix"/> to be saved
+        /// </param>
+        internal static void SavePixToTempPngFile(string tmpFileName, Pix pix)
+        {
+            if (pix != null)
+            {
+                try
+                {
+                    pix.Save(tmpFileName, Tesseract.ImageFormat.Png);
+                }
+                catch (Exception e)
+                {
+                    LogManager.GetLogger(typeof(TesseractOcrUtil)).Info(MessageFormatUtil.Format(
+                            Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE,
+                            e.Message));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create temporary copy of input file to avoid
+        /// issue with tesseract and different encodings
+        /// in the path.
+        /// </summary>
+        /// <param name="src">
+        /// path to the source image
+        /// </param>
+        /// <param name="dst">
+        /// path to the source image
+        /// </param>
+        internal static void CreateTempFileCopy(string src, string dst)
+        {
+            File.Copy(src, dst, true);
         }
     }
 }

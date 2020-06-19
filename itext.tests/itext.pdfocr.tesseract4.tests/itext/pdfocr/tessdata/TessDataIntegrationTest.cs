@@ -213,7 +213,7 @@ namespace iText.Pdfocr.Tessdata {
 
         [NUnit.Framework.Test]
         public virtual void TestMultipageTiffAndCompareTxtFiles() {
-            String imgPath = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String imgPath = TEST_IMAGES_DIRECTORY + "multîpage.tiff";
             String expectedTxt = TEST_DOCUMENTS_DIRECTORY + "multipage_" + testFileTypeName + ".txt";
             bool result = DoOcrAndCompareTxtFiles(tesseractReader, imgPath, expectedTxt, JavaCollectionsUtil.SingletonList
                 <String>("eng"));
@@ -520,7 +520,7 @@ namespace iText.Pdfocr.Tessdata {
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
             NUnit.Framework.Assert.IsTrue(result.Contains(userWords[0]) || result.Contains(userWords[1]));
             NUnit.Framework.Assert.IsTrue(tesseractReader.GetTesseract4OcrEngineProperties().GetPathToUserWordsFile().
-                EndsWith("fra.user-words"));
+                EndsWith(".user-words"));
         }
 
         [NUnit.Framework.Test]
@@ -536,7 +536,7 @@ namespace iText.Pdfocr.Tessdata {
             result = iText.IO.Util.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
             NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
             NUnit.Framework.Assert.IsTrue(tesseractReader.GetTesseract4OcrEngineProperties().GetPathToUserWordsFile().
-                EndsWith("eng.user-words"));
+                EndsWith(".user-words"));
         }
 
         [NUnit.Framework.Test]
@@ -568,6 +568,11 @@ namespace iText.Pdfocr.Tessdata {
             Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
             properties.SetUserWords("eng", new FileStream(userWords, FileMode.Open, FileAccess.Read));
             properties.SetLanguages(new List<String>());
+            tesseractReader.SetTesseract4OcrEngineProperties(properties);
+            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
+            String expectedOutput = "619121";
+            String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
+            NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
         }
 
         /// <summary>Do OCR for given image and compare result text file with expected one.</summary>

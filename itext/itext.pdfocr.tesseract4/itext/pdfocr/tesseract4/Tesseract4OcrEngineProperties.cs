@@ -300,8 +300,6 @@ namespace iText.Pdfocr.Tesseract4 {
         public virtual iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUserWords(String language, Stream 
             inputStream) {
             SetPathToUserWordsFile(null);
-            String userWordsFileName = TesseractOcrUtil.GetTempDir() + System.IO.Path.DirectorySeparatorChar + language
-                 + "." + DEFAULT_USER_WORDS_SUFFIX;
             if (!GetLanguages().Contains(language)) {
                 if (DEFAULT_LANGUAGE.Equals(language.ToLowerInvariant())) {
                     IList<String> languagesList = GetLanguages();
@@ -313,6 +311,7 @@ namespace iText.Pdfocr.Tesseract4 {
                         );
                 }
             }
+            String userWordsFileName = TesseractOcrUtil.GetTempFilePath(language, "." + DEFAULT_USER_WORDS_SUFFIX);
             try {
                 using (StreamWriter writer = new StreamWriter(userWordsFileName)) {
                     TextReader reader = new StreamReader(inputStream, System.Text.Encoding.UTF8);

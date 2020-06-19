@@ -51,9 +51,11 @@ namespace iText.Pdfocr.General {
         [NUnit.Framework.Test]
         public virtual void TestFontColorInMultiPagePdf() {
             String testName = "testFontColorInMultiPagePdf";
-            String path = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            String path = TEST_IMAGES_DIRECTORY + "multîpage.tiff";
             String pdfPath = GetTargetDirectory() + testName + ".pdf";
             FileInfo file = new FileInfo(path);
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages
+                (false));
             OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
             ocrPdfCreatorProperties.SetTextLayerName("Text1");
             Color color = DeviceCmyk.MAGENTA;
@@ -74,7 +76,7 @@ namespace iText.Pdfocr.General {
 
         [NUnit.Framework.Test]
         public virtual void TestNoisyImage() {
-            String path = TEST_IMAGES_DIRECTORY + "noisy_01.png";
+            String path = TEST_IMAGES_DIRECTORY + "tèst/noisy_01.png";
             String expectedOutput1 = "Noisyimage to test Tesseract OCR";
             String expectedOutput2 = "Noisy image to test Tesseract OCR";
             String realOutputHocr = GetTextUsingTesseractFromImage(tesseractReader, new FileInfo(path));
@@ -131,6 +133,24 @@ namespace iText.Pdfocr.General {
         }
 
         [NUnit.Framework.Test]
+        public virtual void TestNonAsciiImagePath() {
+            String path = TEST_IMAGES_DIRECTORY + "tèst/noisy_01.png";
+            String expectedOutput1 = "Noisyimage to test Tesseract OCR";
+            String expectedOutput2 = "Noisy image to test Tesseract OCR";
+            String realOutputHocr = GetTextUsingTesseractFromImage(tesseractReader, new FileInfo(path));
+            NUnit.Framework.Assert.IsTrue(realOutputHocr.Equals(expectedOutput1) || realOutputHocr.Equals(expectedOutput2
+                ));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestNonAsciiImageName() {
+            String path = TEST_IMAGES_DIRECTORY + "nümbérs.jpg";
+            String expectedOutput = "619121";
+            String realOutputHocr = GetTextUsingTesseractFromImage(tesseractReader, new FileInfo(path));
+            NUnit.Framework.Assert.IsTrue(realOutputHocr.Equals(expectedOutput));
+        }
+
+        [NUnit.Framework.Test]
         public virtual void TestNullPathToTessData() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
@@ -172,7 +192,7 @@ namespace iText.Pdfocr.General {
 
         [NUnit.Framework.Test]
         public virtual void TestTxtStringOutput() {
-            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multipage.tiff");
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multîpage.tiff");
             IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
                 , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
                 , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
@@ -185,7 +205,7 @@ namespace iText.Pdfocr.General {
 
         [NUnit.Framework.Test]
         public virtual void TestHocrStringOutput() {
-            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multipage.tiff");
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multîpage.tiff");
             IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
                 , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
                 , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
