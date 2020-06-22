@@ -134,12 +134,7 @@ namespace iText.Pdfocr {
         /// <summary>Returns target directory (because target/test could not exist).</summary>
         public static String GetTargetDirectory() {
             if (!File.Exists(System.IO.Path.Combine(TARGET_FOLDER))) {
-                try {
-                    System.IO.Directory.CreateDirectory(System.IO.Path.Combine(TARGET_FOLDER));
-                }
-                catch (System.IO.IOException e) {
-                    LOGGER.Info(TARGET_FOLDER + " directory does not exist: " + e);
-                }
+                CreateDestinationFolder(TARGET_FOLDER);
             }
             return TARGET_FOLDER;
         }
@@ -359,8 +354,8 @@ namespace iText.Pdfocr {
         protected internal virtual String GetTextFromTextFile(FileInfo file) {
             String content = null;
             try {
-                content = iText.IO.Util.JavaUtil.GetStringForBytes(System.IO.File.ReadAllBytes(file.FullName), System.Text.Encoding
-                    .UTF8);
+                content = iText.IO.Util.JavaUtil.GetStringForBytes(File.ReadAllBytes(file.FullName), System.Text.Encoding.
+                    UTF8);
             }
             catch (System.IO.IOException e) {
                 LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message

@@ -85,7 +85,8 @@ namespace iText.Pdfocr.Tesseract4 {
                         , "ocr_caption") : JavaCollectionsUtil.SingletonList<String>("ocrx_word");
                     foreach (iText.StyledXmlParser.Jsoup.Nodes.Element page in pages) {
                         String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id(), "page_");
-                        int pageNumber = Convert.ToInt32(pageNum[pageNum.Length - 1]);
+                        int pageNumber = Convert.ToInt32(pageNum[pageNum.Length - 1], System.Globalization.CultureInfo.InvariantCulture
+                            );
                         IList<TextInfo> textData = new List<TextInfo>();
                         if (searchedClasses.Count > 0) {
                             Elements objects = page.GetElementsByClass(searchedClasses[0]);
@@ -154,7 +155,7 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static String ReadTxtFile(FileInfo txtFile) {
             String content = null;
             try {
-                content = iText.IO.Util.JavaUtil.GetStringForBytes(System.IO.File.ReadAllBytes(txtFile.FullName), System.Text.Encoding
+                content = iText.IO.Util.JavaUtil.GetStringForBytes(File.ReadAllBytes(txtFile.FullName), System.Text.Encoding
                     .UTF8);
             }
             catch (System.IO.IOException e) {

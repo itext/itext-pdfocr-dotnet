@@ -27,6 +27,7 @@ using iText.IO.Util;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Pdfocr;
+using iText.Test;
 
 namespace iText.Pdfocr.Helpers {
     public class PdfHelper {
@@ -75,12 +76,7 @@ namespace iText.Pdfocr.Helpers {
         /// <summary>Returns target directory (because target/test could not exist).</summary>
         public static String GetTargetDirectory() {
             if (!File.Exists(System.IO.Path.Combine(TARGET_DIRECTORY))) {
-                try {
-                    System.IO.Directory.CreateDirectory(System.IO.Path.Combine(TARGET_DIRECTORY));
-                }
-                catch (System.IO.IOException e) {
-                    LOGGER.Info(TARGET_DIRECTORY + " directory does not exist: " + e);
-                }
+                ExtendedITextTest.CreateDestinationFolder(TARGET_DIRECTORY);
             }
             return TARGET_DIRECTORY;
         }

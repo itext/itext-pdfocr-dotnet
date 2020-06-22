@@ -587,8 +587,8 @@ namespace iText.Pdfocr.Tessdata {
         private bool CompareTxtFiles(String expectedFilePath, String resultFilePath) {
             bool areEqual = true;
             try {
-                IList<String> expected = System.IO.File.ReadAllLines(System.IO.Path.Combine(expectedFilePath));
-                IList<String> result = System.IO.File.ReadAllLines(System.IO.Path.Combine(resultFilePath));
+                IList<String> expected = File.ReadAllLines(System.IO.Path.Combine(expectedFilePath));
+                IList<String> result = File.ReadAllLines(System.IO.Path.Combine(resultFilePath));
                 if (expected.Count != result.Count) {
                     return false;
                 }

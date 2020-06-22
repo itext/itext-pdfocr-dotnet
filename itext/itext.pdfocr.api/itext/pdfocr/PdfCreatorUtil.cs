@@ -154,7 +154,7 @@ namespace iText.Pdfocr {
                 if ("tiff".Equals(ext.ToLowerInvariant()) || "tif".Equals(ext.ToLowerInvariant())) {
                     int tiffPages = GetNumberOfPageTiff(inputImage);
                     for (int page = 0; page < tiffPages; page++) {
-                        byte[] bytes = System.IO.File.ReadAllBytes(inputImage.FullName);
+                        byte[] bytes = File.ReadAllBytes(inputImage.FullName);
                         ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
                         images.Add(imageData);
                     }
