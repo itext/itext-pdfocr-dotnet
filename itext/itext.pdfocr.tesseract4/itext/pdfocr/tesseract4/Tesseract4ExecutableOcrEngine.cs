@@ -184,7 +184,8 @@ namespace iText.Pdfocr.Tesseract4 {
                         , imagePath, e.Message));
                 }
                 try {
-                    if (GetTesseract4OcrEngineProperties().GetPathToUserWordsFile() != null) {
+                    if (GetTesseract4OcrEngineProperties().GetPathToUserWordsFile() != null && GetTesseract4OcrEngineProperties
+                        ().IsUserWordsFileTemporary()) {
                         TesseractHelper.DeleteFile(GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
                     }
                 }

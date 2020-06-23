@@ -71,6 +71,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </remarks>
         private String pathToUserWordsFile = null;
 
+        /// <summary>Indicates if user words file is temporary and has to be removed.</summary>
+        private bool isUserWordsFileTemporary = false;
+
         /// <summary>
         /// Creates a new
         /// <see cref="Tesseract4OcrEngineProperties"/>
@@ -320,7 +323,7 @@ namespace iText.Pdfocr.Tesseract4 {
                         writer.Write(data);
                     }
                     writer.Write(Environment.NewLine);
-                    SetPathToUserWordsFile(userWordsFileName);
+                    SetPathToUserWordsFile(userWordsFileName, true);
                 }
             }
             catch (System.IO.IOException e) {
@@ -355,8 +358,32 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToUserWordsFile(String pathToUserWordsFile
             ) {
+            return SetPathToUserWordsFile(pathToUserWordsFile, false);
+        }
+
+        /// <summary>Sets path to the user words file.</summary>
+        /// <param name="pathToUserWordsFile">
+        /// path to user words file
+        /// as
+        /// <see cref="System.String"/>
+        /// </param>
+        /// <param name="isTempFile">indicates if user words file is temporary and has to be removed</param>
+        /// <returns>
+        /// the
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance
+        /// </returns>
+        internal iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToUserWordsFile(String pathToUserWordsFile
+            , bool isTempFile) {
             this.pathToUserWordsFile = pathToUserWordsFile;
+            this.isUserWordsFileTemporary = isTempFile;
             return this;
+        }
+
+        /// <summary>Indicates if user words file is temporary and has to be removed.</summary>
+        /// <returns>true if the file is temporary, otherwise false.</returns>
+        internal bool IsUserWordsFileTemporary() {
+            return isUserWordsFileTemporary;
         }
     }
 }

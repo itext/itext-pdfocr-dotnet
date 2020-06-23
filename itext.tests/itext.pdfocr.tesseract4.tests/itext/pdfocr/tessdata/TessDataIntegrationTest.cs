@@ -575,6 +575,18 @@ namespace iText.Pdfocr.Tessdata {
             NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
         }
 
+        [NUnit.Framework.Test]
+        public virtual void TestUserWordsFileNotDeleted() {
+            String userWords = TEST_DOCUMENTS_DIRECTORY + "userwords.txt";
+            Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
+            properties.SetPathToUserWordsFile(userWords);
+            properties.SetLanguages(JavaUtil.ArraysAsList("eng"));
+            tesseractReader.SetTesseract4OcrEngineProperties(properties);
+            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
+            tesseractReader.DoImageOcr(new FileInfo(imgPath));
+            NUnit.Framework.Assert.IsTrue(new FileInfo(userWords).Exists);
+        }
+
         /// <summary>Do OCR for given image and compare result text file with expected one.</summary>
         private bool DoOcrAndCompareTxtFiles(AbstractTesseract4OcrEngine tesseractReader, String imgPath, String expectedPath
             , IList<String> languages) {
