@@ -34,7 +34,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
 #if !NETSTANDARD1_6
-        [NUnit.Framework.Timeout(30000)]
+        [NUnit.Framework.Timeout(50000)]
 #endif
         [NUnit.Framework.Test]
         public virtual void TextOutputFromHalftoneFile() {
@@ -51,7 +51,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
 #if !NETSTANDARD1_6
-        [NUnit.Framework.Timeout(30000)]
+        [NUnit.Framework.Timeout(50000)]
 #endif
         [NUnit.Framework.Test]
         public virtual void HocrOutputFromHalftoneFile() {
