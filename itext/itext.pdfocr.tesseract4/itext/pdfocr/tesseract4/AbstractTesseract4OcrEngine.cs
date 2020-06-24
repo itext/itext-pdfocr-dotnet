@@ -24,9 +24,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using Common.Logging;
 using iText.IO.Util;
+using iText.Kernel.Counter;
+using iText.Kernel.Counter.Event;
 using iText.Pdfocr;
+using iText.Pdfocr.Events;
+using iText.Pdfocr.Tesseract4.Events;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -41,13 +46,17 @@ namespace iText.Pdfocr.Tesseract4 {
     /// Also there are possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems).
     /// </remarks>
-    public abstract class AbstractTesseract4OcrEngine : IOcrEngine {
+    public abstract class AbstractTesseract4OcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
         /// <summary>Supported image formats.</summary>
         private static readonly ICollection<String> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet(
             new HashSet<String>(JavaUtil.ArraysAsList("bmp", "png", "tiff", "tif", "jpeg", "jpg", "jpe", "jfif")));
 
+        internal ICollection<Guid> processedUUID = new HashSet<Guid>();
+
         /// <summary>Set of properties.</summary>
         private Tesseract4OcrEngineProperties tesseract4OcrEngineProperties;
+
+        private ThreadLocal<IMetaInfo> threadLocalMetaInfo = new ThreadLocal<IMetaInfo>();
 
         public AbstractTesseract4OcrEngine(Tesseract4OcrEngineProperties tesseract4OcrEngineProperties) {
             this.tesseract4OcrEngineProperties = tesseract4OcrEngineProperties;
@@ -261,6 +270,17 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
+        public virtual IMetaInfo GetThreadLocalMetaInfo() {
+            return threadLocalMetaInfo.Value;
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IThreadLocalMetaInfoAware SetThreadLocalMetaInfo(IMetaInfo metaInfo) {
+            this.threadLocalMetaInfo.Value = metaInfo;
+            return this;
+        }
+
         /// <summary>
         /// Performs tesseract OCR using command line tool
         /// or a wrapper for Tesseract OCR API.
@@ -377,6 +397,27 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             else {
                 return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
+            }
+        }
+
+        internal virtual void ScheduledCheck() {
+            ReflectionUtils.ScheduledCheck();
+        }
+
+        internal virtual void OnEvent() {
+            IMetaInfo metaInfo = this.GetThreadLocalMetaInfo();
+            if (!(metaInfo is OcrPdfCreatorMetaInfo)) {
+                EventCounterHandler.GetInstance().OnEvent(PdfOcrTesseract4Event.TESSERACT4_IMAGE_OCR, this.GetThreadLocalMetaInfo
+                    (), GetType());
+            }
+            else {
+                Guid uuid = ((OcrPdfCreatorMetaInfo)metaInfo).GetDocumentId();
+                if (!processedUUID.Contains(uuid)) {
+                    processedUUID.Add(uuid);
+                    EventCounterHandler.GetInstance().OnEvent(OcrPdfCreatorMetaInfo.PdfDocumentType.PDFA.Equals(((OcrPdfCreatorMetaInfo
+                        )metaInfo).GetPdfDocumentType()) ? PdfOcrTesseract4Event.TESSERACT4_IMAGE_TO_PDFA : PdfOcrTesseract4Event
+                        .TESSERACT4_IMAGE_TO_PDF, ((OcrPdfCreatorMetaInfo)metaInfo).GetWrappedMetaInfo(), GetType());
+                }
             }
         }
 

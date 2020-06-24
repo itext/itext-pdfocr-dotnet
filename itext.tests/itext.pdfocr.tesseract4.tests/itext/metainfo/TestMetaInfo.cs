@@ -20,28 +20,15 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System;
-using System.IO;
-using iText.Pdfocr;
+using iText.Kernel.Counter.Event;
 
-namespace iText.Pdfocr.Tesseract4 {
-    public class ImagePreprocessingUtilTest : IntegrationTestHelper {
-        [NUnit.Framework.Test]
-        public virtual void TestCheckForInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_03_10MB";
-            FileInfo imgFile = new FileInfo(path);
-            NUnit.Framework.Assert.IsFalse(ImagePreprocessingUtil.IsTiffImage(imgFile));
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void TestReadingInvalidImagePath() {
-            NUnit.Framework.Assert.That(() =>  {
-                String path = TEST_IMAGES_DIRECTORY + "numbers_02";
-                FileInfo imgFile = new FileInfo(path);
-                ImagePreprocessingUtil.PreprocessImage(imgFile, 1);
-            }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
-;
-        }
+namespace iText.Metainfo {
+    /// <summary>This class is used for test purposes.</summary>
+    /// <remarks>
+    /// This class is used for test purposes.
+    /// Please be aware that it's put in the com.itextpdf.metainfo deliberately,
+    /// so that it belongs neither to com.itextpdf.pdfocr nor com.itextpdf.pdfocr.tesseract4 packages
+    /// </remarks>
+    public class TestMetaInfo : IMetaInfo {
     }
 }

@@ -27,6 +27,7 @@ using Common.Logging;
 using iText.IO.Font.Otf;
 using iText.IO.Image;
 using iText.IO.Util;
+using iText.Kernel.Counter.Event;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -37,6 +38,7 @@ using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
 using iText.Pdfa;
+using iText.Pdfocr.Events;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -180,14 +182,28 @@ namespace iText.Pdfocr {
         public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent
             ) {
             LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.Count));
+            IMetaInfo storedMetaInfo = null;
+            if (ocrEngine is IThreadLocalMetaInfoAware) {
+                storedMetaInfo = ((IThreadLocalMetaInfoAware)ocrEngine).GetThreadLocalMetaInfo();
+                ((IThreadLocalMetaInfoAware)ocrEngine).SetThreadLocalMetaInfo(new OcrPdfCreatorMetaInfo(((IThreadLocalMetaInfoAware
+                    )ocrEngine).GetThreadLocalMetaInfo(), Guid.NewGuid(), null != pdfOutputIntent ? OcrPdfCreatorMetaInfo.PdfDocumentType
+                    .PDFA : OcrPdfCreatorMetaInfo.PdfDocumentType.PDF));
+            }
             // map contains:
             // keys: image files
             // values:
             // map pageNumber -> retrieved text data(text and its coordinates)
             IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
                 <int, IList<TextInfo>>>();
-            foreach (FileInfo inputImage in inputImages) {
-                imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage));
+            try {
+                foreach (FileInfo inputImage in inputImages) {
+                    imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage));
+                }
+            }
+            finally {
+                if (ocrEngine is IThreadLocalMetaInfoAware) {
+                    ((IThreadLocalMetaInfoAware)ocrEngine).SetThreadLocalMetaInfo(storedMetaInfo);
+                }
             }
             // create PdfDocument
             return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData);
@@ -333,10 +349,12 @@ namespace iText.Pdfocr {
             PdfDocument pdfDocument;
             bool createPdfA3u = pdfOutputIntent != null;
             if (createPdfA3u) {
-                pdfDocument = new PdfADocument(pdfWriter, PdfAConformanceLevel.PDF_A_3U, pdfOutputIntent);
+                pdfDocument = new PdfADocument(pdfWriter, PdfAConformanceLevel.PDF_A_3U, pdfOutputIntent, new DocumentProperties
+                    ().SetEventCountingMetaInfo(new PdfOcrMetaInfo()));
             }
             else {
-                pdfDocument = new PdfDocument(pdfWriter);
+                pdfDocument = new PdfDocument(pdfWriter, new DocumentProperties().SetEventCountingMetaInfo(new PdfOcrMetaInfo
+                    ()));
             }
             // pdfLang should be set in PDF/A mode
             bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !ocrPdfCreatorProperties.GetPdfLang

@@ -138,9 +138,11 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="pageNumber">number of page to be processed</param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber) {
+            ScheduledCheck();
             try {
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());
                 InitializeTesseract(outputFormat);
+                OnEvent();
                 // if preprocessing is not needed and provided image is tiff,
                 // the image will be paginated and separate pages will be OCRed
                 IList<String> resultList = new List<String>();

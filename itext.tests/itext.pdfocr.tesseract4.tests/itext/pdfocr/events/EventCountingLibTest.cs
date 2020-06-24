@@ -21,26 +21,26 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using System.IO;
+using iText.IO.Util;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4;
+using iText.Test.Attributes;
 
-namespace iText.Pdfocr.Tesseract4 {
-    public class ImagePreprocessingUtilTest : IntegrationTestHelper {
-        [NUnit.Framework.Test]
-        public virtual void TestCheckForInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_03_10MB";
-            FileInfo imgFile = new FileInfo(path);
-            NUnit.Framework.Assert.IsFalse(ImagePreprocessingUtil.IsTiffImage(imgFile));
+namespace iText.Pdfocr.Events {
+    public class EventCountingLibTest : EventCountingTest {
+        public EventCountingLibTest()
+            : base(IntegrationTestHelper.ReaderType.LIB) {
         }
 
         [NUnit.Framework.Test]
-        public virtual void TestReadingInvalidImagePath() {
+        [LogMessage(Tesseract4LogMessageConstant.TESSERACT_FAILED)]
+        [LogMessage(Tesseract4OcrException.TESSERACT_FAILED)]
+        public override void TestEventCountingCustomMetaInfoError() {
+            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_101.jpg";
             NUnit.Framework.Assert.That(() =>  {
-                String path = TEST_IMAGES_DIRECTORY + "numbers_02";
-                FileInfo imgFile = new FileInfo(path);
-                ImagePreprocessingUtil.PreprocessImage(imgFile, 1);
+                base.TestEventCountingCustomMetaInfoError();
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.TESSERACT_FAILED, imgPath)))
 ;
         }
     }

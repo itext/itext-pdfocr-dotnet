@@ -193,7 +193,8 @@ namespace iText.Pdfocr {
         /// <summary>Get text from layer specified by name from page.</summary>
         protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page, bool useActualText
             ) {
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath), new DocumentProperties().SetEventCountingMetaInfo
+                (new PdfOcrMetaInfo()));
             IntegrationTestHelper.ExtractionStrategy textExtractionStrategy = new IntegrationTestHelper.ExtractionStrategy
                 (layerName);
             textExtractionStrategy.SetUseActualText(useActualText);

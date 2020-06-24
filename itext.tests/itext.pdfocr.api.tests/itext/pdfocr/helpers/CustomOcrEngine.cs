@@ -24,11 +24,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
+using iText.Kernel.Counter.Event;
 using iText.Pdfocr;
+using iText.Pdfocr.Events;
 
 namespace iText.Pdfocr.Helpers {
-    public class CustomOcrEngine : IOcrEngine {
+    public class CustomOcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
         private OcrEngineProperties ocrEngineProperties;
+
+        private IMetaInfo threadLocalMetaInfo;
 
         public CustomOcrEngine() {
         }
@@ -49,6 +53,15 @@ namespace iText.Pdfocr.Helpers {
         }
 
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
+        }
+
+        public virtual IMetaInfo GetThreadLocalMetaInfo() {
+            return threadLocalMetaInfo;
+        }
+
+        public virtual IThreadLocalMetaInfoAware SetThreadLocalMetaInfo(IMetaInfo metaInfo) {
+            this.threadLocalMetaInfo = metaInfo;
+            return this;
         }
 
         public virtual OcrEngineProperties GetOcrEngineProperties() {

@@ -21,27 +21,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using System.IO;
-using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
-    public class ImagePreprocessingUtilTest : IntegrationTestHelper {
-        [NUnit.Framework.Test]
-        public virtual void TestCheckForInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_03_10MB";
-            FileInfo imgFile = new FileInfo(path);
-            NUnit.Framework.Assert.IsFalse(ImagePreprocessingUtil.IsTiffImage(imgFile));
-        }
+    /// <summary>Product info about this iText add-on.</summary>
+    public class PdfOcrTesseract4ProductInfo {
+        /// <summary>The product name.</summary>
+        public const String PRODUCT_NAME = "pdfOcr-Tesseract4";
 
-        [NUnit.Framework.Test]
-        public virtual void TestReadingInvalidImagePath() {
-            NUnit.Framework.Assert.That(() =>  {
-                String path = TEST_IMAGES_DIRECTORY + "numbers_02";
-                FileInfo imgFile = new FileInfo(path);
-                ImagePreprocessingUtil.PreprocessImage(imgFile, 1);
-            }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
-;
-        }
+        /// <summary>The major version number.</summary>
+        public const int MAJOR_VERSION = 1;
+
+        /// <summary>The minor version number.</summary>
+        public const int MINOR_VERSION = 0;
     }
 }

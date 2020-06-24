@@ -123,6 +123,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="pageNumber">number of page to be processed</param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber) {
+            ScheduledCheck();
             IList<String> @params = new List<String>();
             String execPath = null;
             String imagePath = null;
@@ -166,6 +167,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 // set default user defined dpi
                 AddDefaultDpi(@params);
+                OnEvent();
                 TesseractHelper.RunCommand(IsWindows() ? "cmd" : "bash", CreateCommandList(moveToDirectoryParams, @params)
                     );
             }

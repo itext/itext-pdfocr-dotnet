@@ -22,6 +22,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 internal static class PdfOcrTesseract4Extensions
@@ -53,4 +54,29 @@ internal static class PdfOcrTesseract4Extensions
     {
         return System.Text.Encoding.UTF8.GetBytes(str);
     }
+
+    public static Assembly GetAssembly(this Type type)
+    {
+#if !NETSTANDARD1_6
+        return type.Assembly;
+#else
+            return type.GetTypeInfo().Assembly;
+#endif
+    }
+
+#if !NETSTANDARD1_6
+    public static Attribute GetCustomAttribute(this Assembly assembly, Type attributeType)
+    {
+        object[] customAttributes = assembly.GetCustomAttributes(attributeType, false);
+        if (customAttributes.Length > 0 && customAttributes[0] is Attribute)
+        {
+            return customAttributes[0] as Attribute;
+        }
+        else
+        {
+            return null;
+        }
+    }
+#endif
+
 }

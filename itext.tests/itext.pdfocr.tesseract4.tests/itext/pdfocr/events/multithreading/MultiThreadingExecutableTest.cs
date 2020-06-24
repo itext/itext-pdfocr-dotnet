@@ -20,28 +20,10 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System;
-using System.IO;
-using iText.Pdfocr;
-
-namespace iText.Pdfocr.Tesseract4 {
-    public class ImagePreprocessingUtilTest : IntegrationTestHelper {
-        [NUnit.Framework.Test]
-        public virtual void TestCheckForInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_03_10MB";
-            FileInfo imgFile = new FileInfo(path);
-            NUnit.Framework.Assert.IsFalse(ImagePreprocessingUtil.IsTiffImage(imgFile));
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void TestReadingInvalidImagePath() {
-            NUnit.Framework.Assert.That(() =>  {
-                String path = TEST_IMAGES_DIRECTORY + "numbers_02";
-                FileInfo imgFile = new FileInfo(path);
-                ImagePreprocessingUtil.PreprocessImage(imgFile, 1);
-            }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
-;
+namespace iText.Pdfocr.Events.Multithreading {
+    public class MultiThreadingExecutableTest : MultiThreadingTest {
+        public MultiThreadingExecutableTest()
+            : base(MultiThreadingTest.ReaderType.EXECUTABLE) {
         }
     }
 }
