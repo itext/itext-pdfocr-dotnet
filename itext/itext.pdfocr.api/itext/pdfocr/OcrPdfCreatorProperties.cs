@@ -354,7 +354,7 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Returns FontProvider that was set previously or if it is
-        /// <c>null<code/> a new instance of
+        /// <c>null</c> a new instance of
         /// <see cref="PdfOcrFontProvider"/>
         /// is
         /// returned.
