@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itext.pdfocr.api", "itext\itext.pdfocr.api\itext.pdfocr.api.csproj", "{0C4CEB00-9A56-4547-A925-5974A85A6048}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itext.pdfocr.tesseract4", "itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj", "{6BD3C907-03F5-4D3A-B98B-1A778761F924}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itext.pdfocr.api.tests", "itext.tests\itext.pdfocr.api.tests\itext.pdfocr.api.tests.csproj", "{F19D8ED6-DA91-49E1-9E4F-BBB7A8D75E84}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itext.pdfocr.tesseract4.tests", "itext.tests\itext.pdfocr.tesseract4.tests\itext.pdfocr.tesseract4.tests.csproj", "{50AC143E-76D9-4288-BFDD-9F8002716546}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C4CEB00-9A56-4547-A925-5974A85A6048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C4CEB00-9A56-4547-A925-5974A85A6048}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C4CEB00-9A56-4547-A925-5974A85A6048}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C4CEB00-9A56-4547-A925-5974A85A6048}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BD3C907-03F5-4D3A-B98B-1A778761F924}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BD3C907-03F5-4D3A-B98B-1A778761F924}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BD3C907-03F5-4D3A-B98B-1A778761F924}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BD3C907-03F5-4D3A-B98B-1A778761F924}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F19D8ED6-DA91-49E1-9E4F-BBB7A8D75E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F19D8ED6-DA91-49E1-9E4F-BBB7A8D75E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F19D8ED6-DA91-49E1-9E4F-BBB7A8D75E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F19D8ED6-DA91-49E1-9E4F-BBB7A8D75E84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50AC143E-76D9-4288-BFDD-9F8002716546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50AC143E-76D9-4288-BFDD-9F8002716546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50AC143E-76D9-4288-BFDD-9F8002716546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50AC143E-76D9-4288-BFDD-9F8002716546}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B95CA9FB-5A6F-42F2-A3AB-1B0CBF075036}
+	EndGlobalSection
+EndGlobal

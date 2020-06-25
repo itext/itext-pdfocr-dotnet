@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>itext7.pdfocr.api</id>
+    <version>1.0.0</version>
+    <title>iText 7 pdfOcr</title>
+    <authors>iText Software</authors>
+    <owners>iText Software</owners>
+    <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
+    <icon>ITSC-avatar.png</icon>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>pdfOCR is an iText 7 add-on for C# (.NET) to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
+    <summary>pdfOCR is an iText 7 add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
+    <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
+    <language>en-US</language>
+    <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
+    <dependencies>
+      <group targetFramework="net40">
+        <dependency id="itext7" version="7.1.11" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net40\itext.pdfocr.api.dll" target="lib\net40" />
+    <file src="bin\Release\net40\itext.pdfocr.api.xml" target="lib\net40" />
+    <file src="NOTICE.txt" target="" />
+    <file src="ITSC-avatar.png" target="" />
+    <file src="../../gnu-agpl-v3.0.md" target="" />
+    <file src="../../LICENSE.md" target="" />
+  </files>
+</package>

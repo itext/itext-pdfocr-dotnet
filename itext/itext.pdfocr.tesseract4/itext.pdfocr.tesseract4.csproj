@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup Label="Configuration">
+    <RootNamespace></RootNamespace>
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.tesseract4.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>itext.pdfocr.tesseract4</AssemblyName>
+    <RootNamespace />
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Tesseract.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x64\liblept1760.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>x64\liblept1760.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x64\libtesseract400.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>x64\libtesseract400.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x86\libtesseract400.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>x86\libtesseract400.dll</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x86\liblept1760.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>x86\liblept1760.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\itext\itext.pdfocr.api\itext.pdfocr.api.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Tesseract">
+      <HintPath>lib\Tesseract.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
