@@ -335,7 +335,6 @@ namespace iText.Pdfocr {
         /// for PDF/A-3u document
         /// </param>
         /// <param name="imagesTextData">
-        /// Map<File, Map&lt;Integer, List&lt;textinfo>&gt;&gt; -
         /// map that contains input image files as keys,
         /// and as value: map pageNumber -&gt; text for the page
         /// </param>
@@ -383,7 +382,6 @@ namespace iText.Pdfocr {
 
         /// <summary>Places provided images and recognized text to the result PDF document.</summary>
         /// <param name="imagesTextData">
-        /// Map<File, Map&lt;Integer, List&lt;textinfo>&gt;&gt; -
         /// map that contains input image
         /// files as keys, and as value:
         /// map pageNumber -&gt; text for the page

@@ -167,15 +167,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// coordinates(bbox)
         /// </returns>
         public IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
-            IDictionary<int, IList<TextInfo>> result = new LinkedDictionary<int, IList<TextInfo>>();
             VerifyImageFormatValidity(input);
-            IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, OutputFormat
-                .HOCR);
-            if (processedData != null && processedData.Count > 0) {
-                IList<String> keys = new List<String>(processedData.Keys);
-                result = processedData.Get(keys[0]);
-            }
-            return result;
+            return ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)ProcessInputFiles(input, OutputFormat.HOCR
+                )).GetTextInfos();
         }
 
         /// <summary>
@@ -200,16 +194,15 @@ namespace iText.Pdfocr.Tesseract4 {
         public String DoImageOcr(FileInfo input, OutputFormat outputFormat) {
             String result = "";
             VerifyImageFormatValidity(input);
-            IDictionary<String, IDictionary<int, IList<TextInfo>>> processedData = ProcessInputFiles(input, outputFormat
-                );
-            if (processedData != null && processedData.Count > 0) {
-                IList<String> keys = new List<String>(processedData.Keys);
+            AbstractTesseract4OcrEngine.ITesseractOcrResult processedData = ProcessInputFiles(input, outputFormat);
+            if (processedData != null) {
                 if (outputFormat.Equals(OutputFormat.TXT)) {
-                    result = keys[0];
+                    result = ((AbstractTesseract4OcrEngine.StringTesseractOcrResult)processedData).GetData();
                 }
                 else {
                     StringBuilder outputText = new StringBuilder();
-                    IDictionary<int, IList<TextInfo>> outputMap = processedData.Get(keys[0]);
+                    IDictionary<int, IList<TextInfo>> outputMap = ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)processedData
+                        ).GetTextInfos();
                     foreach (int page in outputMap.Keys) {
                         StringBuilder pageText = new StringBuilder();
                         foreach (TextInfo textInfo in outputMap.Get(page)) {
@@ -327,18 +320,20 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="iText.Pdfocr.IOcrEngine"/>
         /// </param>
         /// <returns>
-        /// Map<String, Map&lt;Integer, List&lt;textinfo>&gt;&gt;
-        /// if output format is txt,
-        /// result is key of the returned map(String),
-        /// otherwise - the value (Map&lt;Integer, List
-        /// <see cref="iText.Pdfocr.TextInfo"/>
-        /// &gt;)
+        /// 
+        /// <see cref="ITesseractOcrResult"/>
+        /// instance, either
+        /// <see cref="StringTesseractOcrResult"/>
+        /// if output format is TXT, or
+        /// <see cref="TextInfoTesseractOcrResult"/>
+        /// if the output format is HOCR
         /// </returns>
-        internal virtual IDictionary<String, IDictionary<int, IList<TextInfo>>> ProcessInputFiles(FileInfo input, 
-            OutputFormat outputFormat) {
+        internal virtual AbstractTesseract4OcrEngine.ITesseractOcrResult ProcessInputFiles(FileInfo input, OutputFormat
+             outputFormat) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             StringBuilder data = new StringBuilder();
             IList<FileInfo> tempFiles = new List<FileInfo>();
+            AbstractTesseract4OcrEngine.ITesseractOcrResult result = null;
             try {
                 // image needs to be paginated only if it's tiff
                 // or preprocessing isn't required
@@ -361,6 +356,7 @@ namespace iText.Pdfocr.Tesseract4 {
                         else {
                             imageData = pageData;
                         }
+                        result = new AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult(imageData);
                     }
                     else {
                         foreach (FileInfo tmpFile in tempFiles) {
@@ -368,6 +364,7 @@ namespace iText.Pdfocr.Tesseract4 {
                                 data.Append(TesseractHelper.ReadTxtFile(tmpFile));
                             }
                         }
+                        result = new AbstractTesseract4OcrEngine.StringTesseractOcrResult(data.ToString());
                     }
                 }
             }
@@ -380,9 +377,6 @@ namespace iText.Pdfocr.Tesseract4 {
                     TesseractHelper.DeleteFile(file.FullName);
                 }
             }
-            IDictionary<String, IDictionary<int, IList<TextInfo>>> result = new LinkedDictionary<String, IDictionary<int
-                , IList<TextInfo>>>();
-            result.Put(data.ToString(), imageData);
             return result;
         }
 
@@ -465,6 +459,33 @@ namespace iText.Pdfocr.Tesseract4 {
                     , image.FullName));
                 throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension
                     );
+            }
+        }
+
+        private interface ITesseractOcrResult {
+        }
+
+        private class StringTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
+            private String data;
+
+            internal StringTesseractOcrResult(String data) {
+                this.data = data;
+            }
+
+            internal virtual String GetData() {
+                return data;
+            }
+        }
+
+        private class TextInfoTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
+            private IDictionary<int, IList<TextInfo>> textInfos;
+
+            internal TextInfoTesseractOcrResult(IDictionary<int, IList<TextInfo>> textInfos) {
+                this.textInfos = textInfos;
+            }
+
+            internal virtual IDictionary<int, IList<TextInfo>> GetTextInfos() {
+                return this.textInfos;
             }
         }
     }
