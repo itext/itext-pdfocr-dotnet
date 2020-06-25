@@ -307,6 +307,41 @@ namespace iText.Pdfocr.Tesseract4 {
         internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber);
 
+        /// <summary>Gets path to provided tess data directory.</summary>
+        /// <returns>
+        /// path to provided tess data directory as
+        /// <see cref="System.String"/>
+        /// </returns>
+        internal virtual String GetTessData() {
+            if (GetTesseract4OcrEngineProperties().GetPathToTessData() == null) {
+                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET);
+            }
+            else {
+                return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
+            }
+        }
+
+        internal virtual void ScheduledCheck() {
+            ReflectionUtils.ScheduledCheck();
+        }
+
+        internal virtual void OnEvent() {
+            IMetaInfo metaInfo = this.GetThreadLocalMetaInfo();
+            if (!(metaInfo is OcrPdfCreatorMetaInfo)) {
+                EventCounterHandler.GetInstance().OnEvent(PdfOcrTesseract4Event.TESSERACT4_IMAGE_OCR, this.GetThreadLocalMetaInfo
+                    (), GetType());
+            }
+            else {
+                Guid uuid = ((OcrPdfCreatorMetaInfo)metaInfo).GetDocumentId();
+                if (!processedUUID.Contains(uuid)) {
+                    processedUUID.Add(uuid);
+                    EventCounterHandler.GetInstance().OnEvent(OcrPdfCreatorMetaInfo.PdfDocumentType.PDFA.Equals(((OcrPdfCreatorMetaInfo
+                        )metaInfo).GetPdfDocumentType()) ? PdfOcrTesseract4Event.TESSERACT4_IMAGE_TO_PDFA : PdfOcrTesseract4Event
+                        .TESSERACT4_IMAGE_TO_PDF, ((OcrPdfCreatorMetaInfo)metaInfo).GetWrappedMetaInfo(), GetType());
+                }
+            }
+        }
+
         /// <summary>Reads data from the provided input image file.</summary>
         /// <param name="input">
         /// input image
@@ -328,8 +363,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="TextInfoTesseractOcrResult"/>
         /// if the output format is HOCR
         /// </returns>
-        internal virtual AbstractTesseract4OcrEngine.ITesseractOcrResult ProcessInputFiles(FileInfo input, OutputFormat
-             outputFormat) {
+        private AbstractTesseract4OcrEngine.ITesseractOcrResult ProcessInputFiles(FileInfo input, OutputFormat outputFormat
+            ) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             StringBuilder data = new StringBuilder();
             IList<FileInfo> tempFiles = new List<FileInfo>();
@@ -380,41 +415,6 @@ namespace iText.Pdfocr.Tesseract4 {
             return result;
         }
 
-        /// <summary>Gets path to provided tess data directory.</summary>
-        /// <returns>
-        /// path to provided tess data directory as
-        /// <see cref="System.String"/>
-        /// </returns>
-        internal virtual String GetTessData() {
-            if (GetTesseract4OcrEngineProperties().GetPathToTessData() == null) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET);
-            }
-            else {
-                return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
-            }
-        }
-
-        internal virtual void ScheduledCheck() {
-            ReflectionUtils.ScheduledCheck();
-        }
-
-        internal virtual void OnEvent() {
-            IMetaInfo metaInfo = this.GetThreadLocalMetaInfo();
-            if (!(metaInfo is OcrPdfCreatorMetaInfo)) {
-                EventCounterHandler.GetInstance().OnEvent(PdfOcrTesseract4Event.TESSERACT4_IMAGE_OCR, this.GetThreadLocalMetaInfo
-                    (), GetType());
-            }
-            else {
-                Guid uuid = ((OcrPdfCreatorMetaInfo)metaInfo).GetDocumentId();
-                if (!processedUUID.Contains(uuid)) {
-                    processedUUID.Add(uuid);
-                    EventCounterHandler.GetInstance().OnEvent(OcrPdfCreatorMetaInfo.PdfDocumentType.PDFA.Equals(((OcrPdfCreatorMetaInfo
-                        )metaInfo).GetPdfDocumentType()) ? PdfOcrTesseract4Event.TESSERACT4_IMAGE_TO_PDFA : PdfOcrTesseract4Event
-                        .TESSERACT4_IMAGE_TO_PDF, ((OcrPdfCreatorMetaInfo)metaInfo).GetWrappedMetaInfo(), GetType());
-                }
-            }
-        }
-
         /// <summary>Creates a temporary file with given extension.</summary>
         /// <param name="extension">
         /// file extension for a new file
@@ -462,10 +462,10 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
-        private interface ITesseractOcrResult {
+        internal interface ITesseractOcrResult {
         }
 
-        private class StringTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
+        internal class StringTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
             private String data;
 
             internal StringTesseractOcrResult(String data) {
@@ -477,7 +477,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
-        private class TextInfoTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
+        internal class TextInfoTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
             private IDictionary<int, IList<TextInfo>> textInfos;
 
             internal TextInfoTesseractOcrResult(IDictionary<int, IList<TextInfo>> textInfos) {
