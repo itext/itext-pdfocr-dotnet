@@ -27,54 +27,27 @@ using System.Threading;
 using iText.Kernel.Counter;
 using iText.Kernel.Counter.Event;
 using iText.Metainfo;
+using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
 using iText.Pdfocr.Tesseract4.Events;
-using iText.Test;
 
 namespace iText.Pdfocr.Events.Multithreading {
-    public abstract class MultiThreadingTest : ExtendedITextTest {
+    public abstract class MultiThreadingTest : IntegrationTestHelper {
         protected internal static readonly String destinationFolder = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/itext/pdfocr/events/multithreading/";
 
         protected internal static readonly String sourceFolder = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/events/multithreading/";
 
-        private AbstractTesseract4OcrEngine tesseractReader;
+        internal AbstractTesseract4OcrEngine tesseractReader;
 
-        private String testFileTypeName;
-
-        private bool isExecutableReaderType;
-
-        private static Tesseract4LibOcrEngine tesseractLibReader = new Tesseract4LibOcrEngine(new Tesseract4OcrEngineProperties
-            ());
-
-        private static Tesseract4ExecutableOcrEngine tesseractExecutableReader = new Tesseract4ExecutableOcrEngine
-            (new Tesseract4OcrEngineProperties());
-
-        public MultiThreadingTest(MultiThreadingTest.ReaderType type) {
-            isExecutableReaderType = type.Equals(MultiThreadingTest.ReaderType.EXECUTABLE);
-            if (isExecutableReaderType) {
-                testFileTypeName = "executable";
-            }
-            else {
-                testFileTypeName = "lib";
-            }
+        public MultiThreadingTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
         }
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateDestinationFolder(destinationFolder);
-        }
-
-        protected internal static AbstractTesseract4OcrEngine GetTesseractReader(MultiThreadingTest.ReaderType type
-            ) {
-            if (type.Equals(MultiThreadingTest.ReaderType.LIB)) {
-                return tesseractLibReader;
-            }
-            else {
-                return tesseractExecutableReader;
-            }
         }
 
         [NUnit.Framework.SetUp]
@@ -148,11 +121,6 @@ namespace iText.Pdfocr.Events.Multithreading {
                 this.events.Add(@event);
                 this.metaInfos.Add(metaInfo);
             }
-        }
-
-        public enum ReaderType {
-            LIB,
-            EXECUTABLE
         }
 
         private static Thread GetThread(DoImageOcrRunnable runnable) {
