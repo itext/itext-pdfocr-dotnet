@@ -29,6 +29,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext7" Version="7.1.11" />
+    <PackageReference Include="itext7" Version="7.1.12-SNAPSHOT" />
   </ItemGroup>
 </Project>

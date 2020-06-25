@@ -26,8 +26,8 @@
     <None Include="itext.snk" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext7" Version="7.1.11" />
-    <PackageReference Include="itext7.pdftest" Version="7.1.11" />
+    <PackageReference Include="itext7" Version="7.1.12-SNAPSHOT" />
+    <PackageReference Include="itext7.pdftest" Version="7.1.12-SNAPSHOT" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
