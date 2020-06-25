@@ -231,6 +231,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// temporary file containing words (one per line) which
         /// ends with a new line character. Train data for provided language
         /// should exist in specified tess data directory.
+        /// NOTE:
+        /// User words dictionary doesn't work properly in tesseract4
+        /// and hidden for public usage until fix is available
         /// </remarks>
         /// <param name="language">
         /// language as
@@ -248,8 +251,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="Tesseract4OcrEngineProperties"/>
         /// instance
         /// </returns>
-        public virtual iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUserWords(String language, IList<String
-            > userWords) {
+        internal virtual iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUserWords(String language, IList
+            <String> userWords) {
             SetPathToUserWordsFile(null);
             if (userWords != null && userWords.Count > 0) {
                 try {
@@ -284,6 +287,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// containing words (one per line) which ends with
         /// a new line character. Train data for provided language
         /// should exist in specified tess data directory.
+        /// NOTE:
+        /// User words dictionary doesn't work properly in tesseract4
+        /// and hidden for public usage until fix is available
         /// </remarks>
         /// <param name="language">
         /// language as
@@ -300,8 +306,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="Tesseract4OcrEngineProperties"/>
         /// instance
         /// </returns>
-        public virtual iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUserWords(String language, Stream 
-            inputStream) {
+        internal virtual iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUserWords(String language, Stream
+             inputStream) {
             SetPathToUserWordsFile(null);
             if (!GetLanguages().Contains(language)) {
                 if (DEFAULT_LANGUAGE.Equals(language.ToLowerInvariant())) {
@@ -335,17 +341,29 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         /// <summary>Returns path to the user words file.</summary>
+        /// <remarks>
+        /// Returns path to the user words file.
+        /// NOTE:
+        /// User words dictionary doesn't work properly in tesseract4
+        /// and hidden for public usage until fix is available
+        /// </remarks>
         /// <returns>
         /// path to user words file as
         /// <see cref="System.String"/>
         /// if it
         /// exists, otherwise - null
         /// </returns>
-        public String GetPathToUserWordsFile() {
+        internal String GetPathToUserWordsFile() {
             return pathToUserWordsFile;
         }
 
         /// <summary>Sets path to the user words file.</summary>
+        /// <remarks>
+        /// Sets path to the user words file.
+        /// NOTE:
+        /// User words dictionary doesn't work properly in tesseract4
+        /// and hidden for public usage until fix is available
+        /// </remarks>
         /// <param name="pathToUserWordsFile">
         /// path to user words file
         /// as
@@ -356,7 +374,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="Tesseract4OcrEngineProperties"/>
         /// instance
         /// </returns>
-        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToUserWordsFile(String pathToUserWordsFile
+        internal iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToUserWordsFile(String pathToUserWordsFile
             ) {
             return SetPathToUserWordsFile(pathToUserWordsFile, false);
         }
