@@ -53,7 +53,7 @@ namespace iText.Pdfocr.Events.Multithreading {
         [NUnit.Framework.SetUp]
         public virtual void InitTesseractProperties() {
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
-            ocrEngineProperties.SetPathToTessData(new FileInfo(sourceFolder + "../../tessdata/"));
+            ocrEngineProperties.SetPathToTessData(new FileInfo(sourceFolder + "../../tessdata"));
             tesseractReader.SetTesseract4OcrEngineProperties(ocrEngineProperties);
         }
 
