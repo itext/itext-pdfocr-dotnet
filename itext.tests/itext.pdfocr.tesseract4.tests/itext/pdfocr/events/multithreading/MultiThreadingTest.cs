@@ -75,8 +75,6 @@ namespace iText.Pdfocr.Events.Multithreading {
                 for (int i = 0; i < n; i++) {
                     threads[i].Start();
                 }
-                // The test will pass in sequential mode, i.e. if the following line is uncommented
-                //threads[i].join();
                 for (int i = 0; i < n; i++) {
                     threads[i].Join();
                 }
