@@ -46,7 +46,7 @@
     </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\itext\itext.pdfocr.api\itext.pdfocr.api.csproj" />
+    <ProjectReference Include="..\itext.pdfocr.api\itext.pdfocr.api.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Tesseract">
