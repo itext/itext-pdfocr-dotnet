@@ -24,8 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
+using iText.Kernel.Colors;
+using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
     public class TessDataIntegrationLibTest : TessDataIntegrationTest {
@@ -34,7 +37,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
 #if !NETSTANDARD1_6
-        [NUnit.Framework.Timeout(50000)]
+        [NUnit.Framework.Timeout(60000)]
 #endif
         [NUnit.Framework.Test]
         public virtual void TextOutputFromHalftoneFile() {
@@ -51,7 +54,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
 #if !NETSTANDARD1_6
-        [NUnit.Framework.Timeout(50000)]
+        [NUnit.Framework.Timeout(60000)]
 #endif
         [NUnit.Framework.Test]
         public virtual void HocrOutputFromHalftoneFile() {
@@ -81,6 +84,53 @@ namespace iText.Pdfocr.Tessdata {
                 .BY_LINES);
             NUnit.Framework.Assert.IsTrue(FindTextInPageData(pageData, 1, expected08));
             NUnit.Framework.Assert.IsTrue(FindTextInPageData(pageData, 1, expected09));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CompareInvoiceFrontThaiImage() {
+            String testName = "compareInvoiceFrontThaiImage";
+            String filename = "invoice_front_thai";
+            //Tesseract for Java and Tesseract for .NET give different output
+            //So we cannot use one reference pdf file for them
+            String expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_" + testFileTypeName + "_java.pdf";
+            String expectedPdfPathDotNet = TEST_DOCUMENTS_DIRECTORY + filename + "_" + testFileTypeName + "_dotnet.pdf";
+            String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + "_" + testFileTypeName + ".pdf";
+            Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
+            properties.SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES);
+            properties.SetPathToTessData(GetTessDataDirectory());
+            properties.SetLanguages(JavaUtil.ArraysAsList("tha", "eng"));
+            tesseractReader.SetTesseract4OcrEngineProperties(properties);
+            DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
+                ("tha", "eng"), JavaUtil.ArraysAsList(NOTO_SANS_THAI_FONT_PATH, NOTO_SANS_FONT_PATH), DeviceRgb.RED);
+            bool javaTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY
+                , "diff_") == null;
+            bool dotNetTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
+                , "diff_") == null;
+            NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
+        }
+
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 2)]
+        [NUnit.Framework.Test]
+        public virtual void CompareThaiTextImage() {
+            String testName = "compareThaiTextImage";
+            String filename = "thai_01";
+            //Tesseract for Java and Tesseract for .NET give different output
+            //So we cannot use one reference pdf file for them
+            String expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_" + testFileTypeName + "_java.pdf";
+            String expectedPdfPathDotNet = TEST_DOCUMENTS_DIRECTORY + filename + "_" + testFileTypeName + "_dotnet.pdf";
+            String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + "_" + testFileTypeName + ".pdf";
+            Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
+            properties.SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES);
+            properties.SetPathToTessData(GetTessDataDirectory());
+            properties.SetLanguages(JavaUtil.ArraysAsList("tha"));
+            tesseractReader.SetTesseract4OcrEngineProperties(properties);
+            DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
+                ("tha"), JavaUtil.ArraysAsList(NOTO_SANS_THAI_FONT_PATH), DeviceRgb.RED);
+            bool javaTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY
+                , "diff_") == null;
+            bool dotNetTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
+                , "diff_") == null;
+            NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
         }
 
         /// <summary>Searches for certain text in page data.</summary>

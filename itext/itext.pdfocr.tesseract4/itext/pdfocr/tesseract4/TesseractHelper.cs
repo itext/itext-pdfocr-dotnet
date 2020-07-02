@@ -38,6 +38,25 @@ namespace iText.Pdfocr.Tesseract4 {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelper)
             );
 
+        /// <summary>Patterns for matching hOCR element bboxes.</summary>
+        private static readonly Regex BBOX_PATTERN = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*"
+            );
+
+        private static readonly Regex BBOX_COORDINATE_PATTERN = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
+            );
+
+        /// <summary>Indices in array representing bbox.</summary>
+        private const int LEFT_IDX = 0;
+
+        private const int BOTTOM_IDX = 1;
+
+        private const int RIGHT_IDX = 2;
+
+        private const int TOP_IDX = 3;
+
+        /// <summary>Size of the array containing bbox.</summary>
+        private const int BBOX_ARRAY_SIZE = 4;
+
         /// <summary>
         /// Creates a new
         /// <see cref="TesseractHelper"/>
@@ -72,15 +91,14 @@ namespace iText.Pdfocr.Tesseract4 {
         public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, TextPositioning 
             textPositioning) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
+            IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes = new LinkedDictionary<String, 
+                iText.StyledXmlParser.Jsoup.Nodes.Node>();
             foreach (FileInfo inputFile in inputFiles) {
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
                     FileStream fileInputStream = new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read);
                     Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(fileInputStream, System.Text.Encoding.UTF8.Name(), 
                         inputFile.FullName);
                     Elements pages = doc.GetElementsByClass("ocr_page");
-                    Regex bboxPattern = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*");
-                    Regex bboxCoordinatePattern = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
-                        );
                     IList<String> searchedClasses = TextPositioning.BY_LINES.Equals(textPositioning) ? JavaUtil.ArraysAsList("ocr_line"
                         , "ocr_caption") : JavaCollectionsUtil.SingletonList<String>("ocrx_word");
                     foreach (iText.StyledXmlParser.Jsoup.Nodes.Element page in pages) {
@@ -97,20 +115,8 @@ namespace iText.Pdfocr.Tesseract4 {
                                 }
                             }
                             foreach (iText.StyledXmlParser.Jsoup.Nodes.Element obj in objects) {
-                                String value = obj.Attr("title");
-                                Match bboxMatcher = iText.IO.Util.StringUtil.Match(bboxPattern, value);
-                                if (bboxMatcher.Success) {
-                                    Match bboxCoordinateMatcher = iText.IO.Util.StringUtil.Match(bboxCoordinatePattern, iText.IO.Util.StringUtil.Group
-                                        (bboxMatcher));
-                                    if (bboxCoordinateMatcher.Success) {
-                                        IList<float> coordinates = new List<float>();
-                                        for (int i = 0; i < 4; i++) {
-                                            String coord = iText.IO.Util.StringUtil.Group(bboxCoordinateMatcher, i + 1);
-                                            coordinates.Add(float.Parse(coord, System.Globalization.CultureInfo.InvariantCulture));
-                                        }
-                                        textData.Add(new TextInfo(obj.Text(), coordinates));
-                                    }
-                                }
+                                IList<float> coordinates = GetAlignedBBox(obj, textPositioning, unparsedBBoxes);
+                                textData.Add(new TextInfo(obj.Text(), coordinates));
                             }
                         }
                         if (textData.Count > 0) {
@@ -123,7 +129,87 @@ namespace iText.Pdfocr.Tesseract4 {
                     fileInputStream.Dispose();
                 }
             }
+            foreach (iText.StyledXmlParser.Jsoup.Nodes.Node node in unparsedBBoxes.Values) {
+                LOGGER.Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_PARSE_NODE_BBOX, node.ToString())
+                    );
+            }
             return imageData;
+        }
+
+        /// <summary>Get and align (if needed) bbox of the element.</summary>
+        internal static IList<float> GetAlignedBBox(iText.StyledXmlParser.Jsoup.Nodes.Element @object, TextPositioning
+             textPositioning, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes) {
+            IList<float> coordinates = ParseBBox(@object, unparsedBBoxes);
+            if (TextPositioning.BY_WORDS_AND_LINES == textPositioning || TextPositioning.BY_WORDS == textPositioning) {
+                iText.StyledXmlParser.Jsoup.Nodes.Node line = @object.Parent();
+                IList<float> lineCoordinates = ParseBBox(line, unparsedBBoxes);
+                if (TextPositioning.BY_WORDS_AND_LINES == textPositioning) {
+                    coordinates[BOTTOM_IDX] = lineCoordinates[BOTTOM_IDX];
+                    coordinates[TOP_IDX] = lineCoordinates[TOP_IDX];
+                }
+                DetectAndFixBrokenBBoxes(@object, coordinates, lineCoordinates, unparsedBBoxes);
+            }
+            return coordinates;
+        }
+
+        /// <summary>Parses element bbox.</summary>
+        /// <param name="node">element containing bbox</param>
+        /// <param name="unparsedBBoxes">list of element ids with bboxes which could not be parsed</param>
+        /// <returns>parsed bbox</returns>
+        internal static IList<float> ParseBBox(iText.StyledXmlParser.Jsoup.Nodes.Node node, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+            > unparsedBBoxes) {
+            IList<float> bbox = new List<float>();
+            Match bboxMatcher = iText.IO.Util.StringUtil.Match(BBOX_PATTERN, node.Attr("title"));
+            if (bboxMatcher.Success) {
+                Match bboxCoordinateMatcher = iText.IO.Util.StringUtil.Match(BBOX_COORDINATE_PATTERN, iText.IO.Util.StringUtil.Group
+                    (bboxMatcher));
+                if (bboxCoordinateMatcher.Success) {
+                    for (int i = 0; i < BBOX_ARRAY_SIZE; i++) {
+                        String coord = iText.IO.Util.StringUtil.Group(bboxCoordinateMatcher, i + 1);
+                        bbox.Add(float.Parse(coord, System.Globalization.CultureInfo.InvariantCulture));
+                    }
+                }
+            }
+            if (bbox.Count == 0) {
+                bbox = JavaUtil.ArraysAsList(0f, 0f, 0f, 0f);
+                String id = node.Attr("id");
+                if (id != null && !unparsedBBoxes.ContainsKey(id)) {
+                    unparsedBBoxes.Put(id, node);
+                }
+            }
+            return bbox;
+        }
+
+        /// <summary>Sometimes hOCR file contains broke character bboxes which are equal to page bbox.</summary>
+        /// <remarks>
+        /// Sometimes hOCR file contains broke character bboxes which are equal to page bbox.
+        /// This method attempts to detect and fix them.
+        /// </remarks>
+        internal static void DetectAndFixBrokenBBoxes(iText.StyledXmlParser.Jsoup.Nodes.Element @object, IList<float
+            > coordinates, IList<float> lineCoordinates, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+            > unparsedBBoxes) {
+            if (coordinates[LEFT_IDX] < lineCoordinates[LEFT_IDX] || coordinates[LEFT_IDX] > lineCoordinates[RIGHT_IDX
+                ]) {
+                if (@object.PreviousElementSibling() == null) {
+                    coordinates[LEFT_IDX] = lineCoordinates[LEFT_IDX];
+                }
+                else {
+                    iText.StyledXmlParser.Jsoup.Nodes.Element sibling = @object.PreviousElementSibling();
+                    IList<float> siblingBBox = ParseBBox(sibling, unparsedBBoxes);
+                    coordinates[LEFT_IDX] = siblingBBox[RIGHT_IDX];
+                }
+            }
+            if (coordinates[RIGHT_IDX] > lineCoordinates[RIGHT_IDX] || coordinates[RIGHT_IDX] < lineCoordinates[LEFT_IDX
+                ]) {
+                if (@object.NextElementSibling() == null) {
+                    coordinates[RIGHT_IDX] = lineCoordinates[RIGHT_IDX];
+                }
+                else {
+                    iText.StyledXmlParser.Jsoup.Nodes.Element sibling = @object.NextElementSibling();
+                    IList<float> siblingBBox = ParseBBox(sibling, unparsedBBoxes);
+                    coordinates[RIGHT_IDX] = siblingBBox[LEFT_IDX];
+                }
+            }
         }
 
         /// <summary>Deletes file using provided path.</summary>

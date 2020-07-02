@@ -40,6 +40,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </remarks>
         BY_LINES,
         /// <summary>Text will be located by words retrieved from hocr file.</summary>
-        BY_WORDS
+        BY_WORDS,
+        /// <summary>Similar to BY_WORDS mode, but top and bottom of word BBox are inherited from line.</summary>
+        BY_WORDS_AND_LINES
     }
 }
