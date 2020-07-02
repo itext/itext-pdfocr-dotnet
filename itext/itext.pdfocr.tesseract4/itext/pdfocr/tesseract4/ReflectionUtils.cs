@@ -53,16 +53,8 @@ using Versions.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
     public sealed class ReflectionUtils {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ReflectionUtils)
-            );
 
-            
         private const String NO_PDFOCR_TESSERACT4 = "No license loaded for product pdfOcr-Tesseract4. Please use LicenseKey.loadLicense(...) to load one.";
-
-        private static IDictionary<String, Type> cachedClasses = new Dictionary<String, Type>();
-
-        private static IDictionary<ReflectionUtils.MethodSignature, MemberInfo> cachedMethods = new Dictionary
-            <ReflectionUtils.MethodSignature, MemberInfo>();
 
         private ReflectionUtils() {
         }
