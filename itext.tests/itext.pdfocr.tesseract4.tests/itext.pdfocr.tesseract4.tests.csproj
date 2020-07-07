@@ -36,11 +36,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj" />
+    <ProjectReference Include="..\..\itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Tesseract">
-      <HintPath>$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll</HintPath>
+      <HintPath>..\..\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
