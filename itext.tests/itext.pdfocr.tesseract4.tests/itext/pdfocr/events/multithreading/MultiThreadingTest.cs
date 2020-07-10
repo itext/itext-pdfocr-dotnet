@@ -102,6 +102,10 @@ namespace iText.Pdfocr.Events.Multithreading {
             }
         }
 
+        private static Thread GetThread(DoImageOcrRunnable runnable) {
+            return new Thread(new ThreadStart(runnable.Run));
+        }
+
         public class TestEventCounter : EventCounter {
             private IList<IEvent> events = new List<IEvent>();
 
@@ -121,10 +125,6 @@ namespace iText.Pdfocr.Events.Multithreading {
                 this.events.Add(@event);
                 this.metaInfos.Add(metaInfo);
             }
-        }
-
-        private static Thread GetThread(DoImageOcrRunnable runnable) {
-            return new Thread(new ThreadStart(runnable.Run));
         }
     }
 }
