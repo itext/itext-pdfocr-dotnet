@@ -115,6 +115,8 @@ namespace iText.Pdfocr.Events.Multithreading {
                 return metaInfos;
             }
 
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized
+                )]
             protected override void OnEvent(IEvent @event, IMetaInfo metaInfo) {
                 this.events.Add(@event);
                 this.metaInfos.Add(metaInfo);
