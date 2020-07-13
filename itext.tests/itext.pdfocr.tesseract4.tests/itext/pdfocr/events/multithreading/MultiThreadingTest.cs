@@ -53,7 +53,7 @@ namespace iText.Pdfocr.Events.Multithreading {
         [NUnit.Framework.SetUp]
         public virtual void InitTesseractProperties() {
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
-            ocrEngineProperties.SetPathToTessData(new FileInfo(sourceFolder + "../../tessdata/"));
+            ocrEngineProperties.SetPathToTessData(new FileInfo(sourceFolder + "../../tessdata"));
             tesseractReader.SetTesseract4OcrEngineProperties(ocrEngineProperties);
         }
 
@@ -75,8 +75,6 @@ namespace iText.Pdfocr.Events.Multithreading {
                 for (int i = 0; i < n; i++) {
                     threads[i].Start();
                 }
-                // The test will pass in sequential mode, i.e. if the following line is uncommented
-                //threads[i].join();
                 for (int i = 0; i < n; i++) {
                     threads[i].Join();
                 }
@@ -104,6 +102,10 @@ namespace iText.Pdfocr.Events.Multithreading {
             }
         }
 
+        private static Thread GetThread(DoImageOcrRunnable runnable) {
+            return new Thread(new ThreadStart(runnable.Run));
+        }
+
         public class TestEventCounter : EventCounter {
             private IList<IEvent> events = new List<IEvent>();
 
@@ -117,14 +119,12 @@ namespace iText.Pdfocr.Events.Multithreading {
                 return metaInfos;
             }
 
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.Synchronized
+                )]
             protected override void OnEvent(IEvent @event, IMetaInfo metaInfo) {
                 this.events.Add(@event);
                 this.metaInfos.Add(metaInfo);
             }
-        }
-
-        private static Thread GetThread(DoImageOcrRunnable runnable) {
-            return new Thread(new ThreadStart(runnable.Run));
         }
     }
 }

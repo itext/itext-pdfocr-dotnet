@@ -26,8 +26,8 @@
     <None Include="itext.snk" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext7" Version="7.1.11" />
-    <PackageReference Include="itext7.pdftest" Version="7.1.11" />
+    <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.netstandard.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.netstandard.csproj')" />
+    <PackageReference Include="itext7.pdftest" Version="7.1.12" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.netstandard.csproj')" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
@@ -36,11 +36,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj" />
+    <ProjectReference Include="..\..\itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Tesseract">
-      <HintPath>$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll</HintPath>
+      <HintPath>..\..\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

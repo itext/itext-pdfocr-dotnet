@@ -68,6 +68,9 @@ namespace iText.Pdfocr {
         // path to font for hindi
         protected internal static readonly String NOTO_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "NotoSans-Regular.ttf";
 
+        // path to font for thai
+        protected internal static readonly String NOTO_SANS_THAI_FONT_PATH = TEST_FONTS_DIRECTORY + "NotoSansThai-Regular.ttf";
+
         // path to font for japanese
         protected internal static readonly String KOSUGI_FONT_PATH = TEST_FONTS_DIRECTORY + "Kosugi-Regular.ttf";
 
@@ -85,6 +88,7 @@ namespace iText.Pdfocr {
         static IntegrationTestHelper() {
             IDictionary<String, String> fontPathToNameMap = new Dictionary<String, String>();
             fontPathToNameMap.Put(NOTO_SANS_FONT_PATH, "NotoSans");
+            fontPathToNameMap.Put(NOTO_SANS_THAI_FONT_PATH, "NotoSansThai");
             fontPathToNameMap.Put(KOSUGI_FONT_PATH, "Kosugi");
             fontPathToNameMap.Put(NOTO_SANS_SC_FONT_PATH, "NotoSansSC");
             fontPathToNameMap.Put(CAIRO_FONT_PATH, "Cairo");

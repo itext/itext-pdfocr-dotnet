@@ -53,31 +53,8 @@ using Versions.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
     public sealed class ReflectionUtils {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ReflectionUtils)
-            );
 
-            
         private const String NO_PDFOCR_TESSERACT4 = "No license loaded for product pdfOcr-Tesseract4. Please use LicenseKey.loadLicense(...) to load one.";
-
-        private static IDictionary<String, Type> cachedClasses = new Dictionary<String, Type>();
-
-        private static IDictionary<ReflectionUtils.MethodSignature, MemberInfo> cachedMethods = new Dictionary
-            <ReflectionUtils.MethodSignature, MemberInfo>();
-
-        static ReflectionUtils() {
-            try {
-                ContextManager contextManager = ContextManager.GetInstance();
-                CallMethod("iText.Kernel.Counter.ContextManager,iText.Kernel", "RegisterGenericContext", contextManager, new Type[] { typeof(
-                    ICollection), typeof(ICollection) }, JavaCollectionsUtil.SingletonList("iText.Pdfocr"), JavaCollectionsUtil
-                    .SingletonList("iText.Pdfocr.Tesseract4"));
-                CallMethod("iText.Kernel.Counter.ContextManager,iText.Kernel", "RegisterGenericContext", contextManager, new Type[] { typeof(
-                    ICollection), typeof(ICollection) }, JavaCollectionsUtil.SingletonList("iText.Pdfocr.Tesseract4"
-                    ), JavaCollectionsUtil.SingletonList("iText.Pdfocr.Tesseract4"));
-            }
-            catch (Exception e) {
-                logger.Error(e.Message);
-            }
-        }
 
         private ReflectionUtils() {
         }
@@ -117,57 +94,6 @@ namespace iText.Pdfocr.Tesseract4 {
                     throw;
                 }
             }
-        }
-
-        private static Object CallMethod(String className, String methodName, Object target, Type[] parameterTypes
-            , params Object[] args) {
-            try {
-                MethodInfo method = FindMethod(className, methodName, parameterTypes);
-                return method.Invoke(target, args);
-            }
-            catch (MissingMethodException) {
-                logger.Warn(MessageFormatUtil.Format("Cannot find method {0} for class {1}", methodName, className));
-            }
-            catch (TypeLoadException) {
-                logger.Warn(MessageFormatUtil.Format("Cannot find class {0}", className));
-            }
-            catch (ArgumentException e) {
-                logger.Warn(MessageFormatUtil.Format("Illegal arguments passed to {0}#{1} method call: {2}", className, methodName
-                    , e.Message));
-            }
-            catch (Exception e) {
-                // Converting checked exceptions to unchecked RuntimeException (java-specific comment).
-                //
-                // If kernel utils throws an exception at this point, we consider it as unrecoverable situation for
-                // its callers (pdfOcr methods).
-                // It's might be more suitable to wrap checked exceptions at a bit higher level, but we do it here for
-                // the sake of convenience.
-                throw new Exception(e.ToString(), e);
-            }
-            return null;
-        }
-
-        private static MethodInfo FindMethod(String className, String methodName, Type[] parameterTypes) {
-            ReflectionUtils.MethodSignature tm = new ReflectionUtils.MethodSignature(className, parameterTypes
-                , methodName);
-            MethodInfo m = (MethodInfo)cachedMethods.Get(tm);
-            if (m == null) {
-                Type foundClass = FindClass(className);
-                if (null != foundClass) {
-                    m = foundClass.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-                    cachedMethods.Put(tm, m);
-                }
-            }
-            return m;
-        }
-
-        private static Type FindClass(String className) {
-            Type c = cachedClasses.Get(className);
-            if (c == null) {
-                c = GetKernelClass(className);
-                cachedClasses.Put(className, c);
-            }
-            return c;
         }
 
         private static Type GetLicenseKeyClass(string className)
@@ -211,50 +137,6 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return type;
         }
-
-
-        private static Type GetKernelClass(string className)
-        {
-            String licenseKeyClassFullName = null;
-            Assembly assembly = typeof(ReflectionUtils).GetAssembly();
-            Attribute keyVersionAttr = assembly.GetCustomAttribute(typeof(KernelVersionAttribute));
-            if (keyVersionAttr is KernelVersionAttribute)
-            {
-                String keyVersion = ((KernelVersionAttribute)keyVersionAttr).KernelVersion;
-                String format = "{0}, Version={1}, Culture=neutral, PublicKeyToken=8354ae6d2174ddca";
-                licenseKeyClassFullName = String.Format(format, className, keyVersion);
-            }
-            Type type = null;
-            if (licenseKeyClassFullName != null)
-            {
-                String fileLoadExceptionMessage = null;
-                try
-                {
-                    type = System.Type.GetType(licenseKeyClassFullName);
-                }
-                catch (FileLoadException fileLoadException)
-                {
-                    fileLoadExceptionMessage = fileLoadException.Message;
-                }
-                if (type == null)
-                {
-                    try
-                    {
-                        type = System.Type.GetType(className);
-                    }
-                    catch
-                    {
-                        // empty
-                    }
-                    if (type == null && fileLoadExceptionMessage != null)
-                    {
-                        LogManager.GetLogger(typeof(ReflectionUtils)).Error(fileLoadExceptionMessage);
-                    }
-                }
-            }
-            return type;
-        }
-
 
         private class MethodSignature {
             protected internal readonly String className;

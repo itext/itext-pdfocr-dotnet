@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
 using iText.Pdfocr;
@@ -124,6 +125,19 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
 ;
+        }
+
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_PARSE_NODE_BBOX, Count = 4)]
+        [NUnit.Framework.Test]
+        public virtual void TestDetectAndFixBrokenBBoxes() {
+            FileInfo hocrFile = new FileInfo(TEST_DOCUMENTS_DIRECTORY + "broken_bboxes.hocr");
+            IDictionary<int, IList<TextInfo>> parsedHocr = TesseractHelper.ParseHocrFile(JavaCollectionsUtil.SingletonList
+                (hocrFile), TextPositioning.BY_WORDS_AND_LINES);
+            TextInfo textInfo = parsedHocr.Get(1)[1];
+            NUnit.Framework.Assert.AreEqual(383.0f, (float)textInfo.GetBbox()[0], 0.1);
+            NUnit.Framework.Assert.AreEqual(101.0f, (float)textInfo.GetBbox()[1], 0.1);
+            NUnit.Framework.Assert.AreEqual(514.0f, (float)textInfo.GetBbox()[2], 0.1);
+            NUnit.Framework.Assert.AreEqual(136.0f, (float)textInfo.GetBbox()[3], 0.1);
         }
 
         private void TestSettingOsName(String osName) {

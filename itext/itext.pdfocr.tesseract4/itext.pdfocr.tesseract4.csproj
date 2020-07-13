@@ -24,29 +24,29 @@
     <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll">
+    <ContentWithTargetPath Include="lib\Tesseract.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Tesseract.dll</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x64\liblept1760.dll">
+    <ContentWithTargetPath Include="lib\x64\liblept1760.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>x64\liblept1760.dll</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x64\libtesseract400.dll">
+    <ContentWithTargetPath Include="lib\x64\libtesseract400.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>x64\libtesseract400.dll</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x86\libtesseract400.dll">
+    <ContentWithTargetPath Include="lib\x86\libtesseract400.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>x86\libtesseract400.dll</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="$(SolutionDir)\itext\itext.pdfocr.tesseract4\lib\x86\liblept1760.dll">
+    <ContentWithTargetPath Include="lib\x86\liblept1760.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>x86\liblept1760.dll</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\itext\itext.pdfocr.api\itext.pdfocr.api.csproj" />
+    <ProjectReference Include="..\itext.pdfocr.api\itext.pdfocr.api.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Tesseract">
