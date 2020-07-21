@@ -286,9 +286,21 @@ namespace iText.Pdfocr.Tesseract4 {
         /// of command line arguments
         /// </param>
         internal static void RunCommand(String execPath, IList<String> paramsList) {
+            RunCommand(execPath, paramsList, null);
+        }
+
+        /// <summary>Runs given command from the specific working directory.</summary>
+        /// <param name="execPath">path to the executable</param>
+        /// <param name="paramsList">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of command line arguments
+        /// </param>
+        /// <param name="workingDirPath">path to the working directory</param>
+        internal static void RunCommand(String execPath, IList<String> paramsList, String workingDirPath) {
             try {
                 String @params = String.Join(" ", paramsList);
-                bool cmdSucceeded = SystemUtil.RunProcessAndWait(execPath, @params);
+                bool cmdSucceeded = SystemUtil.RunProcessAndWait(execPath, @params, workingDirPath);
                 if (!cmdSucceeded) {
                     LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, execPath + " " + @params
                         ));
