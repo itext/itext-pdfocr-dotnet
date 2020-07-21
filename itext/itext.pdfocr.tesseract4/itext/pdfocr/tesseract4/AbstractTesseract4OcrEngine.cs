@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Common.Logging;
+using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel.Counter;
 using iText.Kernel.Counter.Event;
@@ -48,8 +49,9 @@ namespace iText.Pdfocr.Tesseract4 {
     /// </remarks>
     public abstract class AbstractTesseract4OcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
         /// <summary>Supported image formats.</summary>
-        private static readonly ICollection<String> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet(
-            new HashSet<String>(JavaUtil.ArraysAsList("bmp", "png", "tiff", "tif", "jpeg", "jpg", "jpe", "jfif")));
+        private static readonly ICollection<ImageType> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet
+            (new HashSet<ImageType>(JavaUtil.ArraysAsList(ImageType.BMP, ImageType.PNG, ImageType.TIFF, ImageType.
+            JPEG)));
 
         internal ICollection<Guid> processedUUID = new HashSet<Guid>();
 
@@ -442,23 +444,13 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
         private void VerifyImageFormatValidity(FileInfo image) {
-            bool isValid = false;
-            String extension = "incorrect extension";
-            int index = image.FullName.LastIndexOf('.');
-            if (index > 0) {
-                extension = new String(image.FullName.ToCharArray(), index + 1, image.FullName.Length - index - 1);
-                foreach (String format in SUPPORTED_IMAGE_FORMATS) {
-                    if (format.Equals(extension.ToLowerInvariant())) {
-                        isValid = true;
-                        break;
-                    }
-                }
-            }
+            ImageType type = ImagePreprocessingUtil.GetImageType(image);
+            bool isValid = SUPPORTED_IMAGE_FORMATS.Contains(type);
             if (!isValid) {
                 LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , image.FullName));
-                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension
-                    );
+                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(image
+                    .Name);
             }
         }
 

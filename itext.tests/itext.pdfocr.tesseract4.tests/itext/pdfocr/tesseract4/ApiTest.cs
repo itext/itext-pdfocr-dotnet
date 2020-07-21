@@ -56,7 +56,7 @@ namespace iText.Pdfocr.Tesseract4 {
 ;
         }
 
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestDoTesseractOcrForIncorrectImageForExecutable() {
             NUnit.Framework.Assert.That(() =>  {
@@ -70,6 +70,7 @@ namespace iText.Pdfocr.Tesseract4 {
 ;
         }
 
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [LogMessage(Tesseract4OcrException.TESSERACT_FAILED)]
         [LogMessage(Tesseract4LogMessageConstant.TESSERACT_FAILED)]
         [NUnit.Framework.Test]

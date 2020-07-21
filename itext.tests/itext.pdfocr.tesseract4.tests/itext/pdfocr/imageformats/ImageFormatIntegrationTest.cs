@@ -223,11 +223,19 @@ namespace iText.Pdfocr.Imageformats {
         [NUnit.Framework.Test]
         public virtual void TestInputWrongFormat() {
             NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "example.txt");
+                FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "wierdwords.gif");
                 GetTextFromPdf(tesseractReader, file);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT, "txt")))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT, "wierdwords.gif")))
 ;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestSupportedImageWithIncorrectTypeInName() {
+            String path = TEST_IMAGES_DIRECTORY + "numbers_01.nnn";
+            String expectedOutput = "619121";
+            String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path));
+            NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains(expectedOutput));
         }
 
         [NUnit.Framework.Test]

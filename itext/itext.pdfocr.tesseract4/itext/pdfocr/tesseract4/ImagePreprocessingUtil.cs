@@ -64,13 +64,31 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         /// <returns>true if provided image has 'tiff' or 'tif' extension</returns>
         internal static bool IsTiffImage(FileInfo inputImage) {
-            int index = inputImage.FullName.LastIndexOf('.');
-            if (index > 0) {
-                String extension = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index
-                     - 1);
-                return extension.ToLowerInvariant().Contains("tif");
+            return GetImageType(inputImage) == ImageType.TIFF;
+        }
+
+        /// <summary>Gets the image type.</summary>
+        /// <param name="inputImage">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <returns>
+        /// image type
+        /// <see cref="iText.IO.Image.ImageType"/>
+        /// </returns>
+        internal static ImageType GetImageType(FileInfo inputImage) {
+            ImageType type;
+            try {
+                type = ImageTypeDetector.DetectImageType(UrlUtil.ToURL(inputImage.FullName));
             }
-            return false;
+            catch (Exception e) {
+                // NOSONAR
+                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Error(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputImage
+                    .FullName);
+            }
+            return type;
         }
 
         /// <summary>Reads provided image file using stream.</summary>

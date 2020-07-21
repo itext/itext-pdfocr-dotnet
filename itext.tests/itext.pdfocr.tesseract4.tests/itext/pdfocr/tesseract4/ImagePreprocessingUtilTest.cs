@@ -23,16 +23,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using iText.Pdfocr;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
     public class ImagePreprocessingUtilTest : IntegrationTestHelper {
         [NUnit.Framework.Test]
         public virtual void TestCheckForInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_03_10MB";
+            String path = TEST_IMAGES_DIRECTORY + "example_04.png";
             FileInfo imgFile = new FileInfo(path);
             NUnit.Framework.Assert.IsFalse(ImagePreprocessingUtil.IsTiffImage(imgFile));
         }
 
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
         public virtual void TestReadingInvalidImagePath() {
             NUnit.Framework.Assert.That(() =>  {
