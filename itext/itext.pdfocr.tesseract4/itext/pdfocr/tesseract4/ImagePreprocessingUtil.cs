@@ -230,7 +230,11 @@ namespace iText.Pdfocr.Tesseract4 {
             try {
                 bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadImageFromFile(inputImage);
             }
-            catch (Exception ex) {
+            catch (ArgumentException ex) {
+                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
+            }
+            catch (System.IO.IOException ex) {
                 LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
             }

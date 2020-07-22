@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text.RegularExpressions;
 using Common.Logging;
 using iText.IO.Util;
@@ -221,7 +222,11 @@ namespace iText.Pdfocr.Tesseract4 {
                     File.Delete(System.IO.Path.Combine(pathToFile));
                 }
             }
-            catch (Exception e) {
+            catch (System.IO.IOException e) {
+                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
+                    ));
+            }
+            catch (SecurityException e) {
                 LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
                     ));
             }
@@ -307,8 +312,12 @@ namespace iText.Pdfocr.Tesseract4 {
                     throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
                 }
             }
-            catch (Exception e) {
+            catch (System.IO.IOException e) {
                 // NOSONAR
+                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
+                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+            }
+            catch (Exception e) {
                 LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }
