@@ -49,6 +49,9 @@ namespace iText.Pdfocr {
         private static readonly String TARGET_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory + 
             "/test/resources/itext/pdfocr/";
 
+        private static readonly String NON_ASCII_TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
+             + "/test/resources/itext/ñoñ-ascîî/";
+
         // directory with trained data for tests
         protected internal static readonly String LANG_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata";
 
@@ -141,6 +144,14 @@ namespace iText.Pdfocr {
                 CreateDestinationFolder(TARGET_FOLDER);
             }
             return TARGET_FOLDER;
+        }
+
+        /// <summary>Returns a non ascii target directory.</summary>
+        public static String GetNonAsciiTargetDirectory() {
+            if (!File.Exists(System.IO.Path.Combine(NON_ASCII_TARGET_DIRECTORY))) {
+                CreateDestinationFolder(NON_ASCII_TARGET_DIRECTORY);
+            }
+            return NON_ASCII_TARGET_DIRECTORY;
         }
 
         protected internal static FileInfo GetTessDataDirectory() {

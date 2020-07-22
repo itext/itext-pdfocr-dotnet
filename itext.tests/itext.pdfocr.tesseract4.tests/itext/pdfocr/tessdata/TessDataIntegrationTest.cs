@@ -509,6 +509,17 @@ namespace iText.Pdfocr.Tessdata {
             NUnit.Framework.Assert.AreEqual(expected, result);
         }
 
+        [NUnit.Framework.Test]
+        public virtual void TestTargetDirectoryWithNonAsciiPath() {
+            String imgPath = TEST_IMAGES_DIRECTORY + "german_01.jpg";
+            String expectedTxt = TEST_DOCUMENTS_DIRECTORY + "german_01" + testFileTypeName + ".txt";
+            IList<String> languages = JavaCollectionsUtil.SingletonList<String>("deu");
+            String resultTxtFile = GetNonAsciiTargetDirectory() + GetImageName(imgPath, languages) + ".txt";
+            DoOcrAndSaveToTextFile(tesseractReader, imgPath, resultTxtFile, languages);
+            bool result = CompareTxtFiles(expectedTxt, resultTxtFile);
+            NUnit.Framework.Assert.IsTrue(result);
+        }
+
         /// <summary>Do OCR for given image and compare result text file with expected one.</summary>
         private bool DoOcrAndCompareTxtFiles(AbstractTesseract4OcrEngine tesseractReader, String imgPath, String expectedPath
             , IList<String> languages) {
