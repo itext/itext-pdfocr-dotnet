@@ -28,6 +28,7 @@ using System.Security;
 using System.Text.RegularExpressions;
 using Common.Logging;
 using iText.IO.Util;
+using iText.Kernel.Geom;
 using iText.Pdfocr;
 using iText.StyledXmlParser.Jsoup.Nodes;
 using iText.StyledXmlParser.Jsoup.Select;
@@ -46,17 +47,20 @@ namespace iText.Pdfocr.Tesseract4 {
         private static readonly Regex BBOX_COORDINATE_PATTERN = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
             );
 
+        /// <summary>Size of the array containing bbox.</summary>
+        private const int BBOX_ARRAY_SIZE = 4;
+
         /// <summary>Indices in array representing bbox.</summary>
         private const int LEFT_IDX = 0;
 
-        private const int BOTTOM_IDX = 1;
+        private const int TOP_IDX = 1;
 
         private const int RIGHT_IDX = 2;
 
-        private const int TOP_IDX = 3;
+        private const int BOTTOM_IDX = 3;
 
-        /// <summary>Size of the array containing bbox.</summary>
-        private const int BBOX_ARRAY_SIZE = 4;
+        /// <summary>The Constant to convert pixels to points.</summary>
+        private const float PX_TO_PT = 3F / 4F;
 
         /// <summary>
         /// Creates a new
@@ -106,6 +110,7 @@ namespace iText.Pdfocr.Tesseract4 {
                         String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id(), "page_");
                         int pageNumber = Convert.ToInt32(pageNum[pageNum.Length - 1], System.Globalization.CultureInfo.InvariantCulture
                             );
+                        Rectangle pageBbox = ParseBBox(page, null, unparsedBBoxes);
                         IList<TextInfo> textData = new List<TextInfo>();
                         if (searchedClasses.Count > 0) {
                             Elements objects = page.GetElementsByClass(searchedClasses[0]);
@@ -116,8 +121,11 @@ namespace iText.Pdfocr.Tesseract4 {
                                 }
                             }
                             foreach (iText.StyledXmlParser.Jsoup.Nodes.Element obj in objects) {
-                                IList<float> coordinates = GetAlignedBBox(obj, textPositioning, unparsedBBoxes);
-                                textData.Add(new TextInfo(obj.Text(), coordinates));
+                                Rectangle bboxRect = GetAlignedBBox(obj, textPositioning, pageBbox, unparsedBBoxes);
+                                IList<float> bbox = JavaUtil.ArraysAsList(bboxRect.GetLeft(), pageBbox.GetTop() - bboxRect.GetTop(), bboxRect
+                                    .GetRight(), pageBbox.GetTop() - bboxRect.GetBottom());
+                                TextInfo textInfo = new TextInfo(obj.Text(), ToPoints(bboxRect), bbox);
+                                textData.Add(textInfo);
                             }
                         }
                         if (textData.Count > 0) {
@@ -138,27 +146,28 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         /// <summary>Get and align (if needed) bbox of the element.</summary>
-        internal static IList<float> GetAlignedBBox(iText.StyledXmlParser.Jsoup.Nodes.Element @object, TextPositioning
-             textPositioning, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes) {
-            IList<float> coordinates = ParseBBox(@object, unparsedBBoxes);
+        internal static Rectangle GetAlignedBBox(iText.StyledXmlParser.Jsoup.Nodes.Element @object, TextPositioning
+             textPositioning, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes
+            ) {
+            Rectangle box = ParseBBox(@object, pageBbox, unparsedBBoxes);
             if (TextPositioning.BY_WORDS_AND_LINES == textPositioning || TextPositioning.BY_WORDS == textPositioning) {
                 iText.StyledXmlParser.Jsoup.Nodes.Node line = @object.Parent();
-                IList<float> lineCoordinates = ParseBBox(line, unparsedBBoxes);
+                Rectangle lineBbox = ParseBBox(line, pageBbox, unparsedBBoxes);
                 if (TextPositioning.BY_WORDS_AND_LINES == textPositioning) {
-                    coordinates[BOTTOM_IDX] = lineCoordinates[BOTTOM_IDX];
-                    coordinates[TOP_IDX] = lineCoordinates[TOP_IDX];
+                    box.SetBbox(box.GetLeft(), lineBbox.GetBottom(), box.GetRight(), lineBbox.GetTop());
                 }
-                DetectAndFixBrokenBBoxes(@object, coordinates, lineCoordinates, unparsedBBoxes);
+                DetectAndFixBrokenBBoxes(@object, box, lineBbox, pageBbox, unparsedBBoxes);
             }
-            return coordinates;
+            return box;
         }
 
         /// <summary>Parses element bbox.</summary>
         /// <param name="node">element containing bbox</param>
+        /// <param name="pageBBox">element containing parent page bbox</param>
         /// <param name="unparsedBBoxes">list of element ids with bboxes which could not be parsed</param>
         /// <returns>parsed bbox</returns>
-        internal static IList<float> ParseBBox(iText.StyledXmlParser.Jsoup.Nodes.Node node, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
-            > unparsedBBoxes) {
+        internal static Rectangle ParseBBox(iText.StyledXmlParser.Jsoup.Nodes.Node node, Rectangle pageBBox, IDictionary
+            <String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes) {
             IList<float> bbox = new List<float>();
             Match bboxMatcher = iText.IO.Util.StringUtil.Match(BBOX_PATTERN, node.Attr("title"));
             if (bboxMatcher.Success) {
@@ -178,7 +187,13 @@ namespace iText.Pdfocr.Tesseract4 {
                     unparsedBBoxes.Put(id, node);
                 }
             }
-            return bbox;
+            if (pageBBox == null) {
+                return new Rectangle(bbox[LEFT_IDX], bbox[TOP_IDX], bbox[RIGHT_IDX], bbox[BOTTOM_IDX] - bbox[TOP_IDX]);
+            }
+            else {
+                return new Rectangle(0, 0).SetBbox(bbox[LEFT_IDX], pageBBox.GetTop() - bbox[TOP_IDX], bbox[RIGHT_IDX], pageBBox
+                    .GetTop() - bbox[BOTTOM_IDX]);
+            }
         }
 
         /// <summary>Sometimes hOCR file contains broke character bboxes which are equal to page bbox.</summary>
@@ -186,31 +201,34 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Sometimes hOCR file contains broke character bboxes which are equal to page bbox.
         /// This method attempts to detect and fix them.
         /// </remarks>
-        internal static void DetectAndFixBrokenBBoxes(iText.StyledXmlParser.Jsoup.Nodes.Element @object, IList<float
-            > coordinates, IList<float> lineCoordinates, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+        internal static void DetectAndFixBrokenBBoxes(iText.StyledXmlParser.Jsoup.Nodes.Element @object, Rectangle
+             bbox, Rectangle lineBbox, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
             > unparsedBBoxes) {
-            if (coordinates[LEFT_IDX] < lineCoordinates[LEFT_IDX] || coordinates[LEFT_IDX] > lineCoordinates[RIGHT_IDX
-                ]) {
+            if (bbox.GetLeft() < lineBbox.GetLeft() || bbox.GetLeft() > lineBbox.GetRight()) {
                 if (@object.PreviousElementSibling() == null) {
-                    coordinates[LEFT_IDX] = lineCoordinates[LEFT_IDX];
+                    bbox.SetX(lineBbox.GetLeft());
                 }
                 else {
                     iText.StyledXmlParser.Jsoup.Nodes.Element sibling = @object.PreviousElementSibling();
-                    IList<float> siblingBBox = ParseBBox(sibling, unparsedBBoxes);
-                    coordinates[LEFT_IDX] = siblingBBox[RIGHT_IDX];
+                    Rectangle siblingBBox = ParseBBox(sibling, pageBbox, unparsedBBoxes);
+                    bbox.SetX(siblingBBox.GetRight());
                 }
             }
-            if (coordinates[RIGHT_IDX] > lineCoordinates[RIGHT_IDX] || coordinates[RIGHT_IDX] < lineCoordinates[LEFT_IDX
-                ]) {
+            if (bbox.GetRight() > lineBbox.GetRight() || bbox.GetRight() < lineBbox.GetLeft()) {
                 if (@object.NextElementSibling() == null) {
-                    coordinates[RIGHT_IDX] = lineCoordinates[RIGHT_IDX];
+                    bbox.SetBbox(bbox.GetLeft(), bbox.GetBottom(), lineBbox.GetRight(), bbox.GetTop());
                 }
                 else {
                     iText.StyledXmlParser.Jsoup.Nodes.Element sibling = @object.NextElementSibling();
-                    IList<float> siblingBBox = ParseBBox(sibling, unparsedBBoxes);
-                    coordinates[RIGHT_IDX] = siblingBBox[LEFT_IDX];
+                    Rectangle siblingBBox = ParseBBox(sibling, pageBbox, unparsedBBoxes);
+                    bbox.SetBbox(bbox.GetLeft(), bbox.GetBottom(), siblingBBox.GetLeft(), bbox.GetTop());
                 }
             }
+        }
+
+        internal static Rectangle ToPoints(Rectangle rectangle) {
+            return new Rectangle(rectangle.GetX() * PX_TO_PT, rectangle.GetY() * PX_TO_PT, rectangle.GetWidth() * PX_TO_PT
+                , rectangle.GetHeight() * PX_TO_PT);
         }
 
         /// <summary>Deletes file using provided path.</summary>

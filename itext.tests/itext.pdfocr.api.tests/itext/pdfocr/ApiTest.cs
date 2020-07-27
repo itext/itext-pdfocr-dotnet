@@ -26,6 +26,7 @@ using System.IO;
 using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
+using iText.Kernel.Geom;
 using iText.Pdfocr.Helpers;
 using iText.Test;
 using iText.Test.Attributes;
@@ -36,6 +37,20 @@ namespace iText.Pdfocr {
         public virtual void TestTextInfo() {
             String path = PdfHelper.GetDefaultImagePath();
             IDictionary<int, IList<TextInfo>> result = new CustomOcrEngine().DoImageOcr(new FileInfo(path));
+            NUnit.Framework.Assert.AreEqual(1, result.Count);
+            TextInfo textInfo = new TextInfo();
+            textInfo.SetText("text");
+            textInfo.SetBboxRect(new Rectangle(204.0f, 158.0f, 538.0f, 136.0f));
+            int page = 2;
+            result.Put(page, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));
+            NUnit.Framework.Assert.AreEqual(2, result.Count);
+            NUnit.Framework.Assert.AreEqual(textInfo.GetText(), result.Get(page)[0].GetText());
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTextInfoDeprecationMode() {
+            String path = PdfHelper.GetDefaultImagePath();
+            IDictionary<int, IList<TextInfo>> result = new CustomOcrEngine(true).DoImageOcr(new FileInfo(path));
             NUnit.Framework.Assert.AreEqual(1, result.Count);
             TextInfo textInfo = new TextInfo();
             textInfo.SetText("text");
@@ -55,6 +70,20 @@ namespace iText.Pdfocr {
             String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
             PdfHelper.CreatePdf(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK
                 ));
+            ExtractionStrategy strategy = PdfHelper.GetExtractionStrategy(pdfPath);
+            PdfFont font = strategy.GetPdfFont();
+            String fontName = font.GetFontProgram().GetFontNames().GetFontName();
+            NUnit.Framework.Assert.IsTrue(fontName.Contains("LiberationSans"));
+        }
+
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 7)]
+        [NUnit.Framework.Test]
+        public virtual void TestThaiImageWithNotDefGlyphsDeprecationMode() {
+            String testName = "testThaiImageWithNotdefGlyphs";
+            String path = PdfHelper.GetThaiImagePath();
+            String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
+            PdfHelper.CreatePdf(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties().SetTextColor(DeviceRgb.BLACK
+                ), true);
             ExtractionStrategy strategy = PdfHelper.GetExtractionStrategy(pdfPath);
             PdfFont font = strategy.GetPdfFont();
             String fontName = font.GetFontProgram().GetFontNames().GetFontName();

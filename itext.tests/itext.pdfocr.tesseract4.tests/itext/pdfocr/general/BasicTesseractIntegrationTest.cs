@@ -27,6 +27,7 @@ using System.Text;
 using iText.IO.Source;
 using iText.IO.Util;
 using iText.Kernel.Colors;
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Pdfocr;
@@ -190,32 +191,6 @@ namespace iText.Pdfocr.General {
 ;
         }
 
-        [NUnit.Framework.Test]
-        public virtual void TestTxtStringOutput() {
-            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multîpage.tiff");
-            IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
-                , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
-                , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
-                );
-            String result = tesseractReader.DoImageOcr(file, OutputFormat.TXT);
-            foreach (String line in expectedOutput) {
-                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
-            }
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void TestHocrStringOutput() {
-            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multîpage.tiff");
-            IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
-                , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
-                , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
-                );
-            String result = tesseractReader.DoImageOcr(file, OutputFormat.HOCR);
-            foreach (String line in expectedOutput) {
-                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
-            }
-        }
-
         [LogMessage(Tesseract4OcrException.INCORRECT_LANGUAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectLanguage() {
@@ -296,6 +271,32 @@ namespace iText.Pdfocr.General {
                 ));
         }
 
+        [NUnit.Framework.Test]
+        public virtual void TestTxtStringOutput() {
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multîpage.tiff");
+            IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
+                , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
+                , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
+                );
+            String result = tesseractReader.DoImageOcr(file, OutputFormat.TXT);
+            foreach (String line in expectedOutput) {
+                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestHocrStringOutput() {
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "multîpage.tiff");
+            IList<String> expectedOutput = JavaUtil.ArraysAsList("Multipage\nTIFF\nExample\nPage 1", "Multipage\nTIFF\nExample\nPage 2"
+                , "Multipage\nTIFF\nExample\nPage 4", "Multipage\nTIFF\nExample\nPage 5", "Multipage\nTIFF\nExample\nPage 6"
+                , "Multipage\nTIFF\nExample\nPage /", "Multipage\nTIFF\nExample\nPage 8", "Multipage\nTIFF\nExample\nPage 9"
+                );
+            String result = tesseractReader.DoImageOcr(file, OutputFormat.HOCR);
+            foreach (String line in expectedOutput) {
+                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
+            }
+        }
+
         /// <summary>Parse text from image and compare with expected.</summary>
         private void TestImageOcrText(AbstractTesseract4OcrEngine tesseractReader, String path, String expectedOutput
             ) {
@@ -312,7 +313,7 @@ namespace iText.Pdfocr.General {
             if (pageText == null || pageText.Count == 0) {
                 pageText = new List<TextInfo>();
                 TextInfo textInfo = new TextInfo();
-                textInfo.SetBbox(JavaUtil.ArraysAsList(0f, 0f, 0f, 0f));
+                textInfo.SetBboxRect(new Rectangle(0, 0, 0, 0));
                 textInfo.SetText("");
                 pageText.Add(textInfo);
             }
@@ -321,7 +322,6 @@ namespace iText.Pdfocr.General {
 
         /// <summary>Concatenates provided text items to one string.</summary>
         private String GetTextFromPage(IList<TextInfo> pageText) {
-            NUnit.Framework.Assert.AreEqual(4, pageText[0].GetBbox().Count);
             StringBuilder stringBuilder = new StringBuilder();
             foreach (TextInfo text in pageText) {
                 stringBuilder.Append(text.GetText());

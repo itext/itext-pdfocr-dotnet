@@ -123,7 +123,16 @@ namespace iText.Pdfocr.Helpers {
         /// of properties and save to the given path.
         /// </summary>
         public static void CreatePdf(String pdfPath, FileInfo inputFile, OcrPdfCreatorProperties properties) {
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
+            CreatePdf(pdfPath, inputFile, properties, false);
+        }
+
+        /// <summary>
+        /// Perform OCR with custom ocr engine using provided input image and set
+        /// of properties and save to the given path.
+        /// </summary>
+        public static void CreatePdf(String pdfPath, FileInfo inputFile, OcrPdfCreatorProperties properties, bool 
+            textInfoDeprecationMode) {
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(textInfoDeprecationMode), properties);
             try {
                 using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
                     ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(inputFile), pdfWriter).Close();
