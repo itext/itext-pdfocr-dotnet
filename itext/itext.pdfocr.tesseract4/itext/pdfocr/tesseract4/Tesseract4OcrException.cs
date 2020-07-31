@@ -51,6 +51,8 @@ namespace iText.Pdfocr.Tesseract4 {
         public const String PATH_TO_TESS_DATA_IS_NOT_SET = "Path to tess data directory cannot be null and must be set "
              + "to a valid directory";
 
+        public const String PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS = "Path to tess data should contain only ASCII characters";
+
         /// <summary>Creates a new TesseractException.</summary>
         /// <param name="msg">the detail message.</param>
         /// <param name="e">

@@ -520,6 +520,23 @@ namespace iText.Pdfocr.Tessdata {
             NUnit.Framework.Assert.IsTrue(result);
         }
 
+        /// <summary>
+        /// Do OCR and retrieve text from the first page of result PDF document
+        /// using tess data placed by path with non ASCII characters.
+        /// </summary>
+        /// <returns>
+        /// 
+        /// <see cref="System.String"/>
+        /// </returns>
+        protected internal virtual String DoOcrAndGetTextUsingTessDataByNonAsciiPath() {
+            String imgPath = TEST_IMAGES_DIRECTORY + "georgian_01.jpg";
+            FileInfo file = new FileInfo(imgPath);
+            tesseractReader.SetTesseract4OcrEngineProperties(tesseractReader.GetTesseract4OcrEngineProperties().SetPathToTessData
+                (new FileInfo(NON_ASCII_TESS_DATA_DIRECTORY)));
+            return GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList<String>("Georgian"), FREE_SANS_FONT_PATH
+                );
+        }
+
         /// <summary>Do OCR for given image and compare result text file with expected one.</summary>
         private bool DoOcrAndCompareTxtFiles(AbstractTesseract4OcrEngine tesseractReader, String imgPath, String expectedPath
             , IList<String> languages) {

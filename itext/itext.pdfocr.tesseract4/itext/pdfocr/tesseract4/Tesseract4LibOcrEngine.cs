@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using Common.Logging;
 using Tesseract;
 using iText.IO.Util;
@@ -53,6 +54,10 @@ namespace iText.Pdfocr.Tesseract4 {
         /// (depends on OS type)
         /// </remarks>
         private TesseractEngine tesseractInstance = null;
+
+        /// <summary>Pattern for matching ASCII string.</summary>
+        private static readonly Regex ASCII_STRING_PATTERN = iText.IO.Util.StringUtil.RegexCompile("^[\\u0000-\\u007F]*$"
+            );
 
         /// <summary>
         /// Creates a new
@@ -140,6 +145,8 @@ namespace iText.Pdfocr.Tesseract4 {
             , int pageNumber) {
             ScheduledCheck();
             try {
+                // check tess data path for non ASCII characters
+                ValidateTessDataPath(GetTessData());
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());
                 InitializeTesseract(outputFormat);
                 OnEvent();
@@ -185,6 +192,28 @@ namespace iText.Pdfocr.Tesseract4 {
                     ().IsUserWordsFileTemporary()) {
                     TesseractHelper.DeleteFile(GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
                 }
+            }
+        }
+
+        /// <summary>
+        /// Validates Tess Data path,
+        /// checks if tess data path contains only ASCII charset.
+        /// </summary>
+        /// <remarks>
+        /// Validates Tess Data path,
+        /// checks if tess data path contains only ASCII charset.
+        /// Note: tesseract lib has issues with non ASCII characters in tess data path.
+        /// </remarks>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// path to tess data
+        /// </param>
+        private static void ValidateTessDataPath(String tessDataPath) {
+            Match asciiStringMatcher = iText.IO.Util.StringUtil.Match(ASCII_STRING_PATTERN, tessDataPath);
+            if (!asciiStringMatcher.Success) {
+                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
+                    );
             }
         }
 

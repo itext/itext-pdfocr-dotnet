@@ -59,6 +59,10 @@ namespace iText.Pdfocr {
         protected internal static readonly String SCRIPT_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata" + System.IO.Path.DirectorySeparatorChar
              + "script";
 
+        // directory with trained data for tests
+        protected internal static readonly String NON_ASCII_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata" + System.IO.Path.DirectorySeparatorChar
+             + "ñoñ-ascîî";
+
         // directory with test image files
         protected internal static readonly String TEST_IMAGES_DIRECTORY = TEST_DIRECTORY + "images" + System.IO.Path.DirectorySeparatorChar;
 
