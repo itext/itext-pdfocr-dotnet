@@ -48,7 +48,7 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.That(() =>  {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
                 FileInfo imgFile = new FileInfo(path);
-                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), new Tesseract4OcrEngineProperties
+                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ());
                 engine.DoImageOcr(imgFile);
             }
@@ -62,7 +62,7 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.That(() =>  {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01";
                 FileInfo imgFile = new FileInfo(path);
-                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), new Tesseract4OcrEngineProperties
+                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ().SetPathToTessData(GetTessDataDirectory()));
                 engine.DoTesseractOcr(imgFile, null, OutputFormat.HOCR);
             }
@@ -94,8 +94,7 @@ namespace iText.Pdfocr.Tesseract4 {
             Tesseract4OcrEngineProperties properties = new Tesseract4OcrEngineProperties();
             properties.SetPathToTessData(GetTessDataDirectory());
             properties.SetPreprocessingImages(false);
-            Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), properties
-                );
+            Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(properties);
             engine.DoTesseractOcr(imgFile, outputFile, OutputFormat.HOCR);
             NUnit.Framework.Assert.IsTrue(File.Exists(System.IO.Path.Combine(outputFile.FullName)));
             TesseractHelper.DeleteFile(outputFile.FullName);

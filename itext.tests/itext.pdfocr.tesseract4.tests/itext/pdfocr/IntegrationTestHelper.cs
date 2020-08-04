@@ -116,8 +116,7 @@ namespace iText.Pdfocr {
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
             ocrEngineProperties.SetPathToTessData(GetTessDataDirectory());
             tesseractLibReader = new Tesseract4LibOcrEngine(ocrEngineProperties);
-            tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), ocrEngineProperties
-                );
+            tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(ocrEngineProperties);
         }
 
         protected internal static AbstractTesseract4OcrEngine GetTesseractReader(IntegrationTestHelper.ReaderType 
@@ -132,14 +131,6 @@ namespace iText.Pdfocr {
 
         protected internal static Tesseract4LibOcrEngine GetTesseract4LibOcrEngine() {
             return tesseractLibReader;
-        }
-
-        protected internal static String GetTesseractDirectory() {
-            String tesseractDir = Environment.GetEnvironmentVariable("tesseractDir");
-            String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
-                ) : Environment.GetEnvironmentVariable("os.name");
-            return os.ToLowerInvariant().Contains("win") && tesseractDir != null && !String.IsNullOrEmpty(tesseractDir
-                ) ? tesseractDir + "\\tesseract.exe" : "tesseract";
         }
 
         /// <summary>Returns target directory (because target/test could not exist).</summary>
