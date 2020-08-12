@@ -137,47 +137,5 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return type;
         }
-
-        private class MethodSignature {
-            protected internal readonly String className;
-
-            private readonly String methodName;
-
-            protected internal Type[] parameterTypes;
-
-            internal MethodSignature(String className, Type[] parameterTypes)
-                : this(className, parameterTypes, null) {
-            }
-
-            internal MethodSignature(String className, Type[] parameterTypes, String methodName) {
-                this.methodName = methodName;
-                this.className = className;
-                this.parameterTypes = parameterTypes;
-            }
-
-            public override int GetHashCode() {
-                int result = className.GetHashCode();
-                result = 31 * result + JavaUtil.ArraysHashCode(parameterTypes);
-                result = 31 * result + (methodName != null ? methodName.GetHashCode() : 0);
-                return result;
-            }
-
-            public override bool Equals(Object o) {
-                if (this == o) {
-                    return true;
-                }
-                if (o == null || GetType() != o.GetType()) {
-                    return false;
-                }
-                ReflectionUtils.MethodSignature that = (ReflectionUtils.MethodSignature)o;
-                if (!className.Equals(that.className)) {
-                    return false;
-                }
-                if (!JavaUtil.ArraysEquals(parameterTypes, that.parameterTypes)) {
-                    return false;
-                }
-                return methodName != null ? methodName.Equals(that.methodName) : that.methodName == null;
-            }
-        }
     }
 }
