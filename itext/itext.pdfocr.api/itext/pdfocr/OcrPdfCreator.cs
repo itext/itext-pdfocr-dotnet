@@ -405,7 +405,8 @@ namespace iText.Pdfocr {
             foreach (KeyValuePair<FileInfo, IDictionary<int, IList<TextInfo>>> entry in imagesTextData) {
                 try {
                     FileInfo inputImage = entry.Key;
-                    IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage);
+                    IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage, ocrPdfCreatorProperties.GetImageRotationHandler
+                        ());
                     LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
                         (), imageDataList.Count));
                     IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;

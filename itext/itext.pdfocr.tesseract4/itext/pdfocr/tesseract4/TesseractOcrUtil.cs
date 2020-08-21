@@ -26,7 +26,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using Common.Logging;
+using iText.IO.Image;
 using iText.IO.Util;
 using Tesseract;
 
@@ -44,6 +47,16 @@ namespace iText.Pdfocr.Tesseract4 {
     /// </remarks>
     internal sealed class TesseractOcrUtil {
 
+        /// <summary>Rotation constants.</summary>
+        private const int ROTATION_0 = 0;
+        private const int ROTATION_90 = 90;
+        private const int ROTATION_180 = 180;
+        private const int ROTATION_270 = 270;
+        private const int EXIF_ROTATION_0 = 1;
+        private const int EXIF_ROTATION_90 = 6;
+        private const int EXIF_ROTATION_180 = 3;
+        private const int EXIF_ROTATION_270 = 8;
+
         /// <summary>List of pages of the image that is being processed.</summary>
         private IList<Bitmap> imagePages = new List<Bitmap>();
 
@@ -55,7 +68,10 @@ namespace iText.Pdfocr.Tesseract4 {
         internal TesseractOcrUtil() {
         }
 
-        /// <summary>Reads required page from provided tiff image.</summary>
+        /// <summary>
+        /// Reads required page from provided tiff image.
+        /// Note that rotation is always applied when image read.
+        /// </summary>
         /// <param name="inputFile">
         /// input image as
         /// <see cref="System.IO.FileInfo"/>
@@ -70,16 +86,10 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static Pix ReadPixPageFromTiff(FileInfo inputFile, int pageNumber) {
             // copy selected pix form pixa
             Pix pix = null;
-            try
+            Bitmap img = GetImagePage(inputFile, pageNumber);
+            if (img != null)
             {
-                Bitmap img = GetImagePage(inputFile, pageNumber);
-                pix = ConvertImageToPix(img);
-            }
-            catch (IOException e)
-            {
-                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format(
-                        Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE,
-                        e.Message));
+                pix = ReadPix(img);
             }
             // return required page to be preprocessed
             return pix;
@@ -332,29 +342,6 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         /// <summary>
-        /// Converts
-        /// <see cref="System.Drawing.Bitmap"/>
-        /// to
-        /// <see cref="Tesseract.Pix"/>.
-        /// </summary>
-        /// <param name="bufferedImage">
-        /// input image as
-        /// <see cref="System.Drawing.Bitmap"/>
-        /// </param>
-        /// <returns>
-        /// Pix result converted
-        /// <see cref="Tesseract.Pix"/>
-        /// object
-        /// </returns>
-        internal static Pix ConvertImageToPix(System.Drawing.Bitmap bufferedImage) {
-            if (bufferedImage != null)
-            {
-                return new BitmapToPixConverter().Convert(bufferedImage);
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Converts Leptonica
         /// <see cref="Tesseract.Pix"/>
         /// to
@@ -376,7 +363,7 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static System.Drawing.Bitmap ConvertPixToImage(Pix pix) {
             // tesseract restrictions
             // should be improved in further tesseract versions
-            if (pix != null && pix.Depth != 1 && pix.Depth != 8 && pix.Depth != 16 && pix.Depth != 32)
+            if (pix != null)
             {
                 return new PixToBitmapConverter().Convert(pix);
             }
@@ -732,6 +719,270 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static void CreateTempFileCopy(string src, string dst)
         {
             File.Copy(src, dst, true);
+        }
+
+
+        /// <summary>
+        /// Read
+        /// <see cref="Tesseract.Pix"/>
+        /// from 
+        /// <see cref="System.Drawing.Bitmap"/>.
+        /// Note that rotation is always applied when image read.
+        /// </summary>
+        /// <param name="bufferedImage">
+        /// image
+        /// <see cref="System.Drawing.Bitmap"/>
+        /// to read from
+        /// </param>
+        /// <returns>
+        /// Pix result
+        /// <see cref="Tesseract.Pix"/>
+        /// </returns>
+        internal static Pix ReadPix(System.Drawing.Bitmap bufferedImage)
+        {
+            if (bufferedImage != null)
+            {
+                Pix pix = new BitmapToPixConverter().Convert(bufferedImage);
+                if (pix != null)
+                {
+                    int rotation = ReadRotationFromMetadata((System.Drawing.Image)bufferedImage);
+                    pix = Rotate(pix, rotation);
+                }
+                return pix;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Read
+        /// <see cref="Tesseract.Pix"/>
+        /// from 
+        /// <see cref="System.IO.FileInfo"/>.
+        /// Note that rotation is always applied when image read.
+        /// </summary>
+        /// <param name="inputFile">
+        /// input file
+        /// <see cref="System.IO.FileInfo"/>
+        /// to read from
+        /// </param>
+        /// <returns>
+        /// Pix result
+        /// <see cref="Tesseract.Pix"/>
+        /// </returns>
+        internal static Pix ReadPix(FileInfo inputFile)
+        {
+            Pix pix = null;
+            try
+            {
+                pix = Pix.LoadFromFile(inputFile.FullName);
+            }
+            catch (Exception e)
+            {
+                // NOSONAR
+                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+            }
+            if (pix != null)
+            {
+                int rotation = DetectRotation(inputFile);
+                pix = Rotate(pix, rotation);
+            }
+            return pix;
+        }
+
+        /// <summary>
+        /// Read
+        /// <see cref="Tesseract.Pix"/>
+        /// from byte array.
+        /// Note that rotation is always applied when image read.
+        /// </summary>
+        /// <param name="imageBytes">
+        /// image bytes to read from
+        /// </param>
+        /// <returns>
+        /// Pix result
+        /// <see cref="Tesseract.Pix"/>
+        /// </returns>
+        internal static Pix ReadPix(byte[] imageBytes)
+        {
+            try
+            {
+                System.Drawing.Bitmap bufferedImage = (System.Drawing.Bitmap)
+                    ((new ImageConverter()).ConvertFrom(imageBytes));
+                return ReadPix(bufferedImage);
+            }
+            catch (Exception e)
+            {
+                // NOSONAR
+                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Detect rotation specified by image metadata.
+        /// </summary>
+        /// <param name="inputFile">
+        /// file to detect rotation
+        /// </param>
+        /// <returns>
+        /// image rotation as specified in metadata
+        /// </returns>
+        internal static int DetectRotation(FileInfo inputFile)
+        {
+            try
+            {
+                System.Drawing.Image image = System.Drawing.Image.FromFile(inputFile.FullName);
+                return ReadRotationFromMetadata(image);
+            }
+            catch (Exception e)
+            {
+                // NOSONAR
+                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                return ROTATION_0;
+            }
+        }
+
+        /// <summary>
+        /// Detect rotation specified by image metadata.
+        /// </summary>
+        /// <param name="imageData">
+        /// imageData to detect rotation
+        /// </param>
+        /// <returns>
+        /// image rotation as specified in metadata
+        /// </returns>
+        internal static int DetectRotation(ImageData imageData)
+        {
+            return DetectRotation(imageData.GetData());
+        }
+
+        /// <summary>
+        /// Detect rotation specified by image metadata.
+        /// </summary>
+        /// <param name="imageBytes">
+        /// image data to detect rotation
+        /// </param>
+        /// <returns>
+        /// image rotation as specified in metadata
+        /// </returns>
+        internal static int DetectRotation(byte[] imageBytes)
+        {
+            try
+            {
+                System.Drawing.Bitmap bufferedImage = (System.Drawing.Bitmap)
+                    ((new ImageConverter()).ConvertFrom(imageBytes));
+                return ReadRotationFromMetadata(bufferedImage);
+            }
+            catch (Exception e)
+            {
+                // NOSONAR
+                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                    (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                return ROTATION_0;
+            }
+        }
+
+        /// <summary>
+        /// Reads image orientation from metadata and converts to rotation.
+        /// </summary>
+        /// <param name="image">
+        /// image metadata
+        /// </param>
+        /// <returns>
+        /// rotation
+        /// </returns>
+        internal static int ReadRotationFromMetadata(System.Drawing.Image image)
+        {
+            const int exifOrientationID = 0x112;
+
+            if (!image.PropertyIdList.Contains(exifOrientationID))
+                return ROTATION_0;
+
+            PropertyItem prop = image.GetPropertyItem(exifOrientationID);
+            int orientation = BitConverter.ToUInt16(prop.Value, 0);
+            switch (orientation)
+            {
+                case EXIF_ROTATION_0:
+                    return ROTATION_0;
+                case EXIF_ROTATION_90:
+                    return ROTATION_90;
+                case EXIF_ROTATION_180:
+                    return ROTATION_180;
+                case EXIF_ROTATION_270:
+                    return ROTATION_270;
+                default:
+                    LogManager.GetLogger(typeof(TesseractOcrUtil)).Warn(MessageFormatUtil.Format(
+                            Tesseract4LogMessageConstant.UNSUPPORTED_EXIF_ORIENTATION_VALUE,
+                            orientation));
+                    return ROTATION_0;
+            }
+        }
+
+        /// <summary>
+        /// Rotates image by specified angle.
+        /// </summary>
+        /// <param name="pix">
+        /// image source represented by
+        /// <see cref="Tesseract.Pix"/>
+        /// </param>
+        /// <param name="rotation">
+        /// to rotate image at
+        /// </param>
+        /// <returns>
+        /// rotated image, if rotation differs from 0
+        /// </returns>
+        internal static Pix Rotate(Pix pix, int rotation)
+        {
+            switch (rotation)
+            {
+                case ROTATION_90:
+                    return pix.Rotate90(1);
+                case ROTATION_180:
+                    return pix.Rotate90(1).Rotate90(1);
+                case ROTATION_270:
+                    return pix.Rotate90(-1);
+                default:
+                    return pix;
+            }
+        }
+
+        /// <summary>
+        /// Detects and applies rotation to image.
+        /// </summary>
+        /// <param name="imageData">
+        /// source image to rotate if needed
+        /// </param>
+        /// <returns>
+        /// rotated image, if rotation differs from 0
+        /// </returns>
+        internal static ImageData ApplyRotation(ImageData imageData)
+        {
+            Pix pix = ReadPix(imageData.GetData());
+            if (pix == null)
+            {
+                return imageData;
+            }
+            else
+            {
+                ImageData newImageData = imageData;
+                MemoryStream stream = new MemoryStream();
+                try
+                {
+                    System.Drawing.Bitmap bitmap = ConvertPixToImage(pix);
+                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    byte[] byteArray = stream.GetBuffer();
+                    newImageData = ImageDataFactory.Create(byteArray);
+                }
+                finally
+                {
+                    stream.Close();
+                    DestroyPix(pix);
+                }
+                return newImageData;
+            }
         }
     }
 }

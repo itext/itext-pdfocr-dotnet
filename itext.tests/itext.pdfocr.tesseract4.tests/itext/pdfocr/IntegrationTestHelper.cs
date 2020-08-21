@@ -287,6 +287,21 @@ namespace iText.Pdfocr {
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
             imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color) {
+            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fonts, color, false);
+        }
+
+        /// <summary>
+        /// Perform OCR using provided path to image (imgPath)
+        /// and save result PDF document to "pdfPath".
+        /// </summary>
+        /// <remarks>
+        /// Perform OCR using provided path to image (imgPath)
+        /// and save result PDF document to "pdfPath".
+        /// (Method is used for compare tool)
+        /// </remarks>
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color, bool applyRotation
+            ) {
             if (languages != null) {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetLanguages(languages);
@@ -295,6 +310,9 @@ namespace iText.Pdfocr {
             OcrPdfCreatorProperties properties_1 = new OcrPdfCreatorProperties();
             properties_1.SetPdfLang("en-US");
             properties_1.SetTitle("");
+            if (applyRotation) {
+                properties_1.SetImageRotationHandler(new LeptonicaImageRotationHandler());
+            }
             if (fonts != null && fonts.Count > 0) {
                 FontProvider fontProvider = new FontProvider();
                 foreach (String fontPath in fonts) {

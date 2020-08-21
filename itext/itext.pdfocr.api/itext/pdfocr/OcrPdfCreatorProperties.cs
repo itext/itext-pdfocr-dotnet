@@ -108,6 +108,12 @@ namespace iText.Pdfocr {
         private String title = null;
 
         /// <summary>
+        /// Handles rotated images as described in
+        /// <see cref="IImageRotationHandler"/>.
+        /// </summary>
+        private IImageRotationHandler imageRotationHandler;
+
+        /// <summary>
         /// Creates a new
         /// <see cref="OcrPdfCreatorProperties"/>
         /// instance.
@@ -139,6 +145,7 @@ namespace iText.Pdfocr {
             this.title = other.title;
             this.fontProvider = other.fontProvider;
             this.defaultFontFamily = other.defaultFontFamily;
+            this.imageRotationHandler = other.imageRotationHandler;
         }
 
         /// <summary>Gets text color in output PDF document.</summary>
@@ -434,6 +441,29 @@ namespace iText.Pdfocr {
         public virtual String GetDefaultFontFamily() {
             return defaultFontFamily == null || defaultFontFamily.Length == 0 ? GetFontProvider().GetDefaultFontFamily
                 () : defaultFontFamily;
+        }
+
+        /// <summary>Gets image rotation handler instance.</summary>
+        /// <returns>image rotation handler</returns>
+        public virtual IImageRotationHandler GetImageRotationHandler() {
+            return this.imageRotationHandler;
+        }
+
+        /// <summary>Sets image rotation handler instance.</summary>
+        /// <remarks>
+        /// Sets image rotation handler instance.
+        /// If not set - image rotation handling is not applied.
+        /// </remarks>
+        /// <param name="imageRotationDetector">image rotation handler instance</param>
+        /// <returns>
+        /// the
+        /// <see cref="OcrPdfCreatorProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.Pdfocr.OcrPdfCreatorProperties SetImageRotationHandler(IImageRotationHandler imageRotationDetector
+            ) {
+            this.imageRotationHandler = imageRotationDetector;
+            return this;
         }
     }
 }

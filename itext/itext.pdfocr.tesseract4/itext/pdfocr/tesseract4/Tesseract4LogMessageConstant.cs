@@ -64,6 +64,10 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_PARSE_NODE_BBOX = "Cannot parse node BBox, defaults to 0, 0, 0, 0. Node: {0}";
 
+        public const String CANNOT_READ_IMAGE_METADATA = "Cannot read image metadata {0}";
+
+        public const String UNSUPPORTED_EXIF_ORIENTATION_VALUE = "Unsuppoted EXIF Orientation value {0}. 1 is used by default";
+
         private Tesseract4LogMessageConstant() {
         }
     }

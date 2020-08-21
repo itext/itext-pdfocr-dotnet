@@ -150,59 +150,13 @@ namespace iText.Pdfocr.Tesseract4 {
                 pix = TesseractOcrUtil.ReadPixPageFromTiff(inputFile, pageNumber - 1);
             }
             else {
-                pix = ReadPix(inputFile);
+                pix = TesseractOcrUtil.ReadPix(inputFile);
             }
             if (pix == null) {
                 throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile
                     .FullName);
             }
             return TesseractOcrUtil.PreprocessPix(pix);
-        }
-
-        /// <summary>
-        /// Reads
-        /// <see cref="Tesseract.Pix"/>
-        /// from input file or, if
-        /// this is not possible, reads input file as
-        /// <see cref="System.Drawing.Bitmap"/>
-        /// and then converts to
-        /// <see cref="Tesseract.Pix"/>.
-        /// </summary>
-        /// <param name="inputFile">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
-        /// </param>
-        /// <returns>
-        /// Pix result
-        /// <see cref="Tesseract.Pix"/>
-        /// object from
-        /// input file
-        /// </returns>
-        internal static Pix ReadPix(FileInfo inputFile) {
-            Pix pix = null;
-            try {
-                System.Drawing.Bitmap bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadImageFromFile(inputFile
-                    );
-                if (bufferedImage != null) {
-                    pix = TesseractOcrUtil.ConvertImageToPix(bufferedImage);
-                }
-            }
-            catch (Exception e) {
-                // NOSONAR
-                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
-                    (Tesseract4LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_PIX, inputFile.FullName, e.Message));
-            }
-            if (pix == null) {
-                try {
-                    pix = Tesseract.Pix.LoadFromFile(inputFile.FullName);
-                }
-                catch (Exception e) {
-                    // NOSONAR
-                    LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
-                        (Tesseract4LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_PIX, inputFile.FullName, e.Message));
-                }
-            }
-            return pix;
         }
 
         /// <summary>
