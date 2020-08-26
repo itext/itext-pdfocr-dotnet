@@ -22,6 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.IO.Image;
+using iText.IO.Util;
 using iText.Pdfocr;
 using iText.Test.Attributes;
 
@@ -40,10 +42,49 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.That(() =>  {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_02";
                 FileInfo imgFile = new FileInfo(path);
-                ImagePreprocessingUtil.PreprocessImage(imgFile, 1);
+                ImagePreprocessingUtil.PreprocessImage(imgFile, 1, new ImagePreprocessingOptions());
             }
             , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
 ;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestImagePreprocessingOptions() {
+            String sourceImg = TEST_IMAGES_DIRECTORY + "thai_02.jpg";
+            String processedImg = GetTargetDirectory() + "thai_02_processed.jpg";
+            String compareImg = TEST_IMAGES_DIRECTORY + "thai_02_cmp_01.jpg";
+            TesseractOcrUtil.SavePixToPngFile(processedImg, ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg
+                ), 1, new ImagePreprocessingOptions()));
+            CompareImagesWithPrecision(compareImg, processedImg, 0.1);
+            compareImg = TEST_IMAGES_DIRECTORY + "thai_02_cmp_02.jpg";
+            TesseractOcrUtil.SavePixToPngFile(processedImg, ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg
+                ), 1, new ImagePreprocessingOptions().SetTileWidth(300).SetTileHeight(300)));
+            CompareImagesWithPrecision(compareImg, processedImg, 0.1);
+            compareImg = TEST_IMAGES_DIRECTORY + "thai_02_cmp_03.jpg";
+            TesseractOcrUtil.SavePixToPngFile(processedImg, ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg
+                ), 1, new ImagePreprocessingOptions().SetTileWidth(300).SetTileHeight(300).SetSmoothTiling(false)));
+            CompareImagesWithPrecision(compareImg, processedImg, 0.1);
+        }
+
+        private static void CompareImagesWithPrecision(String img1, String img2, double precisionPercents) {
+            ImageData imageData1 = ImageDataFactory.Create(img1);
+            ImageData imageData2 = ImageDataFactory.Create(img2);
+            NUnit.Framework.Assert.AreEqual(0, JavaUtil.FloatCompare(imageData1.GetWidth(), imageData2.GetWidth()));
+            NUnit.Framework.Assert.AreEqual(0, JavaUtil.FloatCompare(imageData1.GetHeight(), imageData2.GetHeight()));
+            System.Drawing.Bitmap image1 = ImagePreprocessingUtil.ReadImageFromFile(new FileInfo(img1));
+            System.Drawing.Bitmap image2 = ImagePreprocessingUtil.ReadImageFromFile(new FileInfo(img2));
+            int inconsistentPixelsCount = 0;
+            for (int x = 0; x < imageData1.GetWidth(); x++) {
+                for (int y = 0; y < imageData1.GetHeight(); y++) {
+                    if (TesseractOcrUtil.GetImagePixelColor(image1, x, y) != TesseractOcrUtil.GetImagePixelColor(image2, x, y)
+                        ) {
+                        inconsistentPixelsCount++;
+                    }
+                }
+            }
+            float differencePercentage = (float)(100 * inconsistentPixelsCount) / (imageData1.GetWidth() * imageData1.
+                GetHeight());
+            NUnit.Framework.Assert.IsTrue(differencePercentage < precisionPercents);
         }
     }
 }

@@ -108,15 +108,19 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="Tesseract.Pix"/>
         /// object to be processed
         /// </param>
+        /// <param name="imagePreprocessingOptions">
+        /// 
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// </param>
         /// <returns>
         /// preprocessed
         /// <see cref="Tesseract.Pix"/>
         /// object
         /// </returns>
-        internal static Pix PreprocessPix(Pix pix) {
-            pix = ConvertToGrayscale(pix);
-            pix = OtsuImageThresholding(pix);
-            return pix;
+        internal static Pix PreprocessPix(Pix pix, ImagePreprocessingOptions imagePreprocessingOptions) {
+            Pix pix1 = ConvertToGrayscale(pix);
+            pix1 = OtsuImageThresholding(pix1, imagePreprocessingOptions);
+            return pix1;
         }
 
         /// <summary>
@@ -171,18 +175,31 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="Tesseract.Pix"/>
         /// object to be processed
         /// </param>
+        /// <param name="imagePreprocessingOptions">
+        /// 
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// </param>
         /// <returns>
         /// 
         /// <see cref="Tesseract.Pix"/>
         /// object after thresholding
         /// </returns>
-        internal static Pix OtsuImageThresholding(Pix pix) {
+        internal static Pix OtsuImageThresholding(Pix pix, ImagePreprocessingOptions imagePreprocessingOptions) {
             if (pix != null)
             {
                 Pix thresholdPix = null;
                 if (pix.Depth == 8)
                 {
-                    thresholdPix = pix.BinarizeOtsuAdaptiveThreshold(pix.Width, pix.Height, 0, 0, 0);
+                    thresholdPix = pix.BinarizeOtsuAdaptiveThreshold(
+                        GetOtsuAdaptiveThresholdTileSize(pix.Width,
+                            imagePreprocessingOptions.GetTileWidth()),
+                        GetOtsuAdaptiveThresholdTileSize(pix.Height,
+                            imagePreprocessingOptions.GetTileHeight()),
+                        GetOtsuAdaptiveThresholdSmoothingTileSize(pix.Width,
+                            imagePreprocessingOptions.IsSmoothTiling()),
+                        GetOtsuAdaptiveThresholdSmoothingTileSize(pix.Height,
+                            imagePreprocessingOptions.IsSmoothTiling()),
+                        0);
                     if (thresholdPix != null && thresholdPix.Width > 0 && thresholdPix.Height > 0)
                     {
                         DestroyPix(pix);
@@ -207,6 +224,45 @@ namespace iText.Pdfocr.Tesseract4 {
             {
                 return pix;
             }
+        }
+
+        /// <summary>
+        /// Gets adaptive threshold tile size.
+        /// </summary>
+        internal static int GetOtsuAdaptiveThresholdTileSize(int imageSize, int tileSize)
+        {
+            if (tileSize == 0)
+            {
+                return imageSize;
+            }
+            else
+            {
+                return tileSize;
+            }
+        }
+
+        /// <summary>
+        /// Gets adaptive threshold smoothing tile size.
+        /// Can be either equal to page size or 0.
+        /// </summary>
+        internal static int GetOtsuAdaptiveThresholdSmoothingTileSize(int imageSize, bool smoothTiling)
+        {
+            if (smoothTiling)
+            {
+                return imageSize;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets an integer pixel in the default RGB color model.
+        /// </summary>
+        internal static int GetImagePixelColor(System.Drawing.Bitmap image, int x, int y)
+        {
+            return image.GetPixel(x, y).ToArgb();
         }
 
         /// <summary>
@@ -682,19 +738,19 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>
         /// Saves passed<see cref="Tesseract.Pix"/> to given path
         /// </summary>
-        /// <param name="tmpFileName">
+        /// <param name="filename">
         /// provided file path to save the <see cref="Tesseract.Pix"/>
         /// </param>
         /// <param name="pix">
         /// provided <see cref="Tesseract.Pix"/> to be saved
         /// </param>
-        internal static void SavePixToTempPngFile(string tmpFileName, Pix pix)
+        internal static void SavePixToPngFile(string filename, Pix pix)
         {
             if (pix != null)
             {
                 try
                 {
-                    pix.Save(tmpFileName, Tesseract.ImageFormat.Png);
+                    pix.Save(filename, Tesseract.ImageFormat.Png);
                 }
                 catch (Exception e)
                 {

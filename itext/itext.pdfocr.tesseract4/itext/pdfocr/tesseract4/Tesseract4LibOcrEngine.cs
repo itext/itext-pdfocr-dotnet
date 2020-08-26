@@ -284,7 +284,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
                     // preprocess and try to ocr
                     result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), ImagePreprocessingUtil.PreprocessImage
-                        (inputImage, pageNumber), outputFormat);
+                        (inputImage, pageNumber, GetTesseract4OcrEngineProperties().GetImagePreprocessingOptions()), outputFormat
+                        );
                 }
                 if (result == null) {
                     System.Drawing.Bitmap bufferedImage = ImagePreprocessingUtil.ReadImage(inputImage);

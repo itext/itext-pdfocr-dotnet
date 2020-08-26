@@ -90,7 +90,8 @@ namespace iText.Pdfocr.Tesseract4 {
         public virtual void TestPreprocessingConditions() {
             Pix pix = null;
             NUnit.Framework.Assert.IsNull(TesseractOcrUtil.ConvertToGrayscale(pix));
-            NUnit.Framework.Assert.IsNull(TesseractOcrUtil.OtsuImageThresholding(pix));
+            NUnit.Framework.Assert.IsNull(TesseractOcrUtil.OtsuImageThresholding(pix, new ImagePreprocessingOptions())
+                );
             NUnit.Framework.Assert.IsNull(TesseractOcrUtil.ConvertPixToImage(pix));
             TesseractOcrUtil.DestroyPix(pix);
         }
@@ -131,7 +132,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 );
             TesseractOcrUtil.SaveImageToTempPngFile(tmpFileName, null);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
-            TesseractOcrUtil.SavePixToTempPngFile(tmpFileName, null);
+            TesseractOcrUtil.SavePixToPngFile(tmpFileName, null);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
         }
 
@@ -141,7 +142,7 @@ namespace iText.Pdfocr.Tesseract4 {
             String tmpFileName = GetTargetDirectory() + "testPixSavingAsPng.png";
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
             Pix pix = TesseractOcrUtil.ReadPix(new FileInfo(path));
-            TesseractOcrUtil.SavePixToTempPngFile(tmpFileName, pix);
+            TesseractOcrUtil.SavePixToPngFile(tmpFileName, pix);
             NUnit.Framework.Assert.IsTrue(File.Exists(System.IO.Path.Combine(tmpFileName)));
             TesseractHelper.DeleteFile(tmpFileName);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));

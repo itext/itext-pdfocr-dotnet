@@ -49,13 +49,6 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Page Segmentation Mode.</summary>
         private int? pageSegMode = 3;
 
-        /// <summary>"True" - if images need to be preprocessed, otherwise - false.</summary>
-        /// <remarks>
-        /// "True" - if images need to be preprocessed, otherwise - false.
-        /// True by default.
-        /// </remarks>
-        private bool preprocessingImages = true;
-
         /// <summary>Defines the way text is retrieved from tesseract output.</summary>
         /// <remarks>
         /// Defines the way text is retrieved from tesseract output.
@@ -73,6 +66,9 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Indicates if user words file is temporary and has to be removed.</summary>
         private bool isUserWordsFileTemporary = false;
+
+        /// <summary>Settings for image preprocessing.</summary>
+        private ImagePreprocessingOptions imagePreprocessingOptions = new ImagePreprocessingOptions();
 
         /// <summary>
         /// Creates a new
@@ -100,9 +96,9 @@ namespace iText.Pdfocr.Tesseract4 {
             : base(other) {
             this.tessDataDir = other.tessDataDir;
             this.pageSegMode = other.pageSegMode;
-            this.preprocessingImages = other.preprocessingImages;
             this.textPositioning = other.textPositioning;
             this.pathToUserWordsFile = other.pathToUserWordsFile;
+            this.imagePreprocessingOptions = other.imagePreprocessingOptions;
         }
 
         /// <summary>Gets default language for ocr.</summary>
@@ -177,7 +173,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Checks whether image preprocessing is needed.</summary>
         /// <returns>true if images need to be preprocessed, otherwise - false</returns>
         public bool IsPreprocessingImages() {
-            return preprocessingImages;
+            return imagePreprocessingOptions != null;
         }
 
         /// <summary>Sets true if image preprocessing is needed.</summary>
@@ -191,7 +187,14 @@ namespace iText.Pdfocr.Tesseract4 {
         /// instance
         /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPreprocessingImages(bool preprocess) {
-            preprocessingImages = preprocess;
+            if (preprocess) {
+                if (imagePreprocessingOptions == null) {
+                    imagePreprocessingOptions = new ImagePreprocessingOptions();
+                }
+            }
+            else {
+                imagePreprocessingOptions = null;
+            }
             return this;
         }
 
@@ -402,6 +405,37 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <returns>true if the file is temporary, otherwise false.</returns>
         internal bool IsUserWordsFileTemporary() {
             return isUserWordsFileTemporary;
+        }
+
+        /// <summary>
+        /// Gets
+        /// <see cref="imagePreprocessingOptions"/>.
+        /// </summary>
+        /// <returns>
+        /// 
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// </returns>
+        public ImagePreprocessingOptions GetImagePreprocessingOptions() {
+            return imagePreprocessingOptions;
+        }
+
+        /// <summary>
+        /// Sets
+        /// <see cref="imagePreprocessingOptions"/>.
+        /// </summary>
+        /// <param name="imagePreprocessingOptions">
+        /// 
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// </param>
+        /// <returns>
+        /// the
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance
+        /// </returns>
+        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetImagePreprocessingOptions(ImagePreprocessingOptions
+             imagePreprocessingOptions) {
+            this.imagePreprocessingOptions = imagePreprocessingOptions;
+            return this;
         }
     }
 }

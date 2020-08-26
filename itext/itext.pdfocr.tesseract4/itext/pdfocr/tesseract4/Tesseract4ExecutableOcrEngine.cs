@@ -322,8 +322,9 @@ namespace iText.Pdfocr.Tesseract4 {
             String path = inputImage.FullName;
             try {
                 if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
-                    Pix pix = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber);
-                    TesseractOcrUtil.SavePixToTempPngFile(tmpFileName, pix);
+                    Pix pix = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber, GetTesseract4OcrEngineProperties(
+                        ).GetImagePreprocessingOptions());
+                    TesseractOcrUtil.SavePixToPngFile(tmpFileName, pix);
                     if (!File.Exists(System.IO.Path.Combine(tmpFileName))) {
                         System.Drawing.Bitmap img = TesseractOcrUtil.ConvertPixToImage(pix);
                         if (img != null) {
