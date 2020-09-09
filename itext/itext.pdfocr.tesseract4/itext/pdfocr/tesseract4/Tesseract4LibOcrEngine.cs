@@ -98,6 +98,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(OutputFormat.HOCR) ? "1" : 
                 "0");
+            if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
+                GetTesseractInstance().SetVariable("preserve_interword_spaces", "1");
+            }
             GetTesseractInstance().SetVariable("user_defined_dpi", "300");
             if (GetTesseract4OcrEngineProperties().GetPathToUserWordsFile() != null) {
                 GetTesseractInstance().SetVariable("load_system_dawg", "0");
@@ -141,15 +144,22 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
+        /// <param name="dispatchEvent">
+        /// indicates if
+        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
+        /// needs to be dispatched
+        /// </param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber) {
+            , int pageNumber, bool dispatchEvent) {
             ScheduledCheck();
             try {
                 // check tess data path for non ASCII characters
                 ValidateTessDataPath(GetTessData());
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());
                 InitializeTesseract(outputFormat);
-                OnEvent();
+                if (dispatchEvent) {
+                    OnEvent();
+                }
                 // if preprocessing is not needed and provided image is tiff,
                 // the image will be paginated and separate pages will be OCRed
                 IList<String> resultList = new List<String>();

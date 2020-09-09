@@ -240,19 +240,6 @@ namespace iText.Pdfocr.General {
         }
 
         [NUnit.Framework.Test]
-        public virtual void TestTesseract4OcrForOnePageWithHocrFormat() {
-            String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
-            String expected = "619121";
-            FileInfo imgFile = new FileInfo(path);
-            FileInfo outputFile = new FileInfo(GetTargetDirectory() + "testTesseract4OcrForOnePage.hocr");
-            tesseractReader.DoTesseractOcr(imgFile, outputFile, OutputFormat.HOCR);
-            IDictionary<int, IList<TextInfo>> pageData = TesseractHelper.ParseHocrFile(JavaCollectionsUtil.SingletonList
-                <FileInfo>(outputFile), tesseractReader.GetTesseract4OcrEngineProperties().GetTextPositioning());
-            String result = GetTextFromPage(pageData.Get(1));
-            NUnit.Framework.Assert.AreEqual(expected, result.Trim());
-        }
-
-        [NUnit.Framework.Test]
         public virtual void TestTesseract4OcrForOnePageWithTxtFormat() {
             String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
             String expected = "619121";

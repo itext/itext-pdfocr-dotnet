@@ -61,6 +61,18 @@ namespace iText.Pdfocr {
         /// <summary>
         /// Creates a new
         /// <see cref="TextInfo"/>
+        /// instance from existing one.
+        /// </summary>
+        /// <param name="textInfo">to create from</param>
+        public TextInfo(iText.Pdfocr.TextInfo textInfo) {
+            this.text = textInfo.text;
+            this.bboxRect = new Rectangle(textInfo.bboxRect);
+            this.bbox = JavaCollectionsUtil.UnmodifiableList<float>(textInfo.bbox);
+        }
+
+        /// <summary>
+        /// Creates a new
+        /// <see cref="TextInfo"/>
         /// instance.
         /// </summary>
         /// <param name="text">any text</param>

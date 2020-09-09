@@ -520,6 +520,25 @@ namespace iText.Pdfocr.Tessdata {
             NUnit.Framework.Assert.IsTrue(result);
         }
 
+        [NUnit.Framework.Test]
+        public virtual void TestThai03ImageWithImprovedHocrParsing() {
+            String[] expected = new String[] { "บ๊อบสตรอเบอรีออดิชั่นธัม โมเนิร์สเซอรี่", "ศากยบุตร เอเซีย", "หน่อมแน้ม เวอร์เบอร์เกอร์แชมป์"
+                 };
+            String imgPath = TEST_IMAGES_DIRECTORY + "thai_03.jpg";
+            FileInfo file = new FileInfo(imgPath);
+            Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
+            properties.SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES);
+            properties.SetUseTxtToImproveHocrParsing(true);
+            properties.SetMinimalConfidenceLevel(80);
+            properties.SetPathToTessData(new FileInfo(LANG_TESS_DATA_DIRECTORY));
+            tesseractReader.SetTesseract4OcrEngineProperties(properties);
+            String pdfText = GetTextFromPdf(tesseractReader, file, 1, JavaUtil.ArraysAsList("tha"), JavaUtil.ArraysAsList
+                (NOTO_SANS_THAI_FONT_PATH, NOTO_SANS_FONT_PATH));
+            foreach (String e in expected) {
+                NUnit.Framework.Assert.IsTrue(pdfText.Contains(e));
+            }
+        }
+
         /// <summary>
         /// Do OCR and retrieve text from the first page of result PDF document
         /// using tess data placed by path with non ASCII characters.
@@ -545,31 +564,38 @@ namespace iText.Pdfocr.Tessdata {
             return CompareTxtFiles(expectedPath, resultTxtFile);
         }
 
+        /// <summary>Compare two arrays of text lines.</summary>
+        private bool CompareTxtLines(IList<String> expected, IList<String> result) {
+            bool areEqual = true;
+            if (expected.Count != result.Count) {
+                return false;
+            }
+            for (int i = 0; i < expected.Count; i++) {
+                String exp = expected[i].Replace("\n", "").Replace("\f", "");
+                exp = iText.IO.Util.StringUtil.ReplaceAll(exp, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
+                String res = result[i].Replace("\n", "").Replace("\f", "");
+                res = iText.IO.Util.StringUtil.ReplaceAll(res, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
+                if (expected[i] == null || result[i] == null) {
+                    areEqual = false;
+                    break;
+                }
+                else {
+                    if (!exp.Equals(res)) {
+                        areEqual = false;
+                        break;
+                    }
+                }
+            }
+            return areEqual;
+        }
+
         /// <summary>Compare two text files using provided paths.</summary>
         private bool CompareTxtFiles(String expectedFilePath, String resultFilePath) {
             bool areEqual = true;
             try {
                 IList<String> expected = File.ReadAllLines(System.IO.Path.Combine(expectedFilePath));
                 IList<String> result = File.ReadAllLines(System.IO.Path.Combine(resultFilePath));
-                if (expected.Count != result.Count) {
-                    return false;
-                }
-                for (int i = 0; i < expected.Count; i++) {
-                    String exp = expected[i].Replace("\n", "").Replace("\f", "");
-                    exp = iText.IO.Util.StringUtil.ReplaceAll(exp, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
-                    String res = result[i].Replace("\n", "").Replace("\f", "");
-                    res = iText.IO.Util.StringUtil.ReplaceAll(res, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
-                    if (expected[i] == null || result[i] == null) {
-                        areEqual = false;
-                        break;
-                    }
-                    else {
-                        if (!exp.Equals(res)) {
-                            areEqual = false;
-                            break;
-                        }
-                    }
-                }
+                areEqual = CompareTxtLines(expected, result);
             }
             catch (System.IO.IOException e) {
                 areEqual = false;

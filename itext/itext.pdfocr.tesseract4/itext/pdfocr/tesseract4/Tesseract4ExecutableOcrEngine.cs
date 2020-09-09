@@ -121,8 +121,13 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
+        /// <param name="dispatchEvent">
+        /// indicates if
+        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
+        /// needs to be dispatched
+        /// </param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber) {
+            , int pageNumber, bool dispatchEvent) {
             ScheduledCheck();
             IList<String> @params = new List<String>();
             String execPath = null;
@@ -164,13 +169,13 @@ namespace iText.Pdfocr.Tesseract4 {
                 AddUserWords(@params, imagePath);
                 // required languages
                 AddLanguages(@params);
-                if (outputFormat.Equals(OutputFormat.HOCR)) {
-                    // path to hocr script
-                    SetHocrOutput(@params);
-                }
+                AddOutputFormat(@params, outputFormat);
+                AddPreserveInterwordSpaces(@params);
                 // set default user defined dpi
                 AddDefaultDpi(@params);
-                OnEvent();
+                if (dispatchEvent) {
+                    OnEvent();
+                }
                 // run tesseract process
                 TesseractHelper.RunCommand(execPath, @params, workingDirectory);
             }
@@ -206,6 +211,24 @@ namespace iText.Pdfocr.Tesseract4 {
         private void SetHocrOutput(IList<String> command) {
             command.Add("-c");
             command.Add("tessedit_create_hocr=1");
+        }
+
+        /// <summary>Sets preserve_interword_spaces option.</summary>
+        /// <param name="command">result command as list of strings</param>
+        private void AddPreserveInterwordSpaces(IList<String> command) {
+            if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
+                command.Add("-c");
+                command.Add("preserve_interword_spaces=1");
+            }
+        }
+
+        /// <summary>Add output format.</summary>
+        /// <param name="command">result command as list of strings</param>
+        /// <param name="outputFormat">output format</param>
+        private void AddOutputFormat(IList<String> command, OutputFormat outputFormat) {
+            if (outputFormat == OutputFormat.HOCR) {
+                SetHocrOutput(command);
+            }
         }
 
         /// <summary>Add path to user-words file for tesseract executable.</summary>

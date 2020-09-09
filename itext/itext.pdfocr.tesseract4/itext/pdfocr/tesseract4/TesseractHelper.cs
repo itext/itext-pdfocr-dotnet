@@ -47,6 +47,9 @@ namespace iText.Pdfocr.Tesseract4 {
         private static readonly Regex BBOX_COORDINATE_PATTERN = iText.IO.Util.StringUtil.RegexCompile(".*\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+).*"
             );
 
+        private static readonly Regex WCONF_PATTERN = iText.IO.Util.StringUtil.RegexCompile("^.*(x_wconf *\\d+).*$"
+            );
+
         /// <summary>Size of the array containing bbox.</summary>
         private const int BBOX_ARRAY_SIZE = 4;
 
@@ -61,6 +64,26 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>The Constant to convert pixels to points.</summary>
         private const float PX_TO_PT = 3F / 4F;
+
+        private const String NEW_LINE_PATTERN = "\n+";
+
+        private const String SPACE_PATTERN = " +";
+
+        private const String NEW_LINE_OR_SPACE_PATTERN = "[\n ]+";
+
+        private const String PAGE_PREFIX_PATTERN = "page_";
+
+        private const String OCR_PAGE = "ocr_page";
+
+        private const String OCR_LINE = "ocr_line";
+
+        private const String OCR_CAPTION = "ocr_caption";
+
+        private const String OCRX_WORD = "ocrx_word";
+
+        private const String TITLE = "title";
+
+        private const String X_WCONF = "x_wconf";
 
         /// <summary>
         /// Creates a new
@@ -93,41 +116,65 @@ namespace iText.Pdfocr.Tesseract4 {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
+        [System.ObsoleteAttribute(@"since 1.0.2. Use ParseHocrFile(System.Collections.Generic.IList{E}, System.Collections.Generic.IList{E}, Tesseract4OcrEngineProperties) instead"
+            )]
         public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, TextPositioning 
             textPositioning) {
+            return ParseHocrFile(inputFiles, null, new Tesseract4OcrEngineProperties().SetTextPositioning(textPositioning
+                ));
+        }
+
+        /// <summary>
+        /// Parses each hocr file from the provided list, retrieves text, and
+        /// returns data in the format described below.
+        /// </summary>
+        /// <param name="inputFiles">list of input files</param>
+        /// <param name="txtInputFiles">
+        /// list of input files in txt format used to make hocr recognition result more precise.
+        /// This is needed for cases of Thai language or some Chinese dialects
+        /// where every character is interpreted as a single word.
+        /// For more information see https://github.com/tesseract-ocr/tesseract/issues/2702
+        /// </param>
+        /// <param name="tesseract4OcrEngineProperties">
+        /// 
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        internal static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, IList<FileInfo
+            > txtInputFiles, Tesseract4OcrEngineProperties tesseract4OcrEngineProperties) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes = new LinkedDictionary<String, 
                 iText.StyledXmlParser.Jsoup.Nodes.Node>();
-            foreach (FileInfo inputFile in inputFiles) {
+            for (int inputFileIdx = 0; inputFileIdx < inputFiles.Count; inputFileIdx++) {
+                FileInfo inputFile = inputFiles[inputFileIdx];
+                String txt = null;
+                if (txtInputFiles != null) {
+                    FileInfo txtInputFile = txtInputFiles[inputFileIdx];
+                    txt = ReadTxtFile(txtInputFile);
+                }
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
                     FileStream fileInputStream = new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read);
                     Document doc = iText.StyledXmlParser.Jsoup.Jsoup.Parse(fileInputStream, System.Text.Encoding.UTF8.Name(), 
                         inputFile.FullName);
-                    Elements pages = doc.GetElementsByClass("ocr_page");
-                    IList<String> searchedClasses = TextPositioning.BY_LINES.Equals(textPositioning) ? JavaUtil.ArraysAsList("ocr_line"
-                        , "ocr_caption") : JavaCollectionsUtil.SingletonList<String>("ocrx_word");
+                    Elements pages = doc.GetElementsByClass(OCR_PAGE);
                     foreach (iText.StyledXmlParser.Jsoup.Nodes.Element page in pages) {
-                        String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id(), "page_");
+                        String[] pageNum = iText.IO.Util.StringUtil.Split(page.Id(), PAGE_PREFIX_PATTERN);
                         int pageNumber = Convert.ToInt32(pageNum[pageNum.Length - 1], System.Globalization.CultureInfo.InvariantCulture
                             );
-                        Rectangle pageBbox = ParseBBox(page, null, unparsedBBoxes);
-                        IList<TextInfo> textData = new List<TextInfo>();
-                        if (searchedClasses.Count > 0) {
-                            Elements objects = page.GetElementsByClass(searchedClasses[0]);
-                            for (int i = 1; i < searchedClasses.Count; i++) {
-                                Elements foundElements = page.GetElementsByClass(searchedClasses[i]);
-                                for (int j = 0; j < foundElements.Count; j++) {
-                                    objects.Add(foundElements[j]);
-                                }
-                            }
-                            foreach (iText.StyledXmlParser.Jsoup.Nodes.Element obj in objects) {
-                                Rectangle bboxRect = GetAlignedBBox(obj, textPositioning, pageBbox, unparsedBBoxes);
-                                IList<float> bbox = JavaUtil.ArraysAsList(bboxRect.GetLeft(), pageBbox.GetTop() - bboxRect.GetTop(), bboxRect
-                                    .GetRight(), pageBbox.GetTop() - bboxRect.GetBottom());
-                                TextInfo textInfo = new TextInfo(obj.Text(), ToPoints(bboxRect), bbox);
-                                textData.Add(textInfo);
-                            }
-                        }
+                        IList<TextInfo> textData = GetTextData(page, tesseract4OcrEngineProperties, txt, unparsedBBoxes);
                         if (textData.Count > 0) {
                             if (imageData.ContainsKey(pageNumber)) {
                                 pageNumber = Enumerable.Max(imageData.Keys) + 1;
@@ -169,7 +216,7 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static Rectangle ParseBBox(iText.StyledXmlParser.Jsoup.Nodes.Node node, Rectangle pageBBox, IDictionary
             <String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes) {
             IList<float> bbox = new List<float>();
-            Match bboxMatcher = iText.IO.Util.StringUtil.Match(BBOX_PATTERN, node.Attr("title"));
+            Match bboxMatcher = iText.IO.Util.StringUtil.Match(BBOX_PATTERN, node.Attr(TITLE));
             if (bboxMatcher.Success) {
                 Match bboxCoordinateMatcher = iText.IO.Util.StringUtil.Match(BBOX_COORDINATE_PATTERN, iText.IO.Util.StringUtil.Group
                     (bboxMatcher));
@@ -188,11 +235,12 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             if (pageBBox == null) {
-                return new Rectangle(bbox[LEFT_IDX], bbox[TOP_IDX], bbox[RIGHT_IDX], bbox[BOTTOM_IDX] - bbox[TOP_IDX]);
+                return new Rectangle(ToPoints(bbox[LEFT_IDX]), ToPoints(bbox[TOP_IDX]), ToPoints(bbox[RIGHT_IDX]), ToPoints
+                    (bbox[BOTTOM_IDX] - bbox[TOP_IDX]));
             }
             else {
-                return new Rectangle(0, 0).SetBbox(bbox[LEFT_IDX], pageBBox.GetTop() - bbox[TOP_IDX], bbox[RIGHT_IDX], pageBBox
-                    .GetTop() - bbox[BOTTOM_IDX]);
+                return new Rectangle(0, 0).SetBbox(ToPoints(bbox[LEFT_IDX]), pageBBox.GetTop() - ToPoints(bbox[TOP_IDX]), 
+                    ToPoints(bbox[RIGHT_IDX]), pageBBox.GetTop() - ToPoints(bbox[BOTTOM_IDX]));
             }
         }
 
@@ -226,9 +274,14 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
-        internal static Rectangle ToPoints(Rectangle rectangle) {
-            return new Rectangle(rectangle.GetX() * PX_TO_PT, rectangle.GetY() * PX_TO_PT, rectangle.GetWidth() * PX_TO_PT
-                , rectangle.GetHeight() * PX_TO_PT);
+        /// <summary>Converts points to pixels.</summary>
+        internal static float ToPixels(float pt) {
+            return pt / PX_TO_PT;
+        }
+
+        /// <summary>Converts pixels to points.</summary>
+        internal static float ToPoints(float px) {
+            return px * PX_TO_PT;
         }
 
         /// <summary>Deletes file using provided path.</summary>
@@ -339,6 +392,193 @@ namespace iText.Pdfocr.Tesseract4 {
                 LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }
+        }
+
+        /// <summary>Gets list of text infos from hocr page.</summary>
+        private static IList<TextInfo> GetTextData(iText.StyledXmlParser.Jsoup.Nodes.Element page, Tesseract4OcrEngineProperties
+             tesseract4OcrEngineProperties, String txt, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+            > unparsedBBoxes) {
+            Rectangle pageBbox = ParseBBox(page, null, unparsedBBoxes);
+            IList<String> searchedClasses = JavaUtil.ArraysAsList(OCR_LINE, OCR_CAPTION);
+            Elements objects = new Elements();
+            for (int i = 0; i < searchedClasses.Count; i++) {
+                Elements foundElements = page.GetElementsByClass(searchedClasses[i]);
+                for (int j = 0; j < foundElements.Count; j++) {
+                    objects.Add(foundElements[j]);
+                }
+            }
+            return GetTextData(objects, tesseract4OcrEngineProperties, txt, pageBbox, unparsedBBoxes);
+        }
+
+        /// <summary>Gets list of text infos from elements within hocr page.</summary>
+        private static IList<TextInfo> GetTextData(IList<iText.StyledXmlParser.Jsoup.Nodes.Element> pageObjects, Tesseract4OcrEngineProperties
+             tesseract4OcrEngineProperties, String txt, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+            > unparsedBBoxes) {
+            IList<TextInfo> textData = new List<TextInfo>();
+            foreach (iText.StyledXmlParser.Jsoup.Nodes.Element lineOrCaption in pageObjects) {
+                if (!String.IsNullOrEmpty(lineOrCaption.Text()) && IsElementConfident(lineOrCaption, tesseract4OcrEngineProperties
+                    .GetMinimalConfidenceLevel())) {
+                    String hocrLineInTxt = FindHocrLineInTxt(lineOrCaption, txt);
+                    if (tesseract4OcrEngineProperties.GetTextPositioning() == TextPositioning.BY_WORDS || tesseract4OcrEngineProperties
+                        .GetTextPositioning() == TextPositioning.BY_WORDS_AND_LINES) {
+                        foreach (TextInfo ti in GetTextDataForWords(lineOrCaption, hocrLineInTxt, tesseract4OcrEngineProperties.GetTextPositioning
+                            (), pageBbox, unparsedBBoxes)) {
+                            textData.Add(ti);
+                        }
+                    }
+                    else {
+                        foreach (TextInfo ti in GetTextDataForLines(lineOrCaption, hocrLineInTxt, pageBbox, unparsedBBoxes)) {
+                            textData.Add(ti);
+                        }
+                    }
+                }
+            }
+            return textData;
+        }
+
+        /// <summary>
+        /// Decides if <c>lineOrCaption</c> is confident or not given into account
+        /// minimalConfidenceLevel property of
+        /// <see cref="Tesseract4OcrEngineProperties"/>.
+        /// </summary>
+        private static bool IsElementConfident(iText.StyledXmlParser.Jsoup.Nodes.Element lineOrCaption, int minimalConfidenceLevel
+            ) {
+            if (minimalConfidenceLevel == 0) {
+                return true;
+            }
+            else {
+                int wconfTotal = 0;
+                int wconfCount = 0;
+                foreach (iText.StyledXmlParser.Jsoup.Nodes.Node node in lineOrCaption.ChildNodes()) {
+                    if (node is iText.StyledXmlParser.Jsoup.Nodes.Element) {
+                        String title = ((iText.StyledXmlParser.Jsoup.Nodes.Element)node).Attr(TITLE);
+                        Match matcher = iText.IO.Util.StringUtil.Match(WCONF_PATTERN, title);
+                        if (matcher.Success) {
+                            String wconf = null;
+                            try {
+                                wconf = iText.IO.Util.StringUtil.Group(matcher, 1);
+                            }
+                            catch (Exception) {
+                            }
+                            //No need to do anything here
+                            if (wconf != null) {
+                                wconf = iText.IO.Util.StringUtil.ReplaceAll(wconf, X_WCONF, "").Trim();
+                                wconfTotal += Convert.ToInt32(wconf, System.Globalization.CultureInfo.InvariantCulture);
+                                wconfCount++;
+                            }
+                        }
+                    }
+                }
+                if (wconfCount > 0) {
+                    return wconfTotal / wconfCount >= minimalConfidenceLevel;
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>Gets list of words represented by text infos from hocr line.</summary>
+        private static IList<TextInfo> GetTextDataForWords(iText.StyledXmlParser.Jsoup.Nodes.Element lineOrCaption
+            , String txtLine, TextPositioning textPositioning, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+            > unparsedBBoxes) {
+            IList<TextInfo> textData = new List<TextInfo>();
+            if (txtLine == null) {
+                foreach (iText.StyledXmlParser.Jsoup.Nodes.Element word in lineOrCaption.GetElementsByClass(OCRX_WORD)) {
+                    Rectangle bboxRect = GetAlignedBBox(word, textPositioning, pageBbox, unparsedBBoxes);
+                    AddToTextData(textData, word.Text(), bboxRect, pageBbox);
+                }
+            }
+            else {
+                IList<TextInfo> textInfos = new List<TextInfo>();
+                String txtLine1 = iText.IO.Util.StringUtil.ReplaceAll(txtLine, NEW_LINE_PATTERN, "");
+                String txtLine2 = iText.IO.Util.StringUtil.ReplaceAll(txtLine1, SPACE_PATTERN, " ");
+                String[] lineItems = iText.IO.Util.StringUtil.Split(txtLine2, " ");
+                foreach (iText.StyledXmlParser.Jsoup.Nodes.Element word in lineOrCaption.GetElementsByClass(OCRX_WORD)) {
+                    Rectangle bboxRect = GetAlignedBBox(word, textPositioning, pageBbox, unparsedBBoxes);
+                    textInfos.Add(new TextInfo(word.Text(), bboxRect));
+                    if (iText.IO.Util.StringUtil.ReplaceAll(lineItems[0], NEW_LINE_OR_SPACE_PATTERN, "").Equals(iText.IO.Util.StringUtil.ReplaceAll
+                        (GetTextInfosText(textInfos), SPACE_PATTERN, ""))) {
+                        lineItems = JavaUtil.ArraysCopyOfRange(lineItems, 1, lineItems.Length);
+                        AddToTextData(textData, MergeTextInfos(textInfos), pageBbox);
+                        textInfos.Clear();
+                    }
+                }
+            }
+            return textData;
+        }
+
+        /// <summary>Gets list of lines represented by text infos from hocr line.</summary>
+        private static IList<TextInfo> GetTextDataForLines(iText.StyledXmlParser.Jsoup.Nodes.Element lineOrCaption
+            , String txtLine, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes
+            ) {
+            IList<TextInfo> textData = new List<TextInfo>();
+            Rectangle bboxRect = GetAlignedBBox(lineOrCaption, TextPositioning.BY_LINES, pageBbox, unparsedBBoxes);
+            if (txtLine == null) {
+                AddToTextData(textData, lineOrCaption.Text(), bboxRect, pageBbox);
+            }
+            else {
+                AddToTextData(textData, txtLine, bboxRect, pageBbox);
+            }
+            return textData;
+        }
+
+        /// <summary>Add text chunk represented by text and bbox to list of text infos.</summary>
+        private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect, Rectangle pageBbox
+            ) {
+            IList<float> bbox = JavaUtil.ArraysAsList(ToPixels(bboxRect.GetLeft()), ToPixels(pageBbox.GetTop() - bboxRect
+                .GetTop()), ToPixels(bboxRect.GetRight()), ToPixels(pageBbox.GetTop() - bboxRect.GetBottom()));
+            TextInfo textInfo = new TextInfo(text, bboxRect, bbox);
+            textData.Add(textInfo);
+        }
+
+        /// <summary>Add text chunk represented by text info to list of text infos.</summary>
+        private static void AddToTextData(IList<TextInfo> textData, TextInfo textInfo, Rectangle pageBbox) {
+            String text = textInfo.GetText();
+            Rectangle bboxRect = textInfo.GetBboxRect();
+            AddToTextData(textData, text, bboxRect, pageBbox);
+        }
+
+        /// <summary>Gets common text for list of text infos.</summary>
+        private static String GetTextInfosText(IList<TextInfo> textInfos) {
+            String text = "";
+            foreach (TextInfo textInfo in textInfos) {
+                text = text + textInfo.GetText();
+            }
+            return text;
+        }
+
+        /// <summary>Merges text infos.</summary>
+        /// <param name="textInfos">source to merge</param>
+        /// <returns>merged text info</returns>
+        private static TextInfo MergeTextInfos(IList<TextInfo> textInfos) {
+            TextInfo textInfo = new TextInfo(textInfos[0]);
+            for (int i = 1; i < textInfos.Count; i++) {
+                textInfo.SetText(textInfo.GetText() + textInfos[i].GetText());
+                Rectangle leftBBox = textInfo.GetBboxRect();
+                Rectangle rightBBox = textInfos[i].GetBboxRect();
+                textInfo.SetBboxRect(new Rectangle(0, 0).SetBbox(leftBBox.GetLeft(), Math.Min(leftBBox.GetBottom(), rightBBox
+                    .GetBottom()), rightBBox.GetRight(), Math.Max(leftBBox.GetTop(), rightBBox.GetTop())));
+            }
+            return textInfo;
+        }
+
+        /// <summary>Attempts to find HOCR line text in provided TXT.</summary>
+        /// <returns>text line if found, otherwise null</returns>
+        private static String FindHocrLineInTxt(iText.StyledXmlParser.Jsoup.Nodes.Element line, String txt) {
+            if (txt == null) {
+                return null;
+            }
+            String hocrLineText = iText.IO.Util.StringUtil.ReplaceAll(line.Text(), SPACE_PATTERN, "");
+            if (String.IsNullOrEmpty(hocrLineText)) {
+                return null;
+            }
+            foreach (String txtLine in iText.IO.Util.StringUtil.Split(txt, "\n")) {
+                if (iText.IO.Util.StringUtil.ReplaceAll(txtLine, SPACE_PATTERN, "").Equals(hocrLineText)) {
+                    return txtLine;
+                }
+            }
+            return null;
         }
     }
 }

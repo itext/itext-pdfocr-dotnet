@@ -106,7 +106,8 @@ namespace iText.Pdfocr.Tesseract4 {
         public virtual void TestDetectAndFixBrokenBBoxes() {
             FileInfo hocrFile = new FileInfo(TEST_DOCUMENTS_DIRECTORY + "broken_bboxes.hocr");
             IDictionary<int, IList<TextInfo>> parsedHocr = TesseractHelper.ParseHocrFile(JavaCollectionsUtil.SingletonList
-                (hocrFile), TextPositioning.BY_WORDS_AND_LINES);
+                (hocrFile), null, new Tesseract4OcrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES
+                ));
             TextInfo textInfo = parsedHocr.Get(1)[1];
             NUnit.Framework.Assert.AreEqual(287.25, (float)textInfo.GetBboxRect().GetLeft(), 0.1);
             NUnit.Framework.Assert.AreEqual(136.5f, (float)textInfo.GetBboxRect().GetBottom(), 0.1);
