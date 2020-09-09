@@ -47,7 +47,7 @@ namespace iText.Pdfocr.Tesseract4 {
         public const String CREATED_TEMPORARY_FILE = "Created temp file {0}";
 
         /// <summary>Constant is not used.</summary>
-        [System.ObsoleteAttribute(@"since 1.0.1.")]
+        [System.ObsoleteAttribute(@"since 1.0.1. Will be removed in 2.0.0")]
         public const String CANNOT_CONVERT_IMAGE_TO_GRAYSCALE = "Cannot convert to gray image with depth {0}";
 
         public const String CANNOT_BINARIZE_IMAGE = "Cannot binarize image with depth {0}";
@@ -60,6 +60,8 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_GET_TEMPORARY_DIRECTORY = "Cannot get " + "temporary directory: {0}";
 
+        /// <summary>Constant is not used.</summary>
+        [System.ObsoleteAttribute(@"since 1.0.1. Will be removed in 2.0.0")]
         public const String CANNOT_CONVERT_IMAGE_TO_PIX = "Cannot convert image to pix: {0}";
 
         public const String CANNOT_PARSE_NODE_BBOX = "Cannot parse node BBox, defaults to 0, 0, 0, 0. Node: {0}";
