@@ -41,17 +41,24 @@ namespace iText.Pdfocr {
 ;
         }
 
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
-        public virtual void TestCorruptedImageWithoutExtension() {
+        public virtual void TestNonexistentImage() {
             NUnit.Framework.Assert.That(() =>  {
                 FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted");
-                String realOutput = PdfHelper.GetTextFromPdf(file, "testCorruptedImageWithoutExtension");
+                String realOutput = PdfHelper.GetTextFromPdf(file, "testNonexistentImage");
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<IO.IOException>())
 ;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestJpegWithoutExtension() {
+            FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "numbers_01");
+            String realOutput = PdfHelper.GetTextFromPdf(file, "testJpegWithoutExtension");
+            NUnit.Framework.Assert.IsNotNull(realOutput);
+            NUnit.Framework.Assert.AreEqual("619121", realOutput);
         }
     }
 }

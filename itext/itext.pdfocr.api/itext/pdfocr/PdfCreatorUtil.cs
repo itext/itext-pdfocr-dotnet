@@ -152,33 +152,28 @@ namespace iText.Pdfocr {
         internal static IList<ImageData> GetImageData(FileInfo inputImage, IImageRotationHandler imageRotationHandler
             ) {
             IList<ImageData> images = new List<ImageData>();
-            String ext = "";
-            int index = inputImage.FullName.LastIndexOf('.');
-            if (index > 0) {
-                ext = new String(inputImage.FullName.ToCharArray(), index + 1, inputImage.FullName.Length - index - 1);
-                if ("tiff".Equals(ext.ToLowerInvariant()) || "tif".Equals(ext.ToLowerInvariant())) {
-                    int tiffPages = GetNumberOfPageTiff(inputImage);
-                    for (int page = 0; page < tiffPages; page++) {
-                        byte[] bytes = File.ReadAllBytes(inputImage.FullName);
-                        ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
-                        if (imageRotationHandler != null) {
-                            imageData = imageRotationHandler.ApplyRotation(imageData);
-                        }
-                        images.Add(imageData);
+            if (ImageTypeDetector.DetectImageType(UrlUtil.ToURL(inputImage.FullName)) == ImageType.TIFF) {
+                int tiffPages = GetNumberOfPageTiff(inputImage);
+                for (int page = 0; page < tiffPages; page++) {
+                    byte[] bytes = File.ReadAllBytes(inputImage.FullName);
+                    ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
+                    if (imageRotationHandler != null) {
+                        imageData = imageRotationHandler.ApplyRotation(imageData);
                     }
+                    images.Add(imageData);
                 }
-                else {
-                    try {
-                        ImageData imageData = ImageDataFactory.Create(inputImage.FullName);
-                        if (imageRotationHandler != null) {
-                            imageData = imageRotationHandler.ApplyRotation(imageData);
-                        }
-                        images.Add(imageData);
+            }
+            else {
+                try {
+                    ImageData imageData = ImageDataFactory.Create(inputImage.FullName);
+                    if (imageRotationHandler != null) {
+                        imageData = imageRotationHandler.ApplyRotation(imageData);
                     }
-                    catch (iText.IO.IOException e) {
-                        LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                        throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
-                    }
+                    images.Add(imageData);
+                }
+                catch (iText.IO.IOException e) {
+                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                    throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
                 }
             }
             return images;

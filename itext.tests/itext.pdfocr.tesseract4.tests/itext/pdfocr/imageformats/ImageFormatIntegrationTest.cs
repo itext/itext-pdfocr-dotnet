@@ -172,6 +172,17 @@ namespace iText.Pdfocr.Imageformats {
         }
 
         [NUnit.Framework.Test]
+        public virtual void TestTextFromTiffWithoutExtension() {
+            string srcFileName = TEST_IMAGES_DIRECTORY + "multipage.tiff";
+            string tmpFileName = Path.GetTempFileName();
+            File.Copy(srcFileName, tmpFileName, true);
+            String realOutput = GetTextFromPdf(tesseractReader, new FileInfo(tmpFileName), 2, null);
+            NUnit.Framework.Assert.IsNotNull(realOutput);
+            NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage 2", realOutput);
+            File.Delete(tmpFileName);
+        }
+
+        [NUnit.Framework.Test]
         public virtual void TestBigTiffWithoutPreprocessing() {
             String path = TEST_IMAGES_DIRECTORY + "example_03_10MB.tiff";
             String expectedOutput = "Image File Format";

@@ -167,7 +167,9 @@ namespace iText.Pdfocr.Helpers {
             String pdfPath = null;
             try {
                 pdfPath = GetTargetDirectory() + testName + ".pdf";
-                CreatePdf(pdfPath, file, new OcrPdfCreatorProperties());
+                OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
+                properties.SetTextLayerName("Text Layer");
+                CreatePdf(pdfPath, file, properties);
                 result = GetTextFromPdfLayer(pdfPath, "Text Layer");
             }
             catch (System.IO.IOException e) {
