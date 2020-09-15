@@ -160,10 +160,10 @@ namespace iText.Pdfocr.Tesseract4 {
                 iText.StyledXmlParser.Jsoup.Nodes.Node>();
             for (int inputFileIdx = 0; inputFileIdx < inputFiles.Count; inputFileIdx++) {
                 FileInfo inputFile = inputFiles[inputFileIdx];
-                String txt = null;
+                IList<String> txt = null;
                 if (txtInputFiles != null) {
                     FileInfo txtInputFile = txtInputFiles[inputFileIdx];
-                    txt = ReadTxtFile(txtInputFile);
+                    txt = File.ReadAllLines(txtInputFile.FullName, System.Text.Encoding.UTF8);
                 }
                 if (inputFile != null && File.Exists(System.IO.Path.Combine(inputFile.FullName))) {
                     FileStream fileInputStream = new FileStream(inputFile.FullName, FileMode.Open, FileAccess.Read);
@@ -396,7 +396,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Gets list of text infos from hocr page.</summary>
         private static IList<TextInfo> GetTextData(iText.StyledXmlParser.Jsoup.Nodes.Element page, Tesseract4OcrEngineProperties
-             tesseract4OcrEngineProperties, String txt, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+             tesseract4OcrEngineProperties, IList<String> txt, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
             > unparsedBBoxes) {
             Rectangle pageBbox = ParseBBox(page, null, unparsedBBoxes);
             IList<String> searchedClasses = JavaUtil.ArraysAsList(OCR_LINE, OCR_CAPTION);
@@ -412,7 +412,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Gets list of text infos from elements within hocr page.</summary>
         private static IList<TextInfo> GetTextData(IList<iText.StyledXmlParser.Jsoup.Nodes.Element> pageObjects, Tesseract4OcrEngineProperties
-             tesseract4OcrEngineProperties, String txt, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
+             tesseract4OcrEngineProperties, IList<String> txt, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
             > unparsedBBoxes) {
             IList<TextInfo> textData = new List<TextInfo>();
             foreach (iText.StyledXmlParser.Jsoup.Nodes.Element lineOrCaption in pageObjects) {
@@ -565,7 +565,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Attempts to find HOCR line text in provided TXT.</summary>
         /// <returns>text line if found, otherwise null</returns>
-        private static String FindHocrLineInTxt(iText.StyledXmlParser.Jsoup.Nodes.Element line, String txt) {
+        private static String FindHocrLineInTxt(iText.StyledXmlParser.Jsoup.Nodes.Element line, IList<String> txt) {
             if (txt == null) {
                 return null;
             }
@@ -573,7 +573,7 @@ namespace iText.Pdfocr.Tesseract4 {
             if (String.IsNullOrEmpty(hocrLineText)) {
                 return null;
             }
-            foreach (String txtLine in iText.IO.Util.StringUtil.Split(txt, "\n")) {
+            foreach (String txtLine in txt) {
                 if (iText.IO.Util.StringUtil.ReplaceAll(txtLine, SPACE_PATTERN, "").Equals(hocrLineText)) {
                     return txtLine;
                 }
