@@ -49,12 +49,19 @@ namespace iText.Pdfocr {
         private static readonly String TARGET_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory + 
             "/test/resources/itext/pdfocr/";
 
+        private static readonly String NON_ASCII_TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
+             + "/test/resources/itext/ñoñ-ascîî/";
+
         // directory with trained data for tests
         protected internal static readonly String LANG_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata";
 
         // directory with trained data for tests
         protected internal static readonly String SCRIPT_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata" + System.IO.Path.DirectorySeparatorChar
              + "script";
+
+        // directory with trained data for tests
+        protected internal static readonly String NON_ASCII_TESS_DATA_DIRECTORY = TEST_DIRECTORY + "tessdata" + System.IO.Path.DirectorySeparatorChar
+             + "ñoñ-ascîî";
 
         // directory with test image files
         protected internal static readonly String TEST_IMAGES_DIRECTORY = TEST_DIRECTORY + "images" + System.IO.Path.DirectorySeparatorChar;
@@ -109,8 +116,7 @@ namespace iText.Pdfocr {
             Tesseract4OcrEngineProperties ocrEngineProperties = new Tesseract4OcrEngineProperties();
             ocrEngineProperties.SetPathToTessData(GetTessDataDirectory());
             tesseractLibReader = new Tesseract4LibOcrEngine(ocrEngineProperties);
-            tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), ocrEngineProperties
-                );
+            tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(ocrEngineProperties);
         }
 
         protected internal static AbstractTesseract4OcrEngine GetTesseractReader(IntegrationTestHelper.ReaderType 
@@ -127,20 +133,20 @@ namespace iText.Pdfocr {
             return tesseractLibReader;
         }
 
-        protected internal static String GetTesseractDirectory() {
-            String tesseractDir = Environment.GetEnvironmentVariable("tesseractDir");
-            String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
-                ) : Environment.GetEnvironmentVariable("os.name");
-            return os.ToLowerInvariant().Contains("win") && tesseractDir != null && !String.IsNullOrEmpty(tesseractDir
-                ) ? tesseractDir + "\\tesseract.exe" : "tesseract";
-        }
-
         /// <summary>Returns target directory (because target/test could not exist).</summary>
         public static String GetTargetDirectory() {
             if (!File.Exists(System.IO.Path.Combine(TARGET_FOLDER))) {
                 CreateDestinationFolder(TARGET_FOLDER);
             }
             return TARGET_FOLDER;
+        }
+
+        /// <summary>Returns a non ascii target directory.</summary>
+        public static String GetNonAsciiTargetDirectory() {
+            if (!File.Exists(System.IO.Path.Combine(NON_ASCII_TARGET_DIRECTORY))) {
+                CreateDestinationFolder(NON_ASCII_TARGET_DIRECTORY);
+            }
+            return NON_ASCII_TARGET_DIRECTORY;
         }
 
         protected internal static FileInfo GetTessDataDirectory() {
@@ -281,6 +287,21 @@ namespace iText.Pdfocr {
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
             imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color) {
+            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fonts, color, false);
+        }
+
+        /// <summary>
+        /// Perform OCR using provided path to image (imgPath)
+        /// and save result PDF document to "pdfPath".
+        /// </summary>
+        /// <remarks>
+        /// Perform OCR using provided path to image (imgPath)
+        /// and save result PDF document to "pdfPath".
+        /// (Method is used for compare tool)
+        /// </remarks>
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color, bool applyRotation
+            ) {
             if (languages != null) {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetLanguages(languages);
@@ -289,6 +310,9 @@ namespace iText.Pdfocr {
             OcrPdfCreatorProperties properties_1 = new OcrPdfCreatorProperties();
             properties_1.SetPdfLang("en-US");
             properties_1.SetTitle("");
+            if (applyRotation) {
+                properties_1.SetImageRotationHandler(new LeptonicaImageRotationHandler());
+            }
             if (fonts != null && fonts.Count > 0) {
                 FontProvider fontProvider = new FontProvider();
                 foreach (String fontPath in fonts) {

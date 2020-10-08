@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
 using iText.Kernel.Counter.Event;
+using iText.Kernel.Geom;
 using iText.Pdfocr;
 using iText.Pdfocr.Events;
 
@@ -34,7 +35,14 @@ namespace iText.Pdfocr.Helpers {
 
         private IMetaInfo threadLocalMetaInfo;
 
-        public CustomOcrEngine() {
+        private bool textInfoDeprecationMode = false;
+
+        public CustomOcrEngine()
+            : this(false) {
+        }
+
+        public CustomOcrEngine(bool textInfoDeprecationMode) {
+            this.textInfoDeprecationMode = textInfoDeprecationMode;
         }
 
         public CustomOcrEngine(OcrEngineProperties ocrEngineProperties) {
@@ -47,7 +55,8 @@ namespace iText.Pdfocr.Helpers {
             if (input.FullName.Contains(PdfHelper.THAI_IMAGE_NAME)) {
                 text = PdfHelper.THAI_TEXT;
             }
-            TextInfo textInfo = new TextInfo(text, JavaUtil.ArraysAsList(204.0f, 158.0f, 742.0f, 294.0f));
+            TextInfo textInfo = this.textInfoDeprecationMode ? new TextInfo(text, JavaUtil.ArraysAsList(204.0f, 158.0f
+                , 742.0f, 294.0f)) : new TextInfo(text, new Rectangle(204.0f, 158.0f, 538.0f, 136.0f));
             result.Put(1, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));
             return result;
         }

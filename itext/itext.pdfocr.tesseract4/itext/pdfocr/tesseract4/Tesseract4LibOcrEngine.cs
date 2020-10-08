@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using Common.Logging;
 using Tesseract;
 using iText.IO.Util;
@@ -53,6 +54,10 @@ namespace iText.Pdfocr.Tesseract4 {
         /// (depends on OS type)
         /// </remarks>
         private TesseractEngine tesseractInstance = null;
+
+        /// <summary>Pattern for matching ASCII string.</summary>
+        private static readonly Regex ASCII_STRING_PATTERN = iText.IO.Util.StringUtil.RegexCompile("^[\\u0000-\\u007F]*$"
+            );
 
         /// <summary>
         /// Creates a new
@@ -93,6 +98,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             GetTesseractInstance().SetVariable("tessedit_create_hocr", outputFormat.Equals(OutputFormat.HOCR) ? "1" : 
                 "0");
+            if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
+                GetTesseractInstance().SetVariable("preserve_interword_spaces", "1");
+            }
             GetTesseractInstance().SetVariable("user_defined_dpi", "300");
             if (GetTesseract4OcrEngineProperties().GetPathToUserWordsFile() != null) {
                 GetTesseractInstance().SetVariable("load_system_dawg", "0");
@@ -136,13 +144,22 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
+        /// <param name="dispatchEvent">
+        /// indicates if
+        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
+        /// needs to be dispatched
+        /// </param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber) {
+            , int pageNumber, bool dispatchEvent) {
             ScheduledCheck();
             try {
+                // check tess data path for non ASCII characters
+                ValidateTessDataPath(GetTessData());
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());
                 InitializeTesseract(outputFormat);
-                OnEvent();
+                if (dispatchEvent) {
+                    OnEvent();
+                }
                 // if preprocessing is not needed and provided image is tiff,
                 // the image will be paginated and separate pages will be OCRed
                 IList<String> resultList = new List<String>();
@@ -185,6 +202,28 @@ namespace iText.Pdfocr.Tesseract4 {
                     ().IsUserWordsFileTemporary()) {
                     TesseractHelper.DeleteFile(GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
                 }
+            }
+        }
+
+        /// <summary>
+        /// Validates Tess Data path,
+        /// checks if tess data path contains only ASCII charset.
+        /// </summary>
+        /// <remarks>
+        /// Validates Tess Data path,
+        /// checks if tess data path contains only ASCII charset.
+        /// Note: tesseract lib has issues with non ASCII characters in tess data path.
+        /// </remarks>
+        /// <param name="tessDataPath">
+        /// 
+        /// <see cref="System.String"/>
+        /// path to tess data
+        /// </param>
+        private static void ValidateTessDataPath(String tessDataPath) {
+            Match asciiStringMatcher = iText.IO.Util.StringUtil.Match(ASCII_STRING_PATTERN, tessDataPath);
+            if (!asciiStringMatcher.Success) {
+                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
+                    );
             }
         }
 
@@ -255,7 +294,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
                     // preprocess and try to ocr
                     result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), ImagePreprocessingUtil.PreprocessImage
-                        (inputImage, pageNumber), outputFormat);
+                        (inputImage, pageNumber, GetTesseract4OcrEngineProperties().GetImagePreprocessingOptions()), outputFormat
+                        );
                 }
                 if (result == null) {
                     System.Drawing.Bitmap bufferedImage = ImagePreprocessingUtil.ReadImage(inputImage);

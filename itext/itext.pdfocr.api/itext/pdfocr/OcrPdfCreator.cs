@@ -69,6 +69,15 @@ namespace iText.Pdfocr {
         /// <summary>The logger.</summary>
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
 
+        /// <summary>Indices in array representing bbox.</summary>
+        private const int LEFT_IDX = 0;
+
+        private const int TOP_IDX = 1;
+
+        private const int RIGHT_IDX = 2;
+
+        private const int BOTTOM_IDX = 3;
+
         /// <summary>
         /// Selected
         /// <see cref="IOcrEngine"/>.
@@ -396,7 +405,8 @@ namespace iText.Pdfocr {
             foreach (KeyValuePair<FileInfo, IDictionary<int, IList<TextInfo>>> entry in imagesTextData) {
                 try {
                     FileInfo inputImage = entry.Key;
-                    IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage);
+                    IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage, ocrPdfCreatorProperties.GetImageRotationHandler
+                        ());
                     LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
                         (), imageDataList.Count));
                     IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
@@ -459,23 +469,18 @@ namespace iText.Pdfocr {
                     );
                 foreach (TextInfo item in pageText) {
                     String line = item.GetText();
-                    IList<float> coordinates = item.GetBbox();
-                    float left = coordinates[0] * multiplier;
-                    float right = (coordinates[2] + 1) * multiplier - 1;
-                    float top = coordinates[1] * multiplier;
-                    float bottom = (coordinates[3] + 1) * multiplier - 1;
-                    float bboxWidthPt = PdfCreatorUtil.GetPoints(right - left);
-                    float bboxHeightPt = PdfCreatorUtil.GetPoints(bottom - top);
+                    float bboxWidthPt = GetWidthPt(item, multiplier);
+                    float bboxHeightPt = GetHeightPt(item, multiplier);
                     FontProvider fontProvider = GetOcrPdfCreatorProperties().GetFontProvider();
                     String fontFamily = GetOcrPdfCreatorProperties().GetDefaultFontFamily();
-                    if (!String.IsNullOrEmpty(line) && bboxHeightPt > 0 && bboxWidthPt > 0) {
+                    if (LineNotEmpty(line, bboxHeightPt, bboxWidthPt)) {
                         Document document = new Document(pdfCanvas.GetDocument());
                         document.SetFontProvider(fontProvider);
                         // Scale the text width to fit the OCR bbox
                         float fontSize = PdfCreatorUtil.CalculateFontSize(document, line, fontFamily, bboxHeightPt, bboxWidthPt);
                         float lineWidth = PdfCreatorUtil.GetRealLineWidth(document, line, fontFamily, fontSize);
-                        float deltaX = PdfCreatorUtil.GetPoints(left);
-                        float deltaY = imageSize.GetHeight() - PdfCreatorUtil.GetPoints(bottom);
+                        float xOffset = GetXOffsetPt(item, multiplier);
+                        float yOffset = GetYOffsetPt(item, multiplier, imageSize);
                         iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
                         canvas.SetFontProvider(fontProvider);
                         Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
@@ -488,8 +493,8 @@ namespace iText.Pdfocr {
                         else {
                             paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
                         }
-                        canvas.ShowTextAligned(paragraph, deltaX + (float)imageCoordinates.x, deltaY + (float)imageCoordinates.y, 
-                            TextAlignment.LEFT);
+                        canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.x, yOffset + (float)imageCoordinates.y
+                            , TextAlignment.LEFT);
                         canvas.Close();
                     }
                 }
@@ -531,6 +536,91 @@ namespace iText.Pdfocr {
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>Get left bound of text chunk.</summary>
+        private static float GetLeft(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return textInfo.GetBbox()[LEFT_IDX] * multiplier;
+            }
+            else {
+                return textInfo.GetBboxRect().GetLeft() * multiplier;
+            }
+        }
+
+        /// <summary>Get right bound of text chunk.</summary>
+        private static float GetRight(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return (textInfo.GetBbox()[RIGHT_IDX] + 1) * multiplier - 1;
+            }
+            else {
+                return (textInfo.GetBboxRect().GetRight() + 1) * multiplier - 1;
+            }
+        }
+
+        /// <summary>Get top bound of text chunk.</summary>
+        private static float GetTop(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return textInfo.GetBbox()[TOP_IDX] * multiplier;
+            }
+            else {
+                return textInfo.GetBboxRect().GetTop() * multiplier;
+            }
+        }
+
+        /// <summary>Get bottom bound of text chunk.</summary>
+        private static float GetBottom(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return (textInfo.GetBbox()[BOTTOM_IDX] + 1) * multiplier - 1;
+            }
+            else {
+                return (textInfo.GetBboxRect().GetBottom() + 1) * multiplier - 1;
+            }
+        }
+
+        /// <summary>Check if line is not empty.</summary>
+        private static bool LineNotEmpty(String line, float bboxHeightPt, float bboxWidthPt) {
+            return !String.IsNullOrEmpty(line) && bboxHeightPt > 0 && bboxWidthPt > 0;
+        }
+
+        /// <summary>Get width of text chunk in points.</summary>
+        private static float GetWidthPt(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return PdfCreatorUtil.GetPoints(GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier));
+            }
+            else {
+                return GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier);
+            }
+        }
+
+        /// <summary>Get height of text chunk in points.</summary>
+        private static float GetHeightPt(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return PdfCreatorUtil.GetPoints(GetBottom(textInfo, multiplier) - GetTop(textInfo, multiplier));
+            }
+            else {
+                return GetTop(textInfo, multiplier) - GetBottom(textInfo, multiplier);
+            }
+        }
+
+        /// <summary>Get horizontal text offset in points.</summary>
+        private static float GetXOffsetPt(TextInfo textInfo, float multiplier) {
+            if (textInfo.GetBboxRect() == null) {
+                return PdfCreatorUtil.GetPoints(GetLeft(textInfo, multiplier));
+            }
+            else {
+                return GetLeft(textInfo, multiplier);
+            }
+        }
+
+        /// <summary>Get vertical text offset in points.</summary>
+        private static float GetYOffsetPt(TextInfo textInfo, float multiplier, Rectangle imageSize) {
+            if (textInfo.GetBboxRect() == null) {
+                return imageSize.GetHeight() - PdfCreatorUtil.GetPoints(GetBottom(textInfo, multiplier));
+            }
+            else {
+                return GetBottom(textInfo, multiplier);
             }
         }
 

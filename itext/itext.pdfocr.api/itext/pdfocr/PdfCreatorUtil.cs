@@ -139,13 +139,18 @@ namespace iText.Pdfocr {
         /// input image as
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
+        /// <param name="imageRotationHandler">
+        /// image rotation handler
+        /// <see cref="IImageRotationHandler"/>
+        /// </param>
         /// <returns>
         /// list of
         /// <see cref="iText.IO.Image.ImageData"/>
         /// objects
         /// (more than one element in the list if it is a multipage tiff)
         /// </returns>
-        internal static IList<ImageData> GetImageData(FileInfo inputImage) {
+        internal static IList<ImageData> GetImageData(FileInfo inputImage, IImageRotationHandler imageRotationHandler
+            ) {
             IList<ImageData> images = new List<ImageData>();
             String ext = "";
             int index = inputImage.FullName.LastIndexOf('.');
@@ -156,12 +161,18 @@ namespace iText.Pdfocr {
                     for (int page = 0; page < tiffPages; page++) {
                         byte[] bytes = File.ReadAllBytes(inputImage.FullName);
                         ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
+                        if (imageRotationHandler != null) {
+                            imageData = imageRotationHandler.ApplyRotation(imageData);
+                        }
                         images.Add(imageData);
                     }
                 }
                 else {
                     try {
                         ImageData imageData = ImageDataFactory.Create(inputImage.FullName);
+                        if (imageRotationHandler != null) {
+                            imageData = imageRotationHandler.ApplyRotation(imageData);
+                        }
                         images.Add(imageData);
                     }
                     catch (iText.IO.IOException e) {

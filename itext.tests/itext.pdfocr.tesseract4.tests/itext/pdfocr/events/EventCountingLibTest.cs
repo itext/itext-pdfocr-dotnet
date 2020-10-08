@@ -20,7 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System;
+using System.IO;
 using iText.IO.Util;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
@@ -33,14 +33,13 @@ namespace iText.Pdfocr.Events {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(Tesseract4LogMessageConstant.TESSERACT_FAILED)]
-        [LogMessage(Tesseract4OcrException.TESSERACT_FAILED)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         public override void TestEventCountingCustomMetaInfoError() {
-            String imgPath = TEST_IMAGES_DIRECTORY + "numbers_101.jpg";
+            FileInfo img = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_101.jpg");
             NUnit.Framework.Assert.That(() =>  {
                 base.TestEventCountingCustomMetaInfoError();
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.TESSERACT_FAILED, imgPath)))
+            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, img.FullName)))
 ;
         }
     }

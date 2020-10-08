@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using Tesseract;
+using iText.IO.Image;
 using iText.Pdfocr;
 using iText.Test.Attributes;
 
@@ -33,7 +34,7 @@ namespace iText.Pdfocr.Tesseract4 {
             String path = TEST_IMAGES_DIRECTORY + "numbers_02.jpg";
             String expected = "0123456789";
             FileInfo imgFile = new FileInfo(path);
-            Pix pix = ImagePreprocessingUtil.ReadPix(imgFile);
+            Pix pix = TesseractOcrUtil.ReadPix(imgFile);
             Tesseract4LibOcrEngine tesseract4LibOcrEngine = GetTesseract4LibOcrEngine();
             tesseract4LibOcrEngine.SetTesseract4OcrEngineProperties(new Tesseract4OcrEngineProperties().SetPathToTessData
                 (GetTessDataDirectory()));
@@ -89,7 +90,8 @@ namespace iText.Pdfocr.Tesseract4 {
         public virtual void TestPreprocessingConditions() {
             Pix pix = null;
             NUnit.Framework.Assert.IsNull(TesseractOcrUtil.ConvertToGrayscale(pix));
-            NUnit.Framework.Assert.IsNull(TesseractOcrUtil.OtsuImageThresholding(pix));
+            NUnit.Framework.Assert.IsNull(TesseractOcrUtil.OtsuImageThresholding(pix, new ImagePreprocessingOptions())
+                );
             NUnit.Framework.Assert.IsNull(TesseractOcrUtil.ConvertPixToImage(pix));
             TesseractOcrUtil.DestroyPix(pix);
         }
@@ -130,7 +132,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 );
             TesseractOcrUtil.SaveImageToTempPngFile(tmpFileName, null);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
-            TesseractOcrUtil.SavePixToTempPngFile(tmpFileName, null);
+            TesseractOcrUtil.SavePixToPngFile(tmpFileName, null);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
         }
 
@@ -139,8 +141,8 @@ namespace iText.Pdfocr.Tesseract4 {
             String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
             String tmpFileName = GetTargetDirectory() + "testPixSavingAsPng.png";
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
-            Pix pix = ImagePreprocessingUtil.ReadPix(new FileInfo(path));
-            TesseractOcrUtil.SavePixToTempPngFile(tmpFileName, pix);
+            Pix pix = TesseractOcrUtil.ReadPix(new FileInfo(path));
+            TesseractOcrUtil.SavePixToPngFile(tmpFileName, pix);
             NUnit.Framework.Assert.IsTrue(File.Exists(System.IO.Path.Combine(tmpFileName)));
             TesseractHelper.DeleteFile(tmpFileName);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
@@ -153,6 +155,45 @@ namespace iText.Pdfocr.Tesseract4 {
             System.Drawing.Bitmap bi = (System.Drawing.Bitmap)System.Drawing.Image.FromStream(new FileStream(path, FileMode.Open
                 , FileAccess.Read));
             TesseractOcrUtil.SaveImageToTempPngFile(null, bi);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestDetectImageRotationAndFix() {
+            String path = TEST_IMAGES_DIRECTORY + "90_degrees_rotated.jpg";
+            TesseractOcrUtil.DetectRotation(new FileInfo(path));
+            ImageData imageData = ImageDataFactory.Create(path);
+            int rotation = TesseractOcrUtil.DetectRotation(imageData);
+            NUnit.Framework.Assert.AreEqual(90, rotation);
+            imageData = TesseractOcrUtil.ApplyRotation(imageData);
+            rotation = TesseractOcrUtil.DetectRotation(imageData);
+            NUnit.Framework.Assert.AreEqual(0, rotation);
+            path = TEST_IMAGES_DIRECTORY + "180_degrees_rotated.jpg";
+            TesseractOcrUtil.DetectRotation(new FileInfo(path));
+            imageData = ImageDataFactory.Create(path);
+            rotation = TesseractOcrUtil.DetectRotation(imageData);
+            NUnit.Framework.Assert.AreEqual(180, rotation);
+            imageData = TesseractOcrUtil.ApplyRotation(imageData);
+            rotation = TesseractOcrUtil.DetectRotation(imageData);
+            NUnit.Framework.Assert.AreEqual(0, rotation);
+            path = TEST_IMAGES_DIRECTORY + "270_degrees_rotated.jpg";
+            TesseractOcrUtil.DetectRotation(new FileInfo(path));
+            imageData = ImageDataFactory.Create(path);
+            rotation = TesseractOcrUtil.DetectRotation(imageData);
+            NUnit.Framework.Assert.AreEqual(270, rotation);
+            imageData = TesseractOcrUtil.ApplyRotation(imageData);
+            rotation = TesseractOcrUtil.DetectRotation(imageData);
+            NUnit.Framework.Assert.AreEqual(0, rotation);
+        }
+
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Ignore = true)]
+        [NUnit.Framework.Test]
+        public virtual void TestDetectImageRotationNegativeCases() {
+            String path = TEST_IMAGES_DIRECTORY + "90_degrees_rotated.jpg_broken_path";
+            int rotation = TesseractOcrUtil.DetectRotation(new FileInfo(path));
+            NUnit.Framework.Assert.AreEqual(0, rotation);
+            byte[] data = "broken image".GetBytes();
+            rotation = TesseractOcrUtil.DetectRotation(data);
+            NUnit.Framework.Assert.AreEqual(0, rotation);
         }
     }
 }

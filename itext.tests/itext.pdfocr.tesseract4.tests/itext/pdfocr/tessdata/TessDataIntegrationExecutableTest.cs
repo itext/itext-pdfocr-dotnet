@@ -20,12 +20,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tessdata {
     public class TessDataIntegrationExecutableTest : TessDataIntegrationTest {
         public TessDataIntegrationExecutableTest()
             : base(IntegrationTestHelper.ReaderType.EXECUTABLE) {
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTessDataWithNonAsciiPath() {
+            // First sentence
+            String expected = "ღმერთი";
+            // correct result with specified georgian+eng language
+            NUnit.Framework.Assert.IsTrue(DoOcrAndGetTextUsingTessDataByNonAsciiPath().StartsWith(expected));
         }
     }
 }

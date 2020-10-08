@@ -195,6 +195,25 @@ namespace iText.Pdfocr.Events {
             }
         }
 
+        [NUnit.Framework.Test]
+        public virtual void TestEventCountingWithImprovedHocrParsing() {
+            String imgPath = TEST_IMAGES_DIRECTORY + "thai_03.jpg";
+            FileInfo file = new FileInfo(imgPath);
+            EventCountingTest.TestEventCounter eventCounter = new EventCountingTest.TestEventCounter();
+            IEventCounterFactory factory = new SimpleEventCounterFactory(eventCounter);
+            EventCounterHandler.GetInstance().Register(factory);
+            Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
+            properties.SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES);
+            properties.SetUseTxtToImproveHocrParsing(true);
+            properties.SetPathToTessData(new FileInfo(LANG_TESS_DATA_DIRECTORY));
+            tesseractReader.SetTesseract4OcrEngineProperties(properties);
+            tesseractReader.DoImageOcr(file);
+            NUnit.Framework.Assert.AreEqual(1, eventCounter.GetEvents().Count);
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4Event.TESSERACT4_IMAGE_OCR.GetEventType(), eventCounter.GetEvents
+                ()[0].GetEventType());
+            EventCounterHandler.GetInstance().Unregister(factory);
+        }
+
         public virtual void TestEventCountingCustomMetaInfoError() {
             String imgPath = TEST_IMAGES_DIRECTORY + "numbers_101.jpg";
             FileInfo file = new FileInfo(imgPath);

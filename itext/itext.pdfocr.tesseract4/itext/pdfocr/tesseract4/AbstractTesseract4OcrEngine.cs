@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Common.Logging;
+using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel.Counter;
 using iText.Kernel.Counter.Event;
@@ -48,8 +49,9 @@ namespace iText.Pdfocr.Tesseract4 {
     /// </remarks>
     public abstract class AbstractTesseract4OcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
         /// <summary>Supported image formats.</summary>
-        private static readonly ICollection<String> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet(
-            new HashSet<String>(JavaUtil.ArraysAsList("bmp", "png", "tiff", "tif", "jpeg", "jpg", "jpe", "jfif")));
+        private static readonly ICollection<ImageType> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet
+            (new HashSet<ImageType>(JavaUtil.ArraysAsList(ImageType.BMP, ImageType.PNG, ImageType.TIFF, ImageType.
+            JPEG)));
 
         internal ICollection<Guid> processedUUID = new HashSet<Guid>();
 
@@ -304,8 +306,48 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
+        internal virtual void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
+            , int pageNumber) {
+            DoTesseractOcr(inputImage, outputFiles, outputFormat, pageNumber, true);
+        }
+
+        /// <summary>
+        /// Performs tesseract OCR using command line tool
+        /// or a wrapper for Tesseract OCR API.
+        /// </summary>
+        /// <remarks>
+        /// Performs tesseract OCR using command line tool
+        /// or a wrapper for Tesseract OCR API.
+        /// Please note that list of output files is accepted instead of a single file because
+        /// page number parameter is not respected in case of TIFF images not requiring preprocessing.
+        /// In other words, if the passed image is the TIFF image and according to the
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// no preprocessing is needed, each page of the TIFF image is OCRed and the number of output files in the list
+        /// is expected to be same as number of pages in the image, otherwise, only one file is expected
+        /// </remarks>
+        /// <param name="inputImage">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="outputFiles">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of output files
+        /// (one per each page)
+        /// </param>
+        /// <param name="outputFormat">
+        /// selected
+        /// <see cref="OutputFormat"/>
+        /// for tesseract
+        /// </param>
+        /// <param name="pageNumber">number of page to be processed</param>
+        /// <param name="dispatchEvent">
+        /// indicates if
+        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
+        /// needs to be dispatched
+        /// </param>
         internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber);
+            , int pageNumber, bool dispatchEvent);
 
         /// <summary>Gets path to provided tess data directory.</summary>
         /// <returns>
@@ -383,8 +425,16 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                     DoTesseractOcr(input, tempFiles, outputFormat, page);
                     if (outputFormat.Equals(OutputFormat.HOCR)) {
-                        IDictionary<int, IList<TextInfo>> pageData = TesseractHelper.ParseHocrFile(tempFiles, GetTesseract4OcrEngineProperties
-                            ().GetTextPositioning());
+                        IList<FileInfo> tempTxtFiles = null;
+                        if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
+                            tempTxtFiles = new List<FileInfo>();
+                            for (int i = 0; i < numOfFiles; i++) {
+                                tempTxtFiles.Add(CreateTempFile(".txt"));
+                            }
+                            DoTesseractOcr(input, tempTxtFiles, OutputFormat.TXT, page, false);
+                        }
+                        IDictionary<int, IList<TextInfo>> pageData = TesseractHelper.ParseHocrFile(tempFiles, tempTxtFiles, GetTesseract4OcrEngineProperties
+                            ());
                         if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
                             imageData.Put(page, pageData.Get(1));
                         }
@@ -442,23 +492,13 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
         private void VerifyImageFormatValidity(FileInfo image) {
-            bool isValid = false;
-            String extension = "incorrect extension";
-            int index = image.FullName.LastIndexOf('.');
-            if (index > 0) {
-                extension = new String(image.FullName.ToCharArray(), index + 1, image.FullName.Length - index - 1);
-                foreach (String format in SUPPORTED_IMAGE_FORMATS) {
-                    if (format.Equals(extension.ToLowerInvariant())) {
-                        isValid = true;
-                        break;
-                    }
-                }
-            }
+            ImageType type = ImagePreprocessingUtil.GetImageType(image);
+            bool isValid = SUPPORTED_IMAGE_FORMATS.Contains(type);
             if (!isValid) {
                 LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , image.FullName));
-                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(extension
-                    );
+                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(image
+                    .Name);
             }
         }
 

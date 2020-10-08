@@ -48,7 +48,7 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.That(() =>  {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
                 FileInfo imgFile = new FileInfo(path);
-                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), new Tesseract4OcrEngineProperties
+                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ());
                 engine.DoImageOcr(imgFile);
             }
@@ -56,13 +56,13 @@ namespace iText.Pdfocr.Tesseract4 {
 ;
         }
 
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestDoTesseractOcrForIncorrectImageForExecutable() {
             NUnit.Framework.Assert.That(() =>  {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01";
                 FileInfo imgFile = new FileInfo(path);
-                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), new Tesseract4OcrEngineProperties
+                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ().SetPathToTessData(GetTessDataDirectory()));
                 engine.DoTesseractOcr(imgFile, null, OutputFormat.HOCR);
             }
@@ -70,6 +70,7 @@ namespace iText.Pdfocr.Tesseract4 {
 ;
         }
 
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [LogMessage(Tesseract4OcrException.TESSERACT_FAILED)]
         [LogMessage(Tesseract4LogMessageConstant.TESSERACT_FAILED)]
         [NUnit.Framework.Test]
@@ -93,38 +94,11 @@ namespace iText.Pdfocr.Tesseract4 {
             Tesseract4OcrEngineProperties properties = new Tesseract4OcrEngineProperties();
             properties.SetPathToTessData(GetTessDataDirectory());
             properties.SetPreprocessingImages(false);
-            Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(GetTesseractDirectory(), properties
-                );
+            Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(properties);
             engine.DoTesseractOcr(imgFile, outputFile, OutputFormat.HOCR);
             NUnit.Framework.Assert.IsTrue(File.Exists(System.IO.Path.Combine(outputFile.FullName)));
             TesseractHelper.DeleteFile(outputFile.FullName);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(outputFile.FullName)));
-        }
-
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Ignore = true)]
-        [LogMessage(Tesseract4OcrException.TESSERACT_FAILED, Ignore = true)]
-        [LogMessage(Tesseract4OcrException.TESSERACT_NOT_FOUND, Ignore = true)]
-        [LogMessage(Tesseract4LogMessageConstant.COMMAND_FAILED, Ignore = true)]
-        [NUnit.Framework.Test]
-        public virtual void TestDoTesseractOcrForExecutableForWin() {
-            NUnit.Framework.Assert.That(() =>  {
-                TestSettingOsName("win");
-            }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
-;
-        }
-
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Ignore = true)]
-        [LogMessage(Tesseract4OcrException.TESSERACT_FAILED, Ignore = true)]
-        [LogMessage(Tesseract4OcrException.TESSERACT_NOT_FOUND, Ignore = true)]
-        [LogMessage(Tesseract4LogMessageConstant.COMMAND_FAILED, Ignore = true)]
-        [NUnit.Framework.Test]
-        public virtual void TestDoTesseractOcrForExecutableForLinux() {
-            NUnit.Framework.Assert.That(() =>  {
-                TestSettingOsName("linux");
-            }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
-;
         }
 
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_PARSE_NODE_BBOX, Count = 4)]
@@ -132,30 +106,17 @@ namespace iText.Pdfocr.Tesseract4 {
         public virtual void TestDetectAndFixBrokenBBoxes() {
             FileInfo hocrFile = new FileInfo(TEST_DOCUMENTS_DIRECTORY + "broken_bboxes.hocr");
             IDictionary<int, IList<TextInfo>> parsedHocr = TesseractHelper.ParseHocrFile(JavaCollectionsUtil.SingletonList
-                (hocrFile), TextPositioning.BY_WORDS_AND_LINES);
+                (hocrFile), null, new Tesseract4OcrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES
+                ));
             TextInfo textInfo = parsedHocr.Get(1)[1];
+            NUnit.Framework.Assert.AreEqual(287.25, (float)textInfo.GetBboxRect().GetLeft(), 0.1);
+            NUnit.Framework.Assert.AreEqual(136.5f, (float)textInfo.GetBboxRect().GetBottom(), 0.1);
+            NUnit.Framework.Assert.AreEqual(385.5, (float)textInfo.GetBboxRect().GetRight(), 0.1);
+            NUnit.Framework.Assert.AreEqual(162.75, (float)textInfo.GetBboxRect().GetTop(), 0.1);
             NUnit.Framework.Assert.AreEqual(383.0f, (float)textInfo.GetBbox()[0], 0.1);
             NUnit.Framework.Assert.AreEqual(101.0f, (float)textInfo.GetBbox()[1], 0.1);
             NUnit.Framework.Assert.AreEqual(514.0f, (float)textInfo.GetBbox()[2], 0.1);
             NUnit.Framework.Assert.AreEqual(136.0f, (float)textInfo.GetBbox()[3], 0.1);
-        }
-
-        private void TestSettingOsName(String osName) {
-            String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
-            FileInfo imgFile = new FileInfo(path);
-            String tesseractDirectory = GetTesseractDirectory();
-            String osPropertyName = Environment.GetEnvironmentVariable("os.name") == null ? "OS" : "os.name";
-            String os = Environment.GetEnvironmentVariable(osPropertyName);
-            Environment.SetEnvironmentVariable(osPropertyName, osName);
-            try {
-                Tesseract4OcrEngineProperties properties = new Tesseract4OcrEngineProperties();
-                properties.SetPathToTessData(GetTessDataDirectory());
-                Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(tesseractDirectory, properties);
-                engine.DoTesseractOcr(imgFile, null, OutputFormat.HOCR);
-            }
-            finally {
-                Environment.SetEnvironmentVariable(osPropertyName, os);
-            }
         }
     }
 }

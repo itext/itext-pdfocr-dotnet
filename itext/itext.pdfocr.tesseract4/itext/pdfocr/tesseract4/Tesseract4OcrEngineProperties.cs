@@ -49,13 +49,6 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Page Segmentation Mode.</summary>
         private int? pageSegMode = 3;
 
-        /// <summary>"True" - if images need to be preprocessed, otherwise - false.</summary>
-        /// <remarks>
-        /// "True" - if images need to be preprocessed, otherwise - false.
-        /// True by default.
-        /// </remarks>
-        private bool preprocessingImages = true;
-
         /// <summary>Defines the way text is retrieved from tesseract output.</summary>
         /// <remarks>
         /// Defines the way text is retrieved from tesseract output.
@@ -73,6 +66,27 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Indicates if user words file is temporary and has to be removed.</summary>
         private bool isUserWordsFileTemporary = false;
+
+        /// <summary>Used to make HOCR recognition result more precise.</summary>
+        /// <remarks>
+        /// Used to make HOCR recognition result more precise.
+        /// This is needed for cases of Thai language or some Chinese dialects
+        /// where every character is interpreted as a single word.
+        /// For more information see https://github.com/tesseract-ocr/tesseract/issues/2702
+        /// </remarks>
+        private bool useTxtToImproveHocrParsing;
+
+        /// <summary>Settings for image preprocessing.</summary>
+        private ImagePreprocessingOptions imagePreprocessingOptions = new ImagePreprocessingOptions();
+
+        /// <summary>Minimal confidence level for HOCR line to be considered as properly recognized.</summary>
+        /// <remarks>
+        /// Minimal confidence level for HOCR line to be considered as properly recognized.
+        /// If real confidence level is lower then line is ignored
+        /// Default value is 0 which means that everything is considered as properly recognized
+        /// Value may vary in range of 0-100
+        /// </remarks>
+        private int minimalConfidenceLevel;
 
         /// <summary>
         /// Creates a new
@@ -100,9 +114,11 @@ namespace iText.Pdfocr.Tesseract4 {
             : base(other) {
             this.tessDataDir = other.tessDataDir;
             this.pageSegMode = other.pageSegMode;
-            this.preprocessingImages = other.preprocessingImages;
             this.textPositioning = other.textPositioning;
             this.pathToUserWordsFile = other.pathToUserWordsFile;
+            this.useTxtToImproveHocrParsing = other.useTxtToImproveHocrParsing;
+            this.imagePreprocessingOptions = other.imagePreprocessingOptions;
+            this.minimalConfidenceLevel = other.minimalConfidenceLevel;
         }
 
         /// <summary>Gets default language for ocr.</summary>
@@ -177,7 +193,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Checks whether image preprocessing is needed.</summary>
         /// <returns>true if images need to be preprocessed, otherwise - false</returns>
         public bool IsPreprocessingImages() {
-            return preprocessingImages;
+            return imagePreprocessingOptions != null;
         }
 
         /// <summary>Sets true if image preprocessing is needed.</summary>
@@ -191,7 +207,14 @@ namespace iText.Pdfocr.Tesseract4 {
         /// instance
         /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPreprocessingImages(bool preprocess) {
-            preprocessingImages = preprocess;
+            if (preprocess) {
+                if (imagePreprocessingOptions == null) {
+                    imagePreprocessingOptions = new ImagePreprocessingOptions();
+                }
+            }
+            else {
+                imagePreprocessingOptions = null;
+            }
             return this;
         }
 
@@ -402,6 +425,103 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <returns>true if the file is temporary, otherwise false.</returns>
         internal bool IsUserWordsFileTemporary() {
             return isUserWordsFileTemporary;
+        }
+
+        /// <summary>
+        /// Gets
+        /// <see cref="useTxtToImproveHocrParsing"/>.
+        /// </summary>
+        /// <remarks>
+        /// Gets
+        /// <see cref="useTxtToImproveHocrParsing"/>.
+        /// Used to make HOCR recognition result more precise.
+        /// This is needed for cases of Thai language or some Chinese dialects
+        /// where every character is interpreted as a single word.
+        /// For more information see https://github.com/tesseract-ocr/tesseract/issues/2702
+        /// </remarks>
+        /// <returns>
+        /// 
+        /// <see cref="useTxtToImproveHocrParsing"/>
+        /// </returns>
+        public bool IsUseTxtToImproveHocrParsing() {
+            return useTxtToImproveHocrParsing;
+        }
+
+        /// <summary>
+        /// Sets
+        /// <see cref="useTxtToImproveHocrParsing"/>.
+        /// </summary>
+        /// <remarks>
+        /// Sets
+        /// <see cref="useTxtToImproveHocrParsing"/>.
+        /// Used to make HOCR recognition result more precise.
+        /// This is needed for cases of Thai language or some Chinese dialects
+        /// where every character is interpreted as a single word.
+        /// For more information see https://github.com/tesseract-ocr/tesseract/issues/2702
+        /// </remarks>
+        /// <param name="useTxtToImproveHocrParsing">
+        /// 
+        /// <see cref="useTxtToImproveHocrParsing"/>
+        /// </param>
+        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUseTxtToImproveHocrParsing(bool useTxtToImproveHocrParsing
+            ) {
+            this.useTxtToImproveHocrParsing = useTxtToImproveHocrParsing;
+            return this;
+        }
+
+        /// <summary>
+        /// Gets
+        /// <see cref="imagePreprocessingOptions"/>.
+        /// </summary>
+        /// <returns>
+        /// 
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// </returns>
+        public ImagePreprocessingOptions GetImagePreprocessingOptions() {
+            return imagePreprocessingOptions;
+        }
+
+        /// <summary>
+        /// Sets
+        /// <see cref="imagePreprocessingOptions"/>.
+        /// </summary>
+        /// <param name="imagePreprocessingOptions">
+        /// 
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// </param>
+        /// <returns>
+        /// the
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance
+        /// </returns>
+        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetImagePreprocessingOptions(ImagePreprocessingOptions
+             imagePreprocessingOptions) {
+            this.imagePreprocessingOptions = imagePreprocessingOptions;
+            return this;
+        }
+
+        /// <summary>Gets minimal confidence level for HOCR line to be considered as properly recognized.</summary>
+        /// <remarks>
+        /// Gets minimal confidence level for HOCR line to be considered as properly recognized.
+        /// If real confidence level is lower then line is ignored
+        /// Default value is 0 which means that everything is considered as properly recognized
+        /// Value may vary in range of 0-100
+        /// </remarks>
+        public int GetMinimalConfidenceLevel() {
+            return minimalConfidenceLevel;
+        }
+
+        /// <summary>Sets minimal confidence level for HOCR line to be considered as properly recognized.</summary>
+        /// <remarks>
+        /// Sets minimal confidence level for HOCR line to be considered as properly recognized.
+        /// If real confidence level is lower then line is ignored
+        /// Default value is 0 which means that everything is considered as properly recognized
+        /// Value may vary in range of 0-100
+        /// </remarks>
+        public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetMinimalConfidenceLevel(int minimalConfidenceLevel
+            ) {
+            this.minimalConfidenceLevel = minimalConfidenceLevel;
+            return this;
         }
     }
 }
