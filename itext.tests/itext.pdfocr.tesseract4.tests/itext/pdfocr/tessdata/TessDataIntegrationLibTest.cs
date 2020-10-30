@@ -47,9 +47,9 @@ namespace iText.Pdfocr.Tessdata {
 ;
         }
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD2_0
         [NUnit.Framework.Timeout(60000)]
-#endif // !NETSTANDARD1_6
+#endif // !NETSTANDARD2_0
         [NUnit.Framework.Test]
         public virtual void TextOutputFromHalftoneFile() {
             String imgPath = TEST_IMAGES_DIRECTORY + "halftone.jpg";

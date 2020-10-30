@@ -57,14 +57,14 @@ internal static class PdfOcrTesseract4Extensions
 
     public static Assembly GetAssembly(this Type type)
     {
-#if !NETSTANDARD1_6
+#if !NETSTANDARD2_0
         return type.Assembly;
 #else
             return type.GetTypeInfo().Assembly;
 #endif
     }
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD2_0
     public static Attribute GetCustomAttribute(this Assembly assembly, Type attributeType)
     {
         object[] customAttributes = assembly.GetCustomAttributes(attributeType, false);
