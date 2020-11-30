@@ -32,7 +32,9 @@ namespace iText.Pdfocr.Tesseract4 {
             : base(IntegrationTestHelper.ReaderType.LIB) {
         }
 
+#if !NETSTANDARD2_0
         [NUnit.Framework.Timeout(60000)]
+#endif // !NETSTANDARD2_0
         [NUnit.Framework.Test]
         public virtual void HocrOutputFromHalftoneFile() {
             String path = TEST_IMAGES_DIRECTORY + "halftone.jpg";
