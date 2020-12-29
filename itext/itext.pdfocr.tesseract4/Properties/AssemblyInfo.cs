@@ -25,4 +25,4 @@ using System.Runtime.InteropServices;
     "816902cc")]
 
 [assembly: Versions.Attributes.KeyVersion("3.1.3.0")]
-[assembly: Versions.Attributes.KernelVersion("7.1.14.0")]
+[assembly: Versions.Attributes.KernelVersion("7.1.15.0")]
