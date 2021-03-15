@@ -17,14 +17,14 @@
     <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
     <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
     <dependencies>
-      <group targetFramework="net40">
+      <group targetFramework="net45">
         <dependency id="itext7" version="7.1.15-SNAPSHOT" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\net40\itext.pdfocr.api.dll" target="lib\net40" />
-    <file src="bin\Release\net40\itext.pdfocr.api.xml" target="lib\net40" />
+    <file src="bin\Release\net45\itext.pdfocr.api.dll" target="lib\net45" />
+    <file src="bin\Release\net45\itext.pdfocr.api.xml" target="lib\net45" />
     <file src="NOTICE.txt" target="" />
     <file src="ITSC-avatar.png" target="" />
     <file src="../../gnu-agpl-v3.0.md" target="" />
