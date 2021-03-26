@@ -24,5 +24,5 @@ using System.Runtime.InteropServices;
     "009746bbdafcb75bcdbcecb7caf1f0f4b6e7d013906ba60b66eb1c8298e4efb052caf6cece4bf1" +
     "816902cc")]
 
-[assembly: Versions.Attributes.KeyVersion("3.1.3.0")]
-[assembly: Versions.Attributes.KernelVersion("7.1.15.0")]
+[assembly: Versions.Attributes.KeyVersion("3.1.4.0")]
+[assembly: Versions.Attributes.KernelVersion("7.1.16.0")]
