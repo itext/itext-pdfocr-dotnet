@@ -153,25 +153,31 @@ namespace iText.Pdfocr {
             ) {
             IList<ImageData> images = new List<ImageData>();
             try {
-                ImageType imageType = ImageTypeDetector.DetectImageType(UrlUtil.ToURL(inputImage.FullName));
-                if (ImageType.TIFF == imageType) {
-                    int tiffPages = GetNumberOfPageTiff(inputImage);
-                    for (int page = 0; page < tiffPages; page++) {
-                        byte[] bytes = File.ReadAllBytes(inputImage.FullName);
-                        ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
+                using (Stream imageStream = new FileStream(inputImage.FullName, FileMode.Open, FileAccess.Read)) {
+                    ImageType imageType = ImageTypeDetector.DetectImageType(imageStream);
+                    if (ImageType.TIFF == imageType) {
+                        int tiffPages = GetNumberOfPageTiff(inputImage);
+                        for (int page = 0; page < tiffPages; page++) {
+                            byte[] bytes = File.ReadAllBytes(inputImage.FullName);
+                            ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
+                            if (imageRotationHandler != null) {
+                                imageData = imageRotationHandler.ApplyRotation(imageData);
+                            }
+                            images.Add(imageData);
+                        }
+                    }
+                    else {
+                        ImageData imageData = ImageDataFactory.Create(inputImage.FullName);
                         if (imageRotationHandler != null) {
                             imageData = imageRotationHandler.ApplyRotation(imageData);
                         }
                         images.Add(imageData);
                     }
                 }
-                else {
-                    ImageData imageData = ImageDataFactory.Create(inputImage.FullName);
-                    if (imageRotationHandler != null) {
-                        imageData = imageRotationHandler.ApplyRotation(imageData);
-                    }
-                    images.Add(imageData);
-                }
+            }
+            catch (System.IO.IOException e) {
+                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
             }
             catch (iText.IO.IOException e) {
                 LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
