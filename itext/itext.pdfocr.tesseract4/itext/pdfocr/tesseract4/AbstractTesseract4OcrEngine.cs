@@ -426,15 +426,24 @@ namespace iText.Pdfocr.Tesseract4 {
                     DoTesseractOcr(input, tempFiles, outputFormat, page);
                     if (outputFormat.Equals(OutputFormat.HOCR)) {
                         IList<FileInfo> tempTxtFiles = null;
-                        if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
-                            tempTxtFiles = new List<FileInfo>();
-                            for (int i = 0; i < numOfFiles; i++) {
-                                tempTxtFiles.Add(CreateTempFile(".txt"));
+                        IDictionary<int, IList<TextInfo>> pageData = null;
+                        try {
+                            if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
+                                tempTxtFiles = new List<FileInfo>();
+                                for (int i = 0; i < numOfFiles; i++) {
+                                    tempTxtFiles.Add(CreateTempFile(".txt"));
+                                }
+                                DoTesseractOcr(input, tempTxtFiles, OutputFormat.TXT, page, false);
                             }
-                            DoTesseractOcr(input, tempTxtFiles, OutputFormat.TXT, page, false);
+                            pageData = TesseractHelper.ParseHocrFile(tempFiles, tempTxtFiles, GetTesseract4OcrEngineProperties());
                         }
-                        IDictionary<int, IList<TextInfo>> pageData = TesseractHelper.ParseHocrFile(tempFiles, tempTxtFiles, GetTesseract4OcrEngineProperties
-                            ());
+                        finally {
+                            if (tempTxtFiles != null) {
+                                foreach (FileInfo file in tempTxtFiles) {
+                                    TesseractHelper.DeleteFile(file.FullName);
+                                }
+                            }
+                        }
                         if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
                             imageData.Put(page, pageData.Get(1));
                         }
