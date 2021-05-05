@@ -194,13 +194,15 @@ namespace iText.Pdfocr.Helpers {
         /// <summary>Get extraction strategy for given document.</summary>
         public static ExtractionStrategy GetExtractionStrategy(String pdfPath, String layerName, bool useActualText
             ) {
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-            ExtractionStrategy strategy = new ExtractionStrategy(layerName);
-            strategy.SetUseActualText(useActualText);
-            PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
-            processor.ProcessPageContent(pdfDocument.GetFirstPage());
-            pdfDocument.Close();
-            return strategy;
+            using (PdfReader readerPdf = new PdfReader(pdfPath)) {
+                using (PdfDocument pdfDocument = new PdfDocument(readerPdf)) {
+                    ExtractionStrategy strategy = new ExtractionStrategy(layerName);
+                    strategy.SetUseActualText(useActualText);
+                    PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
+                    processor.ProcessPageContent(pdfDocument.GetFirstPage());
+                    return strategy;
+                }
+            }
         }
     }
 }
