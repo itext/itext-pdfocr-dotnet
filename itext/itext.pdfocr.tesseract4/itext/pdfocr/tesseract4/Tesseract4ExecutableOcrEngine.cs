@@ -156,7 +156,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 imagePath = PreprocessImage(inputImage, pageNumber);
                 // get the input file parent directory as working directory
                 // as tesseract cannot parse non ascii characters in input path
-                String imageParentDir = TesseractOcrUtil.GetParentDirectory(imagePath);
+                String imageParentDir = TesseractOcrUtil.GetParentDirectoryFile(imagePath);
                 String replacement = IsWindows() ? "" : "/";
                 workingDirectory = imageParentDir.Replace("file:///", replacement).Replace("file:/", replacement);
                 // input file
@@ -407,8 +407,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="secondPath">path to the second file</param>
         /// <returns>true if parent directories are equal, otherwise - false</returns>
         private bool AreEqualParentDirectories(String firstPath, String secondPath) {
-            String firstParentDir = TesseractOcrUtil.GetParentDirectory(firstPath);
-            String secondParentDir = TesseractOcrUtil.GetParentDirectory(secondPath);
+            String firstParentDir = TesseractOcrUtil.GetParentDirectoryFile(firstPath);
+            String secondParentDir = TesseractOcrUtil.GetParentDirectoryFile(secondPath);
             return firstParentDir != null && firstParentDir.Equals(secondParentDir);
         }
     }

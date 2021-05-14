@@ -437,7 +437,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Returns parent directory for the passed path.</summary>
         /// <param name="path">path path to file</param>
         /// <returns>parent directory where the file is located</returns>
-        internal static String GetParentDirectory(string path)
+        internal static String GetParentDirectoryFile(string path)
         {
             return Directory.GetParent(path).FullName;
         }
