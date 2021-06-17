@@ -1,7 +1,7 @@
 /*
 
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2021 iText Group NV
 Authors: Bruno Lowagie, Paulo Soares, et al.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,20 +63,16 @@ namespace iText.Pdfocr.Tesseract4 {
             try {
                 String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
                 String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-                String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
                 String checkLicenseKeyMethodName = "ScheduledCheck";
                 Type licenseKeyClass = GetLicenseKeyClass(licenseKeyClassName);
                 if (licenseKeyClass != null)
                 {
                     Type licenseKeyProductClass = GetLicenseKeyClass(licenseKeyProductClassName);
-                    Type licenseKeyProductFeatureClass = GetLicenseKeyClass(licenseKeyFeatureClassName);
-                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
                     object[] objects = new object[]
                     {
                         PdfOcrTesseract4ProductInfo.PRODUCT_NAME,
-                        PdfOcrTesseract4ProductInfo.MAJOR_VERSION,
-                        PdfOcrTesseract4ProductInfo.MINOR_VERSION,
-                        array
+                        PdfOcrTesseract4ProductInfo.MAJOR_VERSION.ToString(),
+                        PdfOcrTesseract4ProductInfo.MINOR_VERSION.ToString()
                     };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);

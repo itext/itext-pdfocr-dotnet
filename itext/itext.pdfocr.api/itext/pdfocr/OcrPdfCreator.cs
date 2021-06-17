@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -403,27 +403,21 @@ namespace iText.Pdfocr {
         private void AddDataToPdfDocument(IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData, 
             PdfDocument pdfDocument, bool createPdfA3u) {
             foreach (KeyValuePair<FileInfo, IDictionary<int, IList<TextInfo>>> entry in imagesTextData) {
-                try {
-                    FileInfo inputImage = entry.Key;
-                    IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage, ocrPdfCreatorProperties.GetImageRotationHandler
-                        ());
-                    LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
-                        (), imageDataList.Count));
-                    IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
-                    if (imageTextData.Keys.Count > 0) {
-                        for (int page = 0; page < imageDataList.Count; ++page) {
-                            ImageData imageData = imageDataList[page];
-                            Rectangle imageSize = PdfCreatorUtil.CalculateImageSize(imageData, ocrPdfCreatorProperties.GetScaleMode(), 
-                                ocrPdfCreatorProperties.GetPageSize());
-                            if (imageTextData.ContainsKey(page + 1)) {
-                                AddToCanvas(pdfDocument, imageSize, imageTextData.Get(page + 1), imageData, createPdfA3u);
-                            }
+                FileInfo inputImage = entry.Key;
+                IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage, ocrPdfCreatorProperties.GetImageRotationHandler
+                    ());
+                LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
+                    (), imageDataList.Count));
+                IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
+                if (imageTextData.Keys.Count > 0) {
+                    for (int page = 0; page < imageDataList.Count; ++page) {
+                        ImageData imageData = imageDataList[page];
+                        Rectangle imageSize = PdfCreatorUtil.CalculateImageSize(imageData, ocrPdfCreatorProperties.GetScaleMode(), 
+                            ocrPdfCreatorProperties.GetPageSize());
+                        if (imageTextData.ContainsKey(page + 1)) {
+                            AddToCanvas(pdfDocument, imageSize, imageTextData.Get(page + 1), imageData, createPdfA3u);
                         }
                     }
-                }
-                catch (System.IO.IOException e) {
-                    LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_ADD_DATA_TO_PDF_DOCUMENT, e.Message)
-                        );
                 }
             }
         }

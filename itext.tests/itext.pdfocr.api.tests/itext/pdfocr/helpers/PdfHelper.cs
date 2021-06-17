@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -194,13 +194,15 @@ namespace iText.Pdfocr.Helpers {
         /// <summary>Get extraction strategy for given document.</summary>
         public static ExtractionStrategy GetExtractionStrategy(String pdfPath, String layerName, bool useActualText
             ) {
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
-            ExtractionStrategy strategy = new ExtractionStrategy(layerName);
-            strategy.SetUseActualText(useActualText);
-            PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
-            processor.ProcessPageContent(pdfDocument.GetFirstPage());
-            pdfDocument.Close();
-            return strategy;
+            using (PdfReader readerPdf = new PdfReader(pdfPath)) {
+                using (PdfDocument pdfDocument = new PdfDocument(readerPdf)) {
+                    ExtractionStrategy strategy = new ExtractionStrategy(layerName);
+                    strategy.SetUseActualText(useActualText);
+                    PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
+                    processor.ProcessPageContent(pdfDocument.GetFirstPage());
+                    return strategy;
+                }
+            }
         }
     }
 }

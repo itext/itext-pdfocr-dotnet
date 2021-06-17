@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -32,9 +32,9 @@ namespace iText.Pdfocr.Tesseract4 {
             : base(IntegrationTestHelper.ReaderType.LIB) {
         }
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD2_0
         [NUnit.Framework.Timeout(60000)]
-#endif // !NETSTANDARD1_6
+#endif // !NETSTANDARD2_0
         [NUnit.Framework.Test]
         public virtual void HocrOutputFromHalftoneFile() {
             String path = TEST_IMAGES_DIRECTORY + "halftone.jpg";

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2021 iText Group NV
     Authors: iText Software.
 
     This program is offered under a commercial and under the AGPL license.
@@ -57,14 +57,9 @@ internal static class PdfOcrTesseract4Extensions
 
     public static Assembly GetAssembly(this Type type)
     {
-#if !NETSTANDARD1_6
         return type.Assembly;
-#else
-            return type.GetTypeInfo().Assembly;
-#endif
     }
 
-#if !NETSTANDARD1_6
     public static Attribute GetCustomAttribute(this Assembly assembly, Type attributeType)
     {
         object[] customAttributes = assembly.GetCustomAttributes(attributeType, false);
@@ -77,6 +72,5 @@ internal static class PdfOcrTesseract4Extensions
             return null;
         }
     }
-#endif
 
 }

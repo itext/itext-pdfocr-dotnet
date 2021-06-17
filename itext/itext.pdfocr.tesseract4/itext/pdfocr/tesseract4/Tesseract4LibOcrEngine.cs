@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -220,8 +220,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// path to tess data
         /// </param>
         private static void ValidateTessDataPath(String tessDataPath) {
-            Match asciiStringMatcher = iText.IO.Util.StringUtil.Match(ASCII_STRING_PATTERN, tessDataPath);
-            if (!asciiStringMatcher.Success) {
+            Matcher asciiStringMatcher = iText.IO.Util.Matcher.Match(ASCII_STRING_PATTERN, tessDataPath);
+            if (!asciiStringMatcher.Matches()) {
                 throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
                     );
             }

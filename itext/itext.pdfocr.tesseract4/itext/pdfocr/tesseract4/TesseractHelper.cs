@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -216,13 +216,12 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static Rectangle ParseBBox(iText.StyledXmlParser.Jsoup.Nodes.Node node, Rectangle pageBBox, IDictionary
             <String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes) {
             IList<float> bbox = new List<float>();
-            Match bboxMatcher = iText.IO.Util.StringUtil.Match(BBOX_PATTERN, node.Attr(TITLE));
-            if (bboxMatcher.Success) {
-                Match bboxCoordinateMatcher = iText.IO.Util.StringUtil.Match(BBOX_COORDINATE_PATTERN, iText.IO.Util.StringUtil.Group
-                    (bboxMatcher));
-                if (bboxCoordinateMatcher.Success) {
+            Matcher bboxMatcher = iText.IO.Util.Matcher.Match(BBOX_PATTERN, node.Attr(TITLE));
+            if (bboxMatcher.Matches()) {
+                Matcher bboxCoordinateMatcher = iText.IO.Util.Matcher.Match(BBOX_COORDINATE_PATTERN, bboxMatcher.Group());
+                if (bboxCoordinateMatcher.Matches()) {
                     for (int i = 0; i < BBOX_ARRAY_SIZE; i++) {
-                        String coord = iText.IO.Util.StringUtil.Group(bboxCoordinateMatcher, i + 1);
+                        String coord = bboxCoordinateMatcher.Group(i + 1);
                         bbox.Add(float.Parse(coord, System.Globalization.CultureInfo.InvariantCulture));
                     }
                 }
@@ -452,11 +451,11 @@ namespace iText.Pdfocr.Tesseract4 {
                 foreach (iText.StyledXmlParser.Jsoup.Nodes.Node node in lineOrCaption.ChildNodes()) {
                     if (node is iText.StyledXmlParser.Jsoup.Nodes.Element) {
                         String title = ((iText.StyledXmlParser.Jsoup.Nodes.Element)node).Attr(TITLE);
-                        Match matcher = iText.IO.Util.StringUtil.Match(WCONF_PATTERN, title);
-                        if (matcher.Success) {
+                        Matcher matcher = iText.IO.Util.Matcher.Match(WCONF_PATTERN, title);
+                        if (matcher.Matches()) {
                             String wconf = null;
                             try {
-                                wconf = iText.IO.Util.StringUtil.Group(matcher, 1);
+                                wconf = matcher.Group(1);
                             }
                             catch (Exception) {
                             }
