@@ -30,7 +30,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_READ_FILE = "Cannot read file {0}: {1}";
 
-        public const String CANNOT_OCR_INPUT_FILE = "Cannot ocr input file: {1}";
+        public const String CANNOT_OCR_INPUT_FILE = "Cannot ocr input file: {0}";
 
         public const String CANNOT_USE_USER_WORDS = "Cannot use custom user words: {0}";
 
