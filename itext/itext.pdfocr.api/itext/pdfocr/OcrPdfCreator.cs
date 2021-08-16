@@ -435,14 +435,14 @@ namespace iText.Pdfocr {
         private void AddImageToCanvas(ImageData imageData, Rectangle imageSize, PdfCanvas pdfCanvas) {
             if (imageData != null) {
                 if (ocrPdfCreatorProperties.GetPageSize() == null) {
-                    pdfCanvas.AddImage(imageData, imageSize, false);
+                    pdfCanvas.AddImageFittedIntoRectangle(imageData, imageSize, false);
                 }
                 else {
                     Point coordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
                         );
                     Rectangle rect = new Rectangle((float)coordinates.x, (float)coordinates.y, imageSize.GetWidth(), imageSize
                         .GetHeight());
-                    pdfCanvas.AddImage(imageData, rect, false);
+                    pdfCanvas.AddImageFittedIntoRectangle(imageData, rect, false);
                 }
             }
         }
