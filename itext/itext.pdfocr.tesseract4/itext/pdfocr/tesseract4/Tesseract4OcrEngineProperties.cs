@@ -23,7 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Util;
 using iText.Pdfocr;
 
@@ -291,7 +292,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     SetUserWords(language, inputStream);
                 }
                 catch (System.IO.IOException e) {
-                    LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
+                    ITextLogManager.GetLogger(GetType()).LogWarning(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
                         , e.Message));
                 }
             }
@@ -357,7 +358,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (System.IO.IOException e) {
                 SetPathToUserWordsFile(null);
-                LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
+                ITextLogManager.GetLogger(GetType()).LogWarning(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
                     , e.Message));
             }
             return this;

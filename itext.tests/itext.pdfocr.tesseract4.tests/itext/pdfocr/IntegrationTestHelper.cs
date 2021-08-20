@@ -23,7 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Font;
 using iText.IO.Util;
 using iText.Kernel.Colors;
@@ -40,7 +41,8 @@ using iText.Test;
 
 namespace iText.Pdfocr {
     public class IntegrationTestHelper : ExtendedITextTest {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.IntegrationTestHelper));
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.IntegrationTestHelper
+            ));
 
         // directory with test files
         public static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
@@ -164,7 +166,7 @@ namespace iText.Pdfocr {
                 result = GetTextFromPdfLayer(pdfPath, null, page);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return result;
         }
@@ -243,7 +245,7 @@ namespace iText.Pdfocr {
                 result = GetTextFromTextFile(new FileInfo(txtPath));
             }
             catch (Exception e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return result;
         }
@@ -338,7 +340,7 @@ namespace iText.Pdfocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
         }
 
@@ -387,7 +389,7 @@ namespace iText.Pdfocr {
                     UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message
+                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message
                     ));
             }
             return content;

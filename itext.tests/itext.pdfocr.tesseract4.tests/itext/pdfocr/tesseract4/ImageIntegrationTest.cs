@@ -23,14 +23,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Util;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class ImageIntegrationTest : IntegrationTestHelper {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImageIntegrationTest
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImageIntegrationTest
             ));
 
         internal AbstractTesseract4OcrEngine tesseractReader;

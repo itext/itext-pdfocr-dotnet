@@ -27,7 +27,8 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
@@ -38,8 +39,8 @@ namespace iText.Pdfocr.Tesseract4 {
     /// <summary>Helper class.</summary>
     public class TesseractHelper {
         /// <summary>The logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelper)
-            );
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelper
+            ));
 
         /// <summary>Patterns for matching hOCR element bboxes.</summary>
         private static readonly Regex BBOX_PATTERN = iText.IO.Util.StringUtil.RegexCompile(".*bbox(\\s+\\d+){4}.*"
@@ -156,8 +157,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             foreach (iText.StyledXmlParser.Jsoup.Nodes.Node node in unparsedBBoxes.Values) {
-                LOGGER.Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_PARSE_NODE_BBOX, node.ToString())
-                    );
+                LOGGER.LogWarning(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_PARSE_NODE_BBOX, node.ToString
+                    ()));
             }
             return imageData;
         }
@@ -263,12 +264,12 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
-                    ));
+                LOGGER.LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile
+                    , e.Message));
             }
             catch (SecurityException e) {
-                LOGGER.Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile, e.Message
-                    ));
+                LOGGER.LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE, pathToFile
+                    , e.Message));
             }
         }
 
@@ -290,8 +291,8 @@ namespace iText.Pdfocr.Tesseract4 {
                     .UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, txtFile.FullName, e.Message
-                    ));
+                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, txtFile.FullName, 
+                    e.Message));
             }
             return content;
         }
@@ -319,7 +320,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE, path, e.Message));
+                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE, path, e.Message
+                    ));
             }
         }
 
@@ -347,18 +349,18 @@ namespace iText.Pdfocr.Tesseract4 {
                 String @params = String.Join(" ", paramsList);
                 bool cmdSucceeded = SystemUtil.RunProcessAndWait(execPath, @params, workingDirPath);
                 if (!cmdSucceeded) {
-                    LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, execPath + " " + @params
+                    LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, execPath + " " + @params
                         ));
                     throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
                 }
             }
             catch (System.IO.IOException e) {
                 // NOSONAR
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
+                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }
             catch (Exception e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
+                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }
         }

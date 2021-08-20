@@ -46,9 +46,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Common.Logging;
+using iText.IO;
 using iText.IO.Util;
 using iText.Kernel.Counter;
+using Microsoft.Extensions.Logging;
 using Versions.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -127,7 +128,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                     if (type == null && fileLoadExceptionMessage != null)
                     {
-                        LogManager.GetLogger(typeof(ReflectionUtils)).Error(fileLoadExceptionMessage);
+                        ITextLogManager.GetLogger(typeof(ReflectionUtils)).LogError(fileLoadExceptionMessage);
                     }
                 }
             }

@@ -24,8 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
 using Tesseract;
+using iText.IO;
 using iText.IO.Util;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -180,7 +181,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 TesseractHelper.RunCommand(execPath, @params, workingDirectory);
             }
             catch (Tesseract4OcrException e) {
-                LogManager.GetLogger(GetType()).Error(e.Message);
+                ITextLogManager.GetLogger(GetType()).LogError(e.Message);
                 throw new Tesseract4OcrException(e.Message, e);
             }
             finally {
@@ -190,7 +191,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                 }
                 catch (SecurityException e) {
-                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
+                    ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , imagePath, e.Message));
                 }
                 try {
@@ -200,7 +201,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                 }
                 catch (SecurityException e) {
-                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
+                    ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , GetTesseract4OcrEngineProperties().GetPathToUserWordsFile(), e.Message));
                 }
             }
@@ -307,8 +308,8 @@ namespace iText.Pdfocr.Tesseract4 {
                     .FullName;
                 String fileName = new String(filePath.ToCharArray(), 0, filePath.IndexOf(extension, StringComparison.Ordinal
                     ));
-                LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CREATED_TEMPORARY_FILE
-                    , outputFile.FullName));
+                ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
+                    CREATED_TEMPORARY_FILE, outputFile.FullName));
                 command.Add(AddQuotes(fileName));
             }
             catch (Exception) {
@@ -364,7 +365,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , e.Message));
             }
             return path;

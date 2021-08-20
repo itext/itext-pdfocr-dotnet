@@ -23,7 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
@@ -34,7 +35,7 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
     public abstract class TessDataIntegrationTest : IntegrationTestHelper {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tessdata.TessDataIntegrationTest
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tessdata.TessDataIntegrationTest
             ));
 
         internal AbstractTesseract4OcrEngine tesseractReader;
@@ -599,7 +600,7 @@ namespace iText.Pdfocr.Tessdata {
             }
             catch (System.IO.IOException e) {
                 areEqual = false;
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return areEqual;
         }

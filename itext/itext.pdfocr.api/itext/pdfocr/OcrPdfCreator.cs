@@ -23,7 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Font.Otf;
 using iText.IO.Image;
 using iText.IO.Util;
@@ -67,7 +68,7 @@ namespace iText.Pdfocr {
     /// </remarks>
     public class OcrPdfCreator {
         /// <summary>The logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
 
         /// <summary>
         /// Selected
@@ -181,7 +182,8 @@ namespace iText.Pdfocr {
         /// </returns>
         public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent
             ) {
-            LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.Count));
+            LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.
+                Count));
             IMetaInfo storedMetaInfo = null;
             if (ocrEngine is IThreadLocalMetaInfoAware) {
                 storedMetaInfo = ((IThreadLocalMetaInfoAware)ocrEngine).GetThreadLocalMetaInfo();
@@ -311,7 +313,7 @@ namespace iText.Pdfocr {
                 AddTextToCanvas(imageSize, pageText, canvas, multiplier, pdfPage.GetMediaBox());
             }
             catch (OcrException e) {
-                LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
+                LOGGER.LogError(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
                 throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message);
             }
             if (layers[1] != null) {
@@ -359,8 +361,8 @@ namespace iText.Pdfocr {
             bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !ocrPdfCreatorProperties.GetPdfLang
                 ().Equals("");
             if (createPdfA3u && !hasPdfLangProperty) {
-                LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET
-                    ));
+                LOGGER.LogError(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant
+                    .PDF_LANGUAGE_PROPERTY_IS_NOT_SET));
                 throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(PdfOcrLogMessageConstant.
                     PDF_LANGUAGE_PROPERTY_IS_NOT_SET);
             }
@@ -397,8 +399,8 @@ namespace iText.Pdfocr {
                 FileInfo inputImage = entry.Key;
                 IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage, ocrPdfCreatorProperties.GetImageRotationHandler
                     ());
-                LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
-                    (), imageDataList.Count));
+                LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage
+                    .ToString(), imageDataList.Count));
                 IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
                 if (imageTextData.Keys.Count > 0) {
                     for (int page = 0; page < imageDataList.Count; ++page) {
@@ -627,7 +629,7 @@ namespace iText.Pdfocr {
                 }
                 // Warning is logged if not PDF/A document is being created
                 if (notDefGlyphsExists) {
-                    LOGGER.Warn(message);
+                    LOGGER.LogWarning(message);
                 }
                 return this.ShowText(glyphLine, new ActualTextIterator(glyphLine));
             }

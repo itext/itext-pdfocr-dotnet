@@ -22,7 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Font;
 using iText.IO.Util;
 using iText.Layout.Font;
@@ -70,7 +71,7 @@ namespace iText.Pdfocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT
                     , e.Message));
                 return new byte[0];
             }

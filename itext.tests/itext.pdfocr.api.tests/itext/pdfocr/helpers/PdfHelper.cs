@@ -22,7 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Util;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -46,7 +47,7 @@ namespace iText.Pdfocr.Helpers {
         public static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory 
             + "/test/resources/itext/pdfocr/";
 
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(PdfHelper));
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(PdfHelper));
 
         /// <summary>Returns images test directory.</summary>
         public static String GetImagesTestDirectory() {
@@ -130,7 +131,7 @@ namespace iText.Pdfocr.Helpers {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
         }
 
@@ -148,7 +149,7 @@ namespace iText.Pdfocr.Helpers {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
         }
 
@@ -162,7 +163,7 @@ namespace iText.Pdfocr.Helpers {
                 result = GetTextFromPdfLayer(pdfPath, "Text Layer");
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return result;
         }

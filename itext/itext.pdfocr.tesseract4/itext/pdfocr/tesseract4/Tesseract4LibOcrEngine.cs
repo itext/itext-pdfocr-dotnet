@@ -24,8 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
 using Tesseract;
+using iText.IO;
 using iText.IO.Util;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -183,7 +184,7 @@ namespace iText.Pdfocr.Tesseract4 {
                             }
                         }
                         catch (System.IO.IOException e) {
-                            LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE
+                            ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE
                                 , e.Message));
                             throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
                         }
@@ -191,7 +192,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (Tesseract4OcrException e) {
-                LogManager.GetLogger(GetType()).Error(e.Message);
+                ITextLogManager.GetLogger(GetType()).LogError(e.Message);
                 throw new Tesseract4OcrException(e.Message, e);
             }
             finally {
@@ -263,7 +264,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (TesseractException e) {
                 String msg = MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED, e.Message);
-                LogManager.GetLogger(GetType()).Error(msg);
+                ITextLogManager.GetLogger(GetType()).LogError(msg);
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }
             finally {
@@ -305,8 +306,8 @@ namespace iText.Pdfocr.Tesseract4 {
                         }
                         catch (Exception e) {
                             // NOSONAR
-                            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE
-                                , e.Message));
+                            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
+                                CANNOT_PROCESS_IMAGE, e.Message));
                         }
                     }
                     if (result == null) {
@@ -317,7 +318,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e) {
                 // NOSONAR
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
                     , e.Message));
                 throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
             }

@@ -25,7 +25,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel.Counter;
@@ -92,8 +93,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         /// <param name="txtFile">file to be created</param>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
-            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.START_OCR_FOR_IMAGES
-                , inputImages.Count));
+            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
+                START_OCR_FOR_IMAGES, inputImages.Count));
             StringBuilder content = new StringBuilder();
             foreach (FileInfo inputImage in inputImages) {
                 content.Append(DoImageOcr(inputImage, OutputFormat.TXT));
@@ -454,7 +455,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_OCR_INPUT_FILE
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_OCR_INPUT_FILE
                     , e.Message));
             }
             finally {
@@ -495,7 +496,7 @@ namespace iText.Pdfocr.Tesseract4 {
             ImageType type = ImagePreprocessingUtil.GetImageType(image);
             bool isValid = SUPPORTED_IMAGE_FORMATS.Contains(type);
             if (!isValid) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , image.FullName));
                 throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(image
                     .Name);
