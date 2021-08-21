@@ -99,37 +99,6 @@ namespace iText.Pdfocr.Tesseract4 {
         /// returns data in the format described below.
         /// </summary>
         /// <param name="inputFiles">list of input files</param>
-        /// <param name="textPositioning">
-        /// 
-        /// <see cref="TextPositioning"/>
-        /// </param>
-        /// <returns>
-        /// 
-        /// <see cref="System.Collections.IDictionary{K, V}"/>
-        /// where key is
-        /// <see cref="int?"/>
-        /// representing the number of the page and value is
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of
-        /// <see cref="iText.Pdfocr.TextInfo"/>
-        /// elements where each
-        /// <see cref="iText.Pdfocr.TextInfo"/>
-        /// element contains a word or a line and its 4
-        /// coordinates(bbox)
-        /// </returns>
-        [System.ObsoleteAttribute(@"since 1.0.2. Use ParseHocrFile(System.Collections.Generic.IList{E}, System.Collections.Generic.IList{E}, Tesseract4OcrEngineProperties) instead"
-            )]
-        public static IDictionary<int, IList<TextInfo>> ParseHocrFile(IList<FileInfo> inputFiles, TextPositioning 
-            textPositioning) {
-            return ParseHocrFile(inputFiles, null, new Tesseract4OcrEngineProperties().SetTextPositioning(textPositioning
-                ));
-        }
-
-        /// <summary>
-        /// Parses each hocr file from the provided list, retrieves text, and
-        /// returns data in the format described below.
-        /// </summary>
-        /// <param name="inputFiles">list of input files</param>
         /// <param name="txtInputFiles">
         /// list of input files in txt format used to make hocr recognition result more precise.
         /// This is needed for cases of Thai language or some Chinese dialects
