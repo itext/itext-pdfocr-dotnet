@@ -70,8 +70,8 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.AreEqual("degrees", pageData.Get(1)[1].GetText());
             NUnit.Framework.Assert.AreEqual("rotated", pageData.Get(1)[2].GetText());
             NUnit.Framework.Assert.AreEqual("image", pageData.Get(1)[3].GetText());
-            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBbox()[2] - pageData.Get(1)[0].GetBbox()[0] > 100);
-            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBbox()[3] - pageData.Get(1)[0].GetBbox()[1] < 100);
+            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBboxRect().GetWidth() > 100);
+            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBboxRect().GetHeight() < 100);
         }
 
         [NUnit.Framework.Test]

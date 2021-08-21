@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
+using System.Text;
 using System.Text.RegularExpressions;
 using Common.Logging;
 using iText.IO.Util;
@@ -525,9 +526,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Add text chunk represented by text and bbox to list of text infos.</summary>
         private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect, Rectangle pageBbox
             ) {
-            IList<float> bbox = JavaUtil.ArraysAsList(ToPixels(bboxRect.GetLeft()), ToPixels(pageBbox.GetTop() - bboxRect
-                .GetTop()), ToPixels(bboxRect.GetRight()), ToPixels(pageBbox.GetTop() - bboxRect.GetBottom()));
-            TextInfo textInfo = new TextInfo(text, bboxRect, bbox);
+            TextInfo textInfo = new TextInfo(text, bboxRect);
             textData.Add(textInfo);
         }
 
@@ -540,11 +539,11 @@ namespace iText.Pdfocr.Tesseract4 {
 
         /// <summary>Gets common text for list of text infos.</summary>
         private static String GetTextInfosText(IList<TextInfo> textInfos) {
-            String text = "";
+            StringBuilder text = new StringBuilder();
             foreach (TextInfo textInfo in textInfos) {
-                text = text + textInfo.GetText();
+                text.Append(textInfo.GetText());
             }
-            return text;
+            return text.ToString();
         }
 
         /// <summary>Merges text infos.</summary>

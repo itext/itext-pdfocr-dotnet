@@ -113,10 +113,6 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.AreEqual(136.5f, (float)textInfo.GetBboxRect().GetBottom(), 0.1);
             NUnit.Framework.Assert.AreEqual(385.5, (float)textInfo.GetBboxRect().GetRight(), 0.1);
             NUnit.Framework.Assert.AreEqual(162.75, (float)textInfo.GetBboxRect().GetTop(), 0.1);
-            NUnit.Framework.Assert.AreEqual(383.0f, (float)textInfo.GetBbox()[0], 0.1);
-            NUnit.Framework.Assert.AreEqual(101.0f, (float)textInfo.GetBbox()[1], 0.1);
-            NUnit.Framework.Assert.AreEqual(514.0f, (float)textInfo.GetBbox()[2], 0.1);
-            NUnit.Framework.Assert.AreEqual(136.0f, (float)textInfo.GetBbox()[3], 0.1);
         }
     }
 }

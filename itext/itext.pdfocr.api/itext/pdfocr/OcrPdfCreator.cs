@@ -69,15 +69,6 @@ namespace iText.Pdfocr {
         /// <summary>The logger.</summary>
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
 
-        /// <summary>Indices in array representing bbox.</summary>
-        private const int LEFT_IDX = 0;
-
-        private const int TOP_IDX = 1;
-
-        private const int RIGHT_IDX = 2;
-
-        private const int BOTTOM_IDX = 3;
-
         /// <summary>
         /// Selected
         /// <see cref="IOcrEngine"/>.
@@ -535,42 +526,22 @@ namespace iText.Pdfocr {
 
         /// <summary>Get left bound of text chunk.</summary>
         private static float GetLeft(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return textInfo.GetBbox()[LEFT_IDX] * multiplier;
-            }
-            else {
-                return textInfo.GetBboxRect().GetLeft() * multiplier;
-            }
+            return textInfo.GetBboxRect().GetLeft() * multiplier;
         }
 
         /// <summary>Get right bound of text chunk.</summary>
         private static float GetRight(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return (textInfo.GetBbox()[RIGHT_IDX] + 1) * multiplier - 1;
-            }
-            else {
-                return (textInfo.GetBboxRect().GetRight() + 1) * multiplier - 1;
-            }
+            return (textInfo.GetBboxRect().GetRight() + 1) * multiplier - 1;
         }
 
         /// <summary>Get top bound of text chunk.</summary>
         private static float GetTop(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return textInfo.GetBbox()[TOP_IDX] * multiplier;
-            }
-            else {
-                return textInfo.GetBboxRect().GetTop() * multiplier;
-            }
+            return textInfo.GetBboxRect().GetTop() * multiplier;
         }
 
         /// <summary>Get bottom bound of text chunk.</summary>
         private static float GetBottom(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return (textInfo.GetBbox()[BOTTOM_IDX] + 1) * multiplier - 1;
-            }
-            else {
-                return (textInfo.GetBboxRect().GetBottom() + 1) * multiplier - 1;
-            }
+            return (textInfo.GetBboxRect().GetBottom() + 1) * multiplier - 1;
         }
 
         /// <summary>Check if line is not empty.</summary>
