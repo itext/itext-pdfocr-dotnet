@@ -20,24 +20,17 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Kernel.Counter.Event;
+using iText.Commons.Actions.Data;
 
-namespace iText.Pdfocr.Events {
-    /// <summary>
-    /// The interface which holds a thread local meta info,
-    /// meaning different threads operate with independent and different meta infos.
-    /// </summary>
-    public interface IThreadLocalMetaInfoAware {
-        /// <summary>Gets the meta info which is held by the interface.</summary>
-        /// <returns>the held thread local meta info</returns>
-        IMetaInfo GetThreadLocalMetaInfo();
+namespace iText.Pdfocr {
+    /// <summary>The interface that holds information about product data and meta info.</summary>
+    public interface IProductAware {
+        /// <summary>Gets the container with meta info.</summary>
+        /// <returns>the held meta info container</returns>
+        PdfOcrMetaInfoContainer GetMetaInfoContainer();
 
-        /// <summary>Sets a thread local meta info.</summary>
-        /// <param name="metaInfo">a thread local meta info to be held</param>
-        /// <returns>
-        /// this
-        /// <see cref="IThreadLocalMetaInfoAware"/>
-        /// </returns>
-        IThreadLocalMetaInfoAware SetThreadLocalMetaInfo(IMetaInfo metaInfo);
+        /// <summary>Gets object containing information about the product.</summary>
+        /// <returns>product data</returns>
+        ProductData GetProductData();
     }
 }

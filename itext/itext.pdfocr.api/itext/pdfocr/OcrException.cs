@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using iText.IO.Util;
+using iText.Commons.Utils;
 
 namespace iText.Pdfocr {
     /// <summary>Exception class for custom exceptions.</summary>
@@ -32,6 +32,10 @@ namespace iText.Pdfocr {
         public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve " + "any of provided fonts. Please check provided FontProvider.";
 
         public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create " + "PDF document: {0}";
+
+        public const String STATISTICS_EVENT_TYPE_CANT_BE_NULL = "Statistics event type can't be null";
+
+        public const String STATISTICS_EVENT_TYPE_IS_NOT_DETECTED = "Statistics event type is not detected.";
 
         private IList<String> messageParams;
 

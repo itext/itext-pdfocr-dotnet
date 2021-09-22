@@ -28,7 +28,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using iText.IO;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Util;
 using Microsoft.Extensions.Logging;
@@ -325,7 +326,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="SetTesseractProperties"/> method. In .Net all these properties
         /// are needed to be provided in tesseract constructor in order to
         /// initialize tesseract instance.Thus, tesseract initialization takes
-        /// place in <see cref="Tesseract4LibOcrEngine.Tesseract4LibOcrEngine(Tesseract4OcrEngineProperties)"/> constructor in
+        /// place in <see cref="Tesseract4LibOcrEngine"/> constructor in
         /// java, but in .Net it happens only after all properties are validated,
         /// i.e. just before OCR process.
         /// </remarks>

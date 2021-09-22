@@ -26,8 +26,12 @@ using System.IO;
 using System.Security;
 using Microsoft.Extensions.Logging;
 using Tesseract;
-using iText.IO;
-using iText.IO.Util;
+using iText.Commons;
+using iText.Commons.Actions;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Utils;
+using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Actions.Events;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -122,18 +126,21 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        /// <param name="dispatchEvent">
-        /// indicates if
-        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
-        /// needs to be dispatched
-        /// </param>
+        /// <param name="dispatchEvent">indicates if event needs to be dispatched</param>
+        /// <param name="eventHelper">event helper</param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber, bool dispatchEvent) {
-            ScheduledCheck();
+            , int pageNumber, bool dispatchEvent, AbstractPdfOcrEventHelper eventHelper) {
             IList<String> @params = new List<String>();
             String execPath = null;
             String imagePath = null;
             String workingDirectory = null;
+            PdfOcrTesseract4ProductEvent @event = null;
+            if (eventHelper == null) {
+                eventHelper = new Tesseract4EventHelper();
+            }
+            if (dispatchEvent) {
+                @event = OnEvent(eventHelper);
+            }
             try {
                 imagePath = inputImage.FullName;
                 // path to tesseract executable
@@ -174,11 +181,14 @@ namespace iText.Pdfocr.Tesseract4 {
                 AddPreserveInterwordSpaces(@params);
                 // set default user defined dpi
                 AddDefaultDpi(@params);
-                if (dispatchEvent) {
-                    OnEvent();
-                }
                 // run tesseract process
                 TesseractHelper.RunCommand(execPath, @params, workingDirectory);
+                // statistics event
+                OnEventStatistics(eventHelper);
+                // confrim on_demand event
+                if (@event != null && @event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    EventManager.GetInstance().OnEvent(new ConfirmEvent(@event));
+                }
             }
             catch (Tesseract4OcrException e) {
                 ITextLogManager.GetLogger(GetType()).LogError(e.Message);

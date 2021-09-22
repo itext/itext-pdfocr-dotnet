@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -76,7 +76,7 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
             result = result.Replace("\n", "").Replace("\f", "");
-            result = iText.IO.Util.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
+            result = iText.Commons.Utils.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
             NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
             NUnit.Framework.Assert.IsTrue(tesseractReader.GetTesseract4OcrEngineProperties().GetPathToUserWordsFile().
                 EndsWith(".user-words"));

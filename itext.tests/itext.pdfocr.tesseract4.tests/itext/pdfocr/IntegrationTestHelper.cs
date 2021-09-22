@@ -24,9 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using iText.IO;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Font;
-using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
@@ -205,8 +205,7 @@ namespace iText.Pdfocr {
         /// <summary>Get text from layer specified by name from page.</summary>
         protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page, bool useActualText
             ) {
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath), new DocumentProperties().SetEventCountingMetaInfo
-                (new PdfOcrMetaInfo()));
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             IntegrationTestHelper.ExtractionStrategy textExtractionStrategy = new IntegrationTestHelper.ExtractionStrategy
                 (layerName);
             textExtractionStrategy.SetUseActualText(useActualText);
@@ -385,8 +384,8 @@ namespace iText.Pdfocr {
         protected internal virtual String GetTextFromTextFile(FileInfo file) {
             String content = null;
             try {
-                content = iText.IO.Util.JavaUtil.GetStringForBytes(File.ReadAllBytes(file.FullName), System.Text.Encoding.
-                    UTF8);
+                content = iText.Commons.Utils.JavaUtil.GetStringForBytes(File.ReadAllBytes(file.FullName), System.Text.Encoding
+                    .UTF8);
             }
             catch (System.IO.IOException e) {
                 LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message

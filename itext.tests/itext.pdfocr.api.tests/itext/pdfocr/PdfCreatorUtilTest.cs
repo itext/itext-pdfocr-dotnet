@@ -22,8 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Collections.Generic;
 using System.IO;
+using iText.Commons.Utils;
 using iText.IO.Image;
-using iText.IO.Util;
 using iText.Pdfocr.Helpers;
 using iText.Test;
 using iText.Test.Attributes;

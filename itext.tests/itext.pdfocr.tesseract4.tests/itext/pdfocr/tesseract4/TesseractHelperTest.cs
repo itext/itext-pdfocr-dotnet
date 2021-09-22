@@ -25,8 +25,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using iText.IO;
-using iText.IO.Util;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {

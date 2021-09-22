@@ -24,8 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iText.Commons.Utils;
 using iText.IO.Source;
-using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -267,7 +267,7 @@ namespace iText.Pdfocr.General {
                 );
             String result = tesseractReader.DoImageOcr(file, OutputFormat.TXT);
             foreach (String line in expectedOutput) {
-                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
+                NUnit.Framework.Assert.IsTrue(iText.Commons.Utils.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
             }
         }
 
@@ -280,7 +280,7 @@ namespace iText.Pdfocr.General {
                 );
             String result = tesseractReader.DoImageOcr(file, OutputFormat.HOCR);
             foreach (String line in expectedOutput) {
-                NUnit.Framework.Assert.IsTrue(iText.IO.Util.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
+                NUnit.Framework.Assert.IsTrue(iText.Commons.Utils.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
             }
         }
 

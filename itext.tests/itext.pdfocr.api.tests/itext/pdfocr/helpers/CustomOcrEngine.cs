@@ -23,17 +23,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iText.IO.Util;
-using iText.Kernel.Counter.Event;
+using iText.Commons.Actions.Data;
+using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
-using iText.Pdfocr.Events;
 
 namespace iText.Pdfocr.Helpers {
-    public class CustomOcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
+    public class CustomOcrEngine : IOcrEngine, IProductAware {
         private OcrEngineProperties ocrEngineProperties;
-
-        private IMetaInfo threadLocalMetaInfo;
 
         public CustomOcrEngine() {
         }
@@ -53,20 +50,28 @@ namespace iText.Pdfocr.Helpers {
             return result;
         }
 
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
+            ) {
+            return DoImageOcr(input);
+        }
+
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
         }
 
-        public virtual IMetaInfo GetThreadLocalMetaInfo() {
-            return threadLocalMetaInfo;
-        }
-
-        public virtual IThreadLocalMetaInfoAware SetThreadLocalMetaInfo(IMetaInfo metaInfo) {
-            this.threadLocalMetaInfo = metaInfo;
-            return this;
+        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
+            ) {
         }
 
         public virtual OcrEngineProperties GetOcrEngineProperties() {
             return ocrEngineProperties;
+        }
+
+        public virtual PdfOcrMetaInfoContainer GetMetaInfoContainer() {
+            return null;
+        }
+
+        public virtual ProductData GetProductData() {
+            return null;
         }
     }
 }

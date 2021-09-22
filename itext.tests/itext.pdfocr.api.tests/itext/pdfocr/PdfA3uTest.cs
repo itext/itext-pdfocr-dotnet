@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;

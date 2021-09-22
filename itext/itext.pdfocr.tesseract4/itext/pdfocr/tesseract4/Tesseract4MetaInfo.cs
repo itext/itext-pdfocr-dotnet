@@ -20,15 +20,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Kernel.Counter.Event;
+using iText.Commons.Actions.Contexts;
 
-namespace iText.Metainfo {
-    /// <summary>This class is used for test purposes.</summary>
-    /// <remarks>
-    /// This class is used for test purposes.
-    /// Please be aware that it's put in the com.itextpdf.metainfo deliberately,
-    /// so that it belongs neither to com.itextpdf.pdfocr nor com.itextpdf.pdfocr.tesseract4 packages
-    /// </remarks>
-    public class TestMetaInfo : IMetaInfo {
+namespace iText.Pdfocr.Tesseract4 {
+    internal class Tesseract4MetaInfo : IMetaInfo {
     }
 }

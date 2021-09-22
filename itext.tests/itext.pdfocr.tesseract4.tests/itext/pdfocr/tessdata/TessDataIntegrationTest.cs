@@ -24,8 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using iText.IO;
-using iText.IO.Util;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
@@ -156,7 +156,7 @@ namespace iText.Pdfocr.Tessdata {
             String expected = "日本語文法";
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
                 String>("jpn"));
-            result = iText.IO.Util.StringUtil.ReplaceAll(result, "[\f\n]", "");
+            result = iText.Commons.Utils.StringUtil.ReplaceAll(result, "[\f\n]", "");
             // correct result with specified japanese language
             NUnit.Framework.Assert.IsTrue(result.Contains(expected));
         }
@@ -167,8 +167,8 @@ namespace iText.Pdfocr.Tessdata {
             String expectedFr = "RESTEZ\nCALME\nPARLEZ EN\nFRANÇAIS";
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath, JavaCollectionsUtil.SingletonList<
                 String>("fra"));
-            result = iText.IO.Util.StringUtil.ReplaceAll(result, "(?:\\n\\f)+", "").Trim();
-            result = iText.IO.Util.StringUtil.ReplaceAll(result, "\\n\\n", "\n").Trim();
+            result = iText.Commons.Utils.StringUtil.ReplaceAll(result, "(?:\\n\\f)+", "").Trim();
+            result = iText.Commons.Utils.StringUtil.ReplaceAll(result, "\\n\\n", "\n").Trim();
             // correct result with specified spanish language
             NUnit.Framework.Assert.IsTrue(result.EndsWith(expectedFr));
             // incorrect result when languages are not specified
@@ -247,7 +247,7 @@ namespace iText.Pdfocr.Tessdata {
             String result = GetTextFromPdf(tesseractReader, file, JavaUtil.ArraysAsList("ara", "eng"), CAIRO_FONT_PATH
                 );
             // correct result with specified arabic+english languages
-            NUnit.Framework.Assert.AreEqual(expected, iText.IO.Util.StringUtil.ReplaceAll(result, "[?]", ""));
+            NUnit.Framework.Assert.AreEqual(expected, iText.Commons.Utils.StringUtil.ReplaceAll(result, "[?]", ""));
             // incorrect result when languages are not specified
             // or languages were specified in the wrong order
             NUnit.Framework.Assert.AreNotEqual(expected, GetTextFromPdf(tesseractReader, file, JavaCollectionsUtil.SingletonList
@@ -573,9 +573,9 @@ namespace iText.Pdfocr.Tessdata {
             }
             for (int i = 0; i < expected.Count; i++) {
                 String exp = expected[i].Replace("\n", "").Replace("\f", "");
-                exp = iText.IO.Util.StringUtil.ReplaceAll(exp, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
+                exp = iText.Commons.Utils.StringUtil.ReplaceAll(exp, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
                 String res = result[i].Replace("\n", "").Replace("\f", "");
-                res = iText.IO.Util.StringUtil.ReplaceAll(res, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
+                res = iText.Commons.Utils.StringUtil.ReplaceAll(res, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
                 if (expected[i] == null || result[i] == null) {
                     areEqual = false;
                     break;
