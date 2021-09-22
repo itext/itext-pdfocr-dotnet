@@ -50,4 +50,8 @@ internal static class PdfOcrExtensions
         return oldVal;
     }
 
+    public static bool IsEmpty<T1, T2>(this ICollection<KeyValuePair<T1, T2>> collection) {
+        return collection.Count == 0;
+    }
+
 }

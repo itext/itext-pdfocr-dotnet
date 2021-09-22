@@ -20,24 +20,25 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Sequence;
+using iText.Pdfocr.Tesseract4.Actions.Data;
+using iText.Pdfocr.Tesseract4.Actions.Events;
+using iText.Test;
 
-namespace iText.Pdfocr {
-    /// <summary>Helper class for working with events.</summary>
-    /// <remarks>Helper class for working with events. This class is for internal usage.</remarks>
-    public abstract class AbstractPdfOcrEventHelper : AbstractITextEvent {
-        /// <summary>Handles the event.</summary>
-        /// <param name="event">event</param>
-        public abstract void OnEvent(AbstractProductITextEvent @event);
+namespace iText.Pdfocr.Actions.Events {
+    public class PdfOcrTesseract4ProductEventTest : ExtendedITextTest {
+        [NUnit.Framework.Test]
+        public virtual void EventTypeTest() {
+            PdfOcrTesseract4ProductEvent e = PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(new SequenceId(), null
+                , EventConfirmationType.ON_DEMAND);
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ProductEvent.PROCESS_IMAGE, e.GetEventType());
+        }
 
-        /// <summary>Returns the sequence id</summary>
-        /// <returns>sequence id</returns>
-        public abstract SequenceId GetSequenceId();
-
-        /// <summary>Returns the confirmation type of event.</summary>
-        /// <returns>event confirmation type</returns>
-        public abstract EventConfirmationType GetConfirmationType();
+        [NUnit.Framework.Test]
+        public virtual void ProductDataNameTest() {
+            NUnit.Framework.Assert.AreEqual("pdfOcr-tesseract4", PdfOcrTesseract4ProductData.GetInstance().GetProductName
+                ());
+        }
     }
 }

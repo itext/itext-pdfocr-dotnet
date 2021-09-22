@@ -24,7 +24,7 @@ using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Contexts;
 using iText.Commons.Actions.Sequence;
-using iText.Pdfocr.Statisctics;
+using iText.Pdfocr.Statistics;
 
 namespace iText.Pdfocr {
     internal class OcrPdfCreatorEventHelper : AbstractPdfOcrEventHelper {

@@ -27,7 +27,7 @@ using iText.Commons.Actions.Data;
 using iText.Commons.Utils;
 using iText.Pdfocr;
 
-namespace iText.Pdfocr.Statisctics {
+namespace iText.Pdfocr.Statistics {
     /// <summary>Class which represents an event for specifying type of an ocr processing.</summary>
     /// <remarks>
     /// Class which represents an event for specifying type of an ocr processing.

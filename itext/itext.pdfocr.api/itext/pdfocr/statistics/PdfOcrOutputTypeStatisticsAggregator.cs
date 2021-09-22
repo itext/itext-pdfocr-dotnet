@@ -26,7 +26,7 @@ using iText.Commons.Actions;
 using iText.Commons.Utils;
 using iText.Pdfocr;
 
-namespace iText.Pdfocr.Statisctics {
+namespace iText.Pdfocr.Statistics {
     /// <summary>Statistics aggregator which aggregates types of ocr processing.</summary>
     public class PdfOcrOutputTypeStatisticsAggregator : AbstractStatisticsAggregator {
         private const String STRING_FOR_DATA = "data";

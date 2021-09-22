@@ -32,7 +32,7 @@ using iText.Commons.Actions.Data;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Pdfocr;
-using iText.Pdfocr.Statisctics;
+using iText.Pdfocr.Statistics;
 using iText.Pdfocr.Tesseract4.Actions.Data;
 using iText.Pdfocr.Tesseract4.Actions.Events;
 

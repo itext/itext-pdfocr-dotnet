@@ -23,17 +23,116 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using iText.Commons.Actions.Contexts;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Pdfa;
 using iText.Pdfocr.Helpers;
 using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
     public class ApiTest : ExtendedITextTest {
+        public static readonly String DESTINATION_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory
+             + "/test/itext/pdfocr";
+
+        [NUnit.Framework.OneTimeSetUp]
+        public static void BeforeClass() {
+            CreateOrClearDestinationFolder(DESTINATION_FOLDER);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreatePdfWithFileTest() {
+            OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetMetaInfo(new ApiTest.DummyMetaInfo());
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(new CustomOcrEngine(), props);
+            using (PdfDocument pdf = pdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(PdfHelper
+                .GetDefaultImagePath())), PdfHelper.GetPdfWriter(), new DocumentProperties().SetEventCountingMetaInfo(
+                new ApiTest.DummyMetaInfo()))) {
+                String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
+                    .UTF8);
+                NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreatePdfFileWithFileTest() {
+            String output = DESTINATION_FOLDER + "createPdfFileWithFileTest.pdf";
+            OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetMetaInfo(new ApiTest.DummyMetaInfo());
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(new CustomOcrEngine(), props);
+            pdfCreator.CreatePdfFile(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(PdfHelper.GetDefaultImagePath
+                ())), new FileInfo(output));
+            using (PdfDocument pdf = new PdfDocument(new PdfReader(output))) {
+                String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
+                    .UTF8);
+                NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreatePdfAWithFileTest() {
+            OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetMetaInfo(new ApiTest.DummyMetaInfo()).SetPdfLang
+                ("en-US");
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(new CustomOcrEngine(), props);
+            using (PdfDocument pdf = pdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(PdfHelper
+                .GetDefaultImagePath())), PdfHelper.GetPdfWriter(), new DocumentProperties().SetEventCountingMetaInfo(
+                new ApiTest.DummyMetaInfo()), PdfHelper.GetRGBPdfOutputIntent())) {
+                String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
+                    .UTF8);
+                NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
+                NUnit.Framework.Assert.IsTrue(pdf is PdfADocument);
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreatePdfAFileWithFileTest() {
+            String output = DESTINATION_FOLDER + "createPdfAFileWithFileTest.pdf";
+            OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetMetaInfo(new ApiTest.DummyMetaInfo()).SetPdfLang
+                ("en-US");
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(new CustomOcrEngine(), props);
+            pdfCreator.CreatePdfAFile(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(PdfHelper.GetDefaultImagePath
+                ())), new FileInfo(output), PdfHelper.GetRGBPdfOutputIntent());
+            using (PdfDocument pdf = new PdfDocument(new PdfReader(output))) {
+                String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
+                    .UTF8);
+                NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
+                PdfAConformanceLevel cl = pdf.GetReader().GetPdfAConformanceLevel();
+                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetConformance(), cl.GetConformance());
+                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetPart(), cl.GetPart());
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreatePdfAFileWithFileNoMetaTest() {
+            String output = DESTINATION_FOLDER + "createPdfAFileWithFileNoMetaTest.pdf";
+            OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetPdfLang("en-US");
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(new CustomOcrEngine(), props);
+            pdfCreator.CreatePdfAFile(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(PdfHelper.GetDefaultImagePath
+                ())), new FileInfo(output), PdfHelper.GetRGBPdfOutputIntent());
+            using (PdfDocument pdf = new PdfDocument(new PdfReader(output))) {
+                String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
+                    .UTF8);
+                NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
+                PdfAConformanceLevel cl = pdf.GetReader().GetPdfAConformanceLevel();
+                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetConformance(), cl.GetConformance());
+                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetPart(), cl.GetPart());
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreatePdfAFileWithFileProductAwareEngineTest() {
+            String output = DESTINATION_FOLDER + "createPdfAFileWithFileProductAwareEngineTest.pdf";
+            OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetPdfLang("en-US");
+            CustomProductAwareOcrEngine ocrEngine = new CustomProductAwareOcrEngine();
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(ocrEngine, props);
+            pdfCreator.CreatePdfAFile(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(PdfHelper.GetDefaultImagePath
+                ())), new FileInfo(output), PdfHelper.GetRGBPdfOutputIntent());
+            NUnit.Framework.Assert.IsTrue(ocrEngine.IsGetMetaInfoContainerTriggered());
+        }
+
         [NUnit.Framework.Test]
         public virtual void TestTextInfo() {
             String path = PdfHelper.GetDefaultImagePath();
@@ -96,6 +195,9 @@ namespace iText.Pdfocr {
             public virtual ImageData ApplyRotation(ImageData imageData) {
                 throw new Exception("applyRotation is not implemented");
             }
+        }
+
+        private class DummyMetaInfo : IMetaInfo {
         }
     }
 }
