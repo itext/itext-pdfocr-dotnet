@@ -458,7 +458,7 @@ namespace iText.Pdfocr.Tesseract4 {
             if (txtLine == null) {
                 foreach (iText.StyledXmlParser.Jsoup.Nodes.Element word in lineOrCaption.GetElementsByClass(OCRX_WORD)) {
                     Rectangle bboxRect = GetAlignedBBox(word, textPositioning, pageBbox, unparsedBBoxes);
-                    AddToTextData(textData, word.Text(), bboxRect, pageBbox);
+                    AddToTextData(textData, word.Text(), bboxRect);
                 }
             }
             else {
@@ -472,7 +472,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     if (iText.Commons.Utils.StringUtil.ReplaceAll(lineItems[0], NEW_LINE_OR_SPACE_PATTERN, "").Equals(iText.Commons.Utils.StringUtil.ReplaceAll
                         (GetTextInfosText(textInfos), SPACE_PATTERN, ""))) {
                         lineItems = JavaUtil.ArraysCopyOfRange(lineItems, 1, lineItems.Length);
-                        AddToTextData(textData, MergeTextInfos(textInfos), pageBbox);
+                        AddToTextData(textData, MergeTextInfos(textInfos));
                         textInfos.Clear();
                     }
                 }
@@ -487,26 +487,25 @@ namespace iText.Pdfocr.Tesseract4 {
             IList<TextInfo> textData = new List<TextInfo>();
             Rectangle bboxRect = GetAlignedBBox(lineOrCaption, TextPositioning.BY_LINES, pageBbox, unparsedBBoxes);
             if (txtLine == null) {
-                AddToTextData(textData, lineOrCaption.Text(), bboxRect, pageBbox);
+                AddToTextData(textData, lineOrCaption.Text(), bboxRect);
             }
             else {
-                AddToTextData(textData, txtLine, bboxRect, pageBbox);
+                AddToTextData(textData, txtLine, bboxRect);
             }
             return textData;
         }
 
         /// <summary>Add text chunk represented by text and bbox to list of text infos.</summary>
-        private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect, Rectangle pageBbox
-            ) {
+        private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect) {
             TextInfo textInfo = new TextInfo(text, bboxRect);
             textData.Add(textInfo);
         }
 
         /// <summary>Add text chunk represented by text info to list of text infos.</summary>
-        private static void AddToTextData(IList<TextInfo> textData, TextInfo textInfo, Rectangle pageBbox) {
+        private static void AddToTextData(IList<TextInfo> textData, TextInfo textInfo) {
             String text = textInfo.GetText();
             Rectangle bboxRect = textInfo.GetBboxRect();
-            AddToTextData(textData, text, bboxRect, pageBbox);
+            AddToTextData(textData, text, bboxRect);
         }
 
         /// <summary>Gets common text for list of text infos.</summary>
