@@ -28,6 +28,7 @@ using iText.Commons.Utils;
 using iText.IO.Font;
 using iText.IO.Util;
 using iText.Layout.Font;
+using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr {
     public class PdfOcrFontProvider : FontProvider {

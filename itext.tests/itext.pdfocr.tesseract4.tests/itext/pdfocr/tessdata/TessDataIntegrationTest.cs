@@ -30,6 +30,7 @@ using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Logs;
 using iText.Pdfocr.Tesseract4;
 using iText.Test.Attributes;
 

@@ -32,6 +32,7 @@ using iText.Commons;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Util;
+using iText.Pdfocr.Tesseract4.Logs;
 using Microsoft.Extensions.Logging;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using Tesseract;

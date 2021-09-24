@@ -22,7 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 
-namespace iText.Pdfocr.Tesseract4 {
+namespace iText.Pdfocr.Tesseract4.Logs {
     public class Tesseract4LogMessageConstant {
         public const String TESSERACT_FAILED = "Tesseract failed: {0}";
 
@@ -40,7 +40,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_DELETE_FILE = "File {0} cannot be deleted: {1}";
 
-        public const String CANNOT_PROCESS_IMAGE = "Cannot process " + "image: {0}";
+        public const String CANNOT_PROCESS_IMAGE = "Cannot process image: {0}";
 
         public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
 
@@ -57,7 +57,7 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image {0}";
 
-        public const String CANNOT_GET_TEMPORARY_DIRECTORY = "Cannot get " + "temporary directory: {0}";
+        public const String CANNOT_GET_TEMPORARY_DIRECTORY = "Cannot get temporary directory: {0}";
 
         public const String CANNOT_PARSE_NODE_BBOX = "Cannot parse node BBox, defaults to 0, 0, 0, 0. Node: {0}";
 
@@ -67,5 +67,6 @@ namespace iText.Pdfocr.Tesseract4 {
 
         private Tesseract4LogMessageConstant() {
         }
+        //Private constructor will prevent the instantiation of this class directly
     }
 }

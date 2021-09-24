@@ -37,6 +37,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Layout.Font;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test;
 
 namespace iText.Pdfocr {

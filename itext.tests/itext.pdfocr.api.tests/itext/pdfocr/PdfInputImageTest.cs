@@ -24,6 +24,7 @@ using System;
 using System.IO;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
+using iText.Pdfocr.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 

@@ -32,6 +32,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Pdfa;
 using iText.Pdfocr.Helpers;
+using iText.Pdfocr.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 

@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System.IO;
 using iText.Pdfocr.Tesseract4;
 using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {

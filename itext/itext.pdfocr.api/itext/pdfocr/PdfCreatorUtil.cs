@@ -34,6 +34,7 @@ using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Renderer;
 using iText.Pdfocr.Exceptions;
+using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr {
     internal class PdfCreatorUtil {

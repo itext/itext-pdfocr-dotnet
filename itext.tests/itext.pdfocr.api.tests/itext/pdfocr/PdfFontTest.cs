@@ -29,6 +29,7 @@ using iText.Kernel.Font;
 using iText.Layout.Font;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
+using iText.Pdfocr.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 

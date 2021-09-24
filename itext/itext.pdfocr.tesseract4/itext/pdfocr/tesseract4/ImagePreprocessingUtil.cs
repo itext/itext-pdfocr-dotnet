@@ -30,6 +30,7 @@ using iText.IO.Image;
 using iText.IO.Source;
 using iText.IO.Util;
 using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>Utilities class to work with images.</summary>

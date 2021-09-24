@@ -26,6 +26,7 @@ using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
+using iText.Pdfocr.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 
