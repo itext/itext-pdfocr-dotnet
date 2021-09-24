@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
 using iText.IO.Image;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
 using iText.Test;
 using iText.Test.Attributes;

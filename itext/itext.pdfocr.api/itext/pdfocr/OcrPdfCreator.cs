@@ -41,6 +41,7 @@ using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
 using iText.Pdfa;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Statistics;
 
 namespace iText.Pdfocr {

@@ -27,6 +27,7 @@ using iText.Kernel.Colors;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Imageformats {

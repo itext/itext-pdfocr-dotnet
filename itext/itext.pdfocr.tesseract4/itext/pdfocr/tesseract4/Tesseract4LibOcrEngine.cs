@@ -32,6 +32,7 @@ using iText.Commons.Actions.Confirmations;
 using iText.Commons.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4.Actions.Events;
+using iText.Pdfocr.Tesseract4.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>

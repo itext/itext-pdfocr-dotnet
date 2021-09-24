@@ -32,6 +32,7 @@ using iText.Commons;
 using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.StyledXmlParser.Jsoup.Nodes;
 using iText.StyledXmlParser.Jsoup.Select;
 

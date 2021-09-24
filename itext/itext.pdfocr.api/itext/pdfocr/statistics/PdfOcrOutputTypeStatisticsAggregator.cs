@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using iText.Commons.Actions;
 using iText.Commons.Utils;
-using iText.Pdfocr;
+using iText.Pdfocr.Exceptions;
 
 namespace iText.Pdfocr.Statistics {
     /// <summary>Statistics aggregator which aggregates types of ocr processing.</summary>

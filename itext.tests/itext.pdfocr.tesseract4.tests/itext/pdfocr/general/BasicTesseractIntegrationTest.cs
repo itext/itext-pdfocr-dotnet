@@ -32,6 +32,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.General {

@@ -23,12 +23,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using iText.Commons.Utils;
-using iText.Kernel;
 using iText.Kernel.Colors;
+using iText.Kernel.Exceptions;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using iText.Layout.Font;
-using iText.Pdfa;
+using iText.Pdfa.Exceptions;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
 using iText.Test;
 using iText.Test.Attributes;

@@ -35,6 +35,7 @@ using iText.Pdfocr;
 using iText.Pdfocr.Statistics;
 using iText.Pdfocr.Tesseract4.Actions.Data;
 using iText.Pdfocr.Tesseract4.Actions.Events;
+using iText.Pdfocr.Tesseract4.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>

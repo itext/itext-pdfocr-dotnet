@@ -22,11 +22,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using iText.Commons.Exceptions;
 using iText.Commons.Utils;
 
-namespace iText.Pdfocr {
+namespace iText.Pdfocr.Exceptions {
     /// <summary>Exception class for custom exceptions.</summary>
-    public class OcrException : Exception {
+    public class OcrException : ITextException {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
         public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve " + "any of provided fonts. Please check provided FontProvider.";
@@ -78,7 +79,7 @@ namespace iText.Pdfocr {
         /// <summary>Sets additional params for Exception message.</summary>
         /// <param name="messageParams">additional params.</param>
         /// <returns>object itself.</returns>
-        public virtual iText.Pdfocr.OcrException SetMessageParams(params String[] messageParams) {
+        public virtual iText.Pdfocr.Exceptions.OcrException SetMessageParams(params String[] messageParams) {
             this.messageParams = JavaUtil.ArraysAsList(messageParams);
             return this;
         }

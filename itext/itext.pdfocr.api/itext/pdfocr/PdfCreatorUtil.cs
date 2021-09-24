@@ -33,6 +33,7 @@ using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Renderer;
+using iText.Pdfocr.Exceptions;
 
 namespace iText.Pdfocr {
     internal class PdfCreatorUtil {
@@ -180,7 +181,7 @@ namespace iText.Pdfocr {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
             }
-            catch (iText.IO.IOException e) {
+            catch (iText.IO.Exceptions.IOException e) {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
             }

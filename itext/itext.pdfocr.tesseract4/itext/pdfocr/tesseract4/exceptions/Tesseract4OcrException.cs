@@ -21,13 +21,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using iText.Pdfocr;
+using iText.Pdfocr.Exceptions;
 
-namespace iText.Pdfocr.Tesseract4 {
+namespace iText.Pdfocr.Tesseract4.Exceptions {
     public class Tesseract4OcrException : OcrException {
-        public const String TESSERACT_LIB_NOT_INSTALLED_WIN = "Tesseract failed. "
-             + "Please ensure you have at least Visual C++ 2015 Redistributable installed";
-
         public const String INCORRECT_INPUT_IMAGE_FORMAT = "{0} format is not supported.";
 
         public const String INCORRECT_LANGUAGE = "{0} does not exist in {1}";
@@ -39,6 +36,8 @@ namespace iText.Pdfocr.Tesseract4 {
         public const String TESSERACT_FAILED = "Tesseract failed. " + "Please check provided parameters";
 
         public const String TESSERACT_LIB_NOT_INSTALLED = "Tesseract failed. " + "Please ensure you have tesseract library installed";
+
+        public const String TESSERACT_LIB_NOT_INSTALLED_WIN = "Tesseract failed. " + "Please ensure you have latest Visual C++ Redistributable installed";
 
         public const String TESSERACT_NOT_FOUND = "Tesseract failed. " + "Please check that tesseract is installed and provided path to "
              + "tesseract executable directory is correct";

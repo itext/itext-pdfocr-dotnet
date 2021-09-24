@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using iText.Commons;
 using iText.Commons.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
