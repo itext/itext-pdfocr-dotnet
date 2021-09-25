@@ -20,31 +20,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Commons.Actions;
-using iText.Commons.Actions.Confirmations;
-using iText.Commons.Actions.Sequence;
 using iText.Pdfocr;
 
-namespace iText.Pdfocr.Tesseract4 {
-    /// <summary>Helper class for working with events.</summary>
-    internal class Tesseract4EventHelper : AbstractPdfOcrEventHelper {
-        internal Tesseract4EventHelper() {
-        }
-
-        // do nothing
-        public override void OnEvent(AbstractProductITextEvent @event) {
-            if (@event is AbstractContextBasedITextEvent) {
-                ((AbstractContextBasedITextEvent)@event).SetMetaInfo(new Tesseract4MetaInfo());
-            }
-            EventManager.GetInstance().OnEvent(@event);
-        }
-
-        public override SequenceId GetSequenceId() {
-            return new SequenceId();
-        }
-
-        public override EventConfirmationType GetConfirmationType() {
-            return EventConfirmationType.ON_DEMAND;
+namespace iText.Pdfocr.Actions {
+    public class Tesseract4EventHandlingLibTest : Tesseract4EventHandlingTest {
+        public Tesseract4EventHandlingLibTest()
+            : base(IntegrationTestHelper.ReaderType.LIB) {
         }
     }
 }

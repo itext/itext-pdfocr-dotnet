@@ -42,8 +42,6 @@ namespace iText.Pdfocr.Tesseract4.Logs {
 
         public const String CANNOT_PROCESS_IMAGE = "Cannot process image: {0}";
 
-        public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
-
         public const String CREATED_TEMPORARY_FILE = "Created temp file {0}";
 
         // Constant is used only in .NET version, but it's kept here for the sake of consistency and autoporting.

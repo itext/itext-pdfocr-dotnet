@@ -27,7 +27,6 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Tesseract;
 using iText.Commons;
-using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Utils;
 using iText.Pdfocr;
@@ -191,9 +190,7 @@ namespace iText.Pdfocr.Tesseract4 {
                             }
                         }
                         catch (System.IO.IOException e) {
-                            ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE
-                                , e.Message));
-                            throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                            throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_WRITE_TO_FILE, e);
                         }
                     }
                 }
@@ -201,7 +198,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 OnEventStatistics(eventHelper);
                 // confirm on_demand event
                 if (@event != null && @event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
-                    EventManager.GetInstance().OnEvent(new ConfirmEvent(@event));
+                    eventHelper.OnEvent(new ConfirmEvent(@event));
                 }
             }
             catch (Tesseract4OcrException e) {

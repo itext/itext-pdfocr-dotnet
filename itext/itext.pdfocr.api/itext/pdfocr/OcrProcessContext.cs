@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 namespace iText.Pdfocr {
     /// <summary>Class for storing ocr processing context.</summary>
     public class OcrProcessContext {
-        private readonly AbstractPdfOcrEventHelper ocrEventHelper;
+        private AbstractPdfOcrEventHelper ocrEventHelper;
 
         /// <summary>Creates an instance of ocr process context</summary>
         /// <param name="eventHelper">helper class for working with events</param>
@@ -38,6 +38,12 @@ namespace iText.Pdfocr {
         /// </returns>
         public virtual AbstractPdfOcrEventHelper GetOcrEventHelper() {
             return ocrEventHelper;
+        }
+
+        /// <summary>Sets ocr event helper.</summary>
+        /// <param name="eventHelper">event helper</param>
+        public virtual void SetOcrEventHelper(AbstractPdfOcrEventHelper eventHelper) {
+            this.ocrEventHelper = eventHelper;
         }
     }
 }

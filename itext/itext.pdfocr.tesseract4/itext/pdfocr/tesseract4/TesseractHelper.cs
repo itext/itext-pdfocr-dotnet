@@ -323,8 +323,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE, path, e.Message
-                    ));
+                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_WRITE_TO_FILE, e);
             }
         }
 

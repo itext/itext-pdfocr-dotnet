@@ -23,28 +23,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Sequence;
-using iText.Pdfocr;
+using iText.Test;
 
-namespace iText.Pdfocr.Tesseract4 {
-    /// <summary>Helper class for working with events.</summary>
-    internal class Tesseract4EventHelper : AbstractPdfOcrEventHelper {
-        internal Tesseract4EventHelper() {
+namespace iText.Pdfocr {
+    public class OcrProcessContextTest : ExtendedITextTest {
+        [NUnit.Framework.Test]
+        public virtual void SetOcrEventHelperTest() {
+            AbstractPdfOcrEventHelper eventHelper = new OcrProcessContextTest.CustomEventHelper();
+            OcrProcessContext context = new OcrProcessContext(eventHelper);
+            NUnit.Framework.Assert.AreSame(eventHelper, context.GetOcrEventHelper());
         }
 
-        // do nothing
-        public override void OnEvent(AbstractProductITextEvent @event) {
-            if (@event is AbstractContextBasedITextEvent) {
-                ((AbstractContextBasedITextEvent)@event).SetMetaInfo(new Tesseract4MetaInfo());
+        private class CustomEventHelper : AbstractPdfOcrEventHelper {
+            public override void OnEvent(AbstractProductITextEvent @event) {
             }
-            EventManager.GetInstance().OnEvent(@event);
-        }
 
-        public override SequenceId GetSequenceId() {
-            return new SequenceId();
-        }
+            // Do nothing
+            public override SequenceId GetSequenceId() {
+                return null;
+            }
 
-        public override EventConfirmationType GetConfirmationType() {
-            return EventConfirmationType.ON_DEMAND;
+            public override EventConfirmationType GetConfirmationType() {
+                return EventConfirmationType.ON_DEMAND;
+            }
         }
     }
 }

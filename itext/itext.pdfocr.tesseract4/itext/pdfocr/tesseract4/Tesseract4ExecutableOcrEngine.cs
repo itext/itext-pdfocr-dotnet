@@ -27,7 +27,6 @@ using System.Security;
 using Microsoft.Extensions.Logging;
 using Tesseract;
 using iText.Commons;
-using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Utils;
 using iText.Pdfocr;
@@ -189,7 +188,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 OnEventStatistics(eventHelper);
                 // confrim on_demand event
                 if (@event != null && @event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
-                    EventManager.GetInstance().OnEvent(new ConfirmEvent(@event));
+                    eventHelper.OnEvent(new ConfirmEvent(@event));
                 }
             }
             catch (Tesseract4OcrException e) {

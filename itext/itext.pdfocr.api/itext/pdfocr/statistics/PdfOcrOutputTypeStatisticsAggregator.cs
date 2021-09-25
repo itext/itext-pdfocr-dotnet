@@ -28,7 +28,7 @@ using iText.Pdfocr.Exceptions;
 
 namespace iText.Pdfocr.Statistics {
     /// <summary>Statistics aggregator which aggregates types of ocr processing.</summary>
-    public class PdfOcrOutputTypeStatisticsAggregator : AbstractStatisticsAggregator {
+    internal class PdfOcrOutputTypeStatisticsAggregator : AbstractStatisticsAggregator {
         private const String STRING_FOR_DATA = "data";
 
         private const String STRING_FOR_PDF = "pdf";

@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using iText.Commons;
+using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Contexts;
 using iText.Commons.Actions.Data;
 using iText.Commons.Utils;
@@ -134,12 +135,32 @@ namespace iText.Pdfocr.Tesseract4 {
             ) {
             ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
                 START_OCR_FOR_IMAGES, inputImages.Count));
-            StringBuilder content = new StringBuilder();
-            foreach (FileInfo inputImage in inputImages) {
-                content.Append(DoImageOcr(inputImage, OutputFormat.TXT, ocrProcessContext));
+            AbstractPdfOcrEventHelper storedEventHelper;
+            if (ocrProcessContext.GetOcrEventHelper() == null) {
+                storedEventHelper = new Tesseract4EventHelper();
             }
-            // write to file
-            TesseractHelper.WriteToTextFile(txtFile.FullName, content.ToString());
+            else {
+                storedEventHelper = ocrProcessContext.GetOcrEventHelper();
+            }
+            PdfOcrTesseract4ProductEvent @event = PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(storedEventHelper
+                .GetSequenceId(), null, storedEventHelper.GetConfirmationType());
+            storedEventHelper.OnEvent(@event);
+            try {
+                // set Tesseract4FileResultEventHelper
+                ocrProcessContext.SetOcrEventHelper(new Tesseract4FileResultEventHelper(storedEventHelper));
+                StringBuilder content = new StringBuilder();
+                foreach (FileInfo inputImage in inputImages) {
+                    content.Append(DoImageOcr(inputImage, OutputFormat.TXT, ocrProcessContext));
+                }
+                // write to file
+                TesseractHelper.WriteToTextFile(txtFile.FullName, content.ToString());
+                if (@event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    storedEventHelper.OnEvent(new ConfirmEvent(@event));
+                }
+            }
+            finally {
+                ocrProcessContext.SetOcrEventHelper(storedEventHelper);
+            }
         }
 
         /// <summary>

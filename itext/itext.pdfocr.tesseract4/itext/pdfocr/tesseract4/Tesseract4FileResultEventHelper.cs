@@ -24,27 +24,44 @@ using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Sequence;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Actions.Events;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>Helper class for working with events.</summary>
-    internal class Tesseract4EventHelper : AbstractPdfOcrEventHelper {
-        internal Tesseract4EventHelper() {
+    internal class Tesseract4FileResultEventHelper : AbstractPdfOcrEventHelper {
+        private AbstractPdfOcrEventHelper wrappedEventHelper;
+
+        internal Tesseract4FileResultEventHelper()
+            : this(null) {
         }
 
-        // do nothing
+        internal Tesseract4FileResultEventHelper(AbstractPdfOcrEventHelper wrappedEventHelper) {
+            this.wrappedEventHelper = wrappedEventHelper == null ? new Tesseract4EventHelper() : wrappedEventHelper;
+        }
+
         public override void OnEvent(AbstractProductITextEvent @event) {
-            if (@event is AbstractContextBasedITextEvent) {
-                ((AbstractContextBasedITextEvent)@event).SetMetaInfo(new Tesseract4MetaInfo());
+            if (!IsProcessImageEvent(@event) && !IsConfirmForProcessImageEvent(@event)) {
+                wrappedEventHelper.OnEvent(@event);
             }
-            EventManager.GetInstance().OnEvent(@event);
         }
 
         public override SequenceId GetSequenceId() {
-            return new SequenceId();
+            return wrappedEventHelper.GetSequenceId();
         }
 
         public override EventConfirmationType GetConfirmationType() {
-            return EventConfirmationType.ON_DEMAND;
+            return wrappedEventHelper.GetConfirmationType();
+        }
+
+        private static bool IsProcessImageEvent(AbstractProductITextEvent @event) {
+            return @event is PdfOcrTesseract4ProductEvent && PdfOcrTesseract4ProductEvent.PROCESS_IMAGE.Equals(((PdfOcrTesseract4ProductEvent
+                )@event).GetEventType());
+        }
+
+        private static bool IsConfirmForProcessImageEvent(AbstractProductITextEvent @event) {
+            return @event is ConfirmEvent && ((ConfirmEvent)@event).GetConfirmedEvent() is PdfOcrTesseract4ProductEvent
+                 && PdfOcrTesseract4ProductEvent.PROCESS_IMAGE.Equals(((ConfirmEvent)@event).GetConfirmedEvent().GetEventType
+                ());
         }
     }
 }

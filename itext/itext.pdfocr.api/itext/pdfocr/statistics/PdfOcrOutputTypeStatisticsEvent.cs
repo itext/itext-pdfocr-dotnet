@@ -67,7 +67,7 @@ namespace iText.Pdfocr.Statistics {
 
         /// <summary>Gets the type of statistic event.</summary>
         /// <returns>the statistics event type</returns>
-        internal virtual PdfOcrOutputType GetPdfOcrStatisticsEventType() {
+        public virtual PdfOcrOutputType GetPdfOcrStatisticsEventType() {
             return type;
         }
     }
