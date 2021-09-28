@@ -87,7 +87,7 @@ namespace iText.Pdfocr {
             }
             catch (InvalidOperationException e) {
                 LOGGER.LogError(PdfOcrLogMessageConstant.PROVIDED_FONT_PROVIDER_IS_INVALID);
-                throw new OcrException(OcrException.CANNOT_RESOLVE_PROVIDED_FONTS, e);
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_RESOLVE_PROVIDED_FONTS, e);
             }
             return fontSize;
         }
@@ -180,11 +180,11 @@ namespace iText.Pdfocr {
             }
             catch (System.IO.IOException e) {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
             }
             catch (iText.IO.Exceptions.IOException e) {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
             }
             return images;
         }

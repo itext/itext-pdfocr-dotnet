@@ -31,7 +31,7 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
     public class ApiTest : IntegrationTestHelper {
-        [LogMessage(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET)]
+        [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET)]
         [NUnit.Framework.Test]
         public virtual void TestDefaultTessDataPathValidationForLib() {
             NUnit.Framework.Assert.That(() =>  {
@@ -40,11 +40,11 @@ namespace iText.Pdfocr.Tesseract4 {
                 Tesseract4LibOcrEngine engine = new Tesseract4LibOcrEngine(new Tesseract4OcrEngineProperties());
                 engine.DoImageOcr(imgFile);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET))
 ;
         }
 
-        [LogMessage(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET)]
+        [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET)]
         [NUnit.Framework.Test]
         public virtual void TestDefaultTessDataPathValidationForExecutable() {
             NUnit.Framework.Assert.That(() =>  {
@@ -54,7 +54,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     ());
                 engine.DoImageOcr(imgFile);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET))
 ;
         }
 
@@ -68,12 +68,12 @@ namespace iText.Pdfocr.Tesseract4 {
                     ().SetPathToTessData(GetTessDataDirectory()));
                 engine.DoTesseractOcr(imgFile, null, OutputFormat.HOCR);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE, new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01").FullName)))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE, new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01").FullName)))
 ;
         }
 
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
-        [LogMessage(Tesseract4OcrException.TESSERACT_FAILED)]
+        [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED)]
         [LogMessage(Tesseract4LogMessageConstant.TESSERACT_FAILED)]
         [NUnit.Framework.Test]
         public virtual void TestOcrResultForSinglePageForNullImage() {
@@ -84,7 +84,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 tesseract4LibOcrEngine.InitializeTesseract(OutputFormat.TXT);
                 tesseract4LibOcrEngine.DoTesseractOcr(null, null, OutputFormat.HOCR);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.TESSERACT_FAILED))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED))
 ;
         }
 

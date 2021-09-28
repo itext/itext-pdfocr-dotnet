@@ -106,7 +106,7 @@ namespace iText.Pdfocr {
             pdfDocument.Close();
         }
 
-        [LogMessage(OcrException.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
+        [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNonCompliantThaiPdfA() {
             NUnit.Framework.Assert.That(() =>  {
@@ -119,7 +119,7 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
                     ());
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, 3611))))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, 3611))))
 ;
         }
 
@@ -149,7 +149,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.IsTrue(font.IsEmbedded());
         }
 
-        [LogMessage(OcrException.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
+        [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestPdfACreateWithoutPdfLangProperty() {
             NUnit.Framework.Assert.That(() =>  {
@@ -159,7 +159,7 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties(), PdfHelper.GetRGBPdfOutputIntent
                     ());
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET)))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET)))
 ;
         }
     }

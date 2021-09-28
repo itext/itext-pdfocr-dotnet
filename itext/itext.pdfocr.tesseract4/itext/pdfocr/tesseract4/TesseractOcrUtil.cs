@@ -359,9 +359,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 catch (Exception e)
                 {
-                    throw new Tesseract4OcrException(isWindows ?
-                        Tesseract4OcrException.TESSERACT_LIB_NOT_INSTALLED_WIN :
-                        Tesseract4OcrException.TESSERACT_LIB_NOT_INSTALLED, e);
+                    throw new PdfOcrTesseract4Exception(isWindows ?
+                        PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_LIB_NOT_INSTALLED_WIN :
+                        PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_LIB_NOT_INSTALLED, e);
                 }
             }
         }

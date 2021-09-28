@@ -512,9 +512,11 @@ namespace iText.Pdfocr {
             try {
                 AddTextToCanvas(imageSize, pageText, canvas, multiplier, pdfPage.GetMediaBox());
             }
-            catch (OcrException e) {
-                LOGGER.LogError(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
-                throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message);
+            catch (PdfOcrException e) {
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, e.Message
+                    ));
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message
+                    );
             }
             if (layers[1] != null) {
                 canvas.EndLayer();
@@ -539,10 +541,10 @@ namespace iText.Pdfocr {
             bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !ocrPdfCreatorProperties.GetPdfLang
                 ().Equals("");
             if (createPdfA3u && !hasPdfLangProperty) {
-                LOGGER.LogError(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant
                     .PDF_LANGUAGE_PROPERTY_IS_NOT_SET));
-                throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(PdfOcrLogMessageConstant.
-                    PDF_LANGUAGE_PROPERTY_IS_NOT_SET);
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(PdfOcrLogMessageConstant
+                    .PDF_LANGUAGE_PROPERTY_IS_NOT_SET);
             }
             // add metadata
             if (hasPdfLangProperty) {
@@ -800,7 +802,7 @@ namespace iText.Pdfocr {
                         if (this.createPdfA3u) {
                             // exception is thrown only if PDF/A document is
                             // being created
-                            throw new OcrException(message);
+                            throw new PdfOcrException(message);
                         }
                         // setting actual text to NotDef glyph
                         glyphLine.SetActualTextToGlyph(i, glyphLine.ToUnicodeString(i, i + 1));

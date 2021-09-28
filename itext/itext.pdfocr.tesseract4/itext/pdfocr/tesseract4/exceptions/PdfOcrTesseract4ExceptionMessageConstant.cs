@@ -21,10 +21,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using iText.Pdfocr.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4.Exceptions {
-    public class Tesseract4OcrException : OcrException {
+    public class PdfOcrTesseract4ExceptionMessageConstant {
         public const String INCORRECT_INPUT_IMAGE_FORMAT = "{0} format is not supported.";
 
         public const String INCORRECT_LANGUAGE = "{0} does not exist in {1}";
@@ -35,42 +34,25 @@ namespace iText.Pdfocr.Tesseract4.Exceptions {
 
         public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
 
-        public const String TESSERACT_FAILED = "Tesseract failed. " + "Please check provided parameters";
+        public const String TESSERACT_FAILED = "Tesseract failed. Please check provided parameters";
 
-        public const String TESSERACT_LIB_NOT_INSTALLED = "Tesseract failed. " + "Please ensure you have tesseract library installed";
+        public const String TESSERACT_LIB_NOT_INSTALLED = "Tesseract failed. Please ensure you have tesseract library installed";
 
-        public const String TESSERACT_LIB_NOT_INSTALLED_WIN = "Tesseract failed. " + "Please ensure you have latest Visual C++ Redistributable installed";
+        public const String TESSERACT_LIB_NOT_INSTALLED_WIN = "Tesseract failed. Please ensure you have latest Visual C++ Redistributable installed";
 
-        public const String TESSERACT_NOT_FOUND = "Tesseract failed. " + "Please check that tesseract is installed and provided path to "
+        public const String TESSERACT_NOT_FOUND = "Tesseract failed. Please check that tesseract is installed and provided path to "
              + "tesseract executable directory is correct";
 
         public const String CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE = "Cannot find path to tesseract executable.";
 
-        public const String PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID = "Provided path to tess data directory does not exist or it is "
-             + "an invalid directory";
+        public const String PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID = "Provided path to tess data directory does not exist or it is an invalid directory";
 
-        public const String PATH_TO_TESS_DATA_IS_NOT_SET = "Path to tess data directory cannot be null and must be set "
-             + "to a valid directory";
+        public const String PATH_TO_TESS_DATA_IS_NOT_SET = "Path to tess data directory cannot be null and must be set to a valid directory";
 
         public const String PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS = "Path to tess data should contain only ASCII characters";
 
-        /// <summary>Creates a new TesseractException.</summary>
-        /// <param name="msg">the detail message.</param>
-        /// <param name="e">
-        /// the cause
-        /// (which is saved for later retrieval
-        /// by
-        /// <see cref="System.Exception.InnerException()"/>
-        /// method).
-        /// </param>
-        public Tesseract4OcrException(String msg, Exception e)
-            : base(msg, e) {
+        private PdfOcrTesseract4ExceptionMessageConstant() {
         }
-
-        /// <summary>Creates a new TesseractException.</summary>
-        /// <param name="msg">the detail message.</param>
-        public Tesseract4OcrException(String msg)
-            : base(msg) {
-        }
+        //Private constructor will prevent the instantiation of this class directly
     }
 }

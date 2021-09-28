@@ -323,7 +323,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_WRITE_TO_FILE, e);
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e);
             }
         }
 
@@ -353,17 +353,17 @@ namespace iText.Pdfocr.Tesseract4 {
                 if (!cmdSucceeded) {
                     LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, execPath + " " + @params
                         ));
-                    throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                    throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
                 }
             }
             catch (System.IO.IOException e) {
                 // NOSONAR
                 LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
             catch (Exception e) {
                 LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
         }
 

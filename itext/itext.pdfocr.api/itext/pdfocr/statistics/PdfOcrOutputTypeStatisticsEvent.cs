@@ -44,10 +44,10 @@ namespace iText.Pdfocr.Statistics {
         public PdfOcrOutputTypeStatisticsEvent(PdfOcrOutputType type, ProductData productData)
             : base(productData) {
             if (type == null) {
-                throw new OcrException(OcrException.STATISTICS_EVENT_TYPE_CANT_BE_NULL);
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.STATISTICS_EVENT_TYPE_CANT_BE_NULL);
             }
             if (null == PdfOcrOutputTypeStatisticsAggregator.GetKeyForType(type)) {
-                throw new OcrException(OcrException.STATISTICS_EVENT_TYPE_IS_NOT_DETECTED);
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.STATISTICS_EVENT_TYPE_IS_NOT_DETECTED);
             }
             this.type = type;
         }

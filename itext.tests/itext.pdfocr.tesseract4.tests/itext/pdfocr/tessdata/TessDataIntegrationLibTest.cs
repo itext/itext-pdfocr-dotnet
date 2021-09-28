@@ -36,7 +36,8 @@ namespace iText.Pdfocr.Tessdata {
             : base(IntegrationTestHelper.ReaderType.LIB) {
         }
 
-        [LogMessage(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS)]
+        [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
+            )]
         [NUnit.Framework.Test]
         public virtual void TestTessDataWithNonAsciiPath() {
             NUnit.Framework.Assert.That(() =>  {
@@ -45,7 +46,7 @@ namespace iText.Pdfocr.Tessdata {
                 NUnit.Framework.Assert.Fail("Should throw exception for the tesseract lib when tess data path contains non ASCII characters"
                     );
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS))
 ;
         }
 

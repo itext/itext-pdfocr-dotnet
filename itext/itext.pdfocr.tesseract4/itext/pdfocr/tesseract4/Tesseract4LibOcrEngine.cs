@@ -190,7 +190,7 @@ namespace iText.Pdfocr.Tesseract4 {
                             }
                         }
                         catch (System.IO.IOException e) {
-                            throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_WRITE_TO_FILE, e);
+                            throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e);
                         }
                     }
                 }
@@ -201,9 +201,9 @@ namespace iText.Pdfocr.Tesseract4 {
                     eventHelper.OnEvent(new ConfirmEvent(@event));
                 }
             }
-            catch (Tesseract4OcrException e) {
+            catch (PdfOcrTesseract4Exception e) {
                 ITextLogManager.GetLogger(GetType()).LogError(e.Message);
-                throw new Tesseract4OcrException(e.Message, e);
+                throw new PdfOcrTesseract4Exception(e.Message, e);
             }
             finally {
                 if (tesseractInstance != null) {
@@ -233,7 +233,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private static void ValidateTessDataPath(String tessDataPath) {
             Matcher asciiStringMatcher = iText.Commons.Utils.Matcher.Match(ASCII_STRING_PATTERN, tessDataPath);
             if (!asciiStringMatcher.Matches()) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
                     );
             }
         }
@@ -275,7 +275,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (TesseractException e) {
                 String msg = MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED, e.Message);
                 ITextLogManager.GetLogger(GetType()).LogError(msg);
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
             finally {
                 TesseractOcrUtil.DisposeTesseractInstance(GetTesseractInstance());
@@ -330,7 +330,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 // NOSONAR
                 ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
                     , e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
             return result;
         }

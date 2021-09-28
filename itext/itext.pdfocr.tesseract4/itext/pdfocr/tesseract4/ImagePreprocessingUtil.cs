@@ -89,8 +89,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 // NOSONAR
                 ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogError(MessageFormatUtil
                     .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputImage
-                    .FullName);
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+                    ).SetMessageParams(inputImage.FullName);
             }
             return type;
         }
@@ -162,8 +162,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 pix = TesseractOcrUtil.ReadPix(inputFile);
             }
             if (pix == null) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile
-                    .FullName);
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+                    ).SetMessageParams(inputFile.FullName);
             }
             return TesseractOcrUtil.PreprocessPix(pix, imagePreprocessingOptions);
         }

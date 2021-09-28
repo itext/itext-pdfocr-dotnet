@@ -228,7 +228,7 @@ namespace iText.Pdfocr.Imageformats {
                 FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "wierdwords.gif");
                 GetTextFromPdf(tesseractReader, file);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT, "wierdwords.gif")))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT, "wierdwords.gif")))
 ;
         }
 

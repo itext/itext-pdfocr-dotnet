@@ -146,7 +146,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 imagePath = inputImage.FullName;
                 // path to tesseract executable
                 if (GetPathToExecutable() == null || String.IsNullOrEmpty(GetPathToExecutable())) {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE);
+                    throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE
+                        );
                 }
                 else {
                     if (IsWindows()) {
@@ -191,9 +192,9 @@ namespace iText.Pdfocr.Tesseract4 {
                     eventHelper.OnEvent(new ConfirmEvent(@event));
                 }
             }
-            catch (Tesseract4OcrException e) {
+            catch (PdfOcrTesseract4Exception e) {
                 ITextLogManager.GetLogger(GetType()).LogError(e.Message);
-                throw new Tesseract4OcrException(e.Message, e);
+                throw new PdfOcrTesseract4Exception(e.Message, e);
             }
             finally {
                 try {
@@ -325,7 +326,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception) {
                 // NOSONAR
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
         }
 
@@ -391,8 +392,8 @@ namespace iText.Pdfocr.Tesseract4 {
             try {
                 TesseractHelper.RunCommand(execPath, JavaCollectionsUtil.SingletonList<String>("--version"));
             }
-            catch (Tesseract4OcrException e) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_NOT_FOUND, e);
+            catch (PdfOcrTesseract4Exception e) {
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_NOT_FOUND, e);
             }
         }
 

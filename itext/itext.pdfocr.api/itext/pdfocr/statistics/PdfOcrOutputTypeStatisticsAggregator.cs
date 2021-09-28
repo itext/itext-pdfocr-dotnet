@@ -64,7 +64,7 @@ namespace iText.Pdfocr.Statistics {
             String fileTypeKey = GetKeyForType(type);
             if (null == fileTypeKey) {
                 // this line is not expected to be reached, since an exception should have been thrown on event creation
-                throw new OcrException(OcrException.STATISTICS_EVENT_TYPE_IS_NOT_DETECTED);
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.STATISTICS_EVENT_TYPE_IS_NOT_DETECTED);
             }
             lock (Lock) {
                 long? documentsOfThisRange = numberOfUsagesPerType.Get(fileTypeKey);

@@ -72,7 +72,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.That(() =>  {
                 PdfCreatorUtil.GetImageData(new FileInfo("no such path"), null);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
 ;
         }
 
@@ -82,7 +82,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.That(() =>  {
                 PdfCreatorUtil.GetImageData(new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted.jpg"), null);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_READ_INPUT_IMAGE)))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE)))
 ;
         }
     }

@@ -27,20 +27,13 @@ using iText.Commons.Utils;
 
 namespace iText.Pdfocr.Exceptions {
     /// <summary>Exception class for custom exceptions.</summary>
-    public class OcrException : ITextException {
-        public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
-
-        public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve " + "any of provided fonts. Please check provided FontProvider.";
-
-        public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create " + "PDF document: {0}";
-
-        public const String STATISTICS_EVENT_TYPE_CANT_BE_NULL = "Statistics event type can't be null";
-
-        public const String STATISTICS_EVENT_TYPE_IS_NOT_DETECTED = "Statistics event type is not detected.";
-
+    public class PdfOcrException : ITextException {
         private IList<String> messageParams;
 
-        /// <summary>Creates a new OcrException.</summary>
+        /// <summary>
+        /// Creates a new
+        /// <see cref="PdfOcrException"/>.
+        /// </summary>
         /// <param name="msg">the detail message.</param>
         /// <param name="e">
         /// the cause
@@ -49,14 +42,32 @@ namespace iText.Pdfocr.Exceptions {
         /// <see cref="System.Exception.InnerException()"/>
         /// method).
         /// </param>
-        public OcrException(String msg, Exception e)
+        public PdfOcrException(String msg, Exception e)
             : base(msg, e) {
         }
 
-        /// <summary>Creates a new OcrException.</summary>
+        /// <summary>
+        /// Creates a new
+        /// <see cref="PdfOcrException"/>.
+        /// </summary>
         /// <param name="msg">the detail message.</param>
-        public OcrException(String msg)
+        public PdfOcrException(String msg)
             : base(msg) {
+        }
+
+        /// <summary>
+        /// Creates a new
+        /// <see cref="PdfOcrException"/>.
+        /// </summary>
+        /// <param name="e">
+        /// the cause
+        /// which is saved for later retrieval
+        /// by
+        /// <see cref="System.Exception.InnerException()"/>
+        /// method).
+        /// </param>
+        public PdfOcrException(Exception e)
+            : base(e) {
         }
 
         /// <summary><inheritDoc/></summary>
@@ -79,7 +90,7 @@ namespace iText.Pdfocr.Exceptions {
         /// <summary>Sets additional params for Exception message.</summary>
         /// <param name="messageParams">additional params.</param>
         /// <returns>object itself.</returns>
-        public virtual iText.Pdfocr.Exceptions.OcrException SetMessageParams(params String[] messageParams) {
+        public virtual iText.Pdfocr.Exceptions.PdfOcrException SetMessageParams(params String[] messageParams) {
             this.messageParams = JavaUtil.ArraysAsList(messageParams);
             return this;
         }

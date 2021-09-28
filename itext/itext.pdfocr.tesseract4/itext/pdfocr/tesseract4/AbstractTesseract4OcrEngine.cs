@@ -366,15 +366,15 @@ namespace iText.Pdfocr.Tesseract4 {
             if (languagesList.Count == 0) {
                 if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + GetTesseract4OcrEngineProperties
                     ().GetDefaultLanguage() + suffix).Exists) {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_LANGUAGE).SetMessageParams(GetTesseract4OcrEngineProperties
-                        ().GetDefaultLanguage() + suffix, GetTessData());
+                    throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_LANGUAGE).SetMessageParams
+                        (GetTesseract4OcrEngineProperties().GetDefaultLanguage() + suffix, GetTessData());
                 }
             }
             else {
                 foreach (String lang in languagesList) {
                     if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix).Exists) {
-                        throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_LANGUAGE).SetMessageParams(lang + suffix
-                            , GetTessData());
+                        throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_LANGUAGE).SetMessageParams
+                            (lang + suffix, GetTessData());
                     }
                 }
             }
@@ -466,7 +466,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal virtual String GetTessData() {
             if (GetTesseract4OcrEngineProperties().GetPathToTessData() == null) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET);
             }
             else {
                 return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
@@ -600,8 +600,8 @@ namespace iText.Pdfocr.Tesseract4 {
             if (!isValid) {
                 ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , image.FullName));
-                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(image
-                    .Name);
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT
+                    ).SetMessageParams(image.Name);
             }
         }
 

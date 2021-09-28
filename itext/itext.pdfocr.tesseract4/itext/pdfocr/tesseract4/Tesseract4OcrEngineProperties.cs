@@ -154,7 +154,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToTessData(FileInfo tessData) {
             if (tessData == null || !FileUtil.DirectoryExists(tessData.FullName)) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID
+                    );
             }
             this.tessDataDir = tessData;
             return this;
@@ -342,8 +343,8 @@ namespace iText.Pdfocr.Tesseract4 {
                     SetLanguages(languagesList);
                 }
                 else {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST).SetMessageParams(language
-                        );
+                    throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST
+                        ).SetMessageParams(language);
                 }
             }
             String userWordsFileName = TesseractOcrUtil.GetTempFilePath(language, "." + DEFAULT_USER_WORDS_SUFFIX);

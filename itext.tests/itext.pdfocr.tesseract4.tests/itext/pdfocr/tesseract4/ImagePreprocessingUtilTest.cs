@@ -46,7 +46,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 FileInfo imgFile = new FileInfo(path);
                 ImagePreprocessingUtil.PreprocessImage(imgFile, 1, new ImagePreprocessingOptions());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>())
 ;
         }
 

@@ -65,7 +65,8 @@ namespace iText.Pdfocr.Actions {
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(imgFile);
             FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
-            NUnit.Framework.Assert.Catch(typeof(OcrException), () => ocrPdfCreator.CreatePdfFile(images, outPdfFile));
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => ocrPdfCreator.CreatePdfFile(images, outPdfFile
+                ));
             // check ocr events
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
         }
@@ -157,7 +158,7 @@ namespace iText.Pdfocr.Actions {
             FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
-            NUnit.Framework.Assert.Catch(typeof(Tesseract4OcrException), () => ocrPdfCreator.CreatePdf(images, pdfWriter
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => ocrPdfCreator.CreatePdf(images, pdfWriter
                 ));
             pdfWriter.Dispose();
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
@@ -228,7 +229,7 @@ namespace iText.Pdfocr.Actions {
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         public virtual void DoImageOcrNoImageTest() {
             FileInfo imgFile = new FileInfo("uncknown");
-            NUnit.Framework.Assert.Catch(typeof(OcrException), () => tesseractReader.DoImageOcr(imgFile));
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => tesseractReader.DoImageOcr(imgFile));
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
         }
 
@@ -280,8 +281,8 @@ namespace iText.Pdfocr.Actions {
             FileInfo imgFile = new FileInfo("no_image");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
             FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".txt");
-            NUnit.Framework.Assert.Catch(typeof(OcrException), () => tesseractReader.CreateTxtFile(images, outPdfFile)
-                );
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => tesseractReader.CreateTxtFile(images, outPdfFile
+                ));
             // only one usage event is expected and it is not confirmed (no confirm event
             NUnit.Framework.Assert.AreEqual(1, eventsHandler.GetEvents().Count);
             ValidateUsageEvent(eventsHandler.GetEvents()[0], EventConfirmationType.ON_DEMAND);
@@ -292,9 +293,9 @@ namespace iText.Pdfocr.Actions {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
             FileInfo outPdfFile = new FileInfo("nopath/nofile");
-            Exception e = NUnit.Framework.Assert.Catch(typeof(Tesseract4OcrException), () => tesseractReader.CreateTxtFile
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => tesseractReader.CreateTxtFile
                 (images, outPdfFile));
-            NUnit.Framework.Assert.AreEqual(Tesseract4OcrException.CANNOT_WRITE_TO_FILE, e.Message);
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e.Message);
             NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
