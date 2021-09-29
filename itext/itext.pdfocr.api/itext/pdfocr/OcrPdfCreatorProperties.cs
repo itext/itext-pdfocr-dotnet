@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Commons.Actions.Contexts;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Layout.Font;
@@ -112,6 +113,8 @@ namespace iText.Pdfocr {
         /// <see cref="IImageRotationHandler"/>.
         /// </summary>
         private IImageRotationHandler imageRotationHandler;
+
+        private IMetaInfo metaInfo;
 
         /// <summary>
         /// Creates a new
@@ -464,6 +467,26 @@ namespace iText.Pdfocr {
             ) {
             this.imageRotationHandler = imageRotationDetector;
             return this;
+        }
+
+        /// <summary>
+        /// Set meta info for this
+        /// <see cref="OcrPdfCreatorProperties"/>.
+        /// </summary>
+        /// <param name="metaInfo">meta info</param>
+        /// <returns>
+        /// the instance of the current
+        /// <see cref="OcrPdfCreatorProperties"/>
+        /// </returns>
+        public virtual iText.Pdfocr.OcrPdfCreatorProperties SetMetaInfo(IMetaInfo metaInfo) {
+            this.metaInfo = metaInfo;
+            return this;
+        }
+
+        /// <summary>Returns meta info</summary>
+        /// <returns>meta info</returns>
+        internal virtual IMetaInfo GetMetaInfo() {
+            return metaInfo;
         }
     }
 }

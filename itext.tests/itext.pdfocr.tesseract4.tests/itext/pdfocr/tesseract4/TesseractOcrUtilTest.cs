@@ -25,6 +25,7 @@ using System.IO;
 using Tesseract;
 using iText.IO.Image;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {

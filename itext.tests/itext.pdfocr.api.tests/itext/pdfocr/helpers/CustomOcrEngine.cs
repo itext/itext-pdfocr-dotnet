@@ -23,26 +23,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iText.IO.Util;
-using iText.Kernel.Counter.Event;
+using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
-using iText.Pdfocr.Events;
 
 namespace iText.Pdfocr.Helpers {
-    public class CustomOcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
+    public class CustomOcrEngine : IOcrEngine {
         private OcrEngineProperties ocrEngineProperties;
 
-        private IMetaInfo threadLocalMetaInfo;
-
-        private bool textInfoDeprecationMode = false;
-
-        public CustomOcrEngine()
-            : this(false) {
-        }
-
-        public CustomOcrEngine(bool textInfoDeprecationMode) {
-            this.textInfoDeprecationMode = textInfoDeprecationMode;
+        public CustomOcrEngine() {
         }
 
         public CustomOcrEngine(OcrEngineProperties ocrEngineProperties) {
@@ -55,22 +44,21 @@ namespace iText.Pdfocr.Helpers {
             if (input.FullName.Contains(PdfHelper.THAI_IMAGE_NAME)) {
                 text = PdfHelper.THAI_TEXT;
             }
-            TextInfo textInfo = this.textInfoDeprecationMode ? new TextInfo(text, JavaUtil.ArraysAsList(204.0f, 158.0f
-                , 742.0f, 294.0f)) : new TextInfo(text, new Rectangle(204.0f, 158.0f, 538.0f, 136.0f));
+            TextInfo textInfo = new TextInfo(text, new Rectangle(204.0f, 158.0f, 538.0f, 136.0f));
             result.Put(1, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));
             return result;
+        }
+
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
+            ) {
+            return DoImageOcr(input);
         }
 
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
         }
 
-        public virtual IMetaInfo GetThreadLocalMetaInfo() {
-            return threadLocalMetaInfo;
-        }
-
-        public virtual IThreadLocalMetaInfoAware SetThreadLocalMetaInfo(IMetaInfo metaInfo) {
-            this.threadLocalMetaInfo = metaInfo;
-            return this;
+        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
+            ) {
         }
 
         public virtual OcrEngineProperties GetOcrEngineProperties() {

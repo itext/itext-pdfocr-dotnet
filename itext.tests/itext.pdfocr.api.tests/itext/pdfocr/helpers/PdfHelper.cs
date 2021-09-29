@@ -22,8 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using Common.Logging;
-using iText.IO.Util;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Pdfocr;
@@ -46,7 +47,7 @@ namespace iText.Pdfocr.Helpers {
         public static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory 
             + "/test/resources/itext/pdfocr/";
 
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(PdfHelper));
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(PdfHelper));
 
         /// <summary>Returns images test directory.</summary>
         public static String GetImagesTestDirectory() {
@@ -123,23 +124,14 @@ namespace iText.Pdfocr.Helpers {
         /// of properties and save to the given path.
         /// </summary>
         public static void CreatePdf(String pdfPath, FileInfo inputFile, OcrPdfCreatorProperties properties) {
-            CreatePdf(pdfPath, inputFile, properties, false);
-        }
-
-        /// <summary>
-        /// Perform OCR with custom ocr engine using provided input image and set
-        /// of properties and save to the given path.
-        /// </summary>
-        public static void CreatePdf(String pdfPath, FileInfo inputFile, OcrPdfCreatorProperties properties, bool 
-            textInfoDeprecationMode) {
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(textInfoDeprecationMode), properties);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new CustomOcrEngine(), properties);
             try {
                 using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
                     ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(inputFile), pdfWriter).Close();
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
         }
 
@@ -157,7 +149,7 @@ namespace iText.Pdfocr.Helpers {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
         }
 
@@ -171,7 +163,7 @@ namespace iText.Pdfocr.Helpers {
                 result = GetTextFromPdfLayer(pdfPath, "Text Layer");
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return result;
         }

@@ -28,9 +28,13 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Common.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Util;
+using iText.Pdfocr.Tesseract4.Logs;
+using Microsoft.Extensions.Logging;
+using iText.Pdfocr.Tesseract4.Exceptions;
 using Tesseract;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -153,8 +157,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 else
                 {
-                    LogManager.GetLogger(typeof(TesseractOcrUtil))
-                        .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_GRAYSCALE, depth));
+                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+                        .LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_CONVERT_IMAGE_TO_GRAYSCALE, depth));
                     return pix;
                 }
             }
@@ -207,16 +211,16 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                     else
                     {
-                        LogManager.GetLogger(typeof(TesseractOcrUtil))
-                            .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
+                        ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+                            .LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
                         DestroyPix(thresholdPix);
                         return pix;
                     }
                 }
                 else
                 {
-                    LogManager.GetLogger(typeof(TesseractOcrUtil))
-                        .Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
+                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+                        .LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
                     return pix;
                 }
             }
@@ -324,7 +328,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="SetTesseractProperties"/> method. In .Net all these properties
         /// are needed to be provided in tesseract constructor in order to
         /// initialize tesseract instance.Thus, tesseract initialization takes
-        /// place in <see cref="Tesseract4LibOcrEngine.Tesseract4LibOcrEngine(Tesseract4OcrEngineProperties)"/> constructor in
+        /// place in <see cref="Tesseract4LibOcrEngine"/> constructor in
         /// java, but in .Net it happens only after all properties are validated,
         /// i.e. just before OCR process.
         /// </remarks>
@@ -355,9 +359,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 catch (Exception e)
                 {
-                    throw new Tesseract4OcrException(isWindows ?
-                        Tesseract4OcrException.TESSERACT_LIB_NOT_INSTALLED_WIN :
-                        Tesseract4OcrException.TESSERACT_LIB_NOT_INSTALLED, e);
+                    throw new PdfOcrTesseract4Exception(isWindows ?
+                        PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_LIB_NOT_INSTALLED_WIN :
+                        PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_LIB_NOT_INSTALLED, e);
                 }
             }
         }
@@ -437,7 +441,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Returns parent directory for the passed path.</summary>
         /// <param name="path">path path to file</param>
         /// <returns>parent directory where the file is located</returns>
-        internal static String GetParentDirectory(string path)
+        internal static String GetParentDirectoryFile(string path)
         {
             return Directory.GetParent(path).FullName;
         }
@@ -475,8 +479,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 SetListOfPages(bitmapList);
             } catch (Exception e)
             {
-                LogManager.GetLogger(typeof(TesseractOcrUtil))
-                    .Error(MessageFormatUtil.Format(
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+                    .LogError(MessageFormatUtil.Format(
                         Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE,
                         inputFile.FullName,
                         e.Message));
@@ -505,8 +509,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 int pages = image.GetFrameCount(FrameDimension.Page);
                 if (page >= pages)
                 {
-                    LogManager.GetLogger(typeof(TesseractOcrUtil))
-                        .Warn(MessageFormatUtil.Format(
+                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+                        .LogWarning(MessageFormatUtil.Format(
                             Tesseract4LogMessageConstant.PAGE_NUMBER_IS_INCORRECT,
                             page,
                             input.FullName));
@@ -516,8 +520,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 img = new Bitmap(image);
             } catch (Exception e)
             {
-                LogManager.GetLogger(typeof(TesseractOcrUtil))
-                    .Error(MessageFormatUtil.Format(
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+                    .LogError(MessageFormatUtil.Format(
                         Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE,
                         input.FullName,
                         e.Message));
@@ -727,7 +731,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 catch (Exception e)
                 {
-                    LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format(
+                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format(
                             Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE,
                             e.Message));
                 }
@@ -754,7 +758,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 catch (Exception e)
                 {
-                    LogManager.GetLogger(typeof(TesseractOcrUtil)).Info(MessageFormatUtil.Format(
+                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogInformation(MessageFormatUtil.Format(
                             Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE,
                             e.Message));
                 }
@@ -835,7 +839,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Exception e)
             {
                 // NOSONAR
-                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
             }
             if (pix != null)
@@ -870,7 +874,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Exception e)
             {
                 // NOSONAR
-                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 return null;
             }
@@ -895,7 +899,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Exception e)
             {
                 // NOSONAR
-                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 return ROTATION_0;
             }
@@ -935,7 +939,7 @@ namespace iText.Pdfocr.Tesseract4 {
             catch (Exception e)
             {
                 // NOSONAR
-                LogManager.GetLogger(typeof(TesseractOcrUtil)).Error(MessageFormatUtil.Format
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 return ROTATION_0;
             }
@@ -970,7 +974,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 case EXIF_ROTATION_270:
                     return ROTATION_270;
                 default:
-                    LogManager.GetLogger(typeof(TesseractOcrUtil)).Warn(MessageFormatUtil.Format(
+                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogWarning(MessageFormatUtil.Format(
                             Tesseract4LogMessageConstant.UNSUPPORTED_EXIF_ORIENTATION_VALUE,
                             orientation));
                     return ROTATION_0;

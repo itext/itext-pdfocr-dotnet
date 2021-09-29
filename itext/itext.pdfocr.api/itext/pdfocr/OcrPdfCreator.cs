@@ -23,11 +23,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Actions;
+using iText.Commons.Actions.Sequence;
+using iText.Commons.Utils;
 using iText.IO.Font.Otf;
 using iText.IO.Image;
-using iText.IO.Util;
-using iText.Kernel.Counter.Event;
+using iText.Kernel.Actions.Events;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -38,7 +41,9 @@ using iText.Layout.Element;
 using iText.Layout.Font;
 using iText.Layout.Properties;
 using iText.Pdfa;
-using iText.Pdfocr.Events;
+using iText.Pdfocr.Exceptions;
+using iText.Pdfocr.Logs;
+using iText.Pdfocr.Statistics;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -67,16 +72,7 @@ namespace iText.Pdfocr {
     /// </remarks>
     public class OcrPdfCreator {
         /// <summary>The logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
-
-        /// <summary>Indices in array representing bbox.</summary>
-        private const int LEFT_IDX = 0;
-
-        private const int TOP_IDX = 1;
-
-        private const int RIGHT_IDX = 2;
-
-        private const int BOTTOM_IDX = 3;
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.OcrPdfCreator));
 
         /// <summary>
         /// Selected
@@ -151,6 +147,85 @@ namespace iText.Pdfocr {
         /// and
         /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// ,
+        /// <see cref="iText.Kernel.Pdf.DocumentProperties"></see>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// ,
+        /// <see cref="iText.Kernel.Pdf.DocumentProperties"></see>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// . PDF/A-3u document will be created if
+        /// provided
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// is not null.
+        /// <para />
+        /// NOTE that after executing this method you will have a product event from
+        /// the both itextcore and pdfOcr. Therefore, use this method only if you need to work
+        /// with the generated
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// . If you don't need this, use the
+        /// <see cref="CreatePdfAFile(System.Collections.Generic.IList{E}, System.IO.FileInfo, iText.Kernel.Pdf.PdfOutputIntent)
+        ///     "/>
+        /// method. In this case, only the pdfOcr event will be dispatched.
+        /// </remarks>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="pdfWriter">
+        /// the
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// object
+        /// to write final PDF document to
+        /// </param>
+        /// <param name="documentProperties">document properties</param>
+        /// <param name="pdfOutputIntent">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// for PDF/A-3u document
+        /// </param>
+        /// <returns>
+        /// result PDF/A-3u
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// object
+        /// </returns>
+        public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, DocumentProperties documentProperties
+            , PdfOutputIntent pdfOutputIntent) {
+            LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.
+                Count));
+            // create event helper
+            SequenceId pdfSequenceId = new SequenceId();
+            OcrPdfCreatorEventHelper ocrEventHelper = new OcrPdfCreatorEventHelper(pdfSequenceId, ocrPdfCreatorProperties
+                .GetMetaInfo());
+            OcrProcessContext ocrProcessContext = new OcrProcessContext(ocrEventHelper);
+            // map contains:
+            // keys: image files
+            // values:
+            // map pageNumber -> retrieved text data(text and its coordinates)
+            IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
+                <int, IList<TextInfo>>>();
+            foreach (FileInfo inputImage in inputImages) {
+                imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage, ocrProcessContext));
+            }
+            // create PdfDocument
+            return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData, pdfSequenceId, documentProperties);
+        }
+
+        /// <summary>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// and
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
         /// </summary>
@@ -161,11 +236,20 @@ namespace iText.Pdfocr {
         /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// and
-        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
-        /// PDF/A-3u document will be created if
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// . PDF/A-3u document will be created if
         /// provided
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
         /// is not null.
+        /// <para />
+        /// NOTE that after executing this method you will have a product event from
+        /// the both itextcore and pdfOcr. Therefore, use this method only if you need to work
+        /// with the generated
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// . If you don't need this, use the
+        /// <see cref="CreatePdfAFile(System.Collections.Generic.IList{E}, System.IO.FileInfo, iText.Kernel.Pdf.PdfOutputIntent)
+        ///     "/>
+        /// method. In this case, only the pdfOcr event will be dispatched.
         /// </remarks>
         /// <param name="inputImages">
         /// 
@@ -190,32 +274,7 @@ namespace iText.Pdfocr {
         /// </returns>
         public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent
             ) {
-            LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.Count));
-            IMetaInfo storedMetaInfo = null;
-            if (ocrEngine is IThreadLocalMetaInfoAware) {
-                storedMetaInfo = ((IThreadLocalMetaInfoAware)ocrEngine).GetThreadLocalMetaInfo();
-                ((IThreadLocalMetaInfoAware)ocrEngine).SetThreadLocalMetaInfo(new OcrPdfCreatorMetaInfo(((IThreadLocalMetaInfoAware
-                    )ocrEngine).GetThreadLocalMetaInfo(), Guid.NewGuid(), null != pdfOutputIntent ? OcrPdfCreatorMetaInfo.PdfDocumentType
-                    .PDFA : OcrPdfCreatorMetaInfo.PdfDocumentType.PDF));
-            }
-            // map contains:
-            // keys: image files
-            // values:
-            // map pageNumber -> retrieved text data(text and its coordinates)
-            IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
-                <int, IList<TextInfo>>>();
-            try {
-                foreach (FileInfo inputImage in inputImages) {
-                    imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage));
-                }
-            }
-            finally {
-                if (ocrEngine is IThreadLocalMetaInfoAware) {
-                    ((IThreadLocalMetaInfoAware)ocrEngine).SetThreadLocalMetaInfo(storedMetaInfo);
-                }
-            }
-            // create PdfDocument
-            return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData);
+            return CreatePdfA(inputImages, pdfWriter, new DocumentProperties(), pdfOutputIntent);
         }
 
         /// <summary>
@@ -225,6 +284,65 @@ namespace iText.Pdfocr {
         /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
         /// </summary>
+        /// <remarks>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
+        /// <para />
+        /// NOTE that after executing this method you will have a product event from
+        /// the both itextcore and pdfOcr. Therefore, use this method only if you need to work
+        /// with the generated
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// . If you don't need this, use the
+        /// <see cref="CreatePdfFile(System.Collections.Generic.IList{E}, System.IO.FileInfo)"/>
+        /// method. In this case, only the pdfOcr event will be dispatched.
+        /// </remarks>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="pdfWriter">
+        /// the
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// object
+        /// to write final PDF document to
+        /// </param>
+        /// <param name="documentProperties">document properties</param>
+        /// <returns>
+        /// result
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// object
+        /// </returns>
+        public PdfDocument CreatePdf(IList<FileInfo> inputImages, PdfWriter pdfWriter, DocumentProperties documentProperties
+            ) {
+            return CreatePdfA(inputImages, pdfWriter, documentProperties, null);
+        }
+
+        /// <summary>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
+        /// <para />
+        /// NOTE that after executing this method you will have a product event from
+        /// the both itextcore and pdfOcr. Therefore, use this method only if you need to work
+        /// with the generated
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// . If you don't need this, use the
+        /// <see cref="CreatePdfFile(System.Collections.Generic.IList{E}, System.IO.FileInfo)"/>
+        /// method. In this case, only the pdfOcr event will be dispatched.
+        /// </remarks>
         /// <param name="inputImages">
         /// 
         /// <see cref="System.Collections.IList{E}"/>
@@ -242,7 +360,82 @@ namespace iText.Pdfocr {
         /// object
         /// </returns>
         public PdfDocument CreatePdf(IList<FileInfo> inputImages, PdfWriter pdfWriter) {
-            return CreatePdfA(inputImages, pdfWriter, null);
+            return CreatePdfA(inputImages, pdfWriter, new DocumentProperties(), null);
+        }
+
+        /// <summary>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="System.IO.FileInfo"/>.
+        /// </summary>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="outPdfFile">
+        /// the
+        /// <see cref="System.IO.FileInfo"/>
+        /// object to write final PDF document to
+        /// </param>
+        public virtual void CreatePdfFile(IList<FileInfo> inputImages, FileInfo outPdfFile) {
+            CreatePdfAFile(inputImages, outPdfFile, null);
+        }
+
+        /// <summary>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="System.IO.FileInfo"/>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="System.IO.FileInfo"/>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
+        /// PDF/A-3u document will be created if provided
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// is not null.
+        /// </remarks>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="outPdfFile">
+        /// the
+        /// <see cref="System.IO.FileInfo"/>
+        /// object to write final PDF document to
+        /// </param>
+        /// <param name="pdfOutputIntent">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// for PDF/A-3u document
+        /// </param>
+        public virtual void CreatePdfAFile(IList<FileInfo> inputImages, FileInfo outPdfFile, PdfOutputIntent pdfOutputIntent
+            ) {
+            DocumentProperties documentProperties = new DocumentProperties();
+            if (ocrPdfCreatorProperties.GetMetaInfo() != null) {
+                documentProperties.SetEventCountingMetaInfo(ocrPdfCreatorProperties.GetMetaInfo());
+            }
+            else {
+                if (ocrEngine is IProductAware) {
+                    documentProperties.SetEventCountingMetaInfo(((IProductAware)ocrEngine).GetMetaInfoContainer().GetMetaInfo(
+                        ));
+                }
+            }
+            using (PdfWriter pdfWriter = new PdfWriter(outPdfFile.FullName)) {
+                PdfDocument pdfDocument = CreatePdfA(inputImages, pdfWriter, documentProperties, pdfOutputIntent);
+                pdfDocument.Close();
+            }
         }
 
         /// <summary>
@@ -319,59 +512,39 @@ namespace iText.Pdfocr {
             try {
                 AddTextToCanvas(imageSize, pageText, canvas, multiplier, pdfPage.GetMediaBox());
             }
-            catch (OcrException e) {
-                LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, e.Message));
-                throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message);
+            catch (PdfOcrException e) {
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, e.Message
+                    ));
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(e.Message
+                    );
             }
             if (layers[1] != null) {
                 canvas.EndLayer();
             }
         }
 
-        /// <summary>
-        /// Creates a new PDF document using provided properties, adds images with
-        /// recognized text.
-        /// </summary>
-        /// <param name="pdfWriter">
-        /// the
-        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
-        /// object
-        /// to write final PDF document to
-        /// </param>
-        /// <param name="pdfOutputIntent">
-        /// 
-        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
-        /// for PDF/A-3u document
-        /// </param>
-        /// <param name="imagesTextData">
-        /// map that contains input image files as keys,
-        /// and as value: map pageNumber -&gt; text for the page
-        /// </param>
-        /// <returns>
-        /// result
-        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// object
-        /// </returns>
         private PdfDocument CreatePdfDocument(PdfWriter pdfWriter, PdfOutputIntent pdfOutputIntent, IDictionary<FileInfo
-            , IDictionary<int, IList<TextInfo>>> imagesTextData) {
+            , IDictionary<int, IList<TextInfo>>> imagesTextData, SequenceId pdfSequenceId, DocumentProperties documentProperties
+            ) {
             PdfDocument pdfDocument;
             bool createPdfA3u = pdfOutputIntent != null;
             if (createPdfA3u) {
-                pdfDocument = new PdfADocument(pdfWriter, PdfAConformanceLevel.PDF_A_3U, pdfOutputIntent, new DocumentProperties
-                    ().SetEventCountingMetaInfo(new PdfOcrMetaInfo()));
+                pdfDocument = new PdfADocument(pdfWriter, PdfAConformanceLevel.PDF_A_3U, pdfOutputIntent, documentProperties
+                    );
             }
             else {
-                pdfDocument = new PdfDocument(pdfWriter, new DocumentProperties().SetEventCountingMetaInfo(new PdfOcrMetaInfo
-                    ()));
+                pdfDocument = new PdfDocument(pdfWriter, documentProperties);
             }
+            LinkDocumentIdEvent linkDocumentIdEvent = new LinkDocumentIdEvent(pdfDocument, pdfSequenceId);
+            EventManager.GetInstance().OnEvent(linkDocumentIdEvent);
             // pdfLang should be set in PDF/A mode
             bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !ocrPdfCreatorProperties.GetPdfLang
                 ().Equals("");
             if (createPdfA3u && !hasPdfLangProperty) {
-                LOGGER.Error(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET
-                    ));
-                throw new OcrException(OcrException.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(PdfOcrLogMessageConstant.
-                    PDF_LANGUAGE_PROPERTY_IS_NOT_SET);
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant
+                    .PDF_LANGUAGE_PROPERTY_IS_NOT_SET));
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT).SetMessageParams(PdfOcrLogMessageConstant
+                    .PDF_LANGUAGE_PROPERTY_IS_NOT_SET);
             }
             // add metadata
             if (hasPdfLangProperty) {
@@ -386,6 +559,13 @@ namespace iText.Pdfocr {
             // reset passed font provider
             ocrPdfCreatorProperties.GetFontProvider().Reset();
             AddDataToPdfDocument(imagesTextData, pdfDocument, createPdfA3u);
+            // statisctics event about type of created pdf
+            if (ocrEngine is IProductAware && ((IProductAware)ocrEngine).GetProductData() != null) {
+                PdfOcrOutputType eventType = createPdfA3u ? PdfOcrOutputType.PDFA : PdfOcrOutputType.PDF;
+                PdfOcrOutputTypeStatisticsEvent docTypeStatisticsEvent = new PdfOcrOutputTypeStatisticsEvent(eventType, ((
+                    IProductAware)ocrEngine).GetProductData());
+                EventManager.GetInstance().OnEvent(docTypeStatisticsEvent);
+            }
             return pdfDocument;
         }
 
@@ -406,8 +586,8 @@ namespace iText.Pdfocr {
                 FileInfo inputImage = entry.Key;
                 IList<ImageData> imageDataList = PdfCreatorUtil.GetImageData(inputImage, ocrPdfCreatorProperties.GetImageRotationHandler
                     ());
-                LOGGER.Info(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage.ToString
-                    (), imageDataList.Count));
+                LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage
+                    .ToString(), imageDataList.Count));
                 IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
                 if (imageTextData.Keys.Count > 0) {
                     for (int page = 0; page < imageDataList.Count; ++page) {
@@ -435,14 +615,14 @@ namespace iText.Pdfocr {
         private void AddImageToCanvas(ImageData imageData, Rectangle imageSize, PdfCanvas pdfCanvas) {
             if (imageData != null) {
                 if (ocrPdfCreatorProperties.GetPageSize() == null) {
-                    pdfCanvas.AddImage(imageData, imageSize, false);
+                    pdfCanvas.AddImageFittedIntoRectangle(imageData, imageSize, false);
                 }
                 else {
                     Point coordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
                         );
                     Rectangle rect = new Rectangle((float)coordinates.x, (float)coordinates.y, imageSize.GetWidth(), imageSize
                         .GetHeight());
-                    pdfCanvas.AddImage(imageData, rect, false);
+                    pdfCanvas.AddImageFittedIntoRectangle(imageData, rect, false);
                 }
             }
         }
@@ -535,42 +715,22 @@ namespace iText.Pdfocr {
 
         /// <summary>Get left bound of text chunk.</summary>
         private static float GetLeft(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return textInfo.GetBbox()[LEFT_IDX] * multiplier;
-            }
-            else {
-                return textInfo.GetBboxRect().GetLeft() * multiplier;
-            }
+            return textInfo.GetBboxRect().GetLeft() * multiplier;
         }
 
         /// <summary>Get right bound of text chunk.</summary>
         private static float GetRight(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return (textInfo.GetBbox()[RIGHT_IDX] + 1) * multiplier - 1;
-            }
-            else {
-                return (textInfo.GetBboxRect().GetRight() + 1) * multiplier - 1;
-            }
+            return (textInfo.GetBboxRect().GetRight() + 1) * multiplier - 1;
         }
 
         /// <summary>Get top bound of text chunk.</summary>
         private static float GetTop(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return textInfo.GetBbox()[TOP_IDX] * multiplier;
-            }
-            else {
-                return textInfo.GetBboxRect().GetTop() * multiplier;
-            }
+            return textInfo.GetBboxRect().GetTop() * multiplier;
         }
 
         /// <summary>Get bottom bound of text chunk.</summary>
         private static float GetBottom(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return (textInfo.GetBbox()[BOTTOM_IDX] + 1) * multiplier - 1;
-            }
-            else {
-                return (textInfo.GetBboxRect().GetBottom() + 1) * multiplier - 1;
-            }
+            return (textInfo.GetBboxRect().GetBottom() + 1) * multiplier - 1;
         }
 
         /// <summary>Check if line is not empty.</summary>
@@ -642,7 +802,7 @@ namespace iText.Pdfocr {
                         if (this.createPdfA3u) {
                             // exception is thrown only if PDF/A document is
                             // being created
-                            throw new OcrException(message);
+                            throw new PdfOcrException(message);
                         }
                         // setting actual text to NotDef glyph
                         glyphLine.SetActualTextToGlyph(i, glyphLine.ToUnicodeString(i, i + 1));
@@ -656,7 +816,7 @@ namespace iText.Pdfocr {
                 }
                 // Warning is logged if not PDF/A document is being created
                 if (notDefGlyphsExists) {
-                    LOGGER.Warn(message);
+                    LOGGER.LogWarning(message);
                 }
                 return this.ShowText(glyphLine, new ActualTextIterator(glyphLine));
             }

@@ -22,11 +22,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
 using Tesseract;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Source;
 using iText.IO.Util;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>Utilities class to work with images.</summary>
@@ -83,10 +87,10 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e) {
                 // NOSONAR
-                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Error(MessageFormatUtil.Format
-                    (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputImage
-                    .FullName);
+                ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogError(MessageFormatUtil
+                    .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+                    ).SetMessageParams(inputImage.FullName);
             }
             return type;
         }
@@ -158,8 +162,8 @@ namespace iText.Pdfocr.Tesseract4 {
                 pix = TesseractOcrUtil.ReadPix(inputFile);
             }
             if (pix == null) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_READ_PROVIDED_IMAGE).SetMessageParams(inputFile
-                    .FullName);
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+                    ).SetMessageParams(inputFile.FullName);
             }
             return TesseractOcrUtil.PreprocessPix(pix, imagePreprocessingOptions);
         }
@@ -190,12 +194,12 @@ namespace iText.Pdfocr.Tesseract4 {
                 bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadImageFromFile(inputImage);
             }
             catch (ArgumentException ex) {
-                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
-                    (Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
+                ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
+                    .Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
             }
             catch (System.IO.IOException ex) {
-                LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
-                    (Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
+                ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
+                    .Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
             }
             if (bufferedImage == null) {
                 try {
@@ -203,8 +207,8 @@ namespace iText.Pdfocr.Tesseract4 {
                         );
                 }
                 catch (System.IO.IOException ex) {
-                    LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).Info(MessageFormatUtil.Format
-                        (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
+                    ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
+                        .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
                 }
             }
             return bufferedImage;

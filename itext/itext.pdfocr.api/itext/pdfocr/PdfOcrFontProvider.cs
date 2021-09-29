@@ -22,10 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Font;
 using iText.IO.Util;
 using iText.Layout.Font;
+using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr {
     public class PdfOcrFontProvider : FontProvider {
@@ -70,7 +73,7 @@ namespace iText.Pdfocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_DEFAULT_FONT
                     , e.Message));
                 return new byte[0];
             }

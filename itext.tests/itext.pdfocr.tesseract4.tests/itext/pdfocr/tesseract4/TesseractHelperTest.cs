@@ -24,13 +24,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Common.Logging;
-using iText.IO.Util;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class TesseractHelperTest : IntegrationTestHelper {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelperTest
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.TesseractHelperTest
             ));
 
         internal AbstractTesseract4OcrEngine tesseractReader;

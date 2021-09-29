@@ -22,11 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Imageformats {
@@ -66,8 +68,8 @@ namespace iText.Pdfocr.Imageformats {
             String expectedOutput = "This is a test message for OCR Scanner Test";
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path), JavaCollectionsUtil.SingletonList
                 <String>("eng"));
-            realOutputHocr = iText.IO.Util.StringUtil.ReplaceAll(realOutputHocr, "[\n]", " ");
-            realOutputHocr = iText.IO.Util.StringUtil.ReplaceAll(realOutputHocr, "[‘]", "");
+            realOutputHocr = iText.Commons.Utils.StringUtil.ReplaceAll(realOutputHocr, "[\n]", " ");
+            realOutputHocr = iText.Commons.Utils.StringUtil.ReplaceAll(realOutputHocr, "[‘]", "");
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains((expectedOutput)));
         }
 
@@ -90,7 +92,7 @@ namespace iText.Pdfocr.Imageformats {
             String expectedOutput = "This is a test message for OCR Scanner Test BMPTest";
             String realOutputHocr = GetTextFromPdf(tesseractReader, new FileInfo(path), JavaCollectionsUtil.SingletonList
                 <String>("eng"));
-            realOutputHocr = iText.IO.Util.StringUtil.ReplaceAll(realOutputHocr, "[\n]", " ");
+            realOutputHocr = iText.Commons.Utils.StringUtil.ReplaceAll(realOutputHocr, "[\n]", " ");
             NUnit.Framework.Assert.IsTrue(realOutputHocr.Contains((expectedOutput)));
         }
 
@@ -226,7 +228,7 @@ namespace iText.Pdfocr.Imageformats {
                 FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "wierdwords.gif");
                 GetTextFromPdf(tesseractReader, file);
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT, "wierdwords.gif")))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT, "wierdwords.gif")))
 ;
         }
 

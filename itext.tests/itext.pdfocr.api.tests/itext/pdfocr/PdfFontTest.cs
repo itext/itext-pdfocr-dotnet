@@ -22,12 +22,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.Commons.Utils;
 using iText.IO.Font;
-using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Layout.Font;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
+using iText.Pdfocr.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 
@@ -51,7 +53,7 @@ namespace iText.Pdfocr {
         }
 
         [LogMessage(PdfOcrLogMessageConstant.PROVIDED_FONT_PROVIDER_IS_INVALID, Count = 1)]
-        [LogMessage(OcrException.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
+        [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidFontWithInvalidDefaultFontFamily() {
             NUnit.Framework.Assert.That(() =>  {
@@ -69,7 +71,7 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_TEXT, result);
                 NUnit.Framework.Assert.AreEqual(ScaleMode.SCALE_TO_FIT, properties.GetScaleMode());
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(OcrException.CANNOT_CREATE_PDF_DOCUMENT, OcrException.CANNOT_RESOLVE_PROVIDED_FONTS)))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrExceptionMessageConstant.CANNOT_RESOLVE_PROVIDED_FONTS)))
 ;
         }
 

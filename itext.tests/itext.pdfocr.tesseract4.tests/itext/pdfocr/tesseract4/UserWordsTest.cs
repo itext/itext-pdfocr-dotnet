@@ -23,8 +23,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class UserWordsTest : IntegrationTestHelper {
@@ -76,7 +77,7 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             String result = GetRecognizedTextFromTextFile(tesseractReader, imgPath);
             result = result.Replace("\n", "").Replace("\f", "");
-            result = iText.IO.Util.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
+            result = iText.Commons.Utils.StringUtil.ReplaceAll(result, "[^\\u0009\\u000A\\u000D\\u0020-\\u007E]", "");
             NUnit.Framework.Assert.IsTrue(result.StartsWith(expectedOutput));
             NUnit.Framework.Assert.IsTrue(tesseractReader.GetTesseract4OcrEngineProperties().GetPathToUserWordsFile().
                 EndsWith(".user-words"));
@@ -90,7 +91,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 properties.SetUserWords("spa", new FileStream(userWords, FileMode.Open, FileAccess.Read));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST, "spa")))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST, "spa")))
 ;
         }
 
@@ -101,7 +102,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 properties.SetUserWords("eng1", JavaUtil.ArraysAsList("word1", "word2"));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(MessageFormatUtil.Format(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1")))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1")))
 ;
         }
 

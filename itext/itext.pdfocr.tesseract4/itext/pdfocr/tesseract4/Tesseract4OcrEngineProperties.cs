@@ -23,9 +23,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
-using iText.IO.Util;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -151,7 +154,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetPathToTessData(FileInfo tessData) {
             if (tessData == null || !FileUtil.DirectoryExists(tessData.FullName)) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_IS_INVALID
+                    );
             }
             this.tessDataDir = tessData;
             return this;
@@ -291,7 +295,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     SetUserWords(language, inputStream);
                 }
                 catch (System.IO.IOException e) {
-                    LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
+                    ITextLogManager.GetLogger(GetType()).LogWarning(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
                         , e.Message));
                 }
             }
@@ -339,8 +343,8 @@ namespace iText.Pdfocr.Tesseract4 {
                     SetLanguages(languagesList);
                 }
                 else {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.LANGUAGE_IS_NOT_IN_THE_LIST).SetMessageParams(language
-                        );
+                    throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST
+                        ).SetMessageParams(language);
                 }
             }
             String userWordsFileName = TesseractOcrUtil.GetTempFilePath(language, "." + DEFAULT_USER_WORDS_SUFFIX);
@@ -357,7 +361,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (System.IO.IOException e) {
                 SetPathToUserWordsFile(null);
-                LogManager.GetLogger(GetType()).Warn(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
+                ITextLogManager.GetLogger(GetType()).LogWarning(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_USE_USER_WORDS
                     , e.Message));
             }
             return this;

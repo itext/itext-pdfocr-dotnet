@@ -23,15 +23,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Source;
-using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Renderer;
+using iText.Pdfocr.Exceptions;
+using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr {
     internal class PdfCreatorUtil {
@@ -42,7 +45,7 @@ namespace iText.Pdfocr {
         private const float POINTS_PER_INCH = 72.0f;
 
         /// <summary>The logger.</summary>
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(PdfCreatorUtil));
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(PdfCreatorUtil));
 
         /// <summary>
         /// Calculates font size according to given bbox height, width and selected
@@ -83,8 +86,8 @@ namespace iText.Pdfocr {
                 }
             }
             catch (InvalidOperationException e) {
-                LOGGER.Error(PdfOcrLogMessageConstant.PROVIDED_FONT_PROVIDER_IS_INVALID);
-                throw new OcrException(OcrException.CANNOT_RESOLVE_PROVIDED_FONTS, e);
+                LOGGER.LogError(PdfOcrLogMessageConstant.PROVIDED_FONT_PROVIDER_IS_INVALID);
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_RESOLVE_PROVIDED_FONTS, e);
             }
             return fontSize;
         }
@@ -176,12 +179,12 @@ namespace iText.Pdfocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
             }
-            catch (iText.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new OcrException(OcrException.CANNOT_READ_INPUT_IMAGE, e);
+            catch (iText.IO.Exceptions.IOException e) {
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
             }
             return images;
         }

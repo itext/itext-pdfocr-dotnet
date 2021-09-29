@@ -22,7 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
+using iText.Pdfocr.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 
@@ -37,7 +39,7 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
 ;
         }
 
@@ -50,7 +52,7 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
 ;
         }
 
@@ -63,7 +65,7 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
 ;
         }
 
@@ -76,7 +78,7 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
 ;
         }
 
@@ -89,7 +91,7 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.IsNotNull(realOutput);
                 NUnit.Framework.Assert.AreEqual("", realOutput);
             }
-            , NUnit.Framework.Throws.InstanceOf<OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
 ;
         }
     }

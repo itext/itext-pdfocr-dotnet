@@ -23,14 +23,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
-using iText.IO.Util;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class ImageIntegrationTest : IntegrationTestHelper {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImageIntegrationTest
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImageIntegrationTest
             ));
 
         internal AbstractTesseract4OcrEngine tesseractReader;
@@ -70,8 +71,8 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.AreEqual("degrees", pageData.Get(1)[1].GetText());
             NUnit.Framework.Assert.AreEqual("rotated", pageData.Get(1)[2].GetText());
             NUnit.Framework.Assert.AreEqual("image", pageData.Get(1)[3].GetText());
-            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBbox()[2] - pageData.Get(1)[0].GetBbox()[0] > 100);
-            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBbox()[3] - pageData.Get(1)[0].GetBbox()[1] < 100);
+            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBboxRect().GetWidth() > 100);
+            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBboxRect().GetHeight() < 100);
         }
 
         [NUnit.Framework.Test]

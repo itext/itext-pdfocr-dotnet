@@ -22,9 +22,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.Commons.Utils;
 using iText.IO.Image;
-using iText.IO.Util;
 using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
@@ -44,7 +46,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 FileInfo imgFile = new FileInfo(path);
                 ImagePreprocessingUtil.PreprocessImage(imgFile, 1, new ImagePreprocessingOptions());
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>())
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>())
 ;
         }
 

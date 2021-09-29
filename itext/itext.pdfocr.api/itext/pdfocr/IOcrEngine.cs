@@ -64,6 +64,31 @@ namespace iText.Pdfocr {
         IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input);
 
         /// <summary>
+        /// Reads data from the provided input image file and returns retrieved data
+        /// in the format described below.
+        /// </summary>
+        /// <param name="input">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="ocrProcessContext">ocr processing context</param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="TextInfo"/>
+        /// elements where each
+        /// <see cref="TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext);
+
+        /// <summary>
         /// Performs OCR using provided
         /// <see cref="IOcrEngine"/>
         /// for the given list of
@@ -84,5 +109,28 @@ namespace iText.Pdfocr {
         /// </param>
         /// <param name="txtFile">file to be created</param>
         void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile);
+
+        /// <summary>
+        /// Performs OCR using provided
+        /// <see cref="IOcrEngine"/>
+        /// for the given list of
+        /// input images and saves output to a text file using provided path.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR using provided
+        /// <see cref="IOcrEngine"/>
+        /// for the given list of
+        /// input images and saves output to a text file using provided path.
+        /// Note that a human reading order is not guaranteed
+        /// due to possible specifics of input images (multi column layout, tables etc)
+        /// </remarks>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="txtFile">file to be created</param>
+        /// <param name="ocrProcessContext">ocr processing context</param>
+        void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext);
     }
 }

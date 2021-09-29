@@ -21,8 +21,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using System.Collections.Generic;
-using iText.IO.Util;
 using iText.Kernel.Geom;
 
 namespace iText.Pdfocr {
@@ -39,16 +37,6 @@ namespace iText.Pdfocr {
         /// describing text bbox (lower-left based) expressed in points.
         /// </summary>
         private Rectangle bboxRect;
-
-        /// <summary>Contains 4 float coordinates: bbox parameters.</summary>
-        /// <remarks>
-        /// Contains 4 float coordinates: bbox parameters.
-        /// Alike bboxRect described by
-        /// <see cref="iText.Kernel.Geom.Rectangle"/>
-        /// coordinates are upper-left based and expressed in pixels.
-        /// </remarks>
-        [System.ObsoleteAttribute(@"since 1.0.1. Use bboxRect instead")]
-        private IList<float> bbox = JavaCollectionsUtil.EmptyList<float>();
 
         /// <summary>
         /// Creates a new
@@ -67,7 +55,6 @@ namespace iText.Pdfocr {
         public TextInfo(iText.Pdfocr.TextInfo textInfo) {
             this.text = textInfo.text;
             this.bboxRect = new Rectangle(textInfo.bboxRect);
-            this.bbox = JavaCollectionsUtil.UnmodifiableList<float>(textInfo.bbox);
         }
 
         /// <summary>
@@ -84,48 +71,6 @@ namespace iText.Pdfocr {
         public TextInfo(String text, Rectangle bbox) {
             this.text = text;
             this.bboxRect = new Rectangle(bbox);
-        }
-
-        /// <summary>
-        /// Creates a new
-        /// <see cref="TextInfo"/>
-        /// instance.
-        /// </summary>
-        /// <param name="text">any text</param>
-        /// <param name="bbox">
-        /// 
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of bbox parameters
-        /// </param>
-        [System.ObsoleteAttribute(@"since 1.0.1. Use TextInfo(System.String, iText.Kernel.Geom.Rectangle) instead"
-            )]
-        public TextInfo(String text, IList<float> bbox) {
-            this.text = text;
-            this.bbox = JavaCollectionsUtil.UnmodifiableList<float>(bbox);
-        }
-
-        /// <summary>
-        /// Creates a new
-        /// <see cref="TextInfo"/>
-        /// instance.
-        /// </summary>
-        /// <param name="text">any text</param>
-        /// <param name="bboxRect">
-        /// 
-        /// <see cref="iText.Kernel.Geom.Rectangle"/>
-        /// describing text bbox
-        /// </param>
-        /// <param name="bbox">
-        /// 
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of bbox parameters
-        /// </param>
-        [System.ObsoleteAttribute(@"since 1.0.1. Use TextInfo(System.String, iText.Kernel.Geom.Rectangle) instead"
-            )]
-        public TextInfo(String text, Rectangle bboxRect, IList<float> bbox) {
-            this.text = text;
-            this.bboxRect = bboxRect;
-            this.bbox = JavaCollectionsUtil.UnmodifiableList<float>(bbox);
         }
 
         /// <summary>Gets text element.</summary>
@@ -158,30 +103,6 @@ namespace iText.Pdfocr {
         /// </param>
         public virtual void SetBboxRect(Rectangle bbox) {
             this.bboxRect = new Rectangle(bbox);
-            this.bbox = JavaCollectionsUtil.EmptyList<float>();
-        }
-
-        /// <summary>Gets bbox coordinates.</summary>
-        /// <returns>
-        /// 
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of bbox parameters
-        /// </returns>
-        [System.ObsoleteAttribute(@"since 1.0.1. Use GetBboxRect() instead")]
-        public virtual IList<float> GetBbox() {
-            return new List<float>(bbox);
-        }
-
-        /// <summary>Sets bbox coordinates.</summary>
-        /// <param name="bbox">
-        /// 
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of bbox parameters
-        /// </param>
-        [System.ObsoleteAttribute(@"since 1.0.1. Use SetBboxRect(iText.Kernel.Geom.Rectangle) instead")]
-        public virtual void SetBbox(IList<float> bbox) {
-            this.bbox = JavaCollectionsUtil.UnmodifiableList<float>(bbox);
-            this.bboxRect = null;
         }
     }
 }

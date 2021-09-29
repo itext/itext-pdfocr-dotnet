@@ -21,11 +21,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Logs;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
@@ -34,7 +36,8 @@ namespace iText.Pdfocr.Tessdata {
             : base(IntegrationTestHelper.ReaderType.LIB) {
         }
 
-        [LogMessage(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS)]
+        [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
+            )]
         [NUnit.Framework.Test]
         public virtual void TestTessDataWithNonAsciiPath() {
             NUnit.Framework.Assert.That(() =>  {
@@ -43,7 +46,7 @@ namespace iText.Pdfocr.Tessdata {
                 NUnit.Framework.Assert.Fail("Should throw exception for the tesseract lib when tess data path contains non ASCII characters"
                     );
             }
-            , NUnit.Framework.Throws.InstanceOf<Tesseract4OcrException>().With.Message.EqualTo(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS))
+            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS))
 ;
         }
 

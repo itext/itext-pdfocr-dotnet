@@ -24,9 +24,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
 using Tesseract;
-using iText.IO.Util;
+using iText.Commons;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Utils;
+using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Actions.Events;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -56,7 +62,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private TesseractEngine tesseractInstance = null;
 
         /// <summary>Pattern for matching ASCII string.</summary>
-        private static readonly Regex ASCII_STRING_PATTERN = iText.IO.Util.StringUtil.RegexCompile("^[\\u0000-\\u007F]*$"
+        private static readonly Regex ASCII_STRING_PATTERN = iText.Commons.Utils.StringUtil.RegexCompile("^[\\u0000-\\u007F]*$"
             );
 
         /// <summary>
@@ -144,22 +150,23 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        /// <param name="dispatchEvent">
-        /// indicates if
-        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
-        /// needs to be dispatched
-        /// </param>
+        /// <param name="dispatchEvent">indicates if event needs to be dispatched</param>
+        /// <param name="eventHelper">event helper</param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber, bool dispatchEvent) {
-            ScheduledCheck();
+            , int pageNumber, bool dispatchEvent, AbstractPdfOcrEventHelper eventHelper) {
+            PdfOcrTesseract4ProductEvent @event = null;
+            if (eventHelper == null) {
+                eventHelper = new Tesseract4EventHelper();
+            }
+            // usage event
+            if (dispatchEvent) {
+                @event = OnEvent(eventHelper);
+            }
             try {
                 // check tess data path for non ASCII characters
                 ValidateTessDataPath(GetTessData());
                 ValidateLanguages(GetTesseract4OcrEngineProperties().GetLanguages());
                 InitializeTesseract(outputFormat);
-                if (dispatchEvent) {
-                    OnEvent();
-                }
                 // if preprocessing is not needed and provided image is tiff,
                 // the image will be paginated and separate pages will be OCRed
                 IList<String> resultList = new List<String>();
@@ -183,16 +190,20 @@ namespace iText.Pdfocr.Tesseract4 {
                             }
                         }
                         catch (System.IO.IOException e) {
-                            LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_WRITE_TO_FILE
-                                , e.Message));
-                            throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                            throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e);
                         }
                     }
                 }
+                // statistics event
+                OnEventStatistics(eventHelper);
+                // confirm on_demand event
+                if (@event != null && @event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    eventHelper.OnEvent(new ConfirmEvent(@event));
+                }
             }
-            catch (Tesseract4OcrException e) {
-                LogManager.GetLogger(GetType()).Error(e.Message);
-                throw new Tesseract4OcrException(e.Message, e);
+            catch (PdfOcrTesseract4Exception e) {
+                ITextLogManager.GetLogger(GetType()).LogError(e.Message);
+                throw new PdfOcrTesseract4Exception(e.Message, e);
             }
             finally {
                 if (tesseractInstance != null) {
@@ -220,9 +231,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// path to tess data
         /// </param>
         private static void ValidateTessDataPath(String tessDataPath) {
-            Matcher asciiStringMatcher = iText.IO.Util.Matcher.Match(ASCII_STRING_PATTERN, tessDataPath);
+            Matcher asciiStringMatcher = iText.Commons.Utils.Matcher.Match(ASCII_STRING_PATTERN, tessDataPath);
             if (!asciiStringMatcher.Matches()) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_DIRECTORY_CONTAINS_NON_ASCII_CHARACTERS
                     );
             }
         }
@@ -263,8 +274,8 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (TesseractException e) {
                 String msg = MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED, e.Message);
-                LogManager.GetLogger(GetType()).Error(msg);
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                ITextLogManager.GetLogger(GetType()).LogError(msg);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
             finally {
                 TesseractOcrUtil.DisposeTesseractInstance(GetTesseractInstance());
@@ -305,8 +316,8 @@ namespace iText.Pdfocr.Tesseract4 {
                         }
                         catch (Exception e) {
                             // NOSONAR
-                            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_PROCESS_IMAGE
-                                , e.Message));
+                            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
+                                CANNOT_PROCESS_IMAGE, e.Message));
                         }
                     }
                     if (result == null) {
@@ -317,9 +328,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e) {
                 // NOSONAR
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
                     , e.Message));
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
             return result;
         }

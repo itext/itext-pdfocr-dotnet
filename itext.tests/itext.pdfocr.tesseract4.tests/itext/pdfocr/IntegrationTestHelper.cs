@@ -23,9 +23,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Font;
-using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
@@ -36,11 +37,13 @@ using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Layout.Font;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test;
 
 namespace iText.Pdfocr {
     public class IntegrationTestHelper : ExtendedITextTest {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(iText.Pdfocr.IntegrationTestHelper));
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.IntegrationTestHelper
+            ));
 
         // directory with test files
         public static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
@@ -164,7 +167,7 @@ namespace iText.Pdfocr {
                 result = GetTextFromPdfLayer(pdfPath, null, page);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return result;
         }
@@ -203,8 +206,7 @@ namespace iText.Pdfocr {
         /// <summary>Get text from layer specified by name from page.</summary>
         protected internal virtual String GetTextFromPdfLayer(String pdfPath, String layerName, int page, bool useActualText
             ) {
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath), new DocumentProperties().SetEventCountingMetaInfo
-                (new PdfOcrMetaInfo()));
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             IntegrationTestHelper.ExtractionStrategy textExtractionStrategy = new IntegrationTestHelper.ExtractionStrategy
                 (layerName);
             textExtractionStrategy.SetUseActualText(useActualText);
@@ -243,7 +245,7 @@ namespace iText.Pdfocr {
                 result = GetTextFromTextFile(new FileInfo(txtPath));
             }
             catch (Exception e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
             return result;
         }
@@ -338,7 +340,7 @@ namespace iText.Pdfocr {
                 }
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(e.Message);
+                LOGGER.LogError(e.Message);
             }
         }
 
@@ -383,11 +385,11 @@ namespace iText.Pdfocr {
         protected internal virtual String GetTextFromTextFile(FileInfo file) {
             String content = null;
             try {
-                content = iText.IO.Util.JavaUtil.GetStringForBytes(File.ReadAllBytes(file.FullName), System.Text.Encoding.
-                    UTF8);
+                content = iText.Commons.Utils.JavaUtil.GetStringForBytes(File.ReadAllBytes(file.FullName), System.Text.Encoding
+                    .UTF8);
             }
             catch (System.IO.IOException e) {
-                LOGGER.Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message
+                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_FILE, file.FullName, e.Message
                     ));
             }
             return content;

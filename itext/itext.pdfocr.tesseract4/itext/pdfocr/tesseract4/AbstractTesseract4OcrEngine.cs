@@ -25,14 +25,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Actions.Contexts;
+using iText.Commons.Actions.Data;
+using iText.Commons.Utils;
 using iText.IO.Image;
-using iText.IO.Util;
-using iText.Kernel.Counter;
-using iText.Kernel.Counter.Event;
 using iText.Pdfocr;
-using iText.Pdfocr.Events;
-using iText.Pdfocr.Tesseract4.Events;
+using iText.Pdfocr.Statistics;
+using iText.Pdfocr.Tesseract4.Actions.Data;
+using iText.Pdfocr.Tesseract4.Actions.Events;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -47,7 +52,7 @@ namespace iText.Pdfocr.Tesseract4 {
     /// Also there are possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems).
     /// </remarks>
-    public abstract class AbstractTesseract4OcrEngine : IOcrEngine, IThreadLocalMetaInfoAware {
+    public abstract class AbstractTesseract4OcrEngine : IOcrEngine, IProductAware {
         /// <summary>Supported image formats.</summary>
         private static readonly ICollection<ImageType> SUPPORTED_IMAGE_FORMATS = JavaCollectionsUtil.UnmodifiableSet
             (new HashSet<ImageType>(JavaUtil.ArraysAsList(ImageType.BMP, ImageType.PNG, ImageType.TIFF, ImageType.
@@ -76,7 +81,25 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         public virtual void DoTesseractOcr(FileInfo inputImage, FileInfo outputFile, OutputFormat outputFormat) {
-            DoTesseractOcr(inputImage, JavaCollectionsUtil.SingletonList<FileInfo>(outputFile), outputFormat, 1);
+            DoTesseractOcr(inputImage, outputFile, outputFormat, new OcrProcessContext(new Tesseract4EventHelper()));
+        }
+
+        /// <summary>Performs tesseract OCR for the first (or for the only) image page.</summary>
+        /// <param name="inputImage">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="outputFile">output file for the result for the first page</param>
+        /// <param name="outputFormat">
+        /// selected
+        /// <see cref="OutputFormat"/>
+        /// for tesseract
+        /// </param>
+        /// <param name="ocrProcessContext">ocr process context</param>
+        public virtual void DoTesseractOcr(FileInfo inputImage, FileInfo outputFile, OutputFormat outputFormat, OcrProcessContext
+             ocrProcessContext) {
+            DoTesseractOcr(inputImage, JavaCollectionsUtil.SingletonList<FileInfo>(outputFile), outputFormat, 1, ocrProcessContext
+                .GetOcrEventHelper());
         }
 
         /// <summary>
@@ -92,14 +115,52 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         /// <param name="txtFile">file to be created</param>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
-            LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.START_OCR_FOR_IMAGES
-                , inputImages.Count));
-            StringBuilder content = new StringBuilder();
-            foreach (FileInfo inputImage in inputImages) {
-                content.Append(DoImageOcr(inputImage, OutputFormat.TXT));
+            CreateTxtFile(inputImages, txtFile, new OcrProcessContext(new Tesseract4EventHelper()));
+        }
+
+        /// <summary>
+        /// Performs OCR using provided
+        /// <see cref="iText.Pdfocr.IOcrEngine"/>
+        /// for the given list of
+        /// input images and saves output to a text file using provided path.
+        /// </summary>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="txtFile">file to be created</param>
+        /// <param name="ocrProcessContext">ocr process context</param>
+        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
+            ) {
+            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
+                START_OCR_FOR_IMAGES, inputImages.Count));
+            AbstractPdfOcrEventHelper storedEventHelper;
+            if (ocrProcessContext.GetOcrEventHelper() == null) {
+                storedEventHelper = new Tesseract4EventHelper();
             }
-            // write to file
-            TesseractHelper.WriteToTextFile(txtFile.FullName, content.ToString());
+            else {
+                storedEventHelper = ocrProcessContext.GetOcrEventHelper();
+            }
+            PdfOcrTesseract4ProductEvent @event = PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(storedEventHelper
+                .GetSequenceId(), null, storedEventHelper.GetConfirmationType());
+            storedEventHelper.OnEvent(@event);
+            try {
+                // set Tesseract4FileResultEventHelper
+                ocrProcessContext.SetOcrEventHelper(new Tesseract4FileResultEventHelper(storedEventHelper));
+                StringBuilder content = new StringBuilder();
+                foreach (FileInfo inputImage in inputImages) {
+                    content.Append(DoImageOcr(inputImage, OutputFormat.TXT, ocrProcessContext));
+                }
+                // write to file
+                TesseractHelper.WriteToTextFile(txtFile.FullName, content.ToString());
+                if (@event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    storedEventHelper.OnEvent(new ConfirmEvent(@event));
+                }
+            }
+            finally {
+                ocrProcessContext.SetOcrEventHelper(storedEventHelper);
+            }
         }
 
         /// <summary>
@@ -171,7 +232,84 @@ namespace iText.Pdfocr.Tesseract4 {
         public IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
             VerifyImageFormatValidity(input);
             return ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)ProcessInputFiles(input, OutputFormat.HOCR
-                )).GetTextInfos();
+                , new Tesseract4EventHelper())).GetTextInfos();
+        }
+
+        /// <summary>
+        /// Reads data from the provided input image file and returns retrieved
+        /// data in the format described below.
+        /// </summary>
+        /// <param name="input">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="ocrProcessContext">ocr process context</param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        public IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext) {
+            VerifyImageFormatValidity(input);
+            return ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)ProcessInputFiles(input, OutputFormat.HOCR
+                , ocrProcessContext.GetOcrEventHelper())).GetTextInfos();
+        }
+
+        /// <summary>
+        /// Reads data from the provided input image file and returns retrieved
+        /// data as string.
+        /// </summary>
+        /// <param name="input">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="outputFormat">
+        /// return
+        /// <see cref="OutputFormat"/>
+        /// result
+        /// </param>
+        /// <param name="ocrProcessContext">ocr process context</param>
+        /// <returns>
+        /// OCR result as a
+        /// <see cref="System.String"/>
+        /// that is
+        /// returned after processing the given image
+        /// </returns>
+        public String DoImageOcr(FileInfo input, OutputFormat outputFormat, OcrProcessContext ocrProcessContext) {
+            String result = "";
+            VerifyImageFormatValidity(input);
+            AbstractTesseract4OcrEngine.ITesseractOcrResult processedData = ProcessInputFiles(input, outputFormat, ocrProcessContext
+                .GetOcrEventHelper());
+            if (processedData != null) {
+                if (outputFormat.Equals(OutputFormat.TXT)) {
+                    result = ((AbstractTesseract4OcrEngine.StringTesseractOcrResult)processedData).GetData();
+                }
+                else {
+                    StringBuilder outputText = new StringBuilder();
+                    IDictionary<int, IList<TextInfo>> outputMap = ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)processedData
+                        ).GetTextInfos();
+                    foreach (int page in outputMap.Keys) {
+                        StringBuilder pageText = new StringBuilder();
+                        foreach (TextInfo textInfo in outputMap.Get(page)) {
+                            pageText.Append(textInfo.GetText());
+                            pageText.Append(Environment.NewLine);
+                        }
+                        outputText.Append(pageText);
+                        outputText.Append(Environment.NewLine);
+                    }
+                    result = outputText.ToString();
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -194,30 +332,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// returned after processing the given image
         /// </returns>
         public String DoImageOcr(FileInfo input, OutputFormat outputFormat) {
-            String result = "";
-            VerifyImageFormatValidity(input);
-            AbstractTesseract4OcrEngine.ITesseractOcrResult processedData = ProcessInputFiles(input, outputFormat);
-            if (processedData != null) {
-                if (outputFormat.Equals(OutputFormat.TXT)) {
-                    result = ((AbstractTesseract4OcrEngine.StringTesseractOcrResult)processedData).GetData();
-                }
-                else {
-                    StringBuilder outputText = new StringBuilder();
-                    IDictionary<int, IList<TextInfo>> outputMap = ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)processedData
-                        ).GetTextInfos();
-                    foreach (int page in outputMap.Keys) {
-                        StringBuilder pageText = new StringBuilder();
-                        foreach (TextInfo textInfo in outputMap.Get(page)) {
-                            pageText.Append(textInfo.GetText());
-                            pageText.Append(Environment.NewLine);
-                        }
-                        outputText.Append(pageText);
-                        outputText.Append(Environment.NewLine);
-                    }
-                    result = outputText.ToString();
-                }
-            }
-            return result;
+            return DoImageOcr(input, outputFormat, new OcrProcessContext(new Tesseract4EventHelper()));
         }
 
         /// <summary>Checks current os type.</summary>
@@ -251,29 +366,27 @@ namespace iText.Pdfocr.Tesseract4 {
             if (languagesList.Count == 0) {
                 if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + GetTesseract4OcrEngineProperties
                     ().GetDefaultLanguage() + suffix).Exists) {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_LANGUAGE).SetMessageParams(GetTesseract4OcrEngineProperties
-                        ().GetDefaultLanguage() + suffix, GetTessData());
+                    throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_LANGUAGE).SetMessageParams
+                        (GetTesseract4OcrEngineProperties().GetDefaultLanguage() + suffix, GetTessData());
                 }
             }
             else {
                 foreach (String lang in languagesList) {
                     if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + lang + suffix).Exists) {
-                        throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_LANGUAGE).SetMessageParams(lang + suffix
-                            , GetTessData());
+                        throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_LANGUAGE).SetMessageParams
+                            (lang + suffix, GetTessData());
                     }
                 }
             }
         }
 
         /// <summary><inheritDoc/></summary>
-        public virtual IMetaInfo GetThreadLocalMetaInfo() {
-            return threadLocalMetaInfo.Value;
+        public virtual PdfOcrMetaInfoContainer GetMetaInfoContainer() {
+            return new PdfOcrMetaInfoContainer(new Tesseract4MetaInfo());
         }
 
-        /// <summary><inheritDoc/></summary>
-        public virtual IThreadLocalMetaInfoAware SetThreadLocalMetaInfo(IMetaInfo metaInfo) {
-            this.threadLocalMetaInfo.Value = metaInfo;
-            return this;
+        public virtual ProductData GetProductData() {
+            return PdfOcrTesseract4ProductData.GetInstance();
         }
 
         /// <summary>
@@ -307,8 +420,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
         internal virtual void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber) {
-            DoTesseractOcr(inputImage, outputFiles, outputFormat, pageNumber, true);
+            , int pageNumber, AbstractPdfOcrEventHelper eventHelper) {
+            DoTesseractOcr(inputImage, outputFiles, outputFormat, pageNumber, true, eventHelper);
         }
 
         /// <summary>
@@ -341,13 +454,10 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        /// <param name="dispatchEvent">
-        /// indicates if
-        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
-        /// needs to be dispatched
-        /// </param>
+        /// <param name="dispatchEvent">indicates if event needs to be dispatched</param>
+        /// <param name="eventHelper">event helper</param>
         internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber, bool dispatchEvent);
+            , int pageNumber, bool dispatchEvent, AbstractPdfOcrEventHelper eventHelper);
 
         /// <summary>Gets path to provided tess data directory.</summary>
         /// <returns>
@@ -356,32 +466,24 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal virtual String GetTessData() {
             if (GetTesseract4OcrEngineProperties().GetPathToTessData() == null) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.PATH_TO_TESS_DATA_IS_NOT_SET);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET);
             }
             else {
                 return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
             }
         }
 
-        internal virtual void ScheduledCheck() {
-            ReflectionUtils.ScheduledCheck();
+        internal virtual PdfOcrTesseract4ProductEvent OnEvent(AbstractPdfOcrEventHelper eventHelper) {
+            // usage event
+            PdfOcrTesseract4ProductEvent @event = PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(eventHelper.GetSequenceId
+                (), null, eventHelper.GetConfirmationType());
+            eventHelper.OnEvent(@event);
+            return @event;
         }
 
-        internal virtual void OnEvent() {
-            IMetaInfo metaInfo = this.GetThreadLocalMetaInfo();
-            if (!(metaInfo is OcrPdfCreatorMetaInfo)) {
-                EventCounterHandler.GetInstance().OnEvent(PdfOcrTesseract4Event.TESSERACT4_IMAGE_OCR, this.GetThreadLocalMetaInfo
-                    (), GetType());
-            }
-            else {
-                Guid uuid = ((OcrPdfCreatorMetaInfo)metaInfo).GetDocumentId();
-                if (!processedUUID.Contains(uuid)) {
-                    processedUUID.Add(uuid);
-                    EventCounterHandler.GetInstance().OnEvent(OcrPdfCreatorMetaInfo.PdfDocumentType.PDFA.Equals(((OcrPdfCreatorMetaInfo
-                        )metaInfo).GetPdfDocumentType()) ? PdfOcrTesseract4Event.TESSERACT4_IMAGE_TO_PDFA : PdfOcrTesseract4Event
-                        .TESSERACT4_IMAGE_TO_PDF, ((OcrPdfCreatorMetaInfo)metaInfo).GetWrappedMetaInfo(), GetType());
-                }
-            }
+        internal virtual void OnEventStatistics(AbstractPdfOcrEventHelper eventHelper) {
+            eventHelper.OnEvent(new PdfOcrOutputTypeStatisticsEvent(PdfOcrOutputType.DATA, PdfOcrTesseract4ProductData
+                .GetInstance()));
         }
 
         /// <summary>Reads data from the provided input image file.</summary>
@@ -396,6 +498,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// by
         /// <see cref="iText.Pdfocr.IOcrEngine"/>
         /// </param>
+        /// <param name="eventHelper">event helper</param>
         /// <returns>
         /// 
         /// <see cref="ITesseractOcrResult"/>
@@ -406,7 +509,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// if the output format is HOCR
         /// </returns>
         private AbstractTesseract4OcrEngine.ITesseractOcrResult ProcessInputFiles(FileInfo input, OutputFormat outputFormat
-            ) {
+            , AbstractPdfOcrEventHelper eventHelper) {
             IDictionary<int, IList<TextInfo>> imageData = new LinkedDictionary<int, IList<TextInfo>>();
             StringBuilder data = new StringBuilder();
             IList<FileInfo> tempFiles = new List<FileInfo>();
@@ -423,7 +526,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     for (int i = 0; i < numOfFiles; i++) {
                         tempFiles.Add(CreateTempFile(extension));
                     }
-                    DoTesseractOcr(input, tempFiles, outputFormat, page);
+                    DoTesseractOcr(input, tempFiles, outputFormat, page, true, eventHelper);
                     if (outputFormat.Equals(OutputFormat.HOCR)) {
                         IList<FileInfo> tempTxtFiles = null;
                         if (GetTesseract4OcrEngineProperties().IsUseTxtToImproveHocrParsing()) {
@@ -431,7 +534,7 @@ namespace iText.Pdfocr.Tesseract4 {
                             for (int i = 0; i < numOfFiles; i++) {
                                 tempTxtFiles.Add(CreateTempFile(".txt"));
                             }
-                            DoTesseractOcr(input, tempTxtFiles, OutputFormat.TXT, page, false);
+                            DoTesseractOcr(input, tempTxtFiles, OutputFormat.TXT, page, false, eventHelper);
                         }
                         IDictionary<int, IList<TextInfo>> pageData = TesseractHelper.ParseHocrFile(tempFiles, tempTxtFiles, GetTesseract4OcrEngineProperties
                             ());
@@ -454,7 +557,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_OCR_INPUT_FILE
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_OCR_INPUT_FILE
                     , e.Message));
             }
             finally {
@@ -495,10 +598,10 @@ namespace iText.Pdfocr.Tesseract4 {
             ImageType type = ImagePreprocessingUtil.GetImageType(image);
             bool isValid = SUPPORTED_IMAGE_FORMATS.Contains(type);
             if (!isValid) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , image.FullName));
-                throw new Tesseract4OcrException(Tesseract4OcrException.INCORRECT_INPUT_IMAGE_FORMAT).SetMessageParams(image
-                    .Name);
+                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT
+                    ).SetMessageParams(image.Name);
             }
         }
 

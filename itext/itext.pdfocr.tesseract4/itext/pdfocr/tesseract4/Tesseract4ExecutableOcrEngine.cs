@@ -24,9 +24,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
 using Tesseract;
-using iText.IO.Util;
+using iText.Commons;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Utils;
+using iText.Pdfocr;
+using iText.Pdfocr.Tesseract4.Actions.Events;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -121,23 +127,27 @@ namespace iText.Pdfocr.Tesseract4 {
         /// for tesseract
         /// </param>
         /// <param name="pageNumber">number of page to be processed</param>
-        /// <param name="dispatchEvent">
-        /// indicates if
-        /// <see cref="iText.Pdfocr.Tesseract4.Events.PdfOcrTesseract4Event"/>
-        /// needs to be dispatched
-        /// </param>
+        /// <param name="dispatchEvent">indicates if event needs to be dispatched</param>
+        /// <param name="eventHelper">event helper</param>
         internal override void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
-            , int pageNumber, bool dispatchEvent) {
-            ScheduledCheck();
+            , int pageNumber, bool dispatchEvent, AbstractPdfOcrEventHelper eventHelper) {
             IList<String> @params = new List<String>();
             String execPath = null;
             String imagePath = null;
             String workingDirectory = null;
+            PdfOcrTesseract4ProductEvent @event = null;
+            if (eventHelper == null) {
+                eventHelper = new Tesseract4EventHelper();
+            }
+            if (dispatchEvent) {
+                @event = OnEvent(eventHelper);
+            }
             try {
                 imagePath = inputImage.FullName;
                 // path to tesseract executable
                 if (GetPathToExecutable() == null || String.IsNullOrEmpty(GetPathToExecutable())) {
-                    throw new Tesseract4OcrException(Tesseract4OcrException.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE);
+                    throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE
+                        );
                 }
                 else {
                     if (IsWindows()) {
@@ -156,7 +166,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 imagePath = PreprocessImage(inputImage, pageNumber);
                 // get the input file parent directory as working directory
                 // as tesseract cannot parse non ascii characters in input path
-                String imageParentDir = TesseractOcrUtil.GetParentDirectory(imagePath);
+                String imageParentDir = TesseractOcrUtil.GetParentDirectoryFile(imagePath);
                 String replacement = IsWindows() ? "" : "/";
                 workingDirectory = imageParentDir.Replace("file:///", replacement).Replace("file:/", replacement);
                 // input file
@@ -173,15 +183,18 @@ namespace iText.Pdfocr.Tesseract4 {
                 AddPreserveInterwordSpaces(@params);
                 // set default user defined dpi
                 AddDefaultDpi(@params);
-                if (dispatchEvent) {
-                    OnEvent();
-                }
                 // run tesseract process
                 TesseractHelper.RunCommand(execPath, @params, workingDirectory);
+                // statistics event
+                OnEventStatistics(eventHelper);
+                // confrim on_demand event
+                if (@event != null && @event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    eventHelper.OnEvent(new ConfirmEvent(@event));
+                }
             }
-            catch (Tesseract4OcrException e) {
-                LogManager.GetLogger(GetType()).Error(e.Message);
-                throw new Tesseract4OcrException(e.Message, e);
+            catch (PdfOcrTesseract4Exception e) {
+                ITextLogManager.GetLogger(GetType()).LogError(e.Message);
+                throw new PdfOcrTesseract4Exception(e.Message, e);
             }
             finally {
                 try {
@@ -190,7 +203,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                 }
                 catch (SecurityException e) {
-                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
+                    ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , imagePath, e.Message));
                 }
                 try {
@@ -200,7 +213,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     }
                 }
                 catch (SecurityException e) {
-                    LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
+                    ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_DELETE_FILE
                         , GetTesseract4OcrEngineProperties().GetPathToUserWordsFile(), e.Message));
                 }
             }
@@ -307,13 +320,13 @@ namespace iText.Pdfocr.Tesseract4 {
                     .FullName;
                 String fileName = new String(filePath.ToCharArray(), 0, filePath.IndexOf(extension, StringComparison.Ordinal
                     ));
-                LogManager.GetLogger(GetType()).Info(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CREATED_TEMPORARY_FILE
-                    , outputFile.FullName));
+                ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
+                    CREATED_TEMPORARY_FILE, outputFile.FullName));
                 command.Add(AddQuotes(fileName));
             }
             catch (Exception) {
                 // NOSONAR
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_FAILED);
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
         }
 
@@ -364,7 +377,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (System.IO.IOException e) {
-                LogManager.GetLogger(GetType()).Error(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
+                ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE
                     , e.Message));
             }
             return path;
@@ -379,8 +392,8 @@ namespace iText.Pdfocr.Tesseract4 {
             try {
                 TesseractHelper.RunCommand(execPath, JavaCollectionsUtil.SingletonList<String>("--version"));
             }
-            catch (Tesseract4OcrException e) {
-                throw new Tesseract4OcrException(Tesseract4OcrException.TESSERACT_NOT_FOUND, e);
+            catch (PdfOcrTesseract4Exception e) {
+                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_NOT_FOUND, e);
             }
         }
 
@@ -407,8 +420,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="secondPath">path to the second file</param>
         /// <returns>true if parent directories are equal, otherwise - false</returns>
         private bool AreEqualParentDirectories(String firstPath, String secondPath) {
-            String firstParentDir = TesseractOcrUtil.GetParentDirectory(firstPath);
-            String secondParentDir = TesseractOcrUtil.GetParentDirectory(secondPath);
+            String firstParentDir = TesseractOcrUtil.GetParentDirectoryFile(firstPath);
+            String secondParentDir = TesseractOcrUtil.GetParentDirectoryFile(secondPath);
             return firstParentDir != null && firstParentDir.Equals(secondParentDir);
         }
     }
