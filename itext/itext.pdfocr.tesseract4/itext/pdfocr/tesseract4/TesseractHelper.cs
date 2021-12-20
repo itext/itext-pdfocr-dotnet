@@ -356,12 +356,8 @@ namespace iText.Pdfocr.Tesseract4 {
                     throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
                 }
             }
-            catch (System.IO.IOException e) {
-                // NOSONAR
-                LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
-                throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
-            }
             catch (Exception e) {
+                // NOSONAR
                 LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
                 throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
