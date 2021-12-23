@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 
 namespace iText.Pdfocr.Tesseract4.Exceptions {
+    /// <summary>Exception class for Tesseract4 input related exceptions.</summary>
     public class PdfOcrInputTesseract4Exception : PdfOcrTesseract4Exception {
         /// <summary>
         /// Creates a new

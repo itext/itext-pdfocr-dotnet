@@ -24,6 +24,7 @@ using System;
 using iText.Pdfocr.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4.Exceptions {
+    /// <summary>Exception class for Tesseract4 exceptions.</summary>
     public class PdfOcrTesseract4Exception : PdfOcrException {
         /// <summary>
         /// Creates a new

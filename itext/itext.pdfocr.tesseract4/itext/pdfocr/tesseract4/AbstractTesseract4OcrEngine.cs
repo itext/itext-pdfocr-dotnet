@@ -65,6 +65,20 @@ namespace iText.Pdfocr.Tesseract4 {
 
         private ThreadLocal<IMetaInfo> threadLocalMetaInfo = new ThreadLocal<IMetaInfo>();
 
+        /// <summary>
+        /// Creates a new
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance
+        /// based on another
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance (copy
+        /// constructor).
+        /// </summary>
+        /// <param name="tesseract4OcrEngineProperties">
+        /// the other
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance
+        /// </param>
         public AbstractTesseract4OcrEngine(Tesseract4OcrEngineProperties tesseract4OcrEngineProperties) {
             this.tesseract4OcrEngineProperties = tesseract4OcrEngineProperties;
         }

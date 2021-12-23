@@ -467,6 +467,11 @@ namespace iText.Pdfocr.Tesseract4 {
         /// 
         /// <see cref="useTxtToImproveHocrParsing"/>
         /// </param>
+        /// <returns>
+        /// this
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance.
+        /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetUseTxtToImproveHocrParsing(bool useTxtToImproveHocrParsing
             ) {
             this.useTxtToImproveHocrParsing = useTxtToImproveHocrParsing;
@@ -511,6 +516,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Default value is 0 which means that everything is considered as properly recognized
         /// Value may vary in range of 0-100
         /// </remarks>
+        /// <returns>minimal confidence level</returns>
         public int GetMinimalConfidenceLevel() {
             return minimalConfidenceLevel;
         }
@@ -522,6 +528,12 @@ namespace iText.Pdfocr.Tesseract4 {
         /// Default value is 0 which means that everything is considered as properly recognized
         /// Value may vary in range of 0-100
         /// </remarks>
+        /// <param name="minimalConfidenceLevel">minimal confidence level value</param>
+        /// <returns>
+        /// this
+        /// <see cref="Tesseract4OcrEngineProperties"/>
+        /// instance
+        /// </returns>
         public iText.Pdfocr.Tesseract4.Tesseract4OcrEngineProperties SetMinimalConfidenceLevel(int minimalConfidenceLevel
             ) {
             this.minimalConfidenceLevel = minimalConfidenceLevel;

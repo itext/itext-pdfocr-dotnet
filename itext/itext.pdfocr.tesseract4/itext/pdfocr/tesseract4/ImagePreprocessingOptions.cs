@@ -40,9 +40,28 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Adaptive threshold smoothing as described here: http://www.leptonica.org/binarization.html.</summary>
         private bool smoothTiling = true;
 
+        /// <summary>
+        /// Creates
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// instance.
+        /// </summary>
         public ImagePreprocessingOptions() {
         }
 
+        /// <summary>
+        /// Creates a new
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// instance
+        /// based on another
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// instance (copy
+        /// constructor).
+        /// </summary>
+        /// <param name="imagePreprocessingOptions">
+        /// the other
+        /// <see cref="ImagePreprocessingOptions"/>
+        /// instance
+        /// </param>
         public ImagePreprocessingOptions(iText.Pdfocr.Tesseract4.ImagePreprocessingOptions imagePreprocessingOptions
             ) {
             this.tileWidth = imagePreprocessingOptions.tileWidth;

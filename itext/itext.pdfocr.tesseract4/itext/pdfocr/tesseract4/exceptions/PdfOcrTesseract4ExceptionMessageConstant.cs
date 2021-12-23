@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 
 namespace iText.Pdfocr.Tesseract4.Exceptions {
+    /// <summary>Class that bundles all the error message templates as constants.</summary>
     public class PdfOcrTesseract4ExceptionMessageConstant {
         public const String INCORRECT_INPUT_IMAGE_FORMAT = "{0} format is not supported.";
 

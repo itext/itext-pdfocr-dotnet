@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using iText.Commons.Utils;
 
 namespace iText.Pdfocr {
+    /// <summary>This class contains additional properties for ocr engine.</summary>
     public class OcrEngineProperties {
         /// <summary>List of languages required for ocr for provided images.</summary>
         private IList<String> languages = JavaCollectionsUtil.EmptyList<String>();

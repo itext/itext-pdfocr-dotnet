@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 
 namespace iText.Pdfocr.Exceptions {
+    /// <summary>Class that bundles all the exception message templates as constants.</summary>
     public class PdfOcrExceptionMessageConstant {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 

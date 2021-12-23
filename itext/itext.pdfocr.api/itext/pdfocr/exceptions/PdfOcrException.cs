@@ -79,6 +79,7 @@ namespace iText.Pdfocr.Exceptions {
         }
 
         /// <summary>Gets additional params for Exception message.</summary>
+        /// <returns>params for exception message</returns>
         protected internal virtual Object[] GetMessageParams() {
             Object[] parameters = new Object[this.messageParams.Count];
             for (int i = 0; i < this.messageParams.Count; ++i) {
