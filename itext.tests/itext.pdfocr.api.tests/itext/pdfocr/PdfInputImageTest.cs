@@ -29,6 +29,7 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfInputImageTest : ExtendedITextTest {
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]

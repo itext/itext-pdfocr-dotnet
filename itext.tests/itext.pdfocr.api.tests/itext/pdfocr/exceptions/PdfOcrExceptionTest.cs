@@ -24,6 +24,7 @@ using System;
 using iText.Test;
 
 namespace iText.Pdfocr.Exceptions {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfOcrExceptionTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void OcrExceptionThrowableConstructorTest() {

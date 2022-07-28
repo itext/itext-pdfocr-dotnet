@@ -27,6 +27,7 @@ using iText.Commons.Actions.Data;
 using iText.Test;
 
 namespace iText.Pdfocr.Statistics {
+    [NUnit.Framework.Category("Unit test")]
     public class PdfOcrOutputTypeStatisticsAggregatorTest : ExtendedITextTest {
         private static readonly ProductData DUMMY_PRODUCT_DATA = new ProductData("test-product", "inner_product", 
             "1.0.0", 1900, 2100);

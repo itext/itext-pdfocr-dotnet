@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Pdfa3u {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfA3UIntegrationLibTest : PdfA3UIntegrationTest {
         public PdfA3UIntegrationLibTest()
             : base(IntegrationTestHelper.ReaderType.LIB) {

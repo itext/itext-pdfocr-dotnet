@@ -24,6 +24,7 @@ using iText.Commons.Actions.Contexts;
 using iText.Test;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Unit test")]
     public class PdfOcrMetaInfoContainerTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void Test() {

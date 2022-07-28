@@ -27,6 +27,7 @@ using iText.Commons.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
+    [NUnit.Framework.Category("Integration test")]
     public class TesseractHelperLibTest : TesseractHelperTest {
         public TesseractHelperLibTest()
             : base(IntegrationTestHelper.ReaderType.LIB) {

@@ -24,6 +24,7 @@ using System;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tessdata {
+    [NUnit.Framework.Category("Integration test")]
     public class TessDataIntegrationExecutableTest : TessDataIntegrationTest {
         public TessDataIntegrationExecutableTest()
             : base(IntegrationTestHelper.ReaderType.EXECUTABLE) {

@@ -31,6 +31,7 @@ using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
+    [NUnit.Framework.Category("Integration test")]
     public class TessDataIntegrationLibTest : TessDataIntegrationTest {
         public TessDataIntegrationLibTest()
             : base(IntegrationTestHelper.ReaderType.LIB) {

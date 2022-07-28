@@ -30,6 +30,7 @@ using iText.Pdfocr.Helpers;
 using iText.Test;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public class ScaleModeTest : ExtendedITextTest {
         private const float DELTA = 1e-4f;
 

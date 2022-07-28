@@ -41,6 +41,7 @@ using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public class IntegrationTestHelper : ExtendedITextTest {
         private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.IntegrationTestHelper
             ));

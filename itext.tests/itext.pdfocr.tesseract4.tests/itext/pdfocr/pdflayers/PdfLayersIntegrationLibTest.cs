@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Pdflayers {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfLayersIntegrationLibTest : PdfLayersIntegrationTest {
         public PdfLayersIntegrationLibTest()
             : base(IntegrationTestHelper.ReaderType.LIB) {

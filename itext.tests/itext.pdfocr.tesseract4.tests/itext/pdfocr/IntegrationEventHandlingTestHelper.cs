@@ -38,6 +38,7 @@ using iText.Pdfocr.Tesseract4.Actions.Data;
 using iText.Pdfocr.Tesseract4.Actions.Events;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public abstract class IntegrationEventHandlingTestHelper : IntegrationTestHelper {
         protected internal readonly AbstractTesseract4OcrEngine tesseractReader;
 

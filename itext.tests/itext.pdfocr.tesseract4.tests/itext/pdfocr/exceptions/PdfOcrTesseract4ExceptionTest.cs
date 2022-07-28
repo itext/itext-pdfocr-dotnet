@@ -25,6 +25,7 @@ using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Test;
 
 namespace iText.Pdfocr.Exceptions {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfOcrTesseract4ExceptionTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void Tesseract4PdfOcrExceptionThrowableConstructorTest() {

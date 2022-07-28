@@ -34,6 +34,7 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfFontTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void TestFontColor() {
