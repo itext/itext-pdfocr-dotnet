@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -27,6 +27,7 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Statistics {
+    [NUnit.Framework.Category("Unit test")]
     public class PdfOcrOutputTypeStatisticsEventTest : ExtendedITextTest {
         private static readonly ProductData DUMMY_PRODUCT_DATA = new ProductData("test-product", "inner_product", 
             "1.0.0", 1900, 2100);

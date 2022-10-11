@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -31,6 +31,10 @@ using iText.Layout.Font;
 using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr {
+    /// <summary>
+    /// <see cref="iText.Layout.Font.FontProvider"/>
+    /// extension for ocr engine.
+    /// </summary>
     public class PdfOcrFontProvider : FontProvider {
         /// <summary>Path to the default font.</summary>
         private const String DEFAULT_FONT_PATH = "iText.Pdfocr.Api.font.LiberationSans-Regular.ttf";
@@ -52,8 +56,16 @@ namespace iText.Pdfocr {
         /// <summary>
         /// Creates a new
         /// <see cref="PdfOcrFontProvider"/>
-        /// instance.
+        /// instance based on provided
+        /// <see cref="iText.Layout.Font.FontSet"/>
+        /// instance and font family.
         /// </summary>
+        /// <param name="fontSet">
+        /// 
+        /// <see cref="iText.Layout.Font.FontSet"/>
+        /// instance
+        /// </param>
+        /// <param name="defaultFontFamily">font family</param>
         public PdfOcrFontProvider(FontSet fontSet, String defaultFontFamily)
             : base(fontSet, defaultFontFamily) {
         }

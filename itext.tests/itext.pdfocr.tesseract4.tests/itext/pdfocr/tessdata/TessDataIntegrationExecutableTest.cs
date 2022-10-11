@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -24,6 +24,7 @@ using System;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tessdata {
+    [NUnit.Framework.Category("Integration test")]
     public class TessDataIntegrationExecutableTest : TessDataIntegrationTest {
         public TessDataIntegrationExecutableTest()
             : base(IntegrationTestHelper.ReaderType.EXECUTABLE) {

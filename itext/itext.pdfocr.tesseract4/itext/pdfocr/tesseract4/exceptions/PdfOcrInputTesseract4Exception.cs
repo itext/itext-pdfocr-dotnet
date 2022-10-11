@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 
 namespace iText.Pdfocr.Tesseract4.Exceptions {
+    /// <summary>Exception class for Tesseract4 input related exceptions.</summary>
     public class PdfOcrInputTesseract4Exception : PdfOcrTesseract4Exception {
         /// <summary>
         /// Creates a new

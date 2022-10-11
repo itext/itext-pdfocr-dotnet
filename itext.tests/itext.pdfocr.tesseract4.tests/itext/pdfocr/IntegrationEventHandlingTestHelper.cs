@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -38,6 +38,7 @@ using iText.Pdfocr.Tesseract4.Actions.Data;
 using iText.Pdfocr.Tesseract4.Actions.Events;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public abstract class IntegrationEventHandlingTestHelper : IntegrationTestHelper {
         protected internal readonly AbstractTesseract4OcrEngine tesseractReader;
 

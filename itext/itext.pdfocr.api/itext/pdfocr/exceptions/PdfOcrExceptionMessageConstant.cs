@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 
 namespace iText.Pdfocr.Exceptions {
+    /// <summary>Class that bundles all the exception message templates as constants.</summary>
     public class PdfOcrExceptionMessageConstant {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 

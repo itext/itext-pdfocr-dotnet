@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -29,70 +29,33 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
+    [NUnit.Framework.Category("Integration test")]
     public class PdfInputImageTest : ExtendedITextTest {
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
-        public virtual void TestCorruptedImage() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted.jpg");
-                String realOutput = PdfHelper.GetTextFromPdf(file, "testCorruptedImage");
-                NUnit.Framework.Assert.IsNotNull(realOutput);
-                NUnit.Framework.Assert.AreEqual("", realOutput);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
-;
+        public virtual void CorruptedImageTest() {
+            FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted.jpg");
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfHelper.GetTextFromPdf(file
+                , "testCorruptedImage"));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message);
         }
 
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
-        public virtual void TestCorruptedImageWithoutExtension() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted");
-                String realOutput = PdfHelper.GetTextFromPdf(file, "testCorruptedImageWithoutExtension");
-                NUnit.Framework.Assert.IsNotNull(realOutput);
-                NUnit.Framework.Assert.AreEqual("", realOutput);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
-;
+        public virtual void CorruptedImageWithoutExtensionTest() {
+            FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted");
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfHelper.GetTextFromPdf(file
+                , "testCorruptedImageWithoutExtension"));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message);
         }
 
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
-        public virtual void TestInvalidImagePathWithoutDot() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo("testName");
-                String realOutput = PdfHelper.GetTextFromPdf(file, "testInvalidImagePathWithoutDot");
-                NUnit.Framework.Assert.IsNotNull(realOutput);
-                NUnit.Framework.Assert.AreEqual("", realOutput);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
-;
-        }
-
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
-        [NUnit.Framework.Test]
-        public virtual void TestInvalidImagePathWithDot() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo("test.Name");
-                String realOutput = PdfHelper.GetTextFromPdf(file, "testInvalidImagePathWithDot");
-                NUnit.Framework.Assert.IsNotNull(realOutput);
-                NUnit.Framework.Assert.AreEqual("", realOutput);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
-;
-        }
-
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
-        [NUnit.Framework.Test]
-        public virtual void TestValidImageWithoutExtension() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "numbers_01");
-                String realOutput = PdfHelper.GetTextFromPdf(file, "testValidImageWithoutExtension");
-                NUnit.Framework.Assert.IsNotNull(realOutput);
-                NUnit.Framework.Assert.AreEqual("", realOutput);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
-;
+        public virtual void InvalidPathWithDotTest() {
+            FileInfo file = new FileInfo("test.Name");
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfHelper.GetTextFromPdf(file
+                , "testInvalidPathWithDot"));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message);
         }
     }
 }

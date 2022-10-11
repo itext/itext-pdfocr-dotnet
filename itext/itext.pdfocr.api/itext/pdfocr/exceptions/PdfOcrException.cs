@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -79,6 +79,7 @@ namespace iText.Pdfocr.Exceptions {
         }
 
         /// <summary>Gets additional params for Exception message.</summary>
+        /// <returns>params for exception message</returns>
         protected internal virtual Object[] GetMessageParams() {
             Object[] parameters = new Object[this.messageParams.Count];
             for (int i = 0; i < this.messageParams.Count; ++i) {
