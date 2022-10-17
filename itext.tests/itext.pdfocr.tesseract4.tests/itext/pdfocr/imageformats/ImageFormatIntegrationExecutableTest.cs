@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Imageformats {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class ImageFormatIntegrationExecutableTest : ImageFormatIntegrationTest {
         public ImageFormatIntegrationExecutableTest()
             : base(IntegrationTestHelper.ReaderType.EXECUTABLE) {

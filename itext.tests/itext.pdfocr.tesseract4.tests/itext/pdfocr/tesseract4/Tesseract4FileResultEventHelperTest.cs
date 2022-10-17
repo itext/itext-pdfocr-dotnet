@@ -30,7 +30,7 @@ using iText.Pdfocr.Tesseract4.Actions.Events;
 using iText.Test;
 
 namespace iText.Pdfocr.Tesseract4 {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class Tesseract4FileResultEventHelperTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void DefaultProcessImageEventTest() {

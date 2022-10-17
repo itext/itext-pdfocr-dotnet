@@ -36,7 +36,7 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class PdfA3uTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void TestPdfA3uWithNullIntent() {

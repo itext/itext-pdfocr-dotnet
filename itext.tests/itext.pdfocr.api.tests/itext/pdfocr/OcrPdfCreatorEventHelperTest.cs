@@ -33,7 +33,7 @@ using iText.Pdfocr.Statistics;
 using iText.Test;
 
 namespace iText.Pdfocr {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class OcrPdfCreatorEventHelperTest : ExtendedITextTest {
         private static readonly ProductData DUMMY_PRODUCT_DATA = new ProductData("test-product", "inner_product", 
             "1.0.0", 1900, 2100);

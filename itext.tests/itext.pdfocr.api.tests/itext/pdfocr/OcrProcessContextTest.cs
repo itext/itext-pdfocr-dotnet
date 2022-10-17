@@ -26,7 +26,7 @@ using iText.Commons.Actions.Sequence;
 using iText.Test;
 
 namespace iText.Pdfocr {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class OcrProcessContextTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void SetOcrEventHelperTest() {

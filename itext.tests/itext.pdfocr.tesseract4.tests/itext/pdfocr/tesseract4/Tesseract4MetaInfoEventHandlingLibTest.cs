@@ -23,7 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class Tesseract4MetaInfoEventHandlingLibTest : Tesseract4MetaInfoEventHandlingTest {
         public Tesseract4MetaInfoEventHandlingLibTest()
             : base(IntegrationTestHelper.ReaderType.LIB) {

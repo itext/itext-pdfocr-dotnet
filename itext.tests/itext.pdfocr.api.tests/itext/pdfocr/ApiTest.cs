@@ -37,7 +37,7 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class ApiTest : ExtendedITextTest {
         public static readonly String DESTINATION_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/itext/pdfocr";

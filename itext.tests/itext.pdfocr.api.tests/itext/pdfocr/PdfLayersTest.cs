@@ -30,7 +30,7 @@ using iText.Pdfocr.Helpers;
 using iText.Test;
 
 namespace iText.Pdfocr {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class PdfLayersTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void TestPdfLayersWithDefaultNames() {

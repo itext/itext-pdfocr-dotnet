@@ -27,7 +27,7 @@ using iText.Pdfocr.Tesseract4.Actions.Events;
 using iText.Test;
 
 namespace iText.Pdfocr.Actions.Events {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class PdfOcrTesseract4ProductEventTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void EventTypeTest() {
