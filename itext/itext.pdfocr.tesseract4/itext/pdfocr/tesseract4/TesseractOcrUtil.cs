@@ -401,6 +401,11 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseractInstance.Dispose();
         }
 
+        internal static Pix ReadPixFromFile(FileInfo inputImage)
+        {
+            return Tesseract.Pix.LoadFromFile(inputImage.FullName);
+        }
+
         /// <summary>
         /// Converts Leptonica
         /// <see cref="Tesseract.Pix"/>
