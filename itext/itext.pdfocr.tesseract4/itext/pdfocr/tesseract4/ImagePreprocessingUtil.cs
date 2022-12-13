@@ -129,7 +129,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// as the result
         /// </returns>
         internal static System.Drawing.Bitmap ReadAsPixAndConvertToBufferedImage(FileInfo inputImage) {
-            Pix pix = Tesseract.Pix.LoadFromFile(inputImage.FullName);
+            Pix pix = TesseractOcrUtil.ReadPixFromFile(inputImage);
             return TesseractOcrUtil.ConvertPixToImage(pix);
         }
 
@@ -191,24 +191,28 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static System.Drawing.Bitmap ReadImage(FileInfo inputImage) {
             System.Drawing.Bitmap bufferedImage = null;
             try {
-                bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadImageFromFile(inputImage);
+                bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadAsPixAndConvertToBufferedImage(inputImage
+                    );
             }
             catch (ArgumentException ex) {
                 ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
-                    .Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
+                    .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
             }
             catch (System.IO.IOException ex) {
                 ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
-                    .Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
+                    .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
             }
             if (bufferedImage == null) {
                 try {
-                    bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadAsPixAndConvertToBufferedImage(inputImage
-                        );
+                    bufferedImage = iText.Pdfocr.Tesseract4.ImagePreprocessingUtil.ReadImageFromFile(inputImage);
+                }
+                catch (ArgumentException ex) {
+                    ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
+                        .Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
                 }
                 catch (System.IO.IOException ex) {
                     ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogInformation(MessageFormatUtil
-                        .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, ex.Message));
+                        .Format(Tesseract4LogMessageConstant.CANNOT_CREATE_BUFFERED_IMAGE, ex.Message));
                 }
             }
             return bufferedImage;
