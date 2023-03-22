@@ -4,15 +4,15 @@
     <id>itext7.pdfocr.api</id>
     <version>3.0.0-SNAPSHOT</version>
     <title>iText 7 pdfOcr</title>
-    <authors>iText Software</authors>
-    <owners>iText Software</owners>
+    <authors>Apryse Software</authors>
+    <owners>Apryse Software</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
     <projectUrl>https://itextpdf.com/en/products/itext-7/pdfocr</projectUrl>
     <icon>ITSC-avatar.png</icon>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>pdfOCR is an iText 7 add-on to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
     <summary>pdfOCR is an iText 7 add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
-    <copyright>Copyright (c) 1998-2023 iText Group NV</copyright>
+    <copyright>Copyright (c) 1998-2023 Apryse Group NV</copyright>
     <language>en-US</language>
     <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
     <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
