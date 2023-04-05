@@ -325,7 +325,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 command.Add(AddQuotes(fileName));
             }
             catch (Exception) {
-                // NOSONAR
                 throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
         }

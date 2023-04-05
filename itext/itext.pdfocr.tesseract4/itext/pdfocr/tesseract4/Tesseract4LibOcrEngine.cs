@@ -315,7 +315,6 @@ namespace iText.Pdfocr.Tesseract4 {
                             result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), bufferedImage, outputFormat);
                         }
                         catch (Exception e) {
-                            // NOSONAR
                             ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
                                 CANNOT_PROCESS_IMAGE, e.Message));
                         }
@@ -327,7 +326,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (Exception e) {
-                // NOSONAR
                 ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
                     , e.Message));
                 throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);

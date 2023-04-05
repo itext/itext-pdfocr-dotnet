@@ -843,7 +843,6 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e)
             {
-                // NOSONAR
                 ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
             }
@@ -878,7 +877,6 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e)
             {
-                // NOSONAR
                 ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 return null;
@@ -903,7 +901,6 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e)
             {
-                // NOSONAR
                 ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 return ROTATION_0;
@@ -943,7 +940,6 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             catch (Exception e)
             {
-                // NOSONAR
                 ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format
                     (Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 return ROTATION_0;

@@ -86,7 +86,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 type = ImageTypeDetector.DetectImageType(UrlUtil.ToURL(inputImage.FullName));
             }
             catch (Exception e) {
-                // NOSONAR
                 ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogError(MessageFormatUtil
                     .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
                 throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE

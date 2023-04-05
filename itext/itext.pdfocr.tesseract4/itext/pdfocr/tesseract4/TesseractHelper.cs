@@ -357,7 +357,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (Exception e) {
-                // NOSONAR
                 LOGGER.LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.COMMAND_FAILED, e.Message));
                 throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
