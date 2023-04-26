@@ -26,9 +26,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
-    <PackageReference Include="itext7.pdftest" Version="8.0.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+    <PackageReference Include="itext7.pdftest" Version="8.0.0" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
 	<ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
-    <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">

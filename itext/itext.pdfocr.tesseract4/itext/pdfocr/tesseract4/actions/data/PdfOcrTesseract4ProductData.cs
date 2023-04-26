@@ -34,7 +34,7 @@ namespace iText.Pdfocr.Tesseract4.Actions.Data {
 
         private const String PDF_OCR_TESSERACT4_PUBLIC_PRODUCT_NAME = "pdfOCR-Tesseract4";
 
-        private const String PDF_OCR_VERSION = "3.0.0-SNAPSHOT";
+        private const String PDF_OCR_VERSION = "3.0.0";
 
         private const int PDF_OCR_COPYRIGHT_SINCE = 2000;
 
