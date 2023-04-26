@@ -1,7 +1,7 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2022 iText Group NV
-Authors: iText Software.
+Copyright (c) 1998-2023 Apryse Group NV
+Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
 For commercial licensing, contact us at https://itextpdf.com/sales.  For AGPL licensing, see below.
@@ -315,7 +315,6 @@ namespace iText.Pdfocr.Tesseract4 {
                             result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), bufferedImage, outputFormat);
                         }
                         catch (Exception e) {
-                            // NOSONAR
                             ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
                                 CANNOT_PROCESS_IMAGE, e.Message));
                         }
@@ -327,7 +326,6 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
             catch (Exception e) {
-                // NOSONAR
                 ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.TESSERACT_FAILED
                     , e.Message));
                 throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);

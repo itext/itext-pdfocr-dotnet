@@ -1,7 +1,7 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2022 iText Group NV
-Authors: iText Software.
+Copyright (c) 1998-2023 Apryse Group NV
+Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
 For commercial licensing, contact us at https://itextpdf.com/sales.  For AGPL licensing, see below.
@@ -34,11 +34,11 @@ namespace iText.Pdfocr.Tesseract4.Actions.Data {
 
         private const String PDF_OCR_TESSERACT4_PUBLIC_PRODUCT_NAME = "pdfOCR-Tesseract4";
 
-        private const String PDF_OCR_VERSION = "2.0.2";
+        private const String PDF_OCR_VERSION = "3.0.0";
 
         private const int PDF_OCR_COPYRIGHT_SINCE = 2000;
 
-        private const int PDF_OCR_COPYRIGHT_TO = 2022;
+        private const int PDF_OCR_COPYRIGHT_TO = 2023;
 
         private static readonly ProductData PDF_OCR_PRODUCT_DATA = new ProductData(PDF_OCR_TESSERACT4_PUBLIC_PRODUCT_NAME
             , PDF_OCR_TESSERACT4_PRODUCT_NAME, PDF_OCR_VERSION, PDF_OCR_COPYRIGHT_SINCE, PDF_OCR_COPYRIGHT_TO);

@@ -5,18 +5,18 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("iText.Pdfocr.Api")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("iText Group NV")]
+[assembly: AssemblyCompany("Apryse Group NV")]
 [assembly: AssemblyProduct("iText")]
-[assembly: AssemblyCopyright ("Copyright (c) 1998-2022 iText Group NV")]
+[assembly: AssemblyCopyright ("Copyright (c) 1998-2023 Apryse Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 
 [assembly: Guid("0c4ceb00-9a56-4547-a925-5974a85a6048")]
 
-[assembly: AssemblyVersion("2.0.2.0")]
-[assembly: AssemblyFileVersion("2.0.2.0")]
-[assembly: AssemblyInformationalVersion("2.0.2")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
+[assembly: AssemblyInformationalVersion("3.0.0")]
 [assembly: InternalsVisibleTo("itext.pdfocr.api.tests, PublicKey=" +
     "00240000048000009400000006020000002400005253413100040000010001008b21ed5b3fc1c1" +
     "1996390981fe22bbe71a39a9e11d3c2cefddd6ee92920fa871f9666ae0fa941af0280d0653df04" +
