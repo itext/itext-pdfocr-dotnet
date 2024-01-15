@@ -658,7 +658,7 @@ namespace iText.Pdfocr {
                         iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
                         canvas.SetFontProvider(fontProvider);
                         Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
-                        Paragraph paragraph = new Paragraph(text).SetMargin(0).SetMultipliedLeading(1.2f);
+                        Paragraph paragraph = new Paragraph(text).SetMargin(0);
                         paragraph.SetFontFamily(fontFamily).SetFontSize(fontSize);
                         paragraph.SetWidth(bboxWidthPt * 1.5f);
                         if (ocrPdfCreatorProperties.GetTextColor() != null) {

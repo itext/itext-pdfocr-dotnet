@@ -84,10 +84,10 @@ namespace iText.Pdfocr.Tessdata {
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("tha", "eng"), JavaUtil.ArraysAsList(NOTO_SANS_THAI_FONT_PATH, NOTO_SANS_FONT_PATH), DeviceRgb.RED);
-            bool javaTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
-            bool dotNetTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
+            bool javaTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathJava, GetTargetDirectory(
+                ), "diff_") == null;
+            bool dotNetTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory
+                (), "diff_") == null;
             NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
         }
 
@@ -108,10 +108,10 @@ namespace iText.Pdfocr.Tessdata {
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("tha"), JavaUtil.ArraysAsList(NOTO_SANS_THAI_FONT_PATH), DeviceRgb.RED);
-            bool javaTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
-            bool dotNetTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
+            bool javaTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathJava, GetTargetDirectory(
+                ), "diff_") == null;
+            bool dotNetTest = new CompareTool().CompareByContent(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory
+                (), "diff_") == null;
             NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
         }
     }

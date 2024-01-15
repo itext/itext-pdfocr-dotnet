@@ -69,6 +69,7 @@ namespace iText.Pdfocr {
             float maxFontSize = bbox.GetHeight();
             try {
                 Paragraph paragraph = new Paragraph(line);
+                paragraph.SetMargin(0);
                 paragraph.SetWidth(bbox.GetWidth());
                 paragraph.SetFontFamily(fontFamily);
                 while (Math.Abs(fontSize - maxFontSize) > 1e-1) {
