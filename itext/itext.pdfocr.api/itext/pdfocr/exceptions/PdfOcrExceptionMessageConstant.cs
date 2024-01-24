@@ -35,6 +35,8 @@ namespace iText.Pdfocr.Exceptions {
 
         public const String STATISTICS_EVENT_TYPE_IS_NOT_DETECTED = "Statistics event type is not detected.";
 
+        public const String TAGGING_IS_NOT_SUPPORTED = "Tagging is not supported by the OCR engine.";
+
         private PdfOcrExceptionMessageConstant() {
         }
         //Private constructor will prevent the instantiation of this class directly

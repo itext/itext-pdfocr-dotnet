@@ -36,6 +36,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Layer;
+using iText.Kernel.Pdf.Tagutils;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Font;
@@ -44,6 +45,7 @@ using iText.Pdfa;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
 using iText.Pdfocr.Statistics;
+using iText.Pdfocr.Structuretree;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -193,13 +195,17 @@ namespace iText.Pdfocr {
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
         /// for PDF/A-3u document
         /// </param>
+        /// <param name="ocrProcessProperties">
+        /// extra OCR process properties passed to
+        /// <see cref="OcrProcessContext"/>
+        /// </param>
         /// <returns>
         /// result PDF/A-3u
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// object
         /// </returns>
         public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, DocumentProperties documentProperties
-            , PdfOutputIntent pdfOutputIntent) {
+            , PdfOutputIntent pdfOutputIntent, IOcrProcessProperties ocrProcessProperties) {
             LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.
                 Count));
             // create event helper
@@ -207,6 +213,7 @@ namespace iText.Pdfocr {
             OcrPdfCreatorEventHelper ocrEventHelper = new OcrPdfCreatorEventHelper(pdfSequenceId, ocrPdfCreatorProperties
                 .GetMetaInfo());
             OcrProcessContext ocrProcessContext = new OcrProcessContext(ocrEventHelper);
+            ocrProcessContext.SetOcrProcessProperties(ocrProcessProperties);
             // map contains:
             // keys: image files
             // values:
@@ -282,6 +289,113 @@ namespace iText.Pdfocr {
         /// <see cref="IOcrEngine"/>
         /// and
         /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// ,
+        /// <see cref="iText.Kernel.Pdf.DocumentProperties"></see>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// ,
+        /// <see cref="iText.Kernel.Pdf.DocumentProperties"></see>
+        /// and
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// . PDF/A-3u document will be created if
+        /// provided
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// is not null.
+        /// <para />
+        /// NOTE that after executing this method you will have a product event from
+        /// the both itextcore and pdfOcr. Therefore, use this method only if you need to work
+        /// with the generated
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// . If you don't need this, use the
+        /// <see cref="CreatePdfAFile(System.Collections.Generic.IList{E}, System.IO.FileInfo, iText.Kernel.Pdf.PdfOutputIntent)
+        ///     "/>
+        /// method. In this case, only the pdfOcr event will be dispatched.
+        /// </remarks>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="pdfWriter">
+        /// the
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// object
+        /// to write final PDF document to
+        /// </param>
+        /// <param name="documentProperties">document properties</param>
+        /// <param name="pdfOutputIntent">
+        /// 
+        /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
+        /// for PDF/A-3u document
+        /// </param>
+        /// <returns>
+        /// result PDF/A-3u
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// object
+        /// </returns>
+        public PdfDocument CreatePdfA(IList<FileInfo> inputImages, PdfWriter pdfWriter, DocumentProperties documentProperties
+            , PdfOutputIntent pdfOutputIntent) {
+            return CreatePdfA(inputImages, pdfWriter, documentProperties, pdfOutputIntent, null);
+        }
+
+        /// <summary>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
+        /// <para />
+        /// NOTE that after executing this method you will have a product event from
+        /// the both itextcore and pdfOcr. Therefore, use this method only if you need to work
+        /// with the generated
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// . If you don't need this, use the
+        /// <see cref="CreatePdfFile(System.Collections.Generic.IList{E}, System.IO.FileInfo)"/>
+        /// method. In this case, only the pdfOcr event will be dispatched.
+        /// </remarks>
+        /// <param name="inputImages">
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of images to be OCRed
+        /// </param>
+        /// <param name="pdfWriter">
+        /// the
+        /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
+        /// object
+        /// to write final PDF document to
+        /// </param>
+        /// <param name="documentProperties">document properties</param>
+        /// <param name="ocrProcessProperties">extra OCR process properties passed to OcrProcessContext</param>
+        /// <returns>
+        /// result
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// object
+        /// </returns>
+        public PdfDocument CreatePdf(IList<FileInfo> inputImages, PdfWriter pdfWriter, DocumentProperties documentProperties
+            , IOcrProcessProperties ocrProcessProperties) {
+            return CreatePdfA(inputImages, pdfWriter, documentProperties, null, ocrProcessProperties);
+        }
+
+        /// <summary>
+        /// Performs OCR with set parameters using provided
+        /// <see cref="IOcrEngine"/>
+        /// and
+        /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>.
         /// </summary>
         /// <remarks>
@@ -318,7 +432,7 @@ namespace iText.Pdfocr {
         /// </returns>
         public PdfDocument CreatePdf(IList<FileInfo> inputImages, PdfWriter pdfWriter, DocumentProperties documentProperties
             ) {
-            return CreatePdfA(inputImages, pdfWriter, documentProperties, null);
+            return CreatePdfA(inputImages, pdfWriter, documentProperties, null, null);
         }
 
         /// <summary>
@@ -360,7 +474,7 @@ namespace iText.Pdfocr {
         /// object
         /// </returns>
         public PdfDocument CreatePdf(IList<FileInfo> inputImages, PdfWriter pdfWriter) {
-            return CreatePdfA(inputImages, pdfWriter, new DocumentProperties(), null);
+            return CreatePdfA(inputImages, pdfWriter, new DocumentProperties(), null, null);
         }
 
         /// <summary>
@@ -510,7 +624,25 @@ namespace iText.Pdfocr {
                 canvas.BeginLayer(layers[1]);
             }
             try {
-                AddTextToCanvas(imageSize, pageText, canvas, multiplier, pdfPage.GetMediaBox());
+                // A map of TextInfo to a tag pointer, always empty if tagging is not supported
+                IDictionary<TextInfo, TagTreePointer> flatLogicalTree = new Dictionary<TextInfo, TagTreePointer>();
+                if (ocrPdfCreatorProperties.IsTagged()) {
+                    // Logical tree, a list of top items, children can be retrieved out of them
+                    IList<LogicalStructureTreeItem> logicalTree = new List<LogicalStructureTreeItem>();
+                    // A map of leaf LogicalStructureTreeItem's to TextInfo's attached to these leaves
+                    IDictionary<LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos = new Dictionary<LogicalStructureTreeItem
+                        , IList<TextInfo>>();
+                    bool taggedSupported = GetLogicalTree(pageText, logicalTree, leavesTextInfos);
+                    if (!taggedSupported) {
+                        throw new PdfOcrException(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED);
+                    }
+                    pdfDocument.SetTagged();
+                    // Create a map of TextInfo to tag pointers meanwhile creating the required tags.
+                    // Tag pointers are later used to put all the required info into canvas (content stream)
+                    BuildLogicalTreeAndFlatten(logicalTree, leavesTextInfos, new TagTreePointer(pdfDocument).SetPageForTagging
+                        (pdfPage), flatLogicalTree);
+                }
+                AddTextToCanvas(imageSize, pageText, flatLogicalTree, canvas, multiplier, pdfPage);
             }
             catch (PdfOcrException e) {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, e.Message
@@ -614,6 +746,9 @@ namespace iText.Pdfocr {
         /// <param name="pdfCanvas">canvas to place the image</param>
         private void AddImageToCanvas(ImageData imageData, Rectangle imageSize, PdfCanvas pdfCanvas) {
             if (imageData != null) {
+                if (ocrPdfCreatorProperties.IsTagged()) {
+                    pdfCanvas.OpenTag(new CanvasArtifact());
+                }
                 if (ocrPdfCreatorProperties.GetPageSize() == null) {
                     pdfCanvas.AddImageFittedIntoRectangle(imageData, imageSize, false);
                 }
@@ -624,6 +759,84 @@ namespace iText.Pdfocr {
                         .GetHeight());
                     pdfCanvas.AddImageFittedIntoRectangle(imageData, rect, false);
                 }
+                if (ocrPdfCreatorProperties.IsTagged()) {
+                    pdfCanvas.CloseTag();
+                }
+            }
+        }
+
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if tagging supported by the engine.
+        /// </returns>
+        [System.ObsoleteAttribute(@"In next major version we need to add boolean taggingSupported() method into IOcrEngine and throw exception in OcrPdfCreator constructor if taggingSupported() returns false but OcrPdfCreatorProperties.getTagged returns true."
+            )]
+        private static bool GetLogicalTree(IList<TextInfo> textInfos, IList<LogicalStructureTreeItem> logicalStructureTreeItems
+            , IDictionary<LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos) {
+            bool taggedSupported = false;
+            if (textInfos == null) {
+                return taggedSupported;
+            }
+            foreach (TextInfo textInfo in textInfos) {
+                LogicalStructureTreeItem structTreeItem = textInfo.GetLogicalStructureTreeItem();
+                LogicalStructureTreeItem topParent;
+                if (structTreeItem is ArtifactItem) {
+                    continue;
+                }
+                else {
+                    if (structTreeItem != null) {
+                        topParent = GetTopParent(structTreeItem);
+                        taggedSupported = true;
+                    }
+                    else {
+                        structTreeItem = new LogicalStructureTreeItem();
+                        textInfo.SetLogicalStructureTreeItem(structTreeItem);
+                        topParent = structTreeItem;
+                    }
+                }
+                IList<TextInfo> textInfosPerStructItem = leavesTextInfos.Get(structTreeItem);
+                if (textInfosPerStructItem == null) {
+                    textInfosPerStructItem = new List<TextInfo>();
+                    textInfosPerStructItem.Add(textInfo);
+                    leavesTextInfos.Put(structTreeItem, textInfosPerStructItem);
+                }
+                else {
+                    textInfosPerStructItem.Add(textInfo);
+                }
+                if (!logicalStructureTreeItems.Contains(topParent)) {
+                    logicalStructureTreeItems.Add(topParent);
+                }
+            }
+            return taggedSupported;
+        }
+
+        private static LogicalStructureTreeItem GetTopParent(LogicalStructureTreeItem structInfo) {
+            if (structInfo.GetParent() != null) {
+                return GetTopParent(structInfo.GetParent());
+            }
+            else {
+                return structInfo;
+            }
+        }
+
+        private void BuildLogicalTreeAndFlatten(IList<LogicalStructureTreeItem> logicalStructureTreeItems, IDictionary
+            <LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos, TagTreePointer tagPointer, IDictionary<TextInfo
+            , TagTreePointer> flatLogicalTree) {
+            foreach (LogicalStructureTreeItem structTreeItem in logicalStructureTreeItems) {
+                AccessibilityProperties accessibilityProperties = structTreeItem.GetAccessibilityProperties();
+                if (accessibilityProperties == null) {
+                    accessibilityProperties = new DefaultAccessibilityProperties(PdfName.Span.GetValue());
+                }
+                tagPointer.AddTag(accessibilityProperties);
+                IList<TextInfo> textItems = leavesTextInfos.Get(structTreeItem);
+                if (textItems != null) {
+                    foreach (TextInfo item in textItems) {
+                        flatLogicalTree.Put(item, new TagTreePointer(tagPointer));
+                    }
+                }
+                BuildLogicalTreeAndFlatten(structTreeItem.GetChildren(), leavesTextInfos, tagPointer, flatLogicalTree);
+                tagPointer.MoveToParent();
             }
         }
 
@@ -633,45 +846,61 @@ namespace iText.Pdfocr {
         /// <see cref="ScaleMode"/>
         /// </param>
         /// <param name="pageText">text that was found on this image (or on this page)</param>
+        /// <param name="flatLogicalTree">a map of TextInfo to a tag pointer</param>
         /// <param name="pdfCanvas">canvas to place the text</param>
         /// <param name="multiplier">coefficient to adjust text placing on canvas</param>
-        /// <param name="pageMediaBox">page parameters</param>
-        private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> pageText, PdfCanvas pdfCanvas, float multiplier
-            , Rectangle pageMediaBox) {
-            if (pageText != null && pageText.Count > 0) {
-                Point imageCoordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
-                    );
-                foreach (TextInfo item in pageText) {
-                    String line = item.GetText();
-                    float bboxWidthPt = GetWidthPt(item, multiplier);
-                    float bboxHeightPt = GetHeightPt(item, multiplier);
-                    FontProvider fontProvider = GetOcrPdfCreatorProperties().GetFontProvider();
-                    String fontFamily = GetOcrPdfCreatorProperties().GetDefaultFontFamily();
-                    if (LineNotEmpty(line, bboxHeightPt, bboxWidthPt)) {
-                        Document document = new Document(pdfCanvas.GetDocument());
-                        document.SetFontProvider(fontProvider);
-                        // Scale the text width to fit the OCR bbox
-                        float fontSize = PdfCreatorUtil.CalculateFontSize(document, line, fontFamily, bboxHeightPt, bboxWidthPt);
-                        float lineWidth = PdfCreatorUtil.GetRealLineWidth(document, line, fontFamily, fontSize);
-                        float xOffset = GetXOffsetPt(item, multiplier);
-                        float yOffset = GetYOffsetPt(item, multiplier, imageSize);
-                        iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
-                        canvas.SetFontProvider(fontProvider);
-                        Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
-                        Paragraph paragraph = new Paragraph(text).SetMargin(0);
-                        paragraph.SetFontFamily(fontFamily).SetFontSize(fontSize);
-                        paragraph.SetWidth(bboxWidthPt * 1.5f);
-                        if (ocrPdfCreatorProperties.GetTextColor() != null) {
-                            paragraph.SetFontColor(ocrPdfCreatorProperties.GetTextColor());
-                        }
-                        else {
-                            paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
-                        }
-                        canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.x, yOffset + (float)imageCoordinates.y
-                            , TextAlignment.LEFT);
-                        canvas.Close();
+        /// <param name="page">current page</param>
+        private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> pageText, IDictionary<TextInfo, TagTreePointer
+            > flatLogicalTree, PdfCanvas pdfCanvas, float multiplier, PdfPage page) {
+            if (pageText == null || pageText.Count == 0) {
+                return;
+            }
+            Rectangle pageMediaBox = page.GetMediaBox();
+            Point imageCoordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
+                );
+            foreach (TextInfo item in pageText) {
+                float bboxWidthPt = GetWidthPt(item, multiplier);
+                float bboxHeightPt = GetHeightPt(item, multiplier);
+                FontProvider fontProvider = GetOcrPdfCreatorProperties().GetFontProvider();
+                String fontFamily = GetOcrPdfCreatorProperties().GetDefaultFontFamily();
+                String line = item.GetText();
+                if (!LineNotEmpty(line, bboxHeightPt, bboxWidthPt)) {
+                    continue;
+                }
+                Document document = new Document(pdfCanvas.GetDocument());
+                document.SetFontProvider(fontProvider);
+                // Scale the text width to fit the OCR bbox
+                float fontSize = PdfCreatorUtil.CalculateFontSize(document, line, fontFamily, bboxHeightPt, bboxWidthPt);
+                float lineWidth = PdfCreatorUtil.GetRealLineWidth(document, line, fontFamily, fontSize);
+                float xOffset = GetXOffsetPt(item, multiplier);
+                float yOffset = GetYOffsetPt(item, multiplier, imageSize);
+                TagTreePointer tagPointer = flatLogicalTree.Get(item);
+                if (tagPointer != null) {
+                    pdfCanvas.OpenTag(tagPointer.GetTagReference());
+                }
+                else {
+                    if (ocrPdfCreatorProperties.IsTagged()) {
+                        pdfCanvas.OpenTag(new CanvasArtifact());
                     }
                 }
+                iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
+                canvas.SetFontProvider(fontProvider);
+                Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
+                Paragraph paragraph = new Paragraph(text).SetMargin(0);
+                paragraph.SetFontFamily(fontFamily).SetFontSize(fontSize);
+                paragraph.SetWidth(bboxWidthPt * 1.5f);
+                if (ocrPdfCreatorProperties.GetTextColor() != null) {
+                    paragraph.SetFontColor(ocrPdfCreatorProperties.GetTextColor());
+                }
+                else {
+                    paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
+                }
+                canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.x, yOffset + (float)imageCoordinates.y
+                    , TextAlignment.LEFT);
+                if (ocrPdfCreatorProperties.IsTagged()) {
+                    pdfCanvas.CloseTag();
+                }
+                canvas.Close();
             }
         }
 

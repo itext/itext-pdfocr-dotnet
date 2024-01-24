@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using iText.Kernel.Geom;
+using iText.Pdfocr.Structuretree;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -37,6 +38,13 @@ namespace iText.Pdfocr {
         /// describing text bbox (lower-left based) expressed in points.
         /// </summary>
         private Rectangle bboxRect;
+
+        /// <summary>
+        /// If LogicalStructureTreeItem is set, then
+        /// <see cref="TextInfo"/>
+        /// s are expected to be in logical order.
+        /// </summary>
+        private LogicalStructureTreeItem logicalStructureTreeItem;
 
         /// <summary>
         /// Creates a new
@@ -103,6 +111,28 @@ namespace iText.Pdfocr {
         /// </param>
         public virtual void SetBboxRect(Rectangle bbox) {
             this.bboxRect = new Rectangle(bbox);
+        }
+
+        /// <summary>Retrieves structure tree item for the text item.</summary>
+        /// <returns>structure tree item.</returns>
+        public virtual LogicalStructureTreeItem GetLogicalStructureTreeItem() {
+            return logicalStructureTreeItem;
+        }
+
+        /// <summary>Sets logical structure tree parent item for the text info.</summary>
+        /// <remarks>
+        /// Sets logical structure tree parent item for the text info. It allows to organize text chunks
+        /// into logical hierarchy, e.g. specify document paragraphs, tables, etc.
+        /// <para />
+        /// If LogicalStructureTreeItem is set, then the list of
+        /// <see cref="TextInfo"/>
+        /// s in
+        /// <see cref="IOcrEngine.DoImageOcr(System.IO.FileInfo)"/>
+        /// return value is expected to be in logical order.
+        /// </remarks>
+        /// <param name="logicalStructureTreeItem">structure tree item.</param>
+        public virtual void SetLogicalStructureTreeItem(LogicalStructureTreeItem logicalStructureTreeItem) {
+            this.logicalStructureTreeItem = logicalStructureTreeItem;
         }
     }
 }

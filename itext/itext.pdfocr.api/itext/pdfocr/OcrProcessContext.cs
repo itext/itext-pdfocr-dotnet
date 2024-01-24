@@ -25,6 +25,8 @@ namespace iText.Pdfocr {
     public class OcrProcessContext {
         private AbstractPdfOcrEventHelper ocrEventHelper;
 
+        private IOcrProcessProperties ocrProcessProperties;
+
         /// <summary>Creates an instance of ocr process context</summary>
         /// <param name="eventHelper">helper class for working with events</param>
         public OcrProcessContext(AbstractPdfOcrEventHelper eventHelper) {
@@ -44,6 +46,18 @@ namespace iText.Pdfocr {
         /// <param name="eventHelper">event helper</param>
         public virtual void SetOcrEventHelper(AbstractPdfOcrEventHelper eventHelper) {
             this.ocrEventHelper = eventHelper;
+        }
+
+        /// <summary>Set extra OCR process properties.</summary>
+        /// <param name="ocrProcessProperties">extra OCR process properties.</param>
+        internal virtual void SetOcrProcessProperties(IOcrProcessProperties ocrProcessProperties) {
+            this.ocrProcessProperties = ocrProcessProperties;
+        }
+
+        /// <summary>Get extra OCR process properties.</summary>
+        /// <returns>extra OCR process properties.</returns>
+        public virtual IOcrProcessProperties GetOcrProcessProperties() {
+            return ocrProcessProperties;
         }
     }
 }
