@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -30,7 +30,9 @@ using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Utils;
 using iText.Pdfa;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
 using iText.Pdfocr.Logs;
 using iText.Test;
@@ -191,6 +193,36 @@ namespace iText.Pdfocr {
             }
             , NUnit.Framework.Throws.InstanceOf<Exception>().With.Message.EqualTo("applyRotation is not implemented"))
 ;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTableStructureTree() {
+            String pdfPath = PdfHelper.GetTargetDirectory() + "tableStructureTree.pdf";
+            // Image doesn't really matter here
+            String input = PdfHelper.GetImagesTestDirectory() + "numbers_01.jpg";
+            IOcrEngine ocrEngine = new TestStructureDetectionOcrEngine();
+            OcrPdfCreatorProperties creatorProperties = new OcrPdfCreatorProperties();
+            creatorProperties.SetTextColor(DeviceRgb.RED);
+            creatorProperties.SetTagged(true);
+            OcrPdfCreator pdfCreator = new OcrPdfCreator(ocrEngine, creatorProperties);
+            TestProcessProperties processProperties = new TestProcessProperties(5, 6, 50, 15, 100, 200);
+            using (PdfWriter pdfWriter = PdfHelper.GetPdfWriter(pdfPath)) {
+                pdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(input)), pdfWriter, new DocumentProperties
+                    (), processProperties).Close();
+            }
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(pdfPath, PdfHelper.TEST_DIRECTORY + "cmp_tableStructureTree.pdf"
+                , PdfHelper.GetTargetDirectory(), "diff_"));
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void TestTaggingNotSupported() {
+            String input = PdfHelper.GetImagesTestDirectory() + "numbers_01.jpg";
+            String pdfPath = PdfHelper.GetTargetDirectory() + "taggingNotSupported.pdf";
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => PdfHelper.CreatePdf(pdfPath, new 
+                FileInfo(input), new OcrPdfCreatorProperties().SetTagged(true)));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT
+                , PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED), e.Message);
         }
 
         internal class NotImplementedImageRotationHandler : IImageRotationHandler {

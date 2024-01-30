@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -290,8 +290,8 @@ namespace iText.Pdfocr.Tessdata {
                 tesseractReader.SetTesseract4OcrEngineProperties(properties);
                 DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                     ("eng", "deu", "spa"), DeviceCmyk.BLACK);
-                NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, TEST_DOCUMENTS_DIRECTORY
-                    , "diff_"));
+                NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                    (), "diff_"));
             }
             finally {
                 NUnit.Framework.Assert.AreEqual(TextPositioning.BY_WORDS, tesseractReader.GetTesseract4OcrEngineProperties

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -34,6 +34,8 @@ namespace iText.Pdfocr.Exceptions {
         public const String STATISTICS_EVENT_TYPE_CANT_BE_NULL = "Statistics event type can't be null";
 
         public const String STATISTICS_EVENT_TYPE_IS_NOT_DETECTED = "Statistics event type is not detected.";
+
+        public const String TAGGING_IS_NOT_SUPPORTED = "Tagging is not supported by the OCR engine.";
 
         private PdfOcrExceptionMessageConstant() {
         }

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -93,10 +93,10 @@ namespace iText.Pdfocr.Tesseract4 {
             // Because of difference of tesseract 5 and tesseract 4 there're some differences in text recognition.
             // So the goal of this test is to make text invisible and check if image is rotated.
             // Proper text recognition is compared in testHocrRotatedImage test by checking HOCR file.
-            bool javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY
+            bool javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory()
                 , "diff_") == null;
-            bool dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
+            bool dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory
+                (), "diff_") == null;
             NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
             filename = "180_degrees_rotated";
             expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_java.pdf";
@@ -104,10 +104,10 @@ namespace iText.Pdfocr.Tesseract4 {
             resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("eng"), JavaUtil.ArraysAsList(NOTO_SANS_FONT_PATH), null, true);
-            javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY, 
+            javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory(), "diff_"
+                ) == null;
+            dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory(), 
                 "diff_") == null;
-            dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
             NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
             filename = "270_degrees_rotated";
             expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_java.pdf";
@@ -115,10 +115,10 @@ namespace iText.Pdfocr.Tesseract4 {
             resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("eng"), JavaUtil.ArraysAsList(NOTO_SANS_FONT_PATH), null, true);
-            javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, TEST_DOCUMENTS_DIRECTORY, 
+            javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory(), "diff_"
+                ) == null;
+            dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory(), 
                 "diff_") == null;
-            dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, TEST_DOCUMENTS_DIRECTORY
-                , "diff_") == null;
             NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
         }
     }

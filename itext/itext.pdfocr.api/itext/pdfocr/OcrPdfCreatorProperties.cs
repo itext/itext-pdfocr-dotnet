@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -115,6 +115,9 @@ namespace iText.Pdfocr {
         private IImageRotationHandler imageRotationHandler;
 
         private IMetaInfo metaInfo;
+
+        /// <summary>Indicates whether the created pdf is tagged or not.</summary>
+        private bool tagged = false;
 
         /// <summary>
         /// Creates a new
@@ -467,6 +470,36 @@ namespace iText.Pdfocr {
             ) {
             this.imageRotationHandler = imageRotationDetector;
             return this;
+        }
+
+        /// <summary>Defines whether pdf document should be tagged or not.</summary>
+        /// <param name="tagged">
+        /// 
+        /// <see langword="true"/>
+        /// if the result pdf is expected to be tagged,
+        /// <see langword="false"/>
+        /// otherwise.
+        /// </param>
+        /// <returns>
+        /// this
+        /// <see cref="OcrPdfCreatorProperties"/>
+        /// instance.
+        /// </returns>
+        public virtual iText.Pdfocr.OcrPdfCreatorProperties SetTagged(bool tagged) {
+            this.tagged = tagged;
+            return this;
+        }
+
+        /// <summary>Retrieve information on whether pdf document should be tagged or not.</summary>
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if the result pdf is expected to be tagged,
+        /// <see langword="false"/>
+        /// otherwise.
+        /// </returns>
+        public virtual bool IsTagged() {
+            return tagged;
         }
 
         /// <summary>

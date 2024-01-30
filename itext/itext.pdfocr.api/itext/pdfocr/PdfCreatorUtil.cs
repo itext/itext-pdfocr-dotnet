@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -69,6 +69,7 @@ namespace iText.Pdfocr {
             float maxFontSize = bbox.GetHeight();
             try {
                 Paragraph paragraph = new Paragraph(line);
+                paragraph.SetMargin(0);
                 paragraph.SetWidth(bbox.GetWidth());
                 paragraph.SetFontFamily(fontFamily);
                 while (Math.Abs(fontSize - maxFontSize) > 1e-1) {
