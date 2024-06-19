@@ -97,6 +97,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private TesseractHelper() {
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Parses each hocr file from the provided list, retrieves text, and
         /// returns data in the format described below.
@@ -164,7 +165,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return imageData;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Get and align (if needed) bbox of the element.</summary>
         internal static Rectangle GetAlignedBBox(iText.StyledXmlParser.Jsoup.Nodes.Element @object, TextPositioning
              textPositioning, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node> unparsedBBoxes
@@ -180,7 +183,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return box;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Parses element bbox.</summary>
         /// <param name="node">element containing bbox</param>
         /// <param name="pageBBox">element containing parent page bbox</param>
@@ -216,7 +221,9 @@ namespace iText.Pdfocr.Tesseract4 {
                     ToPoints(bbox[RIGHT_IDX]), pageBBox.GetTop() - ToPoints(bbox[BOTTOM_IDX]));
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Sometimes hOCR file contains broke character bboxes which are equal to page bbox.</summary>
         /// <remarks>
         /// Sometimes hOCR file contains broke character bboxes which are equal to page bbox.
@@ -246,17 +253,23 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Converts points to pixels.</summary>
         internal static float ToPixels(float pt) {
             return pt / PX_TO_PT;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Converts pixels to points.</summary>
         internal static float ToPoints(float px) {
             return px * PX_TO_PT;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Deletes file using provided path.</summary>
         /// <param name="pathToFile">path to the file to be deleted</param>
         internal static void DeleteFile(String pathToFile) {
@@ -275,7 +288,9 @@ namespace iText.Pdfocr.Tesseract4 {
                     , e.Message));
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Reads from text file to string.</summary>
         /// <param name="txtFile">
         /// input
@@ -299,7 +314,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return content;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Writes provided
         /// <see cref="System.String"/>
@@ -326,7 +343,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e);
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Runs given command.</summary>
         /// <param name="execPath">path to the executable</param>
         /// <param name="paramsList">
@@ -337,7 +356,9 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static void RunCommand(String execPath, IList<String> paramsList) {
             RunCommand(execPath, paramsList, null);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Runs given command from the specific working directory.</summary>
         /// <param name="execPath">path to the executable</param>
         /// <param name="paramsList">
@@ -361,6 +382,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 throw new PdfOcrTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED);
             }
         }
+//\endcond
 
         /// <summary>Gets list of text infos from hocr page.</summary>
         private static IList<TextInfo> GetTextData(iText.StyledXmlParser.Jsoup.Nodes.Element page, Tesseract4OcrEngineProperties

@@ -225,11 +225,13 @@ namespace iText.Pdfocr {
                 , PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED), e.Message);
         }
 
+//\cond DO_NOT_DOCUMENT
         internal class NotImplementedImageRotationHandler : IImageRotationHandler {
             public virtual ImageData ApplyRotation(ImageData imageData) {
                 throw new Exception("applyRotation is not implemented");
             }
         }
+//\endcond
 
         private class DummyMetaInfo : IMetaInfo {
         }

@@ -27,17 +27,22 @@ using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4.Actions.Events;
 
 namespace iText.Pdfocr.Tesseract4 {
+//\cond DO_NOT_DOCUMENT
     /// <summary>Helper class for working with events.</summary>
     internal class Tesseract4FileResultEventHelper : AbstractPdfOcrEventHelper {
         private AbstractPdfOcrEventHelper wrappedEventHelper;
 
+//\cond DO_NOT_DOCUMENT
         internal Tesseract4FileResultEventHelper()
             : this(null) {
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal Tesseract4FileResultEventHelper(AbstractPdfOcrEventHelper wrappedEventHelper) {
             this.wrappedEventHelper = wrappedEventHelper == null ? new Tesseract4EventHelper() : wrappedEventHelper;
         }
+//\endcond
 
         public override void OnEvent(AbstractProductITextEvent @event) {
             if (!IsProcessImageEvent(@event) && !IsConfirmForProcessImageEvent(@event)) {
@@ -64,4 +69,5 @@ namespace iText.Pdfocr.Tesseract4 {
                 ());
         }
     }
+//\endcond
 }

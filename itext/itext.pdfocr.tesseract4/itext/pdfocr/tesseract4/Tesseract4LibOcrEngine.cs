@@ -120,6 +120,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 ().GetPageSegMode(), GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Performs tesseract OCR using wrapper for Tesseract OCR API for the selected page
         /// of input image (by default 1st).
@@ -215,6 +216,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
         }
+//\endcond
 
         /// <summary>
         /// Validates Tess Data path,

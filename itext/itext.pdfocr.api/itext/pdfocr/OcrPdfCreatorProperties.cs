@@ -516,10 +516,12 @@ namespace iText.Pdfocr {
             return this;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Returns meta info</summary>
         /// <returns>meta info</returns>
         internal virtual IMetaInfo GetMetaInfo() {
             return metaInfo;
         }
+//\endcond
     }
 }

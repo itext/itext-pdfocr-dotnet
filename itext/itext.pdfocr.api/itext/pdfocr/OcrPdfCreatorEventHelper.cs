@@ -27,15 +27,18 @@ using iText.Commons.Actions.Sequence;
 using iText.Pdfocr.Statistics;
 
 namespace iText.Pdfocr {
+//\cond DO_NOT_DOCUMENT
     internal class OcrPdfCreatorEventHelper : AbstractPdfOcrEventHelper {
         private readonly SequenceId sequenceId;
 
         private readonly IMetaInfo metaInfo;
 
+//\cond DO_NOT_DOCUMENT
         internal OcrPdfCreatorEventHelper(SequenceId sequenceId, IMetaInfo metaInfo) {
             this.sequenceId = sequenceId;
             this.metaInfo = metaInfo;
         }
+//\endcond
 
         public override void OnEvent(AbstractProductITextEvent @event) {
             if (@event is AbstractContextBasedITextEvent) {
@@ -58,4 +61,5 @@ namespace iText.Pdfocr {
             return EventConfirmationType.ON_CLOSE;
         }
     }
+//\endcond
 }

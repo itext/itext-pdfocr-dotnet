@@ -29,9 +29,13 @@ using iText.Pdfocr.Tesseract4.Exceptions;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class UserWordsTest : IntegrationTestHelper {
+//\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal String testFileTypeName;
+//\endcond
 
         private bool isExecutableReaderType;
 

@@ -38,7 +38,9 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.General {
     public abstract class BasicTesseractIntegrationTest : IntegrationTestHelper {
+//\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
+//\endcond
 
         public BasicTesseractIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);

@@ -34,9 +34,13 @@ namespace iText.Pdfocr.Tesseract4 {
         private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImageIntegrationTest
             ));
 
+//\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal String testFileTypeName;
+//\endcond
 
         private bool isExecutableReaderType;
 

@@ -37,9 +37,12 @@ using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr {
+//\cond DO_NOT_DOCUMENT
     internal class PdfCreatorUtil {
+//\cond DO_NOT_DOCUMENT
         /// <summary>The Constant to convert pixels to points.</summary>
         internal const float PX_TO_PT = 3f / 4f;
+//\endcond
 
         /// <summary>The Constant for points per inch.</summary>
         private const float POINTS_PER_INCH = 72.0f;
@@ -47,6 +50,7 @@ namespace iText.Pdfocr {
         /// <summary>The logger.</summary>
         private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(PdfCreatorUtil));
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Calculates font size according to given bbox height, width and selected
         /// font.
@@ -92,7 +96,9 @@ namespace iText.Pdfocr {
             }
             return fontSize;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Calculated real width of a paragraph with given text line, font provider
         /// and font size.
@@ -113,7 +119,9 @@ namespace iText.Pdfocr {
             IRenderer renderer = paragraph.CreateRendererSubTree().SetParent(document.GetRenderer());
             return ((ParagraphRenderer)renderer).GetMinMaxWidth().GetMaxWidth();
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Calculates image coordinates on the page.</summary>
         /// <param name="size">size of the page</param>
         /// <param name="imageSize">size of the image</param>
@@ -131,7 +139,9 @@ namespace iText.Pdfocr {
             }
             return new Point(x, y);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Retrieves
         /// <see cref="iText.IO.Image.ImageData"/>
@@ -189,7 +199,9 @@ namespace iText.Pdfocr {
             }
             return images;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Calculates the size of the PDF document page according to the provided
         /// <see cref="ScaleMode"/>.
@@ -252,13 +264,16 @@ namespace iText.Pdfocr {
                 return requiredSize;
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Converts value from pixels to points.</summary>
         /// <param name="pixels">input value in pixels</param>
         /// <returns>result value in points</returns>
         internal static float GetPoints(float pixels) {
             return pixels * PX_TO_PT;
         }
+//\endcond
 
         /// <summary>Counts number of pages in the provided tiff image.</summary>
         /// <param name="inputImage">
@@ -274,4 +289,5 @@ namespace iText.Pdfocr {
             return numOfPages;
         }
     }
+//\endcond
 }

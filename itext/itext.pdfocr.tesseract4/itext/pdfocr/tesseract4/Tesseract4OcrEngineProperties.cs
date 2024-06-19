@@ -36,12 +36,14 @@ namespace iText.Pdfocr.Tesseract4 {
     /// <see cref="iText.Pdfocr.IOcrEngine"/>.
     /// </summary>
     public class Tesseract4OcrEngineProperties : OcrEngineProperties {
+//\cond DO_NOT_DOCUMENT
         /// <summary>Default suffix for user-word file.</summary>
         /// <remarks>
         /// Default suffix for user-word file.
         /// (e.g. name: 'eng.user-words')
         /// </remarks>
         internal const String DEFAULT_USER_WORDS_SUFFIX = "user-words";
+//\endcond
 
         /// <summary>Default language for OCR.</summary>
         private const String DEFAULT_LANGUAGE = "eng";
@@ -248,6 +250,7 @@ namespace iText.Pdfocr.Tesseract4 {
             return this;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Using provided list of words there will be created
         /// temporary file containing words (one per line) which
@@ -301,7 +304,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return this;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Using provided input stream there will be created
         /// temporary file (with name 'language.user-words')
@@ -366,7 +371,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return this;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Returns path to the user words file.</summary>
         /// <remarks>
         /// Returns path to the user words file.
@@ -383,7 +390,9 @@ namespace iText.Pdfocr.Tesseract4 {
         internal String GetPathToUserWordsFile() {
             return pathToUserWordsFile;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Sets path to the user words file.</summary>
         /// <remarks>
         /// Sets path to the user words file.
@@ -405,7 +414,9 @@ namespace iText.Pdfocr.Tesseract4 {
             ) {
             return SetPathToUserWordsFile(pathToUserWordsFile, false);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Sets path to the user words file.</summary>
         /// <param name="pathToUserWordsFile">
         /// path to user words file
@@ -424,12 +435,15 @@ namespace iText.Pdfocr.Tesseract4 {
             this.isUserWordsFileTemporary = isTempFile;
             return this;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Indicates if user words file is temporary and has to be removed.</summary>
         /// <returns>true if the file is temporary, otherwise false.</returns>
         internal bool IsUserWordsFileTemporary() {
             return isUserWordsFileTemporary;
         }
+//\endcond
 
         /// <summary>
         /// Gets

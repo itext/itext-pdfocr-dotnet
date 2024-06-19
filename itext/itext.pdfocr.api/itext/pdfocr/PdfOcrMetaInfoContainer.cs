@@ -33,8 +33,10 @@ namespace iText.Pdfocr {
             this.metaInfo = metaInfo;
         }
 
+//\cond DO_NOT_DOCUMENT
         internal virtual IMetaInfo GetMetaInfo() {
             return metaInfo;
         }
+//\endcond
     }
 }

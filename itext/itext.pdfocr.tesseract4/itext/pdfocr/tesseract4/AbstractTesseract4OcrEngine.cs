@@ -58,7 +58,9 @@ namespace iText.Pdfocr.Tesseract4 {
             (new HashSet<ImageType>(JavaUtil.ArraysAsList(ImageType.BMP, ImageType.PNG, ImageType.TIFF, ImageType.
             JPEG)));
 
+//\cond DO_NOT_DOCUMENT
         internal ICollection<Guid> processedUUID = new HashSet<Guid>();
+//\endcond
 
         /// <summary>Set of properties.</summary>
         private Tesseract4OcrEngineProperties tesseract4OcrEngineProperties;
@@ -403,6 +405,7 @@ namespace iText.Pdfocr.Tesseract4 {
             return PdfOcrTesseract4ProductData.GetInstance();
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Performs tesseract OCR using command line tool
         /// or a wrapper for Tesseract OCR API.
@@ -437,7 +440,9 @@ namespace iText.Pdfocr.Tesseract4 {
             , int pageNumber, AbstractPdfOcrEventHelper eventHelper) {
             DoTesseractOcr(inputImage, outputFiles, outputFormat, pageNumber, true, eventHelper);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Performs tesseract OCR using command line tool
         /// or a wrapper for Tesseract OCR API.
@@ -472,7 +477,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="eventHelper">event helper</param>
         internal abstract void DoTesseractOcr(FileInfo inputImage, IList<FileInfo> outputFiles, OutputFormat outputFormat
             , int pageNumber, bool dispatchEvent, AbstractPdfOcrEventHelper eventHelper);
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Gets path to provided tess data directory.</summary>
         /// <returns>
         /// path to provided tess data directory as
@@ -486,7 +493,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 return GetTesseract4OcrEngineProperties().GetPathToTessData().FullName;
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual PdfOcrTesseract4ProductEvent OnEvent(AbstractPdfOcrEventHelper eventHelper) {
             // usage event
             PdfOcrTesseract4ProductEvent @event = PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(eventHelper.GetSequenceId
@@ -494,11 +503,14 @@ namespace iText.Pdfocr.Tesseract4 {
             eventHelper.OnEvent(@event);
             return @event;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual void OnEventStatistics(AbstractPdfOcrEventHelper eventHelper) {
             eventHelper.OnEvent(new PdfOcrOutputTypeStatisticsEvent(PdfOcrOutputType.DATA, PdfOcrTesseract4ProductData
                 .GetInstance()));
         }
+//\endcond
 
         /// <summary>Reads data from the provided input image file.</summary>
         /// <param name="input">
@@ -619,31 +631,45 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         internal interface ITesseractOcrResult {
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal class StringTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
             private String data;
 
+//\cond DO_NOT_DOCUMENT
             internal StringTesseractOcrResult(String data) {
                 this.data = data;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual String GetData() {
                 return data;
             }
+//\endcond
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal class TextInfoTesseractOcrResult : AbstractTesseract4OcrEngine.ITesseractOcrResult {
             private IDictionary<int, IList<TextInfo>> textInfos;
 
+//\cond DO_NOT_DOCUMENT
             internal TextInfoTesseractOcrResult(IDictionary<int, IList<TextInfo>> textInfos) {
                 this.textInfos = textInfos;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual IDictionary<int, IList<TextInfo>> GetTextInfos() {
                 return this.textInfos;
             }
+//\endcond
         }
+//\endcond
     }
 }

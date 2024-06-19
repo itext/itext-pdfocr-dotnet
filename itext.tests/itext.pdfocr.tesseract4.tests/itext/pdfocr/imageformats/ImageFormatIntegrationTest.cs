@@ -33,9 +33,13 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Imageformats {
     public abstract class ImageFormatIntegrationTest : IntegrationTestHelper {
+//\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal String testType;
+//\endcond
 
         public ImageFormatIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
