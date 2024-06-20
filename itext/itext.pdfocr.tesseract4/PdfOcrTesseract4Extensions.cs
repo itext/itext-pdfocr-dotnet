@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-
+//\cond DO_NOT_DOCUMENT
 internal static class PdfOcrTesseract4Extensions
 {
     public static String Name(this Encoding e)
@@ -74,3 +74,4 @@ internal static class PdfOcrTesseract4Extensions
     }
 
 }
+//\endcond

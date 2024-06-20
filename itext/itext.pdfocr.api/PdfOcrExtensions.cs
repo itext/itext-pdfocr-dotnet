@@ -29,7 +29,7 @@ using iText.IO.Util;
 using System.Reflection;
 using iText.Pdfocr;
 
-
+//\cond DO_NOT_DOCUMENT
 internal static class PdfOcrExtensions
 {
     public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> col, TKey key)
@@ -55,3 +55,4 @@ internal static class PdfOcrExtensions
     }
 
 }
+//\endcond
