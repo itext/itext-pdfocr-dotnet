@@ -89,25 +89,27 @@ namespace iText.Pdfocr.Tesseract4 {
 
         [NUnit.Framework.Test]
         public virtual void TestUserWordsWithLanguageNotInList() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 String userWords = TEST_DOCUMENTS_DIRECTORY + "userwords.txt";
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetUserWords("spa", new FileStream(userWords, FileMode.Open, FileAccess.Read));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST, "spa")))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST
+                , "spa"), exception.Message);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestIncorrectLanguageForUserWordsAsList() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetUserWords("eng1", JavaUtil.ArraysAsList("word1", "word2"));
                 properties.SetLanguages(new List<String>());
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST, "eng1")))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.LANGUAGE_IS_NOT_IN_THE_LIST
+                , "eng1"), exception.Message);
         }
 
         [NUnit.Framework.Test]

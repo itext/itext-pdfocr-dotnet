@@ -228,12 +228,11 @@ namespace iText.Pdfocr.Imageformats {
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputWrongFormat() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "wierdwords.gif");
-                GetTextFromPdf(tesseractReader, file);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT, "wierdwords.gif")))
-;
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "wierdwords.gif");
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => GetTextFromPdf
+                (tesseractReader, file));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT
+                , "wierdwords.gif"), exception.Message);
         }
 
         [NUnit.Framework.Test]

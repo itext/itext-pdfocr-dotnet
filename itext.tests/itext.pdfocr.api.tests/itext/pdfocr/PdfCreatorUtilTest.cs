@@ -20,6 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
@@ -70,21 +71,17 @@ namespace iText.Pdfocr {
         [NUnit.Framework.Test]
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         public virtual void GetImageDataFromNotExistingImageTest() {
-            NUnit.Framework.Assert.That(() =>  {
-                PdfCreatorUtil.GetImageData(new FileInfo("no such path"), null);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>())
-;
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfCreatorUtil.GetImageData(new FileInfo(
+                "no such path"), null));
         }
 
         [NUnit.Framework.Test]
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         public virtual void GetImageDataFromInvalidImageTest() {
-            NUnit.Framework.Assert.That(() =>  {
-                PdfCreatorUtil.GetImageData(new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted.jpg"), null);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrInputException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE)))
-;
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfCreatorUtil.GetImageData
+                (new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted.jpg"), null));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE
+                ), exception.Message);
         }
     }
 }

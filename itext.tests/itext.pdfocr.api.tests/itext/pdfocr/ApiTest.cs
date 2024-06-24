@@ -167,7 +167,7 @@ namespace iText.Pdfocr {
 
         [NUnit.Framework.Test]
         public virtual void TestImageRotationHandler() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(Exception), () => {
                 OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
                 properties.SetImageRotationHandler(new ApiTest.NotImplementedImageRotationHandler());
                 String testName = "testSetAndGetImageRotationHandler";
@@ -176,13 +176,13 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdf(pdfPath, new FileInfo(path), properties);
                 NUnit.Framework.Assert.IsNotNull(properties.GetImageRotationHandler());
             }
-            , NUnit.Framework.Throws.InstanceOf<Exception>().With.Message.EqualTo("applyRotation is not implemented"))
-;
+            );
+            NUnit.Framework.Assert.AreEqual("applyRotation is not implemented", exception.Message);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestImageRotationHandlerForTiff() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(Exception), () => {
                 OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
                 properties.SetImageRotationHandler(new ApiTest.NotImplementedImageRotationHandler());
                 String testName = "testSetAndGetImageRotationHandler";
@@ -191,8 +191,8 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdf(pdfPath, new FileInfo(path), properties);
                 NUnit.Framework.Assert.IsNotNull(properties.GetImageRotationHandler());
             }
-            , NUnit.Framework.Throws.InstanceOf<Exception>().With.Message.EqualTo("applyRotation is not implemented"))
-;
+            );
+            NUnit.Framework.Assert.AreEqual("applyRotation is not implemented", exception.Message);
         }
 
         [NUnit.Framework.Test]
