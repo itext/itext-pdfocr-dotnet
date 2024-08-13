@@ -755,8 +755,8 @@ namespace iText.Pdfocr {
                 else {
                     Point coordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
                         );
-                    Rectangle rect = new Rectangle((float)coordinates.x, (float)coordinates.y, imageSize.GetWidth(), imageSize
-                        .GetHeight());
+                    Rectangle rect = new Rectangle((float)coordinates.GetX(), (float)coordinates.GetY(), imageSize.GetWidth(), 
+                        imageSize.GetHeight());
                     pdfCanvas.AddImageFittedIntoRectangle(imageData, rect, false);
                 }
                 if (ocrPdfCreatorProperties.IsTagged()) {
@@ -895,8 +895,8 @@ namespace iText.Pdfocr {
                 else {
                     paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
                 }
-                canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.x, yOffset + (float)imageCoordinates.y
-                    , TextAlignment.LEFT);
+                canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.GetX(), yOffset + (float)imageCoordinates
+                    .GetY(), TextAlignment.LEFT);
                 if (ocrPdfCreatorProperties.IsTagged()) {
                     pdfCanvas.CloseTag();
                 }
