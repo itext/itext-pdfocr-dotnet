@@ -65,7 +65,7 @@ namespace iText.Pdfocr {
                     ());
             }
             );
-            NUnit.Framework.Assert.AreEqual(PdfAConformanceException.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT
+            NUnit.Framework.Assert.AreEqual(PdfaExceptionMessageConstant.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT
                 , exception.Message);
         }
 
