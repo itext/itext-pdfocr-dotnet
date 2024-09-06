@@ -61,6 +61,10 @@ namespace iText.Pdfocr.Helpers {
             ) {
         }
 
+        public virtual bool IsTaggingSupported() {
+            return false;
+        }
+
         public virtual OcrEngineProperties GetOcrEngineProperties() {
             return ocrEngineProperties;
         }

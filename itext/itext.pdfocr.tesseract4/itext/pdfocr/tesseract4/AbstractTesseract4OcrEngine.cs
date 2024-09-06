@@ -47,9 +47,10 @@ namespace iText.Pdfocr.Tesseract4 {
     /// <remarks>
     /// The implementation of
     /// <see cref="iText.Pdfocr.IOcrEngine"/>.
+    /// <para />
     /// This class provides possibilities to perform OCR, to read data from input
     /// files and to return contained text in the required format.
-    /// Also there are possibilities to use features of "tesseract"
+    /// Also, there are possibilities to use features of "tesseract"
     /// (optical character recognition engine for various operating systems).
     /// </remarks>
     public abstract class AbstractTesseract4OcrEngine : IOcrEngine, IProductAware {
@@ -403,6 +404,10 @@ namespace iText.Pdfocr.Tesseract4 {
 
         public virtual ProductData GetProductData() {
             return PdfOcrTesseract4ProductData.GetInstance();
+        }
+
+        public virtual bool IsTaggingSupported() {
+            return false;
         }
 
 //\cond DO_NOT_DOCUMENT

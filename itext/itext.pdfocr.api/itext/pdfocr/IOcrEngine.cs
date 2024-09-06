@@ -132,5 +132,15 @@ namespace iText.Pdfocr {
         /// <param name="txtFile">file to be created</param>
         /// <param name="ocrProcessContext">ocr processing context</param>
         void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext);
+
+        /// <summary>Checks whether tagging is supported by the OCR engine.</summary>
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if tagging is supported by the engine,
+        /// <see langword="false"/>
+        /// otherwise
+        /// </returns>
+        bool IsTaggingSupported();
     }
 }

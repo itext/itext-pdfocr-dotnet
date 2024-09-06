@@ -44,6 +44,7 @@ namespace iText.Pdfocr.Tesseract4 {
     /// The implementation of
     /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
+    /// <para />
     /// This class provides possibilities to use features of "tesseract" CL tool
     /// (optical character recognition engine for various operating systems).
     /// Please note that it's assumed that "tesseract" has already been

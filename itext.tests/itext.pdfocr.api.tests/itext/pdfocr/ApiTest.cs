@@ -215,14 +215,12 @@ namespace iText.Pdfocr {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, LogLevel = LogLevelConstants.ERROR)]
         public virtual void TestTaggingNotSupported() {
             String input = PdfHelper.GetImagesTestDirectory() + "numbers_01.jpg";
             String pdfPath = PdfHelper.GetTargetDirectory() + "taggingNotSupported.pdf";
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => PdfHelper.CreatePdf(pdfPath, new 
                 FileInfo(input), new OcrPdfCreatorProperties().SetTagged(true)));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT
-                , PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED), e.Message);
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED, e.Message);
         }
 
 //\cond DO_NOT_DOCUMENT

@@ -113,6 +113,9 @@ namespace iText.Pdfocr {
         /// <see cref="OcrPdfCreator"/>
         /// </param>
         public OcrPdfCreator(IOcrEngine ocrEngine, OcrPdfCreatorProperties ocrPdfCreatorProperties) {
+            if (ocrPdfCreatorProperties.IsTagged() && !ocrEngine.IsTaggingSupported()) {
+                throw new PdfOcrException(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED);
+            }
             SetOcrEngine(ocrEngine);
             SetOcrPdfCreatorProperties(ocrPdfCreatorProperties);
         }
@@ -630,12 +633,8 @@ namespace iText.Pdfocr {
                     // Logical tree, a list of top items, children can be retrieved out of them
                     IList<LogicalStructureTreeItem> logicalTree = new List<LogicalStructureTreeItem>();
                     // A map of leaf LogicalStructureTreeItem's to TextInfo's attached to these leaves
-                    IDictionary<LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos = new Dictionary<LogicalStructureTreeItem
-                        , IList<TextInfo>>();
-                    bool taggedSupported = GetLogicalTree(pageText, logicalTree, leavesTextInfos);
-                    if (!taggedSupported) {
-                        throw new PdfOcrException(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED);
-                    }
+                    IDictionary<LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos = GetLogicalTree(pageText, logicalTree
+                        );
                     pdfDocument.SetTagged();
                     // Create a map of TextInfo to tag pointers meanwhile creating the required tags.
                     // Tag pointers are later used to put all the required info into canvas (content stream)
@@ -765,18 +764,12 @@ namespace iText.Pdfocr {
             }
         }
 
-        /// <returns>
-        /// 
-        /// <see langword="true"/>
-        /// if tagging supported by the engine.
-        /// </returns>
-        [System.ObsoleteAttribute(@"In next major version we need to add boolean taggingSupported() method into IOcrEngine and throw exception in OcrPdfCreator constructor if taggingSupported() returns false but OcrPdfCreatorProperties.getTagged returns true."
-            )]
-        private static bool GetLogicalTree(IList<TextInfo> textInfos, IList<LogicalStructureTreeItem> logicalStructureTreeItems
-            , IDictionary<LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos) {
-            bool taggedSupported = false;
+        private static IDictionary<LogicalStructureTreeItem, IList<TextInfo>> GetLogicalTree(IList<TextInfo> textInfos
+            , IList<LogicalStructureTreeItem> logicalStructureTreeItems) {
+            IDictionary<LogicalStructureTreeItem, IList<TextInfo>> leavesTextInfos = new Dictionary<LogicalStructureTreeItem
+                , IList<TextInfo>>();
             if (textInfos == null) {
-                return taggedSupported;
+                return leavesTextInfos;
             }
             foreach (TextInfo textInfo in textInfos) {
                 LogicalStructureTreeItem structTreeItem = textInfo.GetLogicalStructureTreeItem();
@@ -787,7 +780,6 @@ namespace iText.Pdfocr {
                 else {
                     if (structTreeItem != null) {
                         topParent = GetTopParent(structTreeItem);
-                        taggedSupported = true;
                     }
                     else {
                         structTreeItem = new LogicalStructureTreeItem();
@@ -808,7 +800,7 @@ namespace iText.Pdfocr {
                     logicalStructureTreeItems.Add(topParent);
                 }
             }
-            return taggedSupported;
+            return leavesTextInfos;
         }
 
         private static LogicalStructureTreeItem GetTopParent(LogicalStructureTreeItem structInfo) {

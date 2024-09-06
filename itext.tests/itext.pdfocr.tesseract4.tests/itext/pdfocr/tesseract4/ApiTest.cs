@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
@@ -119,6 +120,20 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.AreEqual(136.5f, (float)textInfo.GetBboxRect().GetBottom(), 0.1);
             NUnit.Framework.Assert.AreEqual(385.5, (float)textInfo.GetBboxRect().GetRight(), 0.1);
             NUnit.Framework.Assert.AreEqual(162.75, (float)textInfo.GetBboxRect().GetTop(), 0.1);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTaggingNotSupportedForTesseract4ExecutableOcrEngine() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => new OcrPdfCreator(new Tesseract4ExecutableOcrEngine
+                (new Tesseract4OcrEngineProperties()), new OcrPdfCreatorProperties().SetTagged(true)));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED, e.Message);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTaggingNotSupportedForTesseract4LibOcrEngine() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => new OcrPdfCreator(new Tesseract4LibOcrEngine
+                (new Tesseract4OcrEngineProperties()), new OcrPdfCreatorProperties().SetTagged(true)));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED, e.Message);
         }
     }
 }
