@@ -660,8 +660,7 @@ namespace iText.Pdfocr {
             PdfDocument pdfDocument;
             bool createPdfA3u = pdfOutputIntent != null;
             if (createPdfA3u) {
-                pdfDocument = new PdfADocument(pdfWriter, PdfAConformanceLevel.PDF_A_3U, pdfOutputIntent, documentProperties
-                    );
+                pdfDocument = new PdfADocument(pdfWriter, PdfAConformance.PDF_A_3U, pdfOutputIntent, documentProperties);
             }
             else {
                 pdfDocument = new PdfDocument(pdfWriter, documentProperties);

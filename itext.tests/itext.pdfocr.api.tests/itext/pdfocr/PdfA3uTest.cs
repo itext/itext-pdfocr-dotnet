@@ -82,7 +82,7 @@ namespace iText.Pdfocr {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             NUnit.Framework.Assert.AreEqual("en-US", pdfDocument.GetCatalog().GetLang().ToString());
             NUnit.Framework.Assert.AreEqual(null, pdfDocument.GetDocumentInfo().GetTitle());
-            NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
+            NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U, pdfDocument.GetReader().GetPdfConformance().GetAConformance
                 ());
             pdfDocument.Close();
         }
@@ -103,7 +103,7 @@ namespace iText.Pdfocr {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             NUnit.Framework.Assert.AreEqual(locale, pdfDocument.GetCatalog().GetLang().ToString());
             NUnit.Framework.Assert.AreEqual(title, pdfDocument.GetDocumentInfo().GetTitle());
-            NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
+            NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U, pdfDocument.GetReader().GetPdfConformance().GetAConformance
                 ());
             pdfDocument.Close();
         }

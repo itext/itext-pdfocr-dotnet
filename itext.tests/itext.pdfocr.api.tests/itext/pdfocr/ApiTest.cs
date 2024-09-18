@@ -103,9 +103,9 @@ namespace iText.Pdfocr {
                 String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
                     .UTF8);
                 NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
-                PdfAConformanceLevel cl = pdf.GetReader().GetPdfAConformanceLevel();
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetConformance(), cl.GetConformance());
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetPart(), cl.GetPart());
+                PdfAConformance cl = pdf.GetReader().GetPdfConformance().GetAConformance();
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetLevel(), cl.GetLevel());
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetPart(), cl.GetPart());
             }
         }
 
@@ -120,9 +120,9 @@ namespace iText.Pdfocr {
                 String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
                     .UTF8);
                 NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
-                PdfAConformanceLevel cl = pdf.GetReader().GetPdfAConformanceLevel();
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetConformance(), cl.GetConformance());
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetPart(), cl.GetPart());
+                PdfAConformance cl = pdf.GetReader().GetPdfConformance().GetAConformance();
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetLevel(), cl.GetLevel());
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetPart(), cl.GetPart());
             }
         }
 
