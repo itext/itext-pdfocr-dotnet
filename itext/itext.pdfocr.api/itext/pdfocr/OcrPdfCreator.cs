@@ -1014,7 +1014,7 @@ namespace iText.Pdfocr {
                 // default value for error message, it'll be updated with the
                 // unicode of the not found glyph
                 String message = PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER;
-                for (int i = glyphLine.start; i < glyphLine.end; i++) {
+                for (int i = glyphLine.GetStart(); i < glyphLine.GetEnd(); i++) {
                     if (IsNotDefGlyph(currentFont, glyphLine.Get(i))) {
                         notDefGlyphsExists = true;
                         message = MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER
