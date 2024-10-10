@@ -327,7 +327,8 @@ namespace iText.Pdfocr.General {
 
         /// <summary>Create pdfWriter.</summary>
         private PdfWriter GetPdfWriter() {
-            return new PdfWriter(new ByteArrayOutputStream(), new WriterProperties().AddUAXmpMetadata());
+            return new PdfWriter(new ByteArrayOutputStream(), new WriterProperties().AddPdfUaXmpMetadata(PdfUAConformance
+                .PDF_UA_1));
         }
     }
 }
