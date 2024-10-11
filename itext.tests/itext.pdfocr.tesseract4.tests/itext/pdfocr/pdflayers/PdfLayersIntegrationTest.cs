@@ -31,7 +31,9 @@ using iText.Pdfocr.Tesseract4;
 
 namespace iText.Pdfocr.Pdflayers {
     public abstract class PdfLayersIntegrationTest : IntegrationTestHelper {
+//\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
+//\endcond
 
         public PdfLayersIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);

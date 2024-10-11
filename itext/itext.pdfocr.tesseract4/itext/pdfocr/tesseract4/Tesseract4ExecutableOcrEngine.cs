@@ -44,6 +44,7 @@ namespace iText.Pdfocr.Tesseract4 {
     /// The implementation of
     /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
+    /// <para />
     /// This class provides possibilities to use features of "tesseract" CL tool
     /// (optical character recognition engine for various operating systems).
     /// Please note that it's assumed that "tesseract" has already been
@@ -97,6 +98,7 @@ namespace iText.Pdfocr.Tesseract4 {
             pathToExecutable = path;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Performs tesseract OCR using command line tool for the selected page
         /// of input image (by default 1st).
@@ -218,6 +220,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
         }
+//\endcond
 
         /// <summary>Sets hocr output format.</summary>
         /// <param name="command">result command as list of strings</param>

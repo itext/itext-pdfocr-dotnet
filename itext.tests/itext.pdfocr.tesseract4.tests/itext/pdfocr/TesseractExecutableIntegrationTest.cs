@@ -20,6 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
 using System.IO;
 using iText.Pdfocr.Tesseract4;
 using iText.Pdfocr.Tesseract4.Exceptions;
@@ -32,39 +33,38 @@ namespace iText.Pdfocr {
         [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNullPathToTesseractExecutable() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 Tesseract4ExecutableOcrEngine tesseractExecutableReader = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ());
                 tesseractExecutableReader.SetPathToExecutable(null);
                 GetTextFromPdf(tesseractExecutableReader, file);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE
+                , exception.Message);
         }
 
         [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestEmptyPathToTesseractExecutable() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
-                GetTextFromPdf(new Tesseract4ExecutableOcrEngine("", new Tesseract4OcrEngineProperties()), file);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE))
-;
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => GetTextFromPdf
+                (new Tesseract4ExecutableOcrEngine("", new Tesseract4OcrEngineProperties()), file));
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_FIND_PATH_TO_TESSERACT_EXECUTABLE
+                , exception.Message);
         }
 
         [LogMessage(Tesseract4LogMessageConstant.COMMAND_FAILED, Count = 1)]
         [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_NOT_FOUND, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestIncorrectPathToTesseractExecutable() {
-            NUnit.Framework.Assert.That(() =>  {
-                FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
-                GetTextFromPdf(new Tesseract4ExecutableOcrEngine("path\\to\\executable\\", new Tesseract4OcrEngineProperties
-                    ()), file);
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_NOT_FOUND))
-;
+            FileInfo file = new FileInfo(TEST_IMAGES_DIRECTORY + "spanish_01.jpg");
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => GetTextFromPdf
+                (new Tesseract4ExecutableOcrEngine("path\\to\\executable\\", new Tesseract4OcrEngineProperties()), file
+                ));
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_NOT_FOUND, exception.Message
+                );
         }
     }
 }

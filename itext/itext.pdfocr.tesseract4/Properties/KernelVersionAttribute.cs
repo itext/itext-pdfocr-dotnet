@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 
 namespace Versions.Attributes {
+    //\cond DO_NOT_DOCUMENT 
     [AttributeUsage(AttributeTargets.Assembly)]
     internal class KernelVersionAttribute : Attribute {
         internal string KernelVersion { get; private set; }
@@ -31,4 +32,5 @@ namespace Versions.Attributes {
             this.KernelVersion = kernelVersion;
         }
     }
+    //\endcond 
 }

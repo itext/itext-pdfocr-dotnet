@@ -38,6 +38,8 @@ using iText.Pdfocr.Tesseract4.Exceptions;
 using Tesseract;
 
 namespace iText.Pdfocr.Tesseract4 {
+    
+    //\cond DO_NOT_DOCUMENT    
     /// <summary>
     /// Utilities class to work with tesseract command line tool and image
     /// preprocessing using
@@ -1046,4 +1048,5 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
     }
+    //\endcond 
 }

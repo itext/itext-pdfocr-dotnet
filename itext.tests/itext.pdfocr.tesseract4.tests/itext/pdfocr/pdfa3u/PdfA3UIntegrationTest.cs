@@ -37,7 +37,9 @@ namespace iText.Pdfocr.Pdfa3u {
         // path to default rgb color profile
         private static readonly String DEFAULT_RGB_COLOR_PROFILE_PATH = TEST_DIRECTORY + "profiles/sRGB_CS_profile.icm";
 
+//\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
+//\endcond
 
         public PdfA3UIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);

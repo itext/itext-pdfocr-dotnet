@@ -103,9 +103,9 @@ namespace iText.Pdfocr {
                 String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
                     .UTF8);
                 NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
-                PdfAConformanceLevel cl = pdf.GetReader().GetPdfAConformanceLevel();
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetConformance(), cl.GetConformance());
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetPart(), cl.GetPart());
+                PdfAConformance cl = pdf.GetReader().GetPdfConformance().GetAConformance();
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetLevel(), cl.GetLevel());
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetPart(), cl.GetPart());
             }
         }
 
@@ -120,9 +120,9 @@ namespace iText.Pdfocr {
                 String contentBytes = iText.Commons.Utils.JavaUtil.GetStringForBytes(pdf.GetPage(1).GetContentBytes(), System.Text.Encoding
                     .UTF8);
                 NUnit.Framework.Assert.IsTrue(contentBytes.Contains("<00190014001c001400150014>"));
-                PdfAConformanceLevel cl = pdf.GetReader().GetPdfAConformanceLevel();
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetConformance(), cl.GetConformance());
-                NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U.GetPart(), cl.GetPart());
+                PdfAConformance cl = pdf.GetReader().GetPdfConformance().GetAConformance();
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetLevel(), cl.GetLevel());
+                NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U.GetPart(), cl.GetPart());
             }
         }
 
@@ -167,7 +167,7 @@ namespace iText.Pdfocr {
 
         [NUnit.Framework.Test]
         public virtual void TestImageRotationHandler() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(Exception), () => {
                 OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
                 properties.SetImageRotationHandler(new ApiTest.NotImplementedImageRotationHandler());
                 String testName = "testSetAndGetImageRotationHandler";
@@ -176,13 +176,13 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdf(pdfPath, new FileInfo(path), properties);
                 NUnit.Framework.Assert.IsNotNull(properties.GetImageRotationHandler());
             }
-            , NUnit.Framework.Throws.InstanceOf<Exception>().With.Message.EqualTo("applyRotation is not implemented"))
-;
+            );
+            NUnit.Framework.Assert.AreEqual("applyRotation is not implemented", exception.Message);
         }
 
         [NUnit.Framework.Test]
         public virtual void TestImageRotationHandlerForTiff() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(Exception), () => {
                 OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
                 properties.SetImageRotationHandler(new ApiTest.NotImplementedImageRotationHandler());
                 String testName = "testSetAndGetImageRotationHandler";
@@ -191,8 +191,8 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdf(pdfPath, new FileInfo(path), properties);
                 NUnit.Framework.Assert.IsNotNull(properties.GetImageRotationHandler());
             }
-            , NUnit.Framework.Throws.InstanceOf<Exception>().With.Message.EqualTo("applyRotation is not implemented"))
-;
+            );
+            NUnit.Framework.Assert.AreEqual("applyRotation is not implemented", exception.Message);
         }
 
         [NUnit.Framework.Test]
@@ -215,21 +215,21 @@ namespace iText.Pdfocr {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, LogLevel = LogLevelConstants.ERROR)]
         public virtual void TestTaggingNotSupported() {
             String input = PdfHelper.GetImagesTestDirectory() + "numbers_01.jpg";
             String pdfPath = PdfHelper.GetTargetDirectory() + "taggingNotSupported.pdf";
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => PdfHelper.CreatePdf(pdfPath, new 
                 FileInfo(input), new OcrPdfCreatorProperties().SetTagged(true)));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT
-                , PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED), e.Message);
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED, e.Message);
         }
 
+//\cond DO_NOT_DOCUMENT
         internal class NotImplementedImageRotationHandler : IImageRotationHandler {
             public virtual ImageData ApplyRotation(ImageData imageData) {
                 throw new Exception("applyRotation is not implemented");
             }
         }
+//\endcond
 
         private class DummyMetaInfo : IMetaInfo {
         }

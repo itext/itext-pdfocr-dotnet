@@ -54,7 +54,7 @@ namespace iText.Pdfocr {
 
         [NUnit.Framework.Test]
         public virtual void TestIncompatibleOutputIntentAndFontColorSpaceException() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfException), () => {
                 String testName = "testIncompatibleOutputIntentAndFontColorSpaceException";
                 String path = PdfHelper.GetDefaultImagePath();
                 String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
@@ -64,8 +64,9 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
                     ());
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfAConformanceException.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(PdfaExceptionMessageConstant.DEVICECMYK_MAY_BE_USED_ONLY_IF_THE_FILE_HAS_A_CMYK_PDFA_OUTPUT_INTENT_OR_DEFAULTCMYK_IN_USAGE_CONTEXT
+                , exception.Message);
         }
 
         [NUnit.Framework.Test]
@@ -81,7 +82,7 @@ namespace iText.Pdfocr {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             NUnit.Framework.Assert.AreEqual("en-US", pdfDocument.GetCatalog().GetLang().ToString());
             NUnit.Framework.Assert.AreEqual(null, pdfDocument.GetDocumentInfo().GetTitle());
-            NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
+            NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U, pdfDocument.GetReader().GetPdfConformance().GetAConformance
                 ());
             pdfDocument.Close();
         }
@@ -102,7 +103,7 @@ namespace iText.Pdfocr {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfPath));
             NUnit.Framework.Assert.AreEqual(locale, pdfDocument.GetCatalog().GetLang().ToString());
             NUnit.Framework.Assert.AreEqual(title, pdfDocument.GetDocumentInfo().GetTitle());
-            NUnit.Framework.Assert.AreEqual(PdfAConformanceLevel.PDF_A_3U, pdfDocument.GetReader().GetPdfAConformanceLevel
+            NUnit.Framework.Assert.AreEqual(PdfAConformance.PDF_A_3U, pdfDocument.GetReader().GetPdfConformance().GetAConformance
                 ());
             pdfDocument.Close();
         }
@@ -110,7 +111,7 @@ namespace iText.Pdfocr {
         [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNonCompliantThaiPdfA() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => {
                 String testName = "testNonCompliantThaiPdfA";
                 String path = PdfHelper.GetThaiImagePath();
                 String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
@@ -120,8 +121,10 @@ namespace iText.Pdfocr {
                 PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), ocrPdfCreatorProperties, PdfHelper.GetRGBPdfOutputIntent
                     ());
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, 3611))))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT
+                , MessageFormatUtil.Format(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER
+                , 3611)), exception.Message);
         }
 
         [NUnit.Framework.Test]
@@ -153,15 +156,16 @@ namespace iText.Pdfocr {
         [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestPdfACreateWithoutPdfLangProperty() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => {
                 String testName = "testPdfACreateWithoutPdfLangProperty";
                 String path = PdfHelper.GetThaiImagePath();
                 String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
                 PdfHelper.CreatePdfA(pdfPath, new FileInfo(path), new OcrPdfCreatorProperties(), PdfHelper.GetRGBPdfOutputIntent
                     ());
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET)))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT
+                , PdfOcrLogMessageConstant.PDF_LANGUAGE_PROPERTY_IS_NOT_SET), exception.Message);
         }
     }
 }

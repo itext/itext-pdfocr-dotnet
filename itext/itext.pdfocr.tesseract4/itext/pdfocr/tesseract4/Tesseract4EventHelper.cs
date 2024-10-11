@@ -26,10 +26,13 @@ using iText.Commons.Actions.Sequence;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
+//\cond DO_NOT_DOCUMENT
     /// <summary>Helper class for working with events.</summary>
     internal class Tesseract4EventHelper : AbstractPdfOcrEventHelper {
+//\cond DO_NOT_DOCUMENT
         internal Tesseract4EventHelper() {
         }
+//\endcond
 
         // do nothing
         public override void OnEvent(AbstractProductITextEvent @event) {
@@ -47,4 +50,5 @@ namespace iText.Pdfocr.Tesseract4 {
             return EventConfirmationType.ON_DEMAND;
         }
     }
+//\endcond
 }

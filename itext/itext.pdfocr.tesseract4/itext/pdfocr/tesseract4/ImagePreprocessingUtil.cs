@@ -33,6 +33,7 @@ using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
+//\cond DO_NOT_DOCUMENT
     /// <summary>Utilities class to work with images.</summary>
     /// <remarks>
     /// Utilities class to work with images.
@@ -47,6 +48,7 @@ namespace iText.Pdfocr.Tesseract4 {
         private ImagePreprocessingUtil() {
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Counts number of pages in the provided tiff image.</summary>
         /// <param name="inputImage">
         /// input image
@@ -60,7 +62,9 @@ namespace iText.Pdfocr.Tesseract4 {
             raf.Close();
             return numOfPages;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Checks whether image format is TIFF.</summary>
         /// <param name="inputImage">
         /// input image
@@ -70,7 +74,9 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static bool IsTiffImage(FileInfo inputImage) {
             return GetImageType(inputImage) == ImageType.TIFF;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Gets the image type.</summary>
         /// <param name="inputImage">
         /// input image
@@ -93,7 +99,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return type;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Reads provided image file using stream.</summary>
         /// <param name="inputFile">
         /// input image
@@ -110,7 +118,9 @@ namespace iText.Pdfocr.Tesseract4 {
             @is.Dispose();
             return bi;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Reads input file as Leptonica
         /// <see cref="Tesseract.Pix"/>
@@ -131,7 +141,9 @@ namespace iText.Pdfocr.Tesseract4 {
             Pix pix = TesseractOcrUtil.ReadPixFromFile(inputImage);
             return TesseractOcrUtil.ConvertPixToImage(pix);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Performs basic image preprocessing using buffered image (if provided).</summary>
         /// <remarks>
         /// Performs basic image preprocessing using buffered image (if provided).
@@ -166,7 +178,9 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return TesseractOcrUtil.PreprocessPix(pix, imagePreprocessingOptions);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Reads input image as a
         /// <see cref="System.Drawing.Bitmap"/>.
@@ -216,5 +230,7 @@ namespace iText.Pdfocr.Tesseract4 {
             }
             return bufferedImage;
         }
+//\endcond
     }
+//\endcond
 }

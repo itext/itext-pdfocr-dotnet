@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
@@ -34,42 +35,45 @@ namespace iText.Pdfocr.Tesseract4 {
         [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET)]
         [NUnit.Framework.Test]
         public virtual void TestDefaultTessDataPathValidationForLib() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
                 FileInfo imgFile = new FileInfo(path);
                 Tesseract4LibOcrEngine engine = new Tesseract4LibOcrEngine(new Tesseract4OcrEngineProperties());
                 engine.DoImageOcr(imgFile);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET, exception
+                .Message);
         }
 
         [LogMessage(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET)]
         [NUnit.Framework.Test]
         public virtual void TestDefaultTessDataPathValidationForExecutable() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01.jpg";
                 FileInfo imgFile = new FileInfo(path);
                 Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ());
                 engine.DoImageOcr(imgFile);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.PATH_TO_TESS_DATA_IS_NOT_SET, exception
+                .Message);
         }
 
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 2)]
         [NUnit.Framework.Test]
         public virtual void TestDoTesseractOcrForIncorrectImageForExecutable() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01";
                 FileInfo imgFile = new FileInfo(path);
                 Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
                     ().SetPathToTessData(GetTessDataDirectory()));
                 engine.DoTesseractOcr(imgFile, null, OutputFormat.HOCR);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE, new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01").FullName)))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+                , new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01").FullName), exception.Message);
         }
 
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
@@ -77,15 +81,16 @@ namespace iText.Pdfocr.Tesseract4 {
         [LogMessage(Tesseract4LogMessageConstant.TESSERACT_FAILED)]
         [NUnit.Framework.Test]
         public virtual void TestOcrResultForSinglePageForNullImage() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
                 Tesseract4LibOcrEngine tesseract4LibOcrEngine = GetTesseract4LibOcrEngine();
                 tesseract4LibOcrEngine.SetTesseract4OcrEngineProperties(new Tesseract4OcrEngineProperties().SetPathToTessData
                     (GetTessDataDirectory()));
                 tesseract4LibOcrEngine.InitializeTesseract(OutputFormat.TXT);
                 tesseract4LibOcrEngine.DoTesseractOcr(null, null, OutputFormat.HOCR);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>().With.Message.EqualTo(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.TESSERACT_FAILED, exception.Message
+                );
         }
 
         [NUnit.Framework.Test]
@@ -115,6 +120,20 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.AreEqual(136.5f, (float)textInfo.GetBboxRect().GetBottom(), 0.1);
             NUnit.Framework.Assert.AreEqual(385.5, (float)textInfo.GetBboxRect().GetRight(), 0.1);
             NUnit.Framework.Assert.AreEqual(162.75, (float)textInfo.GetBboxRect().GetTop(), 0.1);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTaggingNotSupportedForTesseract4ExecutableOcrEngine() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => new OcrPdfCreator(new Tesseract4ExecutableOcrEngine
+                (new Tesseract4OcrEngineProperties()), new OcrPdfCreatorProperties().SetTagged(true)));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED, e.Message);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TestTaggingNotSupportedForTesseract4LibOcrEngine() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => new OcrPdfCreator(new Tesseract4LibOcrEngine
+                (new Tesseract4OcrEngineProperties()), new OcrPdfCreatorProperties().SetTagged(true)));
+            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.TAGGING_IS_NOT_SUPPORTED, e.Message);
         }
     }
 }

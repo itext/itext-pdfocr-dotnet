@@ -57,7 +57,7 @@ namespace iText.Pdfocr {
         [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInvalidFontWithInvalidDefaultFontFamily() {
-            NUnit.Framework.Assert.That(() =>  {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => {
                 String testName = "testInvalidFontWithInvalidDefaultFontFamily";
                 String path = PdfHelper.GetDefaultImagePath();
                 String pdfPath = PdfHelper.GetTargetDirectory() + testName + ".pdf";
@@ -72,8 +72,9 @@ namespace iText.Pdfocr {
                 NUnit.Framework.Assert.AreEqual(PdfHelper.DEFAULT_TEXT, result);
                 NUnit.Framework.Assert.AreEqual(ScaleMode.SCALE_TO_FIT, properties.GetScaleMode());
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrException>().With.Message.EqualTo(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrExceptionMessageConstant.CANNOT_RESOLVE_PROVIDED_FONTS)))
-;
+            );
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT
+                , PdfOcrExceptionMessageConstant.CANNOT_RESOLVE_PROVIDED_FONTS), exception.Message);
         }
 
         [NUnit.Framework.Test]

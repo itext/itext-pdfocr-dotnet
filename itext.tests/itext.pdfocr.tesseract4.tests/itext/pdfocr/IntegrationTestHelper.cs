@@ -398,7 +398,7 @@ namespace iText.Pdfocr {
 
         /// <summary>Create pdfWriter using provided path to destination file.</summary>
         protected internal virtual PdfWriter GetPdfWriter(String pdfPath) {
-            return new PdfWriter(pdfPath, new WriterProperties().AddUAXmpMetadata());
+            return new PdfWriter(pdfPath, new WriterProperties().AddPdfUaXmpMetadata(PdfUAConformance.PDF_UA_1));
         }
 
         /// <summary>Gets image name from path.</summary>

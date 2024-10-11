@@ -41,13 +41,10 @@ namespace iText.Pdfocr.Tesseract4 {
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
         public virtual void TestReadingInvalidImagePath() {
-            NUnit.Framework.Assert.That(() =>  {
-                String path = TEST_IMAGES_DIRECTORY + "numbers_02";
-                FileInfo imgFile = new FileInfo(path);
-                ImagePreprocessingUtil.PreprocessImage(imgFile, 1, new ImagePreprocessingOptions());
-            }
-            , NUnit.Framework.Throws.InstanceOf<PdfOcrTesseract4Exception>())
-;
+            String path = TEST_IMAGES_DIRECTORY + "numbers_02";
+            FileInfo imgFile = new FileInfo(path);
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => ImagePreprocessingUtil.PreprocessImage
+                (imgFile, 1, new ImagePreprocessingOptions()));
         }
 
         [NUnit.Framework.Test]

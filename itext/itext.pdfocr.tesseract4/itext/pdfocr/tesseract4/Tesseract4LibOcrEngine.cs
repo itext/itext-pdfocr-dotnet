@@ -44,8 +44,10 @@ namespace iText.Pdfocr.Tesseract4 {
     /// The implementation of
     /// <see cref="AbstractTesseract4OcrEngine"/>
     /// for tesseract OCR.
+    /// <para />
     /// This class provides possibilities to use features of "tesseract"
     /// using tess4j.
+    /// <para />
     /// Please note that this class is not thread-safe, in other words this Tesseract engine cannot
     /// be used for multithreaded processing. You should create one instance per thread
     /// </remarks>
@@ -120,6 +122,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 ().GetPageSegMode(), GetTesseract4OcrEngineProperties().GetPathToUserWordsFile());
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Performs tesseract OCR using wrapper for Tesseract OCR API for the selected page
         /// of input image (by default 1st).
@@ -215,6 +218,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
             }
         }
+//\endcond
 
         /// <summary>
         /// Validates Tess Data path,

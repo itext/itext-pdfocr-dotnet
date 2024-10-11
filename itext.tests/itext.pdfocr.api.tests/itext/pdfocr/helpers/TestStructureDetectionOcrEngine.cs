@@ -85,5 +85,9 @@ namespace iText.Pdfocr.Helpers {
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
             ) {
         }
+
+        public virtual bool IsTaggingSupported() {
+            return true;
+        }
     }
 }

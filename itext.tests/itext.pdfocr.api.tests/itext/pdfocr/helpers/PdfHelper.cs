@@ -84,12 +84,13 @@ namespace iText.Pdfocr.Helpers {
 
         /// <summary>Create pdfWriter using provided path to destination file.</summary>
         public static PdfWriter GetPdfWriter(String pdfPath) {
-            return new PdfWriter(pdfPath, new WriterProperties().AddUAXmpMetadata());
+            return new PdfWriter(pdfPath, new WriterProperties().AddPdfUaXmpMetadata(PdfUAConformance.PDF_UA_1));
         }
 
         /// <summary>Create pdfWriter.</summary>
         public static PdfWriter GetPdfWriter() {
-            return new PdfWriter(new MemoryStream(), new WriterProperties().AddUAXmpMetadata());
+            return new PdfWriter(new MemoryStream(), new WriterProperties().AddPdfUaXmpMetadata(PdfUAConformance.PDF_UA_1
+                ));
         }
 
         /// <summary>Creates PDF rgb output intent for tests.</summary>

@@ -48,11 +48,13 @@ namespace iText.Pdfocr {
             this.ocrEventHelper = eventHelper;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Set extra OCR process properties.</summary>
         /// <param name="ocrProcessProperties">extra OCR process properties.</param>
         internal virtual void SetOcrProcessProperties(IOcrProcessProperties ocrProcessProperties) {
             this.ocrProcessProperties = ocrProcessProperties;
         }
+//\endcond
 
         /// <summary>Get extra OCR process properties.</summary>
         /// <returns>extra OCR process properties.</returns>

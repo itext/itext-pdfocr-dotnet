@@ -27,6 +27,7 @@ using iText.Commons.Utils;
 using iText.Pdfocr.Exceptions;
 
 namespace iText.Pdfocr.Statistics {
+//\cond DO_NOT_DOCUMENT
     /// <summary>Statistics aggregator which aggregates types of ocr processing.</summary>
     internal class PdfOcrOutputTypeStatisticsAggregator : AbstractStatisticsAggregator {
         private const String STRING_FOR_DATA = "data";
@@ -107,8 +108,11 @@ namespace iText.Pdfocr.Statistics {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         internal static String GetKeyForType(PdfOcrOutputType type) {
             return OCR_OUTPUT_TYPES.Get(type);
         }
+//\endcond
     }
+//\endcond
 }
