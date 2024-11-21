@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using Tesseract;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Pdfocr;
@@ -52,16 +53,22 @@ namespace iText.Pdfocr.Tesseract4 {
             String sourceImg = TEST_IMAGES_DIRECTORY + "thai_02.jpg";
             String processedImg = GetTargetDirectory() + "thai_02_processed.jpg";
             String compareImg = TEST_IMAGES_DIRECTORY + "thai_02_cmp_01.jpg";
-            TesseractOcrUtil.SavePixToPngFile(processedImg, ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg
-                ), 1, new ImagePreprocessingOptions()));
+            Pix pix = ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg), 1, new ImagePreprocessingOptions
+                ());
+            TesseractOcrUtil.SavePixToPngFile(processedImg, pix);
+            TesseractOcrUtil.DestroyPix(pix);
             CompareImagesWithPrecision(compareImg, processedImg, 0.1);
             compareImg = TEST_IMAGES_DIRECTORY + "thai_02_cmp_02.jpg";
-            TesseractOcrUtil.SavePixToPngFile(processedImg, ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg
-                ), 1, new ImagePreprocessingOptions().SetTileWidth(300).SetTileHeight(300)));
+            pix = ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg), 1, new ImagePreprocessingOptions().SetTileWidth
+                (300).SetTileHeight(300));
+            TesseractOcrUtil.SavePixToPngFile(processedImg, pix);
+            TesseractOcrUtil.DestroyPix(pix);
             CompareImagesWithPrecision(compareImg, processedImg, 0.1);
             compareImg = TEST_IMAGES_DIRECTORY + "thai_02_cmp_03.jpg";
-            TesseractOcrUtil.SavePixToPngFile(processedImg, ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg
-                ), 1, new ImagePreprocessingOptions().SetTileWidth(300).SetTileHeight(300).SetSmoothTiling(false)));
+            pix = ImagePreprocessingUtil.PreprocessImage(new FileInfo(sourceImg), 1, new ImagePreprocessingOptions().SetTileWidth
+                (300).SetTileHeight(300).SetSmoothTiling(false));
+            TesseractOcrUtil.SavePixToPngFile(processedImg, pix);
+            TesseractOcrUtil.DestroyPix(pix);
             CompareImagesWithPrecision(compareImg, processedImg, 0.1);
         }
 

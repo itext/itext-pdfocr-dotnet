@@ -308,9 +308,10 @@ namespace iText.Pdfocr.Tesseract4 {
                 // preprocess if required
                 if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
                     // preprocess and try to ocr
-                    result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), ImagePreprocessingUtil.PreprocessImage
-                        (inputImage, pageNumber, GetTesseract4OcrEngineProperties().GetImagePreprocessingOptions()), outputFormat
-                        );
+                    Pix pix = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber, GetTesseract4OcrEngineProperties(
+                        ).GetImagePreprocessingOptions());
+                    result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), pix, outputFormat);
+                    TesseractOcrUtil.DestroyPix(pix);
                 }
                 if (result == null) {
                     System.Drawing.Bitmap bufferedImage = ImagePreprocessingUtil.ReadImage(inputImage);

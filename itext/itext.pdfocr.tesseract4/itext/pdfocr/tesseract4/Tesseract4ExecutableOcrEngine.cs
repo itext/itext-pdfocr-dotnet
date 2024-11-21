@@ -369,6 +369,7 @@ namespace iText.Pdfocr.Tesseract4 {
                             TesseractOcrUtil.SaveImageToTempPngFile(tmpFileName, img);
                         }
                     }
+                    TesseractOcrUtil.DestroyPix(pix);
                 }
                 if (!GetTesseract4OcrEngineProperties().IsPreprocessingImages() || !File.Exists(System.IO.Path.Combine(tmpFileName
                     ))) {
