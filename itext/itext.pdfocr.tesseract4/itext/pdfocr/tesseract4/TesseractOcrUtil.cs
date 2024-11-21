@@ -125,8 +125,14 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal static Pix PreprocessPix(Pix pix, ImagePreprocessingOptions imagePreprocessingOptions) {
             Pix pix1 = ConvertToGrayscale(pix);
-            pix1 = OtsuImageThresholding(pix1, imagePreprocessingOptions);
-            return pix1;
+            Pix pix2 = OtsuImageThresholding(pix1, imagePreprocessingOptions);
+            if (!TesseractOcrUtil.SamePix(pix, pix1) && !TesseractOcrUtil.SamePix(pix1, pix2)) {
+                // pix1 is cleaned only if it's unique here.
+                // If it points to the same memory as pix then it should be cleaned higher in the call stack.
+                // If it points to the same memory as pix2 then it is still required.
+                TesseractOcrUtil.DestroyPix(pix1);
+            }
+            return pix2;
         }
 
         /// <summary>
@@ -193,10 +199,9 @@ namespace iText.Pdfocr.Tesseract4 {
         internal static Pix OtsuImageThresholding(Pix pix, ImagePreprocessingOptions imagePreprocessingOptions) {
             if (pix != null)
             {
-                Pix thresholdPix = null;
                 if (pix.Depth == 8)
                 {
-                    thresholdPix = pix.BinarizeOtsuAdaptiveThreshold(
+                    Pix thresholdPix = pix.BinarizeOtsuAdaptiveThreshold(
                         GetOtsuAdaptiveThresholdTileSize(pix.Width,
                             imagePreprocessingOptions.GetTileWidth()),
                         GetOtsuAdaptiveThresholdTileSize(pix.Height,
@@ -208,14 +213,13 @@ namespace iText.Pdfocr.Tesseract4 {
                         0);
                     if (thresholdPix != null && thresholdPix.Width > 0 && thresholdPix.Height > 0)
                     {
-                        DestroyPix(pix);
                         return thresholdPix;
                     }
                     else
                     {
                         ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
                             .LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_BINARIZE_IMAGE, pix.Depth));
-                        DestroyPix(thresholdPix);
+                        TesseractOcrUtil.DestroyPix(thresholdPix);
                         return pix;
                     }
                 }
@@ -285,6 +289,24 @@ namespace iText.Pdfocr.Tesseract4 {
             if (pix != null) {
                 pix.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Checks whether two <see cref="Tesseract.Pix"/>
+        /// refer to the same content.
+        /// </summary>
+        /// <param name="pix1">
+        /// 
+        /// <see cref="Tesseract.Pix"/>
+        /// object to compare
+        /// </param>
+        /// <param name="pix2">
+        /// 
+        /// <see cref="Tesseract.Pix"/>
+        /// object to compare
+        /// </param>
+        internal static bool SamePix(Pix pix1, Pix pix2) {
+            return pix1 == pix2;
         }
 
         /// <summary>Sets tesseract properties.</summary>
@@ -656,7 +678,9 @@ namespace iText.Pdfocr.Tesseract4 {
             if (image != null)
             {
                 Pix pix = Pix.LoadFromFile(image.FullName);
-                return GetOcrResultAsString(tesseractInstance, pix, outputFormat);
+                String ocrResult = GetOcrResultAsString(tesseractInstance, pix, outputFormat);
+                TesseractOcrUtil.DestroyPix(pix);
+                return ocrResult;
             }
             return null;
         }
@@ -714,7 +738,6 @@ namespace iText.Pdfocr.Tesseract4 {
                     if (page != null) {
                         page.Dispose();
                     }
-                    DestroyPix(pix);
                 }
             }
             return result;
@@ -813,7 +836,11 @@ namespace iText.Pdfocr.Tesseract4 {
                 if (pix != null)
                 {
                     int rotation = ReadRotationFromMetadata((System.Drawing.Image)bufferedImage);
-                    pix = Rotate(pix, rotation);
+                    Pix rotatedPix = Rotate(pix, rotation);
+                    if (!TesseractOcrUtil.SamePix(rotatedPix, pix)) {
+                        TesseractOcrUtil.DestroyPix(pix);
+                    }
+                    pix = rotatedPix;
                 }
                 return pix;
             }
@@ -1042,7 +1069,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 finally
                 {
                     stream.Close();
-                    DestroyPix(pix);
+                    TesseractOcrUtil.DestroyPix(pix);
                 }
                 return newImageData;
             }
