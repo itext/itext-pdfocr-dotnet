@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2024 Apryse Group NV
+Copyright (c) 1998-2025 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -308,9 +308,10 @@ namespace iText.Pdfocr.Tesseract4 {
                 // preprocess if required
                 if (GetTesseract4OcrEngineProperties().IsPreprocessingImages()) {
                     // preprocess and try to ocr
-                    result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), ImagePreprocessingUtil.PreprocessImage
-                        (inputImage, pageNumber, GetTesseract4OcrEngineProperties().GetImagePreprocessingOptions()), outputFormat
-                        );
+                    Pix pix = ImagePreprocessingUtil.PreprocessImage(inputImage, pageNumber, GetTesseract4OcrEngineProperties(
+                        ).GetImagePreprocessingOptions());
+                    result = new TesseractOcrUtil().GetOcrResultAsString(GetTesseractInstance(), pix, outputFormat);
+                    TesseractOcrUtil.DestroyPix(pix);
                 }
                 if (result == null) {
                     System.Drawing.Bitmap bufferedImage = ImagePreprocessingUtil.ReadImage(inputImage);

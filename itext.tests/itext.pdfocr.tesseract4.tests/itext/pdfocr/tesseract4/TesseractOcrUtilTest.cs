@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2024 Apryse Group NV
+Copyright (c) 1998-2025 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -42,6 +42,7 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseract4LibOcrEngine.InitializeTesseract(OutputFormat.TXT);
             String result = new TesseractOcrUtil().GetOcrResultAsString(tesseract4LibOcrEngine.GetTesseractInstance(), 
                 pix, OutputFormat.TXT);
+            TesseractOcrUtil.DestroyPix(pix);
             NUnit.Framework.Assert.IsTrue(result.Contains(expected));
         }
 
@@ -144,6 +145,7 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));
             Pix pix = TesseractOcrUtil.ReadPix(new FileInfo(path));
             TesseractOcrUtil.SavePixToPngFile(tmpFileName, pix);
+            TesseractOcrUtil.DestroyPix(pix);
             NUnit.Framework.Assert.IsTrue(File.Exists(System.IO.Path.Combine(tmpFileName)));
             TesseractHelper.DeleteFile(tmpFileName);
             NUnit.Framework.Assert.IsFalse(File.Exists(System.IO.Path.Combine(tmpFileName)));

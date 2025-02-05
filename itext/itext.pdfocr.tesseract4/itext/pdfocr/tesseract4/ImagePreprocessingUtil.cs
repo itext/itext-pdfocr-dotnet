@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2024 Apryse Group NV
+Copyright (c) 1998-2025 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -139,7 +139,9 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal static System.Drawing.Bitmap ReadAsPixAndConvertToBufferedImage(FileInfo inputImage) {
             Pix pix = TesseractOcrUtil.ReadPixFromFile(inputImage);
-            return TesseractOcrUtil.ConvertPixToImage(pix);
+            System.Drawing.Bitmap img = TesseractOcrUtil.ConvertPixToImage(pix);
+            TesseractOcrUtil.DestroyPix(pix);
+            return img;
         }
 //\endcond
 
@@ -164,7 +166,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal static Pix PreprocessImage(FileInfo inputFile, int pageNumber, ImagePreprocessingOptions imagePreprocessingOptions
             ) {
-            Pix pix = null;
+            Pix pix;
             // read image
             if (IsTiffImage(inputFile)) {
                 pix = TesseractOcrUtil.ReadPixPageFromTiff(inputFile, pageNumber - 1);
@@ -176,7 +178,11 @@ namespace iText.Pdfocr.Tesseract4 {
                 throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
                     ).SetMessageParams(inputFile.FullName);
             }
-            return TesseractOcrUtil.PreprocessPix(pix, imagePreprocessingOptions);
+            Pix preprocessedPix = TesseractOcrUtil.PreprocessPix(pix, imagePreprocessingOptions);
+            if (!TesseractOcrUtil.SamePix(pix, preprocessedPix)) {
+                TesseractOcrUtil.DestroyPix(pix);
+            }
+            return preprocessedPix;
         }
 //\endcond
 
