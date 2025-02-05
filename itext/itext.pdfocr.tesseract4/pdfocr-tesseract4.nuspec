@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>itext.pdfocr.tesseract4</id>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
     <title>iText pdfOcr</title>
     <authors>Apryse Software</authors>
     <owners>Apryse Software</owners>
@@ -18,7 +18,7 @@
     <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
     <dependencies>
       <group targetFramework="net461">
-        <dependency id="itext.pdfocr.api" version="4.0.1-SNAPSHOT" />
+        <dependency id="itext.pdfocr.api" version="4.0.2-SNAPSHOT" />
       </group>
     </dependencies>
     <references>
