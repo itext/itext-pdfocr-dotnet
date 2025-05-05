@@ -4,6 +4,6 @@
 def repoName = "pdfOcr"
 def dependencyRegex = "itextcore"
 def solutionFile = "i7n-ocr.sln"
-def csprojFramework = "net461"
+def frameworksToTest = "net461"
 
-automaticDotnetBuild(repoName, dependencyRegex, solutionFile, csprojFramework)
+automaticDotnetBuild(repoName, dependencyRegex, solutionFile, frameworksToTest)
