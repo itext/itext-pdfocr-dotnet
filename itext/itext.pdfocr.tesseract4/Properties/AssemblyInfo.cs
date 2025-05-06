@@ -14,9 +14,9 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("0c4ceb00-9a56-4547-a925-5974a85a6048")]
 
-[assembly: AssemblyVersion("4.0.2.0")]
-[assembly: AssemblyFileVersion("4.0.2.0")]
-[assembly: AssemblyInformationalVersion("4.0.2-SNAPSHOT")]
+[assembly: AssemblyVersion("4.0.3.0")]
+[assembly: AssemblyFileVersion("4.0.3.0")]
+[assembly: AssemblyInformationalVersion("4.0.3-SNAPSHOT")]
 [assembly: InternalsVisibleTo("itext.pdfocr.tesseract4.tests, PublicKey=" +
     "00240000048000009400000006020000002400005253413100040000010001008b21ed5b3fc1c1" +
     "1996390981fe22bbe71a39a9e11d3c2cefddd6ee92920fa871f9666ae0fa941af0280d0653df04" +
@@ -24,4 +24,4 @@ using System.Runtime.InteropServices;
     "009746bbdafcb75bcdbcecb7caf1f0f4b6e7d013906ba60b66eb1c8298e4efb052caf6cece4bf1" +
     "816902cc")]
 
-[assembly: Versions.Attributes.KernelVersion("9.2.0.0")]
+[assembly: Versions.Attributes.KernelVersion("9.2.1.0")]
