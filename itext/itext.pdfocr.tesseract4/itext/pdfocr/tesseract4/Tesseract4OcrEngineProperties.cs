@@ -342,7 +342,7 @@ namespace iText.Pdfocr.Tesseract4 {
              inputStream) {
             SetPathToUserWordsFile(null);
             if (!GetLanguages().Contains(language)) {
-                if (DEFAULT_LANGUAGE.Equals(language.ToLowerInvariant())) {
+                if (DEFAULT_LANGUAGE.Equals(StringNormalizer.ToLowerCase(language))) {
                     IList<String> languagesList = GetLanguages();
                     languagesList.Add(language);
                     SetLanguages(languagesList);

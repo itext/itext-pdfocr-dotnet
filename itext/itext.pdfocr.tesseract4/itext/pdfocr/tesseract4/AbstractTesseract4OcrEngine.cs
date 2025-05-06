@@ -355,7 +355,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Checks current os type.</summary>
         /// <returns>boolean true is current os is windows, otherwise - false</returns>
         public virtual bool IsWindows() {
-            return IdentifyOsType().ToLowerInvariant().Contains("win");
+            return StringNormalizer.ToLowerCase(IdentifyOsType()).Contains("win");
         }
 
         /// <summary>Identifies type of current OS and return it (win, linux).</summary>
@@ -366,7 +366,7 @@ namespace iText.Pdfocr.Tesseract4 {
         public virtual String IdentifyOsType() {
             String os = Environment.GetEnvironmentVariable("os.name") == null ? Environment.GetEnvironmentVariable("OS"
                 ) : Environment.GetEnvironmentVariable("os.name");
-            return os.ToLowerInvariant();
+            return StringNormalizer.ToLowerCase(os);
         }
 
         /// <summary>
