@@ -412,7 +412,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 if (index > 0) {
                     String extension = new String(inputImage.FullName.ToCharArray(), index, inputImage.FullName.Length - index
                         );
-                    return extension.ToLowerInvariant();
+                    return StringNormalizer.ToLowerCase(extension);
                 }
             }
             return ".png";

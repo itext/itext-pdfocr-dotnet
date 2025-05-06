@@ -43,7 +43,7 @@ namespace iText.Pdfocr.Imageformats {
 
         public ImageFormatIntegrationTest(IntegrationTestHelper.ReaderType type) {
             tesseractReader = GetTesseractReader(type);
-            this.testType = type.ToString().ToLowerInvariant();
+            this.testType = StringNormalizer.ToLowerCase(type.ToString());
         }
 
         [NUnit.Framework.SetUp]
