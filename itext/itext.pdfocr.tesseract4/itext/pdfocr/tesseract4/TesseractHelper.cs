@@ -54,6 +54,9 @@ namespace iText.Pdfocr.Tesseract4 {
         private static readonly Regex WCONF_PATTERN = iText.Commons.Utils.StringUtil.RegexCompile("^.*(x_wconf *\\d+).*$"
             );
 
+        private static readonly Regex TEXTANGLE_PATTERN = iText.Commons.Utils.StringUtil.RegexCompile("(?:^|;)\\s*textangle\\s+(\\d+)\\s*(?:$|;)"
+            );
+
         /// <summary>Size of the array containing bbox.</summary>
         private const int BBOX_ARRAY_SIZE = 4;
 
@@ -222,6 +225,44 @@ namespace iText.Pdfocr.Tesseract4 {
             }
         }
 //\endcond
+
+        /// <summary>Extracts text orientation from a line node.</summary>
+        /// <remarks>
+        /// Extracts text orientation from a line node. It is specified under a "textangle" key inside
+        /// the "title" attribute string.
+        /// </remarks>
+        /// <param name="line">line element to get text orientation for</param>
+        /// <returns>
+        /// 
+        /// <see cref="iText.Pdfocr.TextOrientation"/>
+        /// of the line if present, otherwise HORIZONTAL
+        /// </returns>
+        private static TextOrientation ExtractTextOrientation(iText.StyledXmlParser.Jsoup.Nodes.Node line) {
+            String title = line.Attr(TITLE);
+            Matcher matcher = iText.Commons.Utils.Matcher.Match(TEXTANGLE_PATTERN, title);
+            if (!matcher.Find()) {
+                return TextOrientation.HORIZONTAL;
+            }
+            String angleString = matcher.Group(1);
+            switch (angleString) {
+                case "270": {
+                    return TextOrientation.HORIZONTAL_ROTATED_270;
+                }
+
+                case "180": {
+                    return TextOrientation.HORIZONTAL_ROTATED_180;
+                }
+
+                case "90": {
+                    return TextOrientation.HORIZONTAL_ROTATED_90;
+                }
+
+                case "0":
+                default: {
+                    return TextOrientation.HORIZONTAL;
+                }
+            }
+        }
 
 //\cond DO_NOT_DOCUMENT
         /// <summary>Sometimes hOCR file contains broke character bboxes which are equal to page bbox.</summary>
@@ -473,10 +514,11 @@ namespace iText.Pdfocr.Tesseract4 {
             , String txtLine, TextPositioning textPositioning, Rectangle pageBbox, IDictionary<String, iText.StyledXmlParser.Jsoup.Nodes.Node
             > unparsedBBoxes) {
             IList<TextInfo> textData = new List<TextInfo>();
+            TextOrientation textOrientation = ExtractTextOrientation(lineOrCaption);
             if (txtLine == null) {
                 foreach (iText.StyledXmlParser.Jsoup.Nodes.Element word in lineOrCaption.GetElementsByClass(OCRX_WORD)) {
                     Rectangle bboxRect = GetAlignedBBox(word, textPositioning, pageBbox, unparsedBBoxes);
-                    AddToTextData(textData, word.Text(), bboxRect);
+                    AddToTextData(textData, word.Text(), bboxRect, textOrientation);
                 }
             }
             else {
@@ -504,26 +546,26 @@ namespace iText.Pdfocr.Tesseract4 {
             ) {
             IList<TextInfo> textData = new List<TextInfo>();
             Rectangle bboxRect = GetAlignedBBox(lineOrCaption, TextPositioning.BY_LINES, pageBbox, unparsedBBoxes);
+            TextOrientation textOrientation = ExtractTextOrientation(lineOrCaption);
             if (txtLine == null) {
-                AddToTextData(textData, lineOrCaption.Text(), bboxRect);
+                AddToTextData(textData, lineOrCaption.Text(), bboxRect, textOrientation);
             }
             else {
-                AddToTextData(textData, txtLine, bboxRect);
+                AddToTextData(textData, txtLine, bboxRect, textOrientation);
             }
             return textData;
         }
 
         /// <summary>Add text chunk represented by text and bbox to list of text infos.</summary>
-        private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect) {
-            TextInfo textInfo = new TextInfo(text, bboxRect);
+        private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect, TextOrientation
+             orientation) {
+            TextInfo textInfo = new TextInfo(text, bboxRect, orientation);
             textData.Add(textInfo);
         }
 
         /// <summary>Add text chunk represented by text info to list of text infos.</summary>
         private static void AddToTextData(IList<TextInfo> textData, TextInfo textInfo) {
-            String text = textInfo.GetText();
-            Rectangle bboxRect = textInfo.GetBboxRect();
-            AddToTextData(textData, text, bboxRect);
+            textData.Add(new TextInfo(textInfo));
         }
 
         /// <summary>Gets common text for list of text infos.</summary>

@@ -59,6 +59,7 @@ namespace iText.Pdfocr {
     /// is the class that creates PDF documents containing input
     /// images and text that was recognized using provided
     /// <see cref="IOcrEngine"/>.
+    /// <para />
     /// <see cref="OcrPdfCreator"/>
     /// provides possibilities to set list of input images to
     /// be used for OCR, to set scaling mode for images, to set color of text in
@@ -153,7 +154,7 @@ namespace iText.Pdfocr {
         /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// ,
-        /// <see cref="iText.Kernel.Pdf.DocumentProperties"></see>
+        /// <see cref="iText.Kernel.Pdf.DocumentProperties"/>
         /// and
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>.
         /// </summary>
@@ -164,7 +165,7 @@ namespace iText.Pdfocr {
         /// creates PDF using provided
         /// <see cref="iText.Kernel.Pdf.PdfWriter"/>
         /// ,
-        /// <see cref="iText.Kernel.Pdf.DocumentProperties"></see>
+        /// <see cref="iText.Kernel.Pdf.DocumentProperties"/>
         /// and
         /// <see cref="iText.Kernel.Pdf.PdfOutputIntent"/>
         /// . PDF/A-3u document will be created if
@@ -557,15 +558,9 @@ namespace iText.Pdfocr {
 
         /// <summary>
         /// Gets used
-        /// <see cref="IOcrEngine"/>.
-        /// </summary>
-        /// <remarks>
-        /// Gets used
-        /// <see cref="IOcrEngine"/>.
-        /// Returns
         /// <see cref="IOcrEngine"/>
         /// reader object to perform OCR.
-        /// </remarks>
+        /// </summary>
         /// <returns>
         /// selected
         /// <see cref="IOcrEngine"/>
@@ -668,8 +663,8 @@ namespace iText.Pdfocr {
             LinkDocumentIdEvent linkDocumentIdEvent = new LinkDocumentIdEvent(pdfDocument, pdfSequenceId);
             EventManager.GetInstance().OnEvent(linkDocumentIdEvent);
             // pdfLang should be set in PDF/A mode
-            bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !ocrPdfCreatorProperties.GetPdfLang
-                ().Equals("");
+            bool hasPdfLangProperty = ocrPdfCreatorProperties.GetPdfLang() != null && !String.IsNullOrEmpty(ocrPdfCreatorProperties
+                .GetPdfLang());
             if (createPdfA3u && !hasPdfLangProperty) {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, PdfOcrLogMessageConstant
                     .PDF_LANGUAGE_PROPERTY_IS_NOT_SET));
@@ -689,7 +684,7 @@ namespace iText.Pdfocr {
             // reset passed font provider
             ocrPdfCreatorProperties.GetFontProvider().Reset();
             AddDataToPdfDocument(imagesTextData, pdfDocument, createPdfA3u);
-            // statisctics event about type of created pdf
+            // statistics event about type of created pdf
             if (ocrEngine is IProductAware && ((IProductAware)ocrEngine).GetProductData() != null) {
                 PdfOcrOutputType eventType = createPdfA3u ? PdfOcrOutputType.PDFA : PdfOcrOutputType.PDF;
                 PdfOcrOutputTypeStatisticsEvent docTypeStatisticsEvent = new PdfOcrOutputTypeStatisticsEvent(eventType, ((
@@ -719,7 +714,7 @@ namespace iText.Pdfocr {
                 LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage
                     .ToString(), imageDataList.Count));
                 IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
-                if (imageTextData.Keys.Count > 0) {
+                if (!imageTextData.Keys.IsEmpty()) {
                     for (int page = 0; page < imageDataList.Count; ++page) {
                         ImageData imageData = imageDataList[page];
                         Rectangle imageSize = PdfCreatorUtil.CalculateImageSize(imageData, ocrPdfCreatorProperties.GetScaleMode(), 
@@ -843,28 +838,28 @@ namespace iText.Pdfocr {
         /// <param name="page">current page</param>
         private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> pageText, IDictionary<TextInfo, TagTreePointer
             > flatLogicalTree, PdfCanvas pdfCanvas, float multiplier, PdfPage page) {
-            if (pageText == null || pageText.Count == 0) {
+            if (pageText == null || pageText.IsEmpty()) {
                 return;
             }
             Rectangle pageMediaBox = page.GetMediaBox();
             Point imageCoordinates = PdfCreatorUtil.CalculateImageCoordinates(ocrPdfCreatorProperties.GetPageSize(), imageSize
                 );
             foreach (TextInfo item in pageText) {
-                float bboxWidthPt = GetWidthPt(item, multiplier);
-                float bboxHeightPt = GetHeightPt(item, multiplier);
+                float textWidthPt = GetTextWidthPt(item, multiplier);
+                float textHeightPt = GetTextHeightPt(item, multiplier);
                 FontProvider fontProvider = GetOcrPdfCreatorProperties().GetFontProvider();
                 String fontFamily = GetOcrPdfCreatorProperties().GetDefaultFontFamily();
                 String line = item.GetText();
-                if (!LineNotEmpty(line, bboxHeightPt, bboxWidthPt)) {
+                if (!LineNotEmpty(line, textHeightPt, textWidthPt)) {
                     continue;
                 }
                 Document document = new Document(pdfCanvas.GetDocument());
                 document.SetFontProvider(fontProvider);
                 // Scale the text width to fit the OCR bbox
-                float fontSize = PdfCreatorUtil.CalculateFontSize(document, line, fontFamily, bboxHeightPt, bboxWidthPt);
+                float fontSize = PdfCreatorUtil.CalculateFontSize(document, line, fontFamily, textHeightPt, textWidthPt);
                 float lineWidth = PdfCreatorUtil.GetRealLineWidth(document, line, fontFamily, fontSize);
                 float xOffset = GetXOffsetPt(item, multiplier);
-                float yOffset = GetYOffsetPt(item, multiplier, imageSize);
+                float yOffset = GetYOffsetPt(item, multiplier);
                 TagTreePointer tagPointer = flatLogicalTree.Get(item);
                 if (tagPointer != null) {
                     pdfCanvas.OpenTag(tagPointer.GetTagReference());
@@ -876,10 +871,9 @@ namespace iText.Pdfocr {
                 }
                 iText.Layout.Canvas canvas = new iText.Layout.Canvas(pdfCanvas, pageMediaBox);
                 canvas.SetFontProvider(fontProvider);
-                Text text = new Text(line).SetHorizontalScaling(bboxWidthPt / lineWidth);
-                Paragraph paragraph = new Paragraph(text).SetMargin(0);
-                paragraph.SetFontFamily(fontFamily).SetFontSize(fontSize);
-                paragraph.SetWidth(bboxWidthPt * 1.5f);
+                Text text = new Text(line).SetHorizontalScaling(textWidthPt / lineWidth);
+                Paragraph paragraph = new Paragraph(text).SetMargin(0).SetFontFamily(fontFamily).SetFontSize(fontSize).SetWidth
+                    (textWidthPt * 1.5f);
                 if (ocrPdfCreatorProperties.GetTextColor() != null) {
                     paragraph.SetFontColor(ocrPdfCreatorProperties.GetTextColor());
                 }
@@ -887,11 +881,42 @@ namespace iText.Pdfocr {
                     paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
                 }
                 canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.GetX(), yOffset + (float)imageCoordinates
-                    .GetY(), TextAlignment.LEFT);
+                    .GetY(), canvas.GetPdfDocument().GetNumberOfPages(), TextAlignment.LEFT, VerticalAlignment.BOTTOM, GetRotationAngle
+                    (item.GetOrientation()));
                 if (ocrPdfCreatorProperties.IsTagged()) {
                     pdfCanvas.CloseTag();
                 }
                 canvas.Close();
+            }
+        }
+
+        /// <summary>
+        /// Returns the text rotation angle in radian for the provided
+        /// <see cref="TextOrientation"/>.
+        /// </summary>
+        /// <param name="orientation">text orientation to get the angle for</param>
+        /// <returns>
+        /// the text rotation angle in radian for the provided
+        /// <see cref="TextOrientation"/>
+        /// </returns>
+        private static float GetRotationAngle(TextOrientation orientation) {
+            switch (orientation) {
+                case TextOrientation.HORIZONTAL_ROTATED_90: {
+                    return (float)(0.5 * Math.PI);
+                }
+
+                case TextOrientation.HORIZONTAL_ROTATED_180: {
+                    return (float)Math.PI;
+                }
+
+                case TextOrientation.HORIZONTAL_ROTATED_270: {
+                    return (float)(1.5 * Math.PI);
+                }
+
+                case TextOrientation.HORIZONTAL:
+                default: {
+                    return 0;
+                }
             }
         }
 
@@ -959,42 +984,66 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Get width of text chunk in points.</summary>
-        private static float GetWidthPt(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return PdfCreatorUtil.GetPoints(GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier));
-            }
-            else {
-                return GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier);
+        private static float GetTextWidthPt(TextInfo textInfo, float multiplier) {
+            switch (textInfo.GetOrientation()) {
+                case TextOrientation.HORIZONTAL_ROTATED_90:
+                case TextOrientation.HORIZONTAL_ROTATED_270: {
+                    return GetTop(textInfo, multiplier) - GetBottom(textInfo, multiplier);
+                }
+
+                case TextOrientation.HORIZONTAL:
+                case TextOrientation.HORIZONTAL_ROTATED_180:
+                default: {
+                    return GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier);
+                }
             }
         }
 
         /// <summary>Get height of text chunk in points.</summary>
-        private static float GetHeightPt(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return PdfCreatorUtil.GetPoints(GetBottom(textInfo, multiplier) - GetTop(textInfo, multiplier));
-            }
-            else {
-                return GetTop(textInfo, multiplier) - GetBottom(textInfo, multiplier);
+        private static float GetTextHeightPt(TextInfo textInfo, float multiplier) {
+            switch (textInfo.GetOrientation()) {
+                case TextOrientation.HORIZONTAL_ROTATED_90:
+                case TextOrientation.HORIZONTAL_ROTATED_270: {
+                    return GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier);
+                }
+
+                case TextOrientation.HORIZONTAL:
+                case TextOrientation.HORIZONTAL_ROTATED_180:
+                default: {
+                    return GetTop(textInfo, multiplier) - GetBottom(textInfo, multiplier);
+                }
             }
         }
 
         /// <summary>Get horizontal text offset in points.</summary>
         private static float GetXOffsetPt(TextInfo textInfo, float multiplier) {
-            if (textInfo.GetBboxRect() == null) {
-                return PdfCreatorUtil.GetPoints(GetLeft(textInfo, multiplier));
-            }
-            else {
-                return GetLeft(textInfo, multiplier);
+            switch (textInfo.GetOrientation()) {
+                case TextOrientation.HORIZONTAL_ROTATED_90:
+                case TextOrientation.HORIZONTAL_ROTATED_180: {
+                    return GetRight(textInfo, multiplier);
+                }
+
+                case TextOrientation.HORIZONTAL:
+                case TextOrientation.HORIZONTAL_ROTATED_270:
+                default: {
+                    return GetLeft(textInfo, multiplier);
+                }
             }
         }
 
         /// <summary>Get vertical text offset in points.</summary>
-        private static float GetYOffsetPt(TextInfo textInfo, float multiplier, Rectangle imageSize) {
-            if (textInfo.GetBboxRect() == null) {
-                return imageSize.GetHeight() - PdfCreatorUtil.GetPoints(GetBottom(textInfo, multiplier));
-            }
-            else {
-                return GetBottom(textInfo, multiplier);
+        private static float GetYOffsetPt(TextInfo textInfo, float multiplier) {
+            switch (textInfo.GetOrientation()) {
+                case TextOrientation.HORIZONTAL_ROTATED_180:
+                case TextOrientation.HORIZONTAL_ROTATED_270: {
+                    return GetTop(textInfo, multiplier);
+                }
+
+                case TextOrientation.HORIZONTAL:
+                case TextOrientation.HORIZONTAL_ROTATED_90:
+                default: {
+                    return GetBottom(textInfo, multiplier);
+                }
             }
         }
 

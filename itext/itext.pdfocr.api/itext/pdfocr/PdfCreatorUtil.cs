@@ -62,12 +62,12 @@ namespace iText.Pdfocr {
         /// </param>
         /// <param name="line">text line</param>
         /// <param name="fontFamily">default font family</param>
-        /// <param name="bboxHeightPt">height of bbox calculated by OCR Reader</param>
-        /// <param name="bboxWidthPt">width of bbox calculated by OCR Reader</param>
+        /// <param name="lineHeightPt">height of the line calculated by OCR Reader</param>
+        /// <param name="lineWidthPt">width of the line calculated by OCR Reader</param>
         /// <returns>font size</returns>
-        internal static float CalculateFontSize(Document document, String line, String fontFamily, float bboxHeightPt
-            , float bboxWidthPt) {
-            Rectangle bbox = new Rectangle(bboxWidthPt * 1.5f, bboxHeightPt * 1.5f);
+        internal static float CalculateFontSize(Document document, String line, String fontFamily, float lineHeightPt
+            , float lineWidthPt) {
+            Rectangle bbox = new Rectangle(lineWidthPt * 1.5f, lineHeightPt * 1.5f);
             // setting minimum and maximum (approx.) values for font size
             float fontSize = 1;
             float maxFontSize = bbox.GetHeight();

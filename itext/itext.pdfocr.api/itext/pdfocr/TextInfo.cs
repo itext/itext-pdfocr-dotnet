@@ -40,6 +40,17 @@ namespace iText.Pdfocr {
         private Rectangle bboxRect;
 
         /// <summary>
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation).
+        /// </summary>
+        /// <remarks>
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation). Text is
+        /// assumed to be horizontal without any rotation by default.
+        /// </remarks>
+        private TextOrientation orientation = TextOrientation.HORIZONTAL;
+
+        /// <summary>
         /// If LogicalStructureTreeItem is set, then
         /// <see cref="TextInfo"/>
         /// s are expected to be in logical order.
@@ -63,6 +74,7 @@ namespace iText.Pdfocr {
         public TextInfo(iText.Pdfocr.TextInfo textInfo) {
             this.text = textInfo.text;
             this.bboxRect = new Rectangle(textInfo.bboxRect);
+            this.orientation = textInfo.orientation;
         }
 
         /// <summary>
@@ -79,6 +91,24 @@ namespace iText.Pdfocr {
         public TextInfo(String text, Rectangle bbox) {
             this.text = text;
             this.bboxRect = new Rectangle(bbox);
+        }
+
+        /// <summary>
+        /// Creates a new
+        /// <see cref="TextInfo"/>
+        /// instance.
+        /// </summary>
+        /// <param name="text">any text</param>
+        /// <param name="bbox">
+        /// 
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// describing text bbox
+        /// </param>
+        /// <param name="orientation">orientation of the text</param>
+        public TextInfo(String text, Rectangle bbox, TextOrientation orientation) {
+            this.text = text;
+            this.bboxRect = new Rectangle(bbox);
+            this.orientation = Objects.RequireNonNull(orientation);
         }
 
         /// <summary>Gets text element.</summary>
@@ -111,6 +141,26 @@ namespace iText.Pdfocr {
         /// </param>
         public virtual void SetBboxRect(Rectangle bbox) {
             this.bboxRect = new Rectangle(bbox);
+        }
+
+        /// <summary>Gets the text orientation.</summary>
+        /// <returns>
+        /// 
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation)
+        /// </returns>
+        public virtual TextOrientation GetOrientation() {
+            return orientation;
+        }
+
+        /// <summary>Sets the text orientation.</summary>
+        /// <param name="orientation">
+        /// 
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation)
+        /// </param>
+        public virtual void SetOrientation(TextOrientation orientation) {
+            this.orientation = Objects.RequireNonNull(orientation);
         }
 
         /// <summary>Retrieves structure tree item for the text item.</summary>

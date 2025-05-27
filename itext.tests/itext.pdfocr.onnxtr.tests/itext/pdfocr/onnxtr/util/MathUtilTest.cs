@@ -1,0 +1,62 @@
+/*
+This file is part of the iText (R) project.
+Copyright (c) 1998-2025 Apryse Group NV
+Authors: Apryse Software.
+
+This program is offered under a commercial and under the AGPL license.
+For commercial licensing, contact us at https://itextpdf.com/sales.  For AGPL licensing, see below.
+
+AGPL licensing:
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+using System;
+
+namespace iText.Pdfocr.Onnxtr.Util {
+//\cond DO_NOT_DOCUMENT
+    internal class MathUtilTest {
+//\cond DO_NOT_DOCUMENT
+        [NUnit.Framework.Test]
+        internal virtual void ArgmaxWithInvalidArgs() {
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => MathUtil.Argmax(null));
+            NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Argmax(new float[0]));
+        }
+//\endcond
+
+//\cond DO_NOT_DOCUMENT
+        [NUnit.Framework.Test]
+        internal virtual void ArgmaxWithValidArgs() {
+            NUnit.Framework.Assert.AreEqual(0, MathUtil.Argmax(new float[] { 1 }));
+            NUnit.Framework.Assert.AreEqual(1, MathUtil.Argmax(new float[] { 1, 3, 2 }));
+            NUnit.Framework.Assert.AreEqual(1, MathUtil.Argmax(new float[] { 1, 3, 3 }));
+        }
+//\endcond
+
+//\cond DO_NOT_DOCUMENT
+        [NUnit.Framework.Test]
+        internal virtual void ClampWithInvalidArgs() {
+            NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Clamp(2, 3, 1));
+        }
+//\endcond
+
+//\cond DO_NOT_DOCUMENT
+        [NUnit.Framework.Test]
+        internal virtual void ClampWithValidArgs() {
+            NUnit.Framework.Assert.AreEqual(1.1, MathUtil.Clamp(1.0, 1.1, 1.9));
+            NUnit.Framework.Assert.AreEqual(1.5, MathUtil.Clamp(1.5, 1.1, 1.9));
+            NUnit.Framework.Assert.AreEqual(1.9, MathUtil.Clamp(2.0, 1.1, 1.9));
+        }
+//\endcond
+    }
+//\endcond
+}
