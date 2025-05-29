@@ -47,9 +47,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <param name="postProcessor">ONNX model output post-processor</param>
         public OnnxDetectionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IDetectionPostProcessor
              postProcessor) {
-            this.modelPath = Objects.RequireNonNull(modelPath);
-            this.inputProperties = Objects.RequireNonNull(inputProperties);
-            this.postProcessor = Objects.RequireNonNull(postProcessor);
+            this.modelPath = modelPath;
+            this.inputProperties = inputProperties;
+            this.postProcessor = postProcessor;
         }
 
         /// <summary>
@@ -99,10 +99,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text detection properties object for a DBNet model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text detection properties object for a DBNet model</returns>
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties DbNet(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , DB_NET_POST_PROCESSOR);
@@ -138,22 +137,18 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text detection properties object for a FAST model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text detection properties object for a FAST model</returns>
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties Fast(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , DEFAULT_POST_PROCESSOR);
         }
 
-        /// <summary>
-        /// Creates a new text detection properties object for existing pre-trained
-        /// LinkNet models, stored on disk.
-        /// </summary>
+        /// <summary>Creates a new text detection properties object for existing pre-trained LinkNet models, stored on disk.
+        ///     </summary>
         /// <remarks>
-        /// Creates a new text detection properties object for existing pre-trained
-        /// LinkNet models, stored on disk.
+        /// Creates a new text detection properties object for existing pre-trained LinkNet models, stored on disk.
         /// <para />
         /// This can be used to load the following models from OnnxTR:
         /// <list type="bullet">
@@ -194,29 +189,28 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text detection properties object for a LinkNet model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text detection properties object for a LinkNet model</returns>
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties LinkNet(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , DEFAULT_POST_PROCESSOR);
         }
 
         /// <summary>Returns the path to the ONNX model.</summary>
-        /// <returns>The path to the ONNX model.</returns>
+        /// <returns>the path to the ONNX model</returns>
         public virtual String GetModelPath() {
             return modelPath;
         }
 
         /// <summary>Returns the ONNX model input properties.</summary>
-        /// <returns>The ONNX model input properties.</returns>
+        /// <returns>the ONNX model input properties</returns>
         public virtual OnnxInputProperties GetInputProperties() {
             return inputProperties;
         }
 
         /// <summary>Returns the ONNX model output post-processor.</summary>
-        /// <returns>The ONNX model output post-processor.</returns>
+        /// <returns>the ONNX model output post-processor</returns>
         public virtual IDetectionPostProcessor GetPostProcessor() {
             return postProcessor;
         }
@@ -235,7 +229,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode(modelPath, inputProperties, postProcessor);
+            return JavaUtil.ArraysHashCode<object>(modelPath, inputProperties, postProcessor);
         }
 
         public override String ToString() {

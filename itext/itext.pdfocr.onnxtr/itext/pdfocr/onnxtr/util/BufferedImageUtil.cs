@@ -22,19 +22,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 #if !NETSTANDARD2_0
 using System.Drawing;
 #endif // !NETSTANDARD2_0
-using Java.Awt;
-using Java.Awt.Image;
-using Org.Bytedeco.Javacpp.Indexer;
-using Org.Bytedeco.Opencv.Global;
-using Org.Bytedeco.Opencv.Opencv_core;
-using Org.Opencv.Core;
 using iText.Commons.Utils;
-using iText.Kernel.Geom;
-using iText.Pdfocr;
-using iText.Pdfocr.Onnxtr;
+using OpenCvSharp;
+using Point = iText.Kernel.Geom.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace iText.Pdfocr.Onnxtr.Util {
     /// <summary>
@@ -50,9 +47,9 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// Converts a collection of images to a batched ML model input in a BCHW format with 3 channels.
         /// This does aspect-preserving image resizing to fit the input shape.
         /// </remarks>
-        /// <param name="images">Collection of images to convert to model input.</param>
-        /// <param name="properties">Model input properties.</param>
-        /// <returns>Batched BCHW model input MD-array.</returns>
+        /// <param name="images">collection of images to convert to model input</param>
+        /// <param name="properties">model input properties</param>
+        /// <returns>batched BCHW model input MD-array</returns>
         public static FloatBufferMdArray ToBchwInput(ICollection<System.Drawing.Bitmap> images, OnnxInputProperties
              properties) {
             // Currently properties guarantee RGB, this is just in case this changes later
@@ -74,89 +71,118 @@ namespace iText.Pdfocr.Onnxtr.Util {
             * For some reason there doesn't seem to be a way to allocate a direct
             * buffer via FloatBuffer itself...
             */
-            FloatBuffer inputData = ByteBuffer.AllocateDirect(CalculateBufferCapacity(inputShape)).Order(ByteOrder.NativeOrder
-                ()).AsFloatBuffer();
+            int bufferSize = CalculateBufferCapacity(inputShape);
+            float[] inputData = new float[bufferSize];
+            int offset = 0;
             foreach (System.Drawing.Bitmap image in images) {
                 System.Drawing.Bitmap resizedImage = Resize(image, properties.GetWidth(), properties.GetHeight(), properties
                     .UseSymmetricPad());
-                System.Diagnostics.Debug.Assert(resizedImage.GetType() == System.Drawing.Bitmap.TYPE_3BYTE_BGR);
                 // Doing normalization at the same time as we fill the buffer
-                WritableRaster raster = resizedImage.GetRaster();
-                for (int y = 0; y < resizedImage.GetHeight(); ++y) {
-                    for (int x = 0; x < resizedImage.GetWidth(); ++x) {
-                        float r = raster.GetSample(x, y, 2) / 255F;
-                        inputData.Put((r - properties.GetRedMean()) / properties.GetRedStd());
+                var rect = new Rectangle(0, 0, resizedImage.Width, resizedImage.Height);
+                BitmapData raster = resizedImage.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                try
+                {
+                    int stride = raster.Stride;
+                    IntPtr ptr = raster.Scan0;
+                    byte[] pixelBytes = new byte[stride * resizedImage.Height];
+                    Marshal.Copy(ptr, pixelBytes, 0, pixelBytes.Length);
+
+                    // Индексы для каналов: B=2, G=1, R=0 (в формате BGR)
+                    for (int y = 0; y < properties.GetHeight(); y++)
+                    {
+                        for (int x = 0; x < properties.GetWidth(); x++)
+                        {
+                            int index = y * stride + x * 3;
+                            byte bByte = pixelBytes[index];
+                            byte gByte = pixelBytes[index + 1];
+                            byte rByte = pixelBytes[index + 2];
+
+                            // R
+                            float r = rByte / 255f;
+                            inputData[offset++] = (r - properties.GetRedMean()) / properties.GetRedStd();
+
+                            // G
+                            float gVal = gByte / 255f;
+                            inputData[offset++] = (gVal - properties.GetGreenMean()) / properties.GetGreenStd();
+
+                            // B
+                            float bVal = bByte / 255f;
+                            inputData[offset++] = (bVal - properties.GetBlueMean()) / properties.GetBlueStd();
+                        }
                     }
                 }
-                for (int y = 0; y < resizedImage.GetHeight(); ++y) {
-                    for (int x = 0; x < resizedImage.GetWidth(); ++x) {
-                        float g = raster.GetSample(x, y, 1) / 255F;
-                        inputData.Put((g - properties.GetGreenMean()) / properties.GetGreenStd());
-                    }
-                }
-                for (int y = 0; y < resizedImage.GetHeight(); ++y) {
-                    for (int x = 0; x < resizedImage.GetWidth(); ++x) {
-                        float b = raster.GetSample(x, y, 0) / 255F;
-                        inputData.Put((b - properties.GetBlueMean()) / properties.GetBlueStd());
-                    }
+                finally
+                {
+                    resizedImage.UnlockBits(raster);
                 }
             }
-            inputData.Rewind();
             return new FloatBufferMdArray(inputData, inputShape);
         }
 
         /// <summary>Converts an image to an RGB Mat for use in OpenCV.</summary>
-        /// <param name="image">Image to convert.</param>
-        /// <returns>RGB 8UC3 OpenCV Mat with the image.</returns>
+        /// <param name="image">image to convert</param>
+        /// <returns>RGB 8UC3 OpenCV Mat with the image</returns>
         public static Mat ToRgbMat(System.Drawing.Bitmap image) {
-            Mat resultMat = new Mat(image.GetHeight(), image.GetWidth(), CvType.CV_8UC3);
-            using (UByteIndexer resultMatIndexer = resultMat.CreateIndexer()) {
-                for (int y = 0; y < image.GetHeight(); ++y) {
-                    for (int x = 0; x < image.GetWidth(); ++x) {
-                        int rgb = image.GetRGB(x, y);
-                        int r = (rgb >> 16) & 0xFF;
-                        int g = (rgb >> 8) & 0xFF;
-                        int b = rgb & 0xFF;
-                        resultMatIndexer.Put(y, (long)x, r, g, b);
-                    }
-                }
+            int width = image.Width;
+            int height = image.Height;
+            Mat resultMat = new Mat(height, width, MatType.CV_8UC3);
+            
+            Rectangle rect = new Rectangle(0, 0, width, height);
+            BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+            try {
+                int stride = bitmapData.Stride;
+                int totalBytes = stride * height;
+
+                byte[] buffer = new byte[totalBytes];
+                Marshal.Copy(bitmapData.Scan0, buffer, 0, totalBytes);
+                byte[] matData = resultMat.ToBytes();
+                Buffer.BlockCopy(buffer, 0, matData, 0, buffer.Length);
+                resultMat.SetArray(matData);
+            }
+            finally {
+                image.UnlockBits(bitmapData);
             }
             return resultMat;
         }
 
         /// <summary>Converts an RGB 8UC3 OpenCV Mat to a buffered image.</summary>
-        /// <param name="rgb">RGB 8UC3 OpenCV Mat to convert.</param>
-        /// <returns>Buffered image based on Mat.</returns>
+        /// <param name="rgb">RGB 8UC3 OpenCV Mat to convert</param>
+        /// <returns>buffered image based on Mat</returns>
         public static System.Drawing.Bitmap FromRgbMat(Mat rgb) {
-            if (rgb.Type() != CvType.CV_8UC3) {
+            if (rgb.Type() != MatType.CV_8UC3) {
                 throw new ArgumentException("Unexpected Mat type");
             }
-            System.Drawing.Bitmap image = new System.Drawing.Bitmap(rgb.Cols(), rgb.Rows(), System.Drawing.Bitmap.TYPE_3BYTE_BGR
+            System.Drawing.Bitmap image = new System.Drawing.Bitmap(rgb.Cols, rgb.Rows, PixelFormat.Format24bppRgb
                 );
-            int[] rgbBuffer = new int[3];
-            using (UByteIndexer rgbIndexer = rgb.CreateIndexer()) {
-                for (int y = 0; y < image.GetHeight(); ++y) {
-                    for (int x = 0; x < image.GetWidth(); ++x) {
-                        rgbIndexer.Get(y, x, rgbBuffer);
-                        int rgbValue = 0xFF000000 | (rgbBuffer[0] << 16) | (rgbBuffer[1] << 8) | rgbBuffer[2];
-                        image.SetRGB(x, y, rgbValue);
-                    }
-                }
+            
+            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+            BitmapData bmpData = image.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            try {
+                int stride = bmpData.Stride;
+                int totalBytes = stride * image.Height;
+
+                byte[] buffer = rgb.ToBytes();
+                Marshal.Copy(buffer, 0, bmpData.Scan0, totalBytes);
+            }
+            finally {
+                image.UnlockBits(bmpData);
             }
             return image;
         }
 
         /// <summary>Rotates image based on text orientation.</summary>
         /// <remarks>Rotates image based on text orientation. If no rotation necessary, same image is returned.</remarks>
-        /// <param name="image">Image to rotate.</param>
-        /// <param name="orientation">Text orientation used to rotate the image.</param>
-        /// <returns>New rotated image, or same image, if no rotation is required.</returns>
+        /// <param name="image">image to rotate</param>
+        /// <param name="orientation">text orientation used to rotate the image</param>
+        /// <returns>new rotated image, or same image, if no rotation is required</returns>
         public static System.Drawing.Bitmap Rotate(System.Drawing.Bitmap image, TextOrientation orientation) {
             if (orientation == TextOrientation.HORIZONTAL) {
                 return image;
             }
-            int oldW = image.GetWidth();
-            int oldH = image.GetHeight();
+            int oldW = image.Width;
+            int oldH = image.Height;
             int newW;
             int newH;
             double angle;
@@ -175,64 +201,70 @@ namespace iText.Pdfocr.Onnxtr.Util {
                     angle = 1.5 * Math.PI;
                 }
             }
-            System.Drawing.Bitmap rotated = new System.Drawing.Bitmap(newW, newH, image.GetType());
-            Graphics2D graphics = rotated.CreateGraphics();
-            graphics.Translate((newW - oldW) / 2.0, (newH - oldH) / 2.0);
-            graphics.Rotate(angle, image.GetWidth() / 2.0, image.GetHeight() / 2.0);
-            graphics.DrawImage(image, 0, 0, null);
-            graphics.Dispose();
+            System.Drawing.Bitmap rotated = new System.Drawing.Bitmap(newW, newH, PixelFormat.Format24bppRgb);
+            using (Graphics graphics = Graphics.FromImage(rotated)) {
+                graphics.Transform.Translate((float)((newW - oldW) / 2.0), (float)((newH - oldH) / 2.0));
+                float centerX = image.Width / 2.0f;
+                float centerY = image.Height / 2.0f;
+                graphics.Transform.Translate(centerX, centerY);
+                graphics.Transform.Rotate((float)angle);
+                graphics.Transform.Translate(-centerX, -centerY);
+                graphics.DrawImage(image, 0, 0);
+            }
             return rotated;
         }
 
         /// <summary>Creates a new image with an aspect ratio preserving resize.</summary>
-        /// <remarks>
-        /// Creates a new image with an aspect ratio preserving resize. New blank pixel will have black
-        /// color.
-        /// </remarks>
-        /// <param name="image">Image to resize.</param>
-        /// <param name="width">Target width.</param>
-        /// <param name="height">Target height.</param>
-        /// <param name="symmetricPad">Whether padding should be symmetric or should it be bottom-right.</param>
-        /// <returns>New resized image.</returns>
+        /// <remarks>Creates a new image with an aspect ratio preserving resize. New blank pixel will have black color.
+        ///     </remarks>
+        /// <param name="image">image to resize</param>
+        /// <param name="width">target width</param>
+        /// <param name="height">target height</param>
+        /// <param name="symmetricPad">whether padding should be symmetric or should it be bottom-right</param>
+        /// <returns>new resized image</returns>
         public static System.Drawing.Bitmap Resize(System.Drawing.Bitmap image, int width, int height, bool symmetricPad
             ) {
             // It is pretty unlikely, that the image is already the correct size, so no need for an exception
-            System.Drawing.Bitmap result = new System.Drawing.Bitmap(width, height, System.Drawing.Bitmap.TYPE_3BYTE_BGR
+            System.Drawing.Bitmap result = new System.Drawing.Bitmap(width, height, PixelFormat.Format24bppRgb
                 );
-            Graphics2D graphics = result.CreateGraphics();
-            graphics.SetColor(Color.BLACK);
-            graphics.SetRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            int sourceWidth = image.GetWidth();
-            int sourceHeight = image.GetHeight();
-            double widthRatio = (double)width / sourceWidth;
-            double heightRatio = (double)height / sourceHeight;
-            if (heightRatio > widthRatio) {
-                int scaledHeight = (int)MathematicUtil.Round(sourceHeight * widthRatio);
-                int yPos;
-                if (symmetricPad) {
-                    yPos = (height - scaledHeight) / 2;
-                    graphics.FillRect(0, 0, width, yPos);
+            using (Graphics graphics = Graphics.FromImage(result)) {
+                graphics.Clear(Color.Black);
+                graphics.InterpolationMode = InterpolationMode.Bilinear;
+
+                int sourceWidth = image.Width;
+                int sourceHeight = image.Height;
+                double widthRatio = (double)width / sourceWidth;
+                double heightRatio = (double)height / sourceHeight;
+                if (heightRatio > widthRatio) {
+                    int scaledHeight = (int)MathematicUtil.Round(sourceHeight * widthRatio);
+                    int yPos;
+                    if (symmetricPad) {
+                        yPos = (height - scaledHeight) / 2;
+                        graphics.FillRectangle(new SolidBrush(Color.Black), 0, 0, width, yPos);
+                    }
+                    else {
+                        yPos = 0;
+                    }
+
+                    graphics.FillRectangle(new SolidBrush(Color.Black), 0, yPos + scaledHeight, width, height - scaledHeight - yPos);
+                    graphics.DrawImage(image, 0, yPos, width, scaledHeight);
                 }
                 else {
-                    yPos = 0;
+                    int scaledWidth = (int)MathematicUtil.Round(sourceWidth * heightRatio);
+                    int xPos;
+                    if (symmetricPad) {
+                        xPos = (width - scaledWidth) / 2;
+                        graphics.FillRectangle(new SolidBrush(Color.Black), 0, 0, xPos, height);
+                    }
+                    else {
+                        xPos = 0;
+                    }
+
+                    graphics.FillRectangle(new SolidBrush(Color.Black), xPos + scaledWidth, 0, width - scaledWidth - xPos, height);
+                    graphics.DrawImage(image, xPos, 0, scaledWidth, height);
                 }
-                graphics.FillRect(0, yPos + scaledHeight, width, height - scaledHeight - yPos);
-                graphics.DrawImage(image, 0, yPos, width, scaledHeight, Color.WHITE, null);
             }
-            else {
-                int scaledWidth = (int)MathematicUtil.Round(sourceWidth * heightRatio);
-                int xPos;
-                if (symmetricPad) {
-                    xPos = (width - scaledWidth) / 2;
-                    graphics.FillRect(0, 0, xPos, height);
-                }
-                else {
-                    xPos = 0;
-                }
-                graphics.FillRect(xPos + scaledWidth, 0, width - scaledWidth - xPos, height);
-                graphics.DrawImage(image, xPos, 0, scaledWidth, height, Color.WHITE, null);
-            }
-            graphics.Dispose();
+
             return result;
         }
 
@@ -241,9 +273,9 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// Extracts sub-images from an image, based on provided rotated 4-point boxes. Sub-images are
         /// transformed to fit the whole image without (in our use cases it is just rotation).
         /// </remarks>
-        /// <param name="image">Original image to be used for extraction.</param>
-        /// <param name="boxes">List of 4-point boxes. Points should be in the following order: BL, TL, TR, BR.</param>
-        /// <returns>List of extracted image boxes.</returns>
+        /// <param name="image">original image to be used for extraction</param>
+        /// <param name="boxes">list of 4-point boxes. Points should be in the following order: BL, TL, TR, BR</param>
+        /// <returns>list of extracted image boxes</returns>
         public static IList<System.Drawing.Bitmap> ExtractBoxes(System.Drawing.Bitmap image, ICollection<Point[]> 
             boxes) {
             IList<System.Drawing.Bitmap> boxesImages = new List<System.Drawing.Bitmap>(boxes.Count);
@@ -252,11 +284,10 @@ namespace iText.Pdfocr.Onnxtr.Util {
                     float boxWidth = (float)box[1].Distance(box[2]);
                     float boxHeight = (float)box[1].Distance(box[0]);
                     using (Mat transformationMat = CalculateBoxTransformationMat(box, boxWidth, boxHeight)) {
-                        using (Mat boxImageMat = new Mat((int)boxHeight, (int)boxWidth, CvType.CV_8UC3)) {
-                            using (Size size = new Size((int)boxWidth, (int)boxHeight)) {
-                                Opencv_imgproc.WarpAffine(imageMat, boxImageMat, transformationMat, size);
-                                boxesImages.Add(iText.Pdfocr.Onnxtr.Util.BufferedImageUtil.FromRgbMat(boxImageMat));
-                            }
+                        using (Mat boxImageMat = new Mat((int)boxHeight, (int)boxWidth, MatType.CV_8UC3)) {
+                            OpenCvSharp.Size size = new OpenCvSharp.Size((int)boxWidth, (int)boxHeight);
+                            Cv2.WarpAffine(imageMat, boxImageMat, transformationMat, size);
+                            boxesImages.Add(iText.Pdfocr.Onnxtr.Util.BufferedImageUtil.FromRgbMat(boxImageMat));
                         }
                     }
                 }
@@ -265,28 +296,29 @@ namespace iText.Pdfocr.Onnxtr.Util {
         }
 
         private static Mat CalculateBoxTransformationMat(Point[] box, float boxWidth, float boxHeight) {
-            using (Mat srcPoints = new Mat(3, 2, CvType.CV_32F)) {
-                using (Mat dstPoints = new Mat(3, 2, CvType.CV_32F)) {
-                    using (FloatIndexer srcPointsIndexer = srcPoints.CreateIndexer()) {
-                        using (FloatIndexer dstPointsIndexer = dstPoints.CreateIndexer()) {
-                            for (int i = 0; i < 3; ++i) {
-                                srcPointsIndexer.Put(i, (float)box[i].GetX(), (float)box[i].GetY());
-                            }
-                            dstPointsIndexer.Put(0, 0F, boxHeight - 1);
-                            dstPointsIndexer.Put(1, 0F, 0F);
-                            dstPointsIndexer.Put(2, boxWidth - 1, 0F);
-                            return Opencv_imgproc.GetAffineTransform(srcPoints, dstPoints);
-                        }
+            using (Mat srcPoints = new Mat(3, 2, MatType.CV_32F)) {
+                using (Mat dstPoints = new Mat(3, 2, MatType.CV_32F)) {
+                    for (int i = 0; i < 3; ++i) {
+                        srcPoints.Set<float>(i, 0, (float)box[i].GetX());
+                        srcPoints.Set<float>(i, 1, (float)box[i].GetY());
                     }
+
+                    dstPoints.Set<float>(0, 0, 0F);
+                    dstPoints.Set<float>(0, 1, boxHeight - 1);
+                    dstPoints.Set<float>(1, 0, 0F);
+                    dstPoints.Set<float>(1, 1, 0F);
+                    dstPoints.Set<float>(2, 0, boxWidth - 1);
+                    dstPoints.Set<float>(2, 1, 0F);
+                    return Cv2.GetAffineTransform(srcPoints, dstPoints);
                 }
             }
         }
 
         /// <summary>Returns the byte capacity required for a float32 buffer of the specified shape.</summary>
-        /// <param name="shape">Shape of the MD-array.</param>
-        /// <returns>The byte capacity required for a float32 buffer of the specified shape.</returns>
+        /// <param name="shape">shape of the MD-array</param>
+        /// <returns>the byte capacity required for a float32 buffer of the specified shape</returns>
         private static int CalculateBufferCapacity(long[] shape) {
-            int capacity = float.BYTES;
+            int capacity = sizeof(float);
             foreach (long dim in shape) {
                 capacity *= (int)dim;
             }

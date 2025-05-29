@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Org.Apache.Commons.Text.Similarity;
 using iText.Commons.Utils;
-using iText.Kernel.Geom;
 using iText.Pdfocr;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Detection;
 using iText.Pdfocr.Onnxtr.Orientation;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Pdfocr.Onnxtr.Util;
+using Point = iText.Kernel.Geom.Point;
+using Rectangle = iText.Kernel.Geom.Rectangle;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>
@@ -66,9 +66,9 @@ namespace iText.Pdfocr.Onnxtr {
         /// </param>
         public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
             IRecognitionPredictor recognitionPredictor) {
-            this.detectionPredictor = Objects.RequireNonNull(detectionPredictor);
+            this.detectionPredictor = detectionPredictor;
             this.orientationPredictor = orientationPredictor;
-            this.recognitionPredictor = Objects.RequireNonNull(recognitionPredictor);
+            this.recognitionPredictor = recognitionPredictor;
         }
 
         /// <summary>Create a new OCR engine with the provided predictors, without text orientation prediction.</summary>
@@ -82,11 +82,11 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         public virtual void Close() {
-            detectionPredictor.Close();
+            detectionPredictor.Dispose();
             if (orientationPredictor != null) {
-                orientationPredictor.Close();
+                orientationPredictor.Dispose();
             }
-            recognitionPredictor.Close();
+            recognitionPredictor.Dispose();
         }
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
@@ -95,25 +95,13 @@ namespace iText.Pdfocr.Onnxtr {
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
-            /*
-            * TODO DEVSIX-9154: Make this interface better.
-            *
-            * There are two problems. First, we get only one image per call. But the text detector
-            * can batch multiple images and for on them at once, which is a performance improvement,
-            * at least on GPU.
-            *
-            * Second problem is that it forces all OCR engines to reimplement image reading code.
-            * Image reading should happen on a layer higher, so that the code is common. This should
-            * also be a performance improvement, since images get read again anyway to create the
-            * final PDF.
-            */
             IList<System.Drawing.Bitmap> images = GetImages(input);
             IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>(images.Count);
             int imageIndex = 0;
             IEnumerator<IList<Point[]>> textBoxGenerator = detectionPredictor.Predict(images);
-            while (textBoxGenerator.HasNext()) {
+            while (textBoxGenerator.MoveNext()) {
                 /*
-                * TODO DEVSIX-9154: Potential performance improvement (at least for GPU).
+                * TODO DEVSIX-9153: Potential performance improvement (at least for GPU).
                 *
                 * There is a potential for performance improvements here. Currently, this mirrors the
                 * behavior in OnnxTR/DocTR, where inputs for orientation and recognition models are
@@ -124,7 +112,7 @@ namespace iText.Pdfocr.Onnxtr {
                 * and then separate the results afterwards.
                 */
                 System.Drawing.Bitmap image = images[imageIndex];
-                IList<Point[]> textBoxes = textBoxGenerator.Next();
+                IList<Point[]> textBoxes = textBoxGenerator.Current;
                 IList<System.Drawing.Bitmap> textImages = BufferedImageUtil.ExtractBoxes(image, textBoxes);
                 IList<TextOrientation> textOrientations = null;
                 if (orientationPredictor != null) {
@@ -140,7 +128,7 @@ namespace iText.Pdfocr.Onnxtr {
                     }
                     textInfos.Add(new TextInfo(textString[i], /* * FIXME DEVSIX-9154: Why not return rectangles in image pixels?.. 
                         * * Seems odd, that an OCR engine should be concerned by PDF specific. It * would make sense for an engine to return results, which could be directly 
-                        * applied to images inputs instead... */ ToPdfRectangle(textBoxes[i], image.GetHeight()), textOrientation
+                        * applied to images inputs instead... */ ToPdfRectangle(textBoxes[i], image.Height), textOrientation
                         ));
                 }
                 result.Put(imageIndex + 1, textInfos);
@@ -156,7 +144,7 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
             ) {
             /*
-            * TODO DEVSIX-9154: Implement this interface.
+            * TODO DEVSIX-9153: Implement this interface.
             *
             * With how this engine is build, there is no concept of "lines" or "paragraphs". It just
             * find boxes with text and recognizes them.
@@ -186,13 +174,13 @@ namespace iText.Pdfocr.Onnxtr {
             for (int j = 0; j < split.restoreMap.Length; ++j) {
                 int stringPartsLeft = split.restoreMap[j];
                 String testString;
-                if (stringPartsLeft == 1) {
-                    testString = recognitionIterator.Next();
+                if (stringPartsLeft == 1 && recognitionIterator.MoveNext()) {
+                    testString = recognitionIterator.Current;
                 }
                 else {
                     StringBuilder sb = new StringBuilder();
-                    while (stringPartsLeft > 0) {
-                        MergeStrings(sb, recognitionIterator.Next());
+                    while (stringPartsLeft > 0 && recognitionIterator.MoveNext()) {
+                        MergeStrings(sb, recognitionIterator.Current);
                         --stringPartsLeft;
                     }
                     testString = sb.ToString();
@@ -223,8 +211,8 @@ namespace iText.Pdfocr.Onnxtr {
             OnnxTrOcrEngine.SplitResult result = new OnnxTrOcrEngine.SplitResult(images.Count);
             for (int i = 0; i < images.Count; ++i) {
                 System.Drawing.Bitmap image = images[i];
-                int width = image.GetWidth();
-                int height = image.GetHeight();
+                int width = image.Width;
+                int height = image.Height;
                 float aspectRatio = (float)width / height;
                 if (aspectRatio < SPLIT_CROPS_MAX_RATIO) {
                     result.splitImages.Add(image);
@@ -245,18 +233,49 @@ namespace iText.Pdfocr.Onnxtr {
                         continue;
                     }
                     ++nonEmptySplitCount;
-                    result.splitImages.Add(image.GetSubimage(minX, 0, currentSplitWidth, height));
+                    result.splitImages.Add(image.Clone(new System.Drawing.Rectangle(minX, 0, currentSplitWidth, height), image.PixelFormat));
                 }
                 result.restoreMap[i] = nonEmptySplitCount;
             }
             return result;
         }
 
+        private static int LevenshteinDistance(string s, string t)
+        {
+            if (string.IsNullOrEmpty(s))
+                return string.IsNullOrEmpty(t) ? 0 : t.Length;
+            if (string.IsNullOrEmpty(t))
+                return s.Length;
+
+            int n = s.Length;
+            int m = t.Length;
+            int[,] d = new int[n + 1, m + 1];
+
+            for (int i = 0; i <= n; i++)
+                d[i, 0] = i;
+            for (int j = 0; j <= m; j++)
+                d[0, j] = j;
+
+            for (int i = 1; i <= n; i++)
+            {
+                for (int j = 1; j <= m; j++)
+                {
+                    int cost = s[i - 1] == t[j - 1] ? 0 : 1;
+
+                    d[i, j] = Math.Min(
+                        Math.Min(d[i - 1, j] + 1,
+                            d[i, j - 1] + 1),
+                        d[i - 1, j - 1] + cost);
+                }
+            }
+            return d[n, m];
+        }
+        
         /// <summary>Merges strings, collected from splits of text images.</summary>
         /// <remarks>
         /// Merges strings, collected from splits of text images.
         /// <para />
-        /// TODO DEVSIX-9154 This code is pretty much 1-to-1 to what is in OnnxTR. Logic is not that trivial...
+        /// TODO DEVSIX-9153 This code is pretty much 1-to-1 to what is in OnnxTR. Logic is not that trivial.
         /// </remarks>
         /// <param name="collector">string builder collector, which contains the current left part of the string</param>
         /// <param name="nextString">next string to add to the collector</param>
@@ -265,11 +284,11 @@ namespace iText.Pdfocr.Onnxtr {
             int commonLength = Math.Min(collector.Length, nextString.Length);
             double[] scores = new double[commonLength];
             for (int i = 0; i < commonLength; ++i) {
-                // FIXME: org.apache.commons.commons-text is used only for this, but
+                // TODO DEVSIX-9153: org.apache.commons.commons-text is used only for this, but
                 //        since Levenshtein distance is relatively trivial, might be
                 //        better to just reimplement it
-                scores[i] = LevenshteinDistance.GetDefaultInstance().Apply(collector.Substring(collector.Length - i - 1), 
-                    nextString.JSubstring(0, i + 1)) / (i + 1.0);
+                scores[i] = LevenshteinDistance(collector.ToString().Substring(collector.Length - i - 1), 
+                    nextString.Substring(0, i + 1)) / (i + 1.0);
             }
             int index = 0;
             // Comparing floats to 0 is fine here, as it only happens, when the
@@ -277,8 +296,8 @@ namespace iText.Pdfocr.Onnxtr {
             if (commonLength > 1 && scores[0] == 0 && scores[1] == 0) {
                 // Edge case (split in the middle of char repetitions): if it starts with 2 or more 0
                 // Compute n_overlap (number of overlapping chars, geometrically determined)
-                int overlap = MathematicUtil.Round(nextString.Length * (iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR
-                     - 1) / iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR);
+                int overlap = (int)MathematicUtil.Round(nextString.Length * (iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR
+                                                                             - 1) / iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR);
                 // Find the number of consecutive zeros in the scores list
                 // Impossible to have a zero after a non-zero score in that case
                 int zeros = (int)JavaUtil.ArraysToEnumerable(scores).Where((x) => x == 0).Count();
@@ -299,7 +318,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
             else {
                 collector.Length = Math.Max(0, collector.Length - 1);
-                collector.JAppend(nextString, index - 1, nextString.Length);
+                collector.Append(nextString, index - 1, nextString.Length);
             }
         }
 
@@ -337,9 +356,8 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         private static IList<System.Drawing.Bitmap> GetImages(FileInfo input) {
-            // TODO DEVSIX-9154: As mentioned before, this should be abstracted away from OcrEngine.
             try {
-                return JavaCollectionsUtil.SingletonList((System.Drawing.Bitmap)System.Drawing.Image.FromStream(input));
+                return JavaCollectionsUtil.SingletonList((System.Drawing.Bitmap)System.Drawing.Image.FromFile(input.FullName));
             }
             catch (System.IO.IOException e) {
                 throw new PdfOcrException("Failed to read image", e);
@@ -347,8 +365,10 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         private static IList<E> ToList<E>(IEnumerator<E> iterator) {
-            IList<E> list = new List<E>();
-            iterator.ForEachRemaining(list);
+            var list = new List<E>();
+            while (iterator.MoveNext()) {
+                list.Add(iterator.Current);
+            }
             return list;
         }
 
@@ -364,6 +384,12 @@ namespace iText.Pdfocr.Onnxtr {
             /// </remarks>
             public readonly int[] restoreMap;
 
+            /// <summary>
+            /// Creates new
+            /// <see cref="SplitResult"/>
+            /// instance.
+            /// </summary>
+            /// <param name="capacity">capacity of the list of sub-images</param>
             public SplitResult(int capacity) {
                 this.splitImages = new List<System.Drawing.Bitmap>(capacity);
                 this.restoreMap = new int[capacity];

@@ -30,7 +30,6 @@ namespace iText.Pdfocr.Onnxtr {
     /// <para />
     /// It contains the input shape, as a [batchSize, channel, height, width] array, mean and standard
     /// deviation values for normalization, whether padding should be symmetrical or not.
-    /// 
     /// </remarks>
     public class OnnxInputProperties {
         /// <summary>Expected channel count.</summary>
@@ -57,29 +56,18 @@ namespace iText.Pdfocr.Onnxtr {
         private readonly bool symmetricPad;
 
         /// <summary>Creates model input properties.</summary>
-        /// <param name="mean">
-        /// Per-channel mean, used for normalization.
-        /// Should be EXPECTED_SHAPE_SIZE length.
-        /// </param>
-        /// <param name="std">
-        /// Per-channel standard deviation, used for normalization.
-        /// Should be EXPECTED_SHAPE_SIZE length.
-        /// </param>
-        /// <param name="shape">
-        /// Target input shape.
-        /// Should be EXPECTED_SHAPE_SIZE length.
-        /// </param>
-        /// <param name="symmetricPad">Whether padding should be symmetrical during input resizing.</param>
+        /// <param name="mean">per-channel mean, used for normalization. Should be EXPECTED_SHAPE_SIZE length</param>
+        /// <param name="std">per-channel standard deviation, used for normalization. Should be EXPECTED_SHAPE_SIZE length
+        ///     </param>
+        /// <param name="shape">target input shape. Should be EXPECTED_SHAPE_SIZE length</param>
+        /// <param name="symmetricPad">whether padding should be symmetrical during input resizing</param>
         public OnnxInputProperties(float[] mean, float[] std, long[] shape, bool symmetricPad) {
-            Objects.RequireNonNull(mean);
             if (mean.Length != EXPECTED_CHANNEL_COUNT) {
                 throw new ArgumentException("mean should be a " + EXPECTED_CHANNEL_COUNT + "-element array");
             }
-            Objects.RequireNonNull(std);
             if (std.Length != EXPECTED_CHANNEL_COUNT) {
                 throw new ArgumentException("std should be a " + EXPECTED_CHANNEL_COUNT + "-element array");
             }
-            Objects.RequireNonNull(shape);
             if (shape.Length != EXPECTED_SHAPE_SIZE) {
                 throw new ArgumentException("shape should be a " + EXPECTED_SHAPE_SIZE + "-element array (BCHW)");
             }
@@ -91,119 +79,119 @@ namespace iText.Pdfocr.Onnxtr {
                     throw new ArgumentException("Unexpected dimension value: " + dim);
                 }
             }
-            this.mean = mean.Clone();
-            this.std = std.Clone();
-            this.shape = shape.Clone();
+            this.mean = (float[])mean.Clone();
+            this.std = (float[])std.Clone();
+            this.shape = (long[])shape.Clone();
             this.symmetricPad = symmetricPad;
         }
 
         /// <summary>Returns per-channel mean, used for normalization.</summary>
-        /// <returns>Per-channel mean, used for normalization.</returns>
+        /// <returns>per-channel mean, used for normalization</returns>
         public virtual float[] GetMean() {
-            return mean.Clone();
+            return (float[])mean.Clone();
         }
 
         /// <summary>Returns channel-specific mean, used for normalization.</summary>
-        /// <param name="index">Index of the channel.</param>
-        /// <returns>Channel-specific mean, used for normalization.</returns>
+        /// <param name="index">index of the channel</param>
+        /// <returns>channel-specific mean, used for normalization</returns>
         public virtual float GetMean(int index) {
             return mean[index];
         }
 
         /// <summary>Returns red channel mean, used for normalization.</summary>
-        /// <returns>Red channel mean, used for normalization.</returns>
+        /// <returns>red channel mean, used for normalization</returns>
         public virtual float GetRedMean() {
             return GetMean(0);
         }
 
         /// <summary>Returns green channel mean, used for normalization.</summary>
-        /// <returns>Green channel mean, used for normalization.</returns>
+        /// <returns>green channel mean, used for normalization</returns>
         public virtual float GetGreenMean() {
             return GetMean(1);
         }
 
         /// <summary>Returns blue channel mean, used for normalization.</summary>
-        /// <returns>Blue channel mean, used for normalization.</returns>
+        /// <returns>blue channel mean, used for normalization</returns>
         public virtual float GetBlueMean() {
             return GetMean(2);
         }
 
         /// <summary>Returns per-channel standard deviation, used for normalization.</summary>
-        /// <returns>Per-channel standard deviation, used for normalization.</returns>
+        /// <returns>per-channel standard deviation, used for normalization</returns>
         public virtual float[] GetStd() {
-            return std.Clone();
+            return (float[])std.Clone();
         }
 
         /// <summary>Returns channel-specific standard deviation, used for normalization.</summary>
-        /// <param name="index">Index of the channel.</param>
-        /// <returns>Channel-specific standard deviation, used for normalization.</returns>
+        /// <param name="index">index of the channel</param>
+        /// <returns>channel-specific standard deviation, used for normalization</returns>
         public virtual float GetStd(int index) {
             return std[index];
         }
 
         /// <summary>Returns red channel standard deviation, used for normalization.</summary>
-        /// <returns>Red channel standard deviation, used for normalization.</returns>
+        /// <returns>red channel standard deviation, used for normalization</returns>
         public virtual float GetRedStd() {
             return GetStd(0);
         }
 
         /// <summary>Returns green channel standard deviation, used for normalization.</summary>
-        /// <returns>Green channel standard deviation, used for normalization.</returns>
+        /// <returns>green channel standard deviation, used for normalization</returns>
         public virtual float GetGreenStd() {
             return GetStd(1);
         }
 
         /// <summary>Returns blue channel standard deviation, used for normalization.</summary>
-        /// <returns>Blue channel standard deviation, used for normalization.</returns>
+        /// <returns>blue channel standard deviation, used for normalization</returns>
         public virtual float GetBlueStd() {
             return GetStd(2);
         }
 
         /// <summary>Returns target input shape.</summary>
-        /// <returns>Target input shape.</returns>
+        /// <returns>target input shape</returns>
         public virtual long[] GetShape() {
-            return shape.Clone();
+            return (long[])shape.Clone();
         }
 
         /// <summary>Returns target input dimension value.</summary>
-        /// <param name="index">Index of the dimension.</param>
-        /// <returns>Target input dimension value.</returns>
+        /// <param name="index">index of the dimension</param>
+        /// <returns>target input dimension value</returns>
         public virtual int GetShape(int index) {
             return (int)shape[index];
         }
 
         /// <summary>Returns input batch size.</summary>
-        /// <returns>Input batch size.</returns>
+        /// <returns>input batch size</returns>
         public virtual int GetBatchSize() {
             return GetShape(0);
         }
 
         /// <summary>Returns input channel count.</summary>
-        /// <returns>Input channel count.</returns>
+        /// <returns>input channel count</returns>
         public virtual int GetChannelCount() {
             return GetShape(1);
         }
 
         /// <summary>Returns input height.</summary>
-        /// <returns>Input height.</returns>
+        /// <returns>input height</returns>
         public virtual int GetHeight() {
             return GetShape(2);
         }
 
         /// <summary>Returns input width.</summary>
-        /// <returns>Input width.</returns>
+        /// <returns>input width</returns>
         public virtual int GetWidth() {
             return GetShape(3);
         }
 
         /// <summary>Returns whether padding should be symmetrical during input resizing.</summary>
-        /// <returns>Whether padding should be symmetrical during input resizing.</returns>
+        /// <returns>whether padding should be symmetrical during input resizing</returns>
         public virtual bool UseSymmetricPad() {
             return symmetricPad;
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode(JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), JavaUtil.ArraysHashCode
+            return JavaUtil.ArraysHashCode<object>(JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), JavaUtil.ArraysHashCode
                 (shape), symmetricPad);
         }
 
@@ -215,8 +203,8 @@ namespace iText.Pdfocr.Onnxtr {
                 return false;
             }
             iText.Pdfocr.Onnxtr.OnnxInputProperties that = (iText.Pdfocr.Onnxtr.OnnxInputProperties)o;
-            return symmetricPad == that.symmetricPad && Objects.DeepEquals(mean, that.mean) && Objects.DeepEquals(std, 
-                that.std) && Objects.DeepEquals(shape, that.shape);
+            return symmetricPad == that.symmetricPad && Object.Equals(mean, that.mean) && Object.Equals(std, 
+                that.std) && Object.Equals(shape, that.shape);
         }
 
         public override String ToString() {

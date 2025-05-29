@@ -10,7 +10,6 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     /// <para />
     /// It contains a path to the model, model input properties and a model
     /// output mapper.
-    /// 
     /// </remarks>
     public class OnnxOrientationPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
@@ -37,14 +36,14 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         private readonly IOutputLabelMapper<TextOrientation> outputMapper;
 
         /// <summary>Creates new crop orientation predictor properties.</summary>
-        /// <param name="modelPath">Path to the ONNX model to load.</param>
-        /// <param name="inputProperties">ONNX model input properties.</param>
-        /// <param name="outputMapper">ONNX model output mapper.</param>
+        /// <param name="modelPath">path to the ONNX model to load</param>
+        /// <param name="inputProperties">ONNX model input properties</param>
+        /// <param name="outputMapper">ONNX model output mapper</param>
         public OnnxOrientationPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IOutputLabelMapper
             <TextOrientation> outputMapper) {
-            this.modelPath = Objects.RequireNonNull(modelPath);
-            this.inputProperties = Objects.RequireNonNull(inputProperties);
-            this.outputMapper = Objects.RequireNonNull(outputMapper);
+            this.modelPath = modelPath;
+            this.inputProperties = inputProperties;
+            this.outputMapper = outputMapper;
         }
 
         /// <summary>
@@ -71,10 +70,9 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new crop orientation properties object for a MobileNetV3 model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new crop orientation properties object for a MobileNetV3 model</returns>
         public static iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictorProperties MobileNetV3(String modelPath
             ) {
             return new iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
@@ -82,25 +80,25 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         }
 
         /// <summary>Returns the path to the ONNX model.</summary>
-        /// <returns>The path to the ONNX model.</returns>
+        /// <returns>the path to the ONNX model</returns>
         public virtual String GetModelPath() {
             return modelPath;
         }
 
         /// <summary>Returns the ONNX model input properties.</summary>
-        /// <returns>The ONNX model input properties.</returns>
+        /// <returns>the ONNX model input properties</returns>
         public virtual OnnxInputProperties GetInputProperties() {
             return inputProperties;
         }
 
         /// <summary>Returns the ONNX model output mapper.</summary>
-        /// <returns>The ONNX model output mapper.</returns>
+        /// <returns>the ONNX model output mapper</returns>
         public virtual IOutputLabelMapper<TextOrientation> GetOutputMapper() {
             return outputMapper;
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode(modelPath, inputProperties, outputMapper);
+            return JavaUtil.ArraysHashCode<object>(modelPath, inputProperties, outputMapper);
         }
 
         public override bool Equals(Object o) {

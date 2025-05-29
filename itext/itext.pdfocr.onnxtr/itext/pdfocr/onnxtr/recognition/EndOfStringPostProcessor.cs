@@ -16,7 +16,6 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// can specify additional tokens afterwards, but they are not used in the
     /// processing. No same character aggregation is done. Output is read till an
     /// end-of-string token in encountered.
-    /// 
     /// </remarks>
     public class EndOfStringPostProcessor : IRecognitionPostProcessor {
         /// <summary>Vocabulary used for the model output (without special tokens).</summary>
@@ -29,29 +28,21 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         private readonly int additionalTokens;
 
         /// <summary>Creates a new post-processor.</summary>
-        /// <param name="vocabulary">
-        /// Vocabulary used for the model output (without special
-        /// tokens).
-        /// </param>
-        /// <param name="additionalTokens">
-        /// Amount of additional tokens in the total vocabulary after the
-        /// * end-of-string token.
-        /// </param>
+        /// <param name="vocabulary">vocabulary used for the model output (without special tokens)</param>
+        /// <param name="additionalTokens">amount of additional tokens in the total vocabulary after the end-of-string token
+        ///     </param>
         public EndOfStringPostProcessor(Vocabulary vocabulary, int additionalTokens) {
-            this.vocabulary = Objects.RequireNonNull(vocabulary);
+            this.vocabulary = vocabulary;
             this.additionalTokens = additionalTokens;
         }
 
         /// <summary>Creates a new post-processor without any additional tokens.</summary>
-        /// <param name="vocabulary">
-        /// Vocabulary used for the model output (without special
-        /// tokens).
-        /// </param>
+        /// <param name="vocabulary">vocabulary used for the model output (without special tokens)</param>
         public EndOfStringPostProcessor(Vocabulary vocabulary)
             : this(vocabulary, 0) {
         }
 
-        /// <summary>Creates a new post-processor with the default vocabulary</summary>
+        /// <summary>Creates a new post-processor with the default vocabulary.</summary>
         public EndOfStringPostProcessor()
             : this(Vocabulary.FRENCH, 0) {
         }
@@ -60,9 +51,11 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             int maxWordLength = output.GetDimension(0);
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
             float[] values = new float[LabelDimension()];
-            FloatBuffer outputBuffer = output.GetData();
-            while (outputBuffer.HasRemaining()) {
-                outputBuffer.Get(values);
+            float[] outputBuffer = output.GetData();
+            int offset = 0;
+            int length = values.Length;
+            while (offset < outputBuffer.Length) {
+                Array.Copy(outputBuffer, offset, values, 0, length);
                 int letterIndex = MathUtil.Argmax(values);
                 if (letterIndex < vocabulary.Size()) {
                     wordBuilder.Append(vocabulary.Map(letterIndex));
@@ -73,6 +66,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                         break;
                     }
                 }
+                offset += length;
             }
             return wordBuilder.ToString();
         }

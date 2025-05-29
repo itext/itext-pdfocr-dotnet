@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace iText.Pdfocr.Onnxtr.Util {
@@ -30,8 +31,8 @@ namespace iText.Pdfocr.Onnxtr.Util {
     /// are cached. This is useful for use in ML-models, where you want to process stuff in batches
     /// instead of one-by-ine.
     /// </remarks>
-    /// <typeparam name="T">Input type.</typeparam>
-    /// <typeparam name="R">Output type.</typeparam>
+    /// <typeparam name="T">input type</typeparam>
+    /// <typeparam name="R">output type</typeparam>
     public class BatchProcessingGenerator<T, R> : IEnumerator<R> {
         private readonly IEnumerator<IList<T>> batchIterator;
 
@@ -44,23 +45,20 @@ namespace iText.Pdfocr.Onnxtr.Util {
         private int batchResultIndex;
 
         /// <summary>Creates a new generator with the provided batch iterator and processor.</summary>
-        /// <param name="batchIterator">Input batch iterator.</param>
-        /// <param name="batchProcessor">Batch processor.</param>
+        /// <param name="batchIterator">input batch iterator</param>
+        /// <param name="batchProcessor">batch processor</param>
         public BatchProcessingGenerator(IEnumerator<IList<T>> batchIterator, IBatchProcessor<T, R> batchProcessor) {
-            this.batchIterator = Objects.RequireNonNull(batchIterator);
-            this.batchProcessor = Objects.RequireNonNull(batchProcessor);
+            this.batchIterator = batchIterator;
+            this.batchProcessor = batchProcessor;
         }
 
         public virtual bool HasNext() {
-            return batchIterator.HasNext() || batchResult != null;
+            return batchIterator.MoveNext() || batchResult != null;
         }
 
         public virtual R Next() {
-            if (!HasNext()) {
-                throw new NullReferenceException();
-            }
             if (batchResult == null) {
-                IList<T> batch = batchIterator.Next();
+                IList<T> batch = batchIterator.Current;
                 batchResult = batchProcessor.ProcessBatch(batch);
                 if (batchResult == null || batchResult.Count != batch.Count) {
                     throw new InvalidOperationException("Batch processing failed: invalid number of outputs");

@@ -29,7 +29,6 @@ namespace iText.Pdfocr.Onnxtr.Util {
         }
 
         public static int Argmax(float[] values) {
-            Objects.RequireNonNull(values);
             if (values.Length == 0) {
                 throw new ArgumentException("values should be a non-empty array");
             }

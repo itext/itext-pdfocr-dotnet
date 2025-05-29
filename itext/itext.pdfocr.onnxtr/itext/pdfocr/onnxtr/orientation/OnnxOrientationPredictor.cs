@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Util;
@@ -36,7 +37,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         private readonly OnnxOrientationPredictorProperties properties;
 
         /// <summary>Creates a crop orientation predictor with the specified properties.</summary>
-        /// <param name="properties">Properties of the predictor.</param>
+        /// <param name="properties">properties of the predictor</param>
         public OnnxOrientationPredictor(OnnxOrientationPredictorProperties properties)
             : base(properties.GetModelPath(), properties.GetInputProperties(), GetExpectedOutputShape(properties)) {
             this.properties = properties;
@@ -66,17 +67,16 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor with the MobileNetV3 model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor with the MobileNetV3 model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictor MobileNetV3(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictor(OnnxOrientationPredictorProperties.MobileNetV3
                 (modelPath));
         }
 
         /// <summary>Returns the crop orientation predictor properties.</summary>
-        /// <returns>The crop orientation predictor properties.</returns>
+        /// <returns>the crop orientation predictor properties</returns>
         public virtual OnnxOrientationPredictorProperties GetProperties() {
             return properties;
         }
@@ -91,11 +91,14 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             // Just extracting the highest scoring "orientation class" for each image via argmax
             IList<TextOrientation> orientations = new List<TextOrientation>(outputBatch.GetDimension(0));
             float[] values = new float[outputBatch.GetDimension(1)];
-            FloatBuffer outputBuffer = outputBatch.GetData();
-            while (outputBuffer.HasRemaining()) {
-                outputBuffer.Get(values);
+            float[] outputBuffer = outputBatch.GetData();
+            int offset = 0;
+            int length = values.Length;
+            while (offset < outputBuffer.Length) {
+                Array.Copy(outputBuffer, offset, values, 0, length);
                 int label = MathUtil.Argmax(values);
                 orientations.Add(properties.GetOutputMapper().Map(label));
+                offset += length;
             }
             return orientations;
         }

@@ -29,8 +29,8 @@ namespace iText.Pdfocr.Onnxtr.Util {
     /// Batch processor mapper interface. This is called by
     /// <see cref="BatchProcessingGenerator{T, R}"/>.
     /// </remarks>
-    /// <typeparam name="T">Input batch type.</typeparam>
-    /// <typeparam name="R">Output batch type.</typeparam>
+    /// <typeparam name="T">input batch type</typeparam>
+    /// <typeparam name="R">output batch type</typeparam>
     [FunctionalInterfaceAttribute]
     public interface IBatchProcessor<T, R> {
         IList<R> ProcessBatch(IList<T> batch);

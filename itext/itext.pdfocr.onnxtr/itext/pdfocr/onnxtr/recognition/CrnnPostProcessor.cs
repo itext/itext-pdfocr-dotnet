@@ -15,19 +15,15 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// Notably it does not have end-of-string tokens. Only token, besides the
     /// vocabulary one, is blank, which is just skipped or used as a char separator.
     /// Multiple of the same label in a row is aggregated into one.
-    /// 
     /// </remarks>
     public class CrnnPostProcessor : IRecognitionPostProcessor {
         /// <summary>Vocabulary used for the model output (without special tokens).</summary>
         private readonly Vocabulary vocabulary;
 
         /// <summary>Creates a new post-processor.</summary>
-        /// <param name="vocabulary">
-        /// Vocabulary used for the model output (without special
-        /// tokens).
-        /// </param>
+        /// <param name="vocabulary">vocabulary used for the model output (without special tokens)</param>
         public CrnnPostProcessor(Vocabulary vocabulary) {
-            this.vocabulary = Objects.RequireNonNull(vocabulary);
+            this.vocabulary = vocabulary;
         }
 
         /// <summary>Creates a new post-processor with the default vocabulary.</summary>
@@ -39,16 +35,19 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             int maxWordLength = output.GetDimension(0);
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
             float[] values = new float[LabelDimension()];
-            FloatBuffer outputBuffer = output.GetData();
+            float[] outputBuffer = output.GetData();
             int prevLetterIndex = -1;
-            while (outputBuffer.HasRemaining()) {
-                outputBuffer.Get(values);
+            int offset = 0;
+            int length = values.Length;
+            while (offset < outputBuffer.Length) {
+                Array.Copy(outputBuffer, offset, values, 0, length);
                 int letterIndex = MathUtil.Argmax(values);
                 // Last letter is <blank>
                 if (prevLetterIndex != letterIndex && letterIndex < vocabulary.Size()) {
                     wordBuilder.Append(vocabulary.Map(letterIndex));
                 }
                 prevLetterIndex = letterIndex;
+                offset += length;
             }
             return wordBuilder.ToString();
         }

@@ -33,9 +33,5 @@ namespace iText.Pdfocr.Onnxtr {
         IEnumerator<R> Predict(IEnumerator<T> inputs);
 
         IEnumerator<R> Predict(IEnumerable<T> inputs);
-
-        void System.IDisposable.Dispose() {
-            Close();
-        }
     }
 }

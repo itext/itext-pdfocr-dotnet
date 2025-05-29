@@ -20,7 +20,8 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using Org.Bytedeco.Opencv.Opencv_core;
+
+using OpenCvSharp;
 
 namespace iText.Pdfocr.Onnxtr.Util {
     /// <summary>Static class with OpenCV utility functions.</summary>
@@ -36,43 +37,38 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// Otherwise, the orientation detection model will get a different box, which is already
         /// pre-rotated in some way. Here we will alter the rectangle, so that points would output the
         /// expected order.
-        /// 
         /// <para />
         /// This will make box have points in the following order, relative to the page: BL, TL, TR, BR.
         /// Bottom as in bottom of the image, not the lowest Y coordinate.
-        /// 
         /// </remarks>
-        /// <param name="rect">RotatedRect to normalize.</param>
+        /// <param name="rect">RotatedRect to normalize</param>
         public static void NormalizeRotatedRect(RotatedRect rect) {
-            float angle = rect.Angle();
+            float angle = rect.Angle;
             float clampedAngle = MathUtil.EuclideanModulo(angle, 360);
             /*
             * For 90 and 270 degrees need to swap sizes.
             */
             if ((45F <= clampedAngle && clampedAngle < 135F) || (225F <= clampedAngle && clampedAngle < 315F)) {
-                using (Size2f rectSize = rect.Size()) {
-                    float tempWidth = rectSize.Width();
-                    rectSize.Width(rectSize.Height());
-                    rectSize.Height(tempWidth);
-                }
+                Size2f rectSize = rect.Size;
+                (rectSize.Width, rectSize.Height) = (rectSize.Height, rectSize.Width);
                 if (clampedAngle < 135F) {
-                    rect.Angle(clampedAngle - 90F);
+                    rect.Angle = clampedAngle - 90F;
                 }
                 else {
-                    rect.Angle(clampedAngle - 270F);
+                    rect.Angle = clampedAngle - 270F;
                 }
             }
             else {
                 if (135F <= clampedAngle && clampedAngle < 225F) {
-                    rect.Angle(clampedAngle - 180F);
+                    rect.Angle = clampedAngle - 180F;
                 }
                 else {
                     if (315F <= clampedAngle) {
-                        rect.Angle(clampedAngle - 360F);
+                        rect.Angle = clampedAngle - 360F;
                     }
                     else {
                         System.Diagnostics.Debug.Assert(0F <= clampedAngle && clampedAngle < 45F);
-                        rect.Angle(clampedAngle);
+                        rect.Angle = clampedAngle;
                     }
                 }
             }

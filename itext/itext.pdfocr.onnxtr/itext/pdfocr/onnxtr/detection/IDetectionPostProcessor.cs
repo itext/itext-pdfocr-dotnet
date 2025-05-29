@@ -37,26 +37,18 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// of the points should be the following: Bottom-Left, Top-Left, Top-Right,
     /// Bottom-Right. This is with "bottom" and "top" referring to how it would look
     /// on an image, not Y coordinate.
-    /// 
     /// <para />
-    /// It box points are return in a different order, it will cause issues with
+    /// Its box points are return in a different order, it will cause issues with
     /// the following steps (like orientation prediction and text recognition).
-    /// 
     /// </remarks>
     public interface IDetectionPostProcessor {
         /// <summary>
         /// Process ML model output for a specified image and return a list of
         /// detected objects.
         /// </summary>
-        /// <param name="input">
-        /// Input image, which was used to produce the inputs to the
-        /// ML model.
-        /// </param>
-        /// <param name="output">Normalized output of the ML model.</param>
-        /// <returns>
-        /// A list of detected objects. See interface documentation for more
-        /// information
-        /// </returns>
+        /// <param name="input">input image, which was used to produce the inputs to the ML model</param>
+        /// <param name="output">normalized output of the ML model</param>
+        /// <returns>a list of detected objects. See interface documentation for more information</returns>
         IList<Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output);
     }
 }

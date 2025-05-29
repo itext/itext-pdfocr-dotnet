@@ -9,7 +9,6 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <para />
     /// It contains a path to the model, model input properties and a model
     /// output post-processor.
-    /// 
     /// </remarks>
     public class OnnxRecognitionPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
@@ -34,14 +33,14 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         private readonly IRecognitionPostProcessor postProcessor;
 
         /// <summary>Creates new text recognition predictor properties.</summary>
-        /// <param name="modelPath">Path to the ONNX model to load.</param>
-        /// <param name="inputProperties">ONNX model input properties.</param>
-        /// <param name="postProcessor">ONNX model output post-processor.</param>
+        /// <param name="modelPath">path to the ONNX model to load</param>
+        /// <param name="inputProperties">ONNX model input properties</param>
+        /// <param name="postProcessor">ONNX model output post-processor</param>
         public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
              postProcessor) {
-            this.modelPath = Objects.RequireNonNull(modelPath);
-            this.inputProperties = Objects.RequireNonNull(inputProperties);
-            this.postProcessor = Objects.RequireNonNull(postProcessor);
+            this.modelPath = modelPath;
+            this.inputProperties = inputProperties;
+            this.postProcessor = postProcessor;
         }
 
         /// <summary>
@@ -68,13 +67,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>
-        /// A new text recognition properties object for a CRNN model with a
-        /// VGG-16 backbone.
-        /// </returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text recognition properties object for a CRNN model with a VGG-16 backbone</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties CrnnVgg16(String modelPath
             ) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
@@ -116,26 +111,19 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>
-        /// A new text recognition properties object for a CRNN model with a
-        /// MobileNet V3 backbone.
-        /// </returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text recognition properties object for a CRNN model with a MobileNet V3 backbone</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties CrnnMobileNetV3(String modelPath
             ) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , new CrnnPostProcessor(Vocabulary.FRENCH));
         }
 
-        /// <summary>
-        /// Creates a new text recognition properties object for existing pre-trained
-        /// MASTER models, stored on disk.
-        /// </summary>
+        /// <summary>Creates a new text recognition properties object for existing pre-trained MASTER models, stored on disk.
+        ///     </summary>
         /// <remarks>
-        /// Creates a new text recognition properties object for existing pre-trained
-        /// MASTER models, stored on disk.
+        /// Creates a new text recognition properties object for existing pre-trained MASTER models, stored on disk.
         /// <para />
         /// This can be used to load the following models from OnnxTR:
         /// <list type="bullet">
@@ -152,10 +140,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text recognition properties object for a MASTER model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text recognition properties object for a MASTER model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties Master(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , 
@@ -186,10 +173,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text recognition properties object for a PARSeq model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text recognition properties object for a PARSeq model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ParSeq(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0));
@@ -218,10 +204,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text recognition properties object for a SAR model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text recognition properties object for a SAR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties Sar(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0));
@@ -262,29 +247,28 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new text recognition properties object for a ViTSTR model.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text recognition properties object for a ViTSTR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ViTstr(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0));
         }
 
         /// <summary>Returns the path to the ONNX model.</summary>
-        /// <returns>The path to the ONNX model.</returns>
+        /// <returns>the path to the ONNX model</returns>
         public virtual String GetModelPath() {
             return modelPath;
         }
 
         /// <summary>Returns the ONNX model input properties.</summary>
-        /// <returns>The ONNX model input properties.</returns>
+        /// <returns>the ONNX model input properties</returns>
         public virtual OnnxInputProperties GetInputProperties() {
             return inputProperties;
         }
 
         /// <summary>Returns the ONNX model output post-processor.</summary>
-        /// <returns>The ONNX model output post-processor.</returns>
+        /// <returns>the ONNX model output post-processor</returns>
         public virtual IRecognitionPostProcessor GetPostProcessor() {
             return postProcessor;
         }
@@ -303,7 +287,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode(modelPath, inputProperties, postProcessor);
+            return JavaUtil.ArraysHashCode<object>(modelPath, inputProperties, postProcessor);
         }
 
         public override String ToString() {

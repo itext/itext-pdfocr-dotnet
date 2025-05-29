@@ -53,13 +53,34 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <summary>Creates a new vocabulary based on a look-up string.</summary>
         /// <param name="lookUpString">look-up string to be used as LUT for the vocabulary</param>
         public Vocabulary(String lookUpString) {
-            Objects.RequireNonNull(lookUpString);
-            if (lookUpString.CodePointCount(0, lookUpString.Length) != lookUpString.Length) {
+            if (CodePointCount(lookUpString, 0, lookUpString.Length) != lookUpString.Length) {
                 throw new ArgumentException("Look-up string contains code points, which are encoded with 2 code units");
             }
             this.lookUpString = lookUpString;
         }
 
+        private static int CodePointCount(string str, int beginIndex, int endIndex)
+        {
+            if (str == null)
+                throw new ArgumentNullException(nameof(str));
+            if (beginIndex < 0 || endIndex > str.Length || beginIndex > endIndex)
+                throw new ArgumentOutOfRangeException();
+
+            int count = 0;
+            for (int i = beginIndex; i < endIndex; i++)
+            {
+                if (char.IsHighSurrogate(str[i]))
+                {
+                    if (i + 1 < endIndex && char.IsLowSurrogate(str[i + 1]))
+                    {
+                        i++; 
+                    }
+                }
+                count++;
+            }
+            return count;
+        }
+        
         /// <summary>Creates a new vocabulary by concatenating multiple ones.</summary>
         /// <param name="vocabularies">vocabularies to concatenate</param>
         /// <returns>the new aggregated vocabulary</returns>
@@ -88,14 +109,14 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// Returns character, which is mapped to the specified index in the lookup
         /// string.
         /// </summary>
-        /// <param name="index">Index to map.</param>
-        /// <returns>Mapped character.</returns>
+        /// <param name="index">index to map</param>
+        /// <returns>mapped character</returns>
         public virtual char Map(int index) {
             return lookUpString[index];
         }
 
         public override int GetHashCode() {
-            return Objects.HashCode(lookUpString);
+            return lookUpString.GetHashCode();
         }
 
         public override bool Equals(Object o) {

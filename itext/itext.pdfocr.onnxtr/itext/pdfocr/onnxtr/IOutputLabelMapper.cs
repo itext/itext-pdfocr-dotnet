@@ -22,15 +22,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>Interface for mapping an integer index (continuous from 0) to output values.</summary>
-    /// <typeparam name="T">Output type.</typeparam>
+    /// <typeparam name="T">output type</typeparam>
     public interface IOutputLabelMapper<T> {
         /// <summary>Returns a number of mappable values.</summary>
-        /// <returns>A number of mappable values.</returns>
+        /// <returns>a number of mappable values</returns>
         int Size();
 
         /// <summary>Returns value, which is mapped to the specified index.</summary>
-        /// <param name="index">Index to map.</param>
-        /// <returns>Mapped output value.</returns>
+        /// <param name="index">index to map</param>
+        /// <returns>mapped output value</returns>
         T Map(int index);
     }
 }

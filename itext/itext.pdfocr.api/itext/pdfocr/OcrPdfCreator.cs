@@ -714,7 +714,7 @@ namespace iText.Pdfocr {
                 LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.NUMBER_OF_PAGES_IN_IMAGE, inputImage
                     .ToString(), imageDataList.Count));
                 IDictionary<int, IList<TextInfo>> imageTextData = entry.Value;
-                if (!imageTextData.Keys.IsEmpty()) {
+                if (imageTextData.Keys.Count > 0) {
                     for (int page = 0; page < imageDataList.Count; ++page) {
                         ImageData imageData = imageDataList[page];
                         Rectangle imageSize = PdfCreatorUtil.CalculateImageSize(imageData, ocrPdfCreatorProperties.GetScaleMode(), 
@@ -838,7 +838,7 @@ namespace iText.Pdfocr {
         /// <param name="page">current page</param>
         private void AddTextToCanvas(Rectangle imageSize, IList<TextInfo> pageText, IDictionary<TextInfo, TagTreePointer
             > flatLogicalTree, PdfCanvas pdfCanvas, float multiplier, PdfPage page) {
-            if (pageText == null || pageText.IsEmpty()) {
+            if (pageText == null || pageText.Count == 0) {
                 return;
             }
             Rectangle pageMediaBox = page.GetMediaBox();

@@ -30,8 +30,8 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// </summary>
     public interface IRecognitionPostProcessor {
         /// <summary>Process ML model output and return recognized characters as string.</summary>
-        /// <param name="output">Raw output of the ML model.</param>
-        /// <returns>Recognized characters as string.</returns>
+        /// <param name="output">raw output of the ML model</param>
+        /// <returns>recognized characters as string</returns>
         String Process(FloatBufferMdArray output);
 
         /// <summary>Returns the size of the output character label vector.</summary>
@@ -39,7 +39,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// Returns the size of the output character label vector. I.e. how many
         /// distinct tokens/characters the model recognizes.
         /// </remarks>
-        /// <returns>The size of the output character label vector.</returns>
+        /// <returns>the size of the output character label vector</returns>
         int LabelDimension();
     }
 }

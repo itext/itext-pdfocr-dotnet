@@ -37,6 +37,14 @@ namespace iText.Pdfocr {
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
         /// describing text bbox (lower-left based) expressed in points.
         /// </summary>
+        /// <remarks>
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// describing text bbox (lower-left based) expressed in points.
+        /// <para />
+        /// TODO DEVSIX-9153: mark this on breaking changes page. Why not return rectangles in image pixels?
+        /// Seems odd, that an OCR engine should be concerned by PDF specific. It would make sense for an engine
+        /// to return results, which could be directly applied to images inputs instead.
+        /// </remarks>
         private Rectangle bboxRect;
 
         /// <summary>
@@ -108,7 +116,7 @@ namespace iText.Pdfocr {
         public TextInfo(String text, Rectangle bbox, TextOrientation orientation) {
             this.text = text;
             this.bboxRect = new Rectangle(bbox);
-            this.orientation = Objects.RequireNonNull(orientation);
+            this.orientation = orientation;
         }
 
         /// <summary>Gets text element.</summary>
@@ -160,7 +168,7 @@ namespace iText.Pdfocr {
         /// describing the orientation of the text (i.e. rotation)
         /// </param>
         public virtual void SetOrientation(TextOrientation orientation) {
-            this.orientation = Objects.RequireNonNull(orientation);
+            this.orientation = orientation;
         }
 
         /// <summary>Retrieves structure tree item for the text item.</summary>

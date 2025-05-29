@@ -22,10 +22,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using iText.Commons.Utils;
-using iText.Kernel.Geom;
 using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Util;
+using Point = iText.Kernel.Geom.Point;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
     /// <summary>
@@ -43,13 +44,10 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             this.properties = properties;
         }
 
-        /// <summary>
-        /// Creates a new text detection predictor using an existing pre-trained
-        /// DBNet model, stored on disk.
-        /// </summary>
+        /// <summary>Creates a new text detection predictor using an existing pre-trained DBNet model, stored on disk.
+        ///     </summary>
         /// <remarks>
-        /// Creates a new text detection predictor using an existing pre-trained
-        /// DBNet model, stored on disk.
+        /// Creates a new text detection predictor using an existing pre-trained DBNet model, stored on disk.
         /// <para />
         /// This can be used to load the following models from OnnxTR:
         /// <list type="bullet">
@@ -90,23 +88,18 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor with the DBNet model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor with the DBNet model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor DbNet(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.DbNet(modelPath
                 ));
         }
 
-        /// <summary>
-        /// Creates a new text detection predictor using an existing pre-trained
-        /// FAST model, stored on disk.
-        /// </summary>
+        /// <summary>Creates a new text detection predictor using an existing pre-trained FAST model, stored on disk.</summary>
         /// <remarks>
-        /// Creates a new text detection predictor using an existing pre-trained
-        /// FAST model, stored on disk. This is the default text detection model in
-        /// OnnxTR.
+        /// Creates a new text detection predictor using an existing pre-trained FAST model, stored on disk.
+        /// This is the default text detection model in OnnxTR.
         /// <para />
         /// This can be used to load the following models from OnnxTR:
         /// <list type="bullet">
@@ -129,22 +122,18 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor with the FAST model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor with the FAST model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor Fast(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.Fast(modelPath
                 ));
         }
 
-        /// <summary>
-        /// Creates a new text detection predictor using an existing pre-trained
-        /// LinkNet model, stored on disk.
-        /// </summary>
+        /// <summary>Creates a new text detection predictor using an existing pre-trained LinkNet model, stored on disk.
+        ///     </summary>
         /// <remarks>
-        /// Creates a new text detection predictor using an existing pre-trained
-        /// LinkNet model, stored on disk.
+        /// Creates a new text detection predictor using an existing pre-trained LinkNet model, stored on disk.
         /// <para />
         /// This can be used to load the following models from OnnxTR:
         /// <list type="bullet">
@@ -185,17 +174,16 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor with the LinkNet model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor with the LinkNet model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor LinkNet(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.LinkNet(modelPath
                 ));
         }
 
         /// <summary>Returns the text detection predictor properties.</summary>
-        /// <returns>The text detection predictor properties.</returns>
+        /// <returns>the text detection predictor properties</returns>
         public virtual OnnxDetectionPredictorProperties GetProperties() {
             return properties;
         }
@@ -209,9 +197,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             , FloatBufferMdArray outputBatch) {
             IDetectionPostProcessor postProcessor = properties.GetPostProcessor();
             // Normalizing pixel values via a sigmoid expit function
-            FloatBuffer outputBuffer = outputBatch.GetData();
-            for (int i = 0; i < outputBuffer.Limit(); ++i) {
-                outputBuffer.Put(i, MathUtil.Expit(outputBuffer.Get(i)));
+            float[] outputBuffer = outputBatch.GetData();
+            for (int i = 0; i < outputBuffer.Length; ++i) {
+                outputBuffer[i] = MathUtil.Expit(outputBuffer[i]);
             }
             IList<IList<Point[]>> batchTextBoxes = new List<IList<Point[]>>(inputBatch.Count);
             for (int i = 0; i < inputBatch.Count; ++i) {
@@ -231,8 +219,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
 
         private static void ConvertToAbsoluteInputBoxes(System.Drawing.Bitmap image, IList<Point[]> boxes, OnnxInputProperties
              properties) {
-            int sourceWidth = image.GetWidth();
-            int sourceHeight = image.GetHeight();
+            int sourceWidth = image.Width;
+            int sourceHeight = image.Height;
             float targetWidth = properties.GetWidth();
             float targetHeight = properties.GetHeight();
             float widthRatio = targetWidth / sourceWidth;
@@ -241,11 +229,11 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             float heightScale;
             // We preserve ratio, when resizing input
             if (heightRatio > widthRatio) {
-                heightScale = targetHeight / MathematicUtil.Round(sourceHeight * widthRatio);
+                heightScale = (float)(targetHeight / MathematicUtil.Round(sourceHeight * widthRatio));
                 widthScale = 1;
             }
             else {
-                widthScale = targetWidth / MathematicUtil.Round(sourceWidth * heightRatio);
+                widthScale = (float)(targetWidth / MathematicUtil.Round(sourceWidth * heightRatio));
                 heightScale = 1;
             }
             Action<Point> updater;

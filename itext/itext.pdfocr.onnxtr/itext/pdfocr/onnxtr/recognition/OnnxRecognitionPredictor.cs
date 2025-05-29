@@ -35,7 +35,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         private readonly OnnxRecognitionPredictorProperties properties;
 
         /// <summary>Creates a text recognition predictor with the specified properties.</summary>
-        /// <param name="properties">Properties of the predictor.</param>
+        /// <param name="properties">properties of the predictor</param>
         public OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties properties)
             : base(properties.GetModelPath(), properties.GetInputProperties(), GetExpectedOutputShape(properties)) {
             this.properties = properties;
@@ -65,13 +65,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>
-        /// A new predictor object with the CRNN model loaded with a VGG-16
-        /// backbone.
-        /// </returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor object with the CRNN model loaded with a VGG-16 backbone</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor CrnnVgg16(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.CrnnVgg16
                 (modelPath));
@@ -112,13 +108,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>
-        /// A new predictor object with the CRNN model loaded with a
-        /// MobileNet V3 backbone.
-        /// </returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor object with the CRNN model loaded with a MobileNet V3 backbone</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor CrnnMobileNetV3(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.CrnnMobileNetV3
                 (modelPath));
@@ -149,8 +141,8 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </list>
         /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor object with the MASTER model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor object with the MASTER model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor Master(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.Master
                 (modelPath));
@@ -179,10 +171,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor object with the PARSeq model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor object with the PARSeq model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor ParSeq(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.ParSeq
                 (modelPath));
@@ -211,22 +202,18 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor object with the SAR model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor object with the SAR model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor Sar(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.Sar
                 (modelPath));
         }
 
-        /// <summary>
-        /// Creates a new text recognition predictor using an existing pre-trained
-        /// ViTSTR model, stored on disk.
-        /// </summary>
+        /// <summary>Creates a new text recognition predictor using an existing pre-trained ViTSTR model, stored on disk.
+        ///     </summary>
         /// <remarks>
-        /// Creates a new text recognition predictor using an existing pre-trained
-        /// ViTSTR model, stored on disk.
+        /// Creates a new text recognition predictor using an existing pre-trained ViTSTR model, stored on disk.
         /// <para />
         /// This can be used to load the following models from OnnxTR:
         /// <list type="bullet">
@@ -255,17 +242,16 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
-        /// <param name="modelPath">Path to the pre-trained model.</param>
-        /// <returns>A new predictor object with the ViTSTR model loaded.</returns>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor object with the ViTSTR model loaded</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor ViTstr(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.ViTstr
                 (modelPath));
         }
 
         /// <summary>Returns the text recognition predictor properties.</summary>
-        /// <returns>The text recognition predictor properties.</returns>
+        /// <returns>the text recognition predictor properties</returns>
         public virtual OnnxRecognitionPredictorProperties GetProperties() {
             return properties;
         }

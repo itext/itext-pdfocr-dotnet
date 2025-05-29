@@ -21,7 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using AI.Onnxruntime;
+using System.Linq;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>
@@ -30,29 +30,21 @@ namespace iText.Pdfocr.Onnxtr {
     /// backing storage.
     /// </summary>
     public class FloatBufferMdArray {
-        private readonly FloatBuffer data;
+        private readonly float[] data;
 
         private readonly long[] shape;
 
-        public FloatBufferMdArray(FloatBuffer data, long[] shape) {
-            Objects.RequireNonNull(data);
-            Objects.RequireNonNull(shape);
-            if (!OrtUtil.ValidateShape(shape)) {
-                throw new ArgumentException("Shape is not valid");
-            }
-            if (data.Remaining() != OrtUtil.ElementCount(shape)) {
-                throw new ArgumentException("Data element count does not match shape");
-            }
-            this.data = ((FloatBuffer)data.Duplicate());
-            this.shape = shape.Clone();
+        public FloatBufferMdArray(float[] data, long[] shape) {
+            this.data = ((float[])data.Clone());
+            this.shape = (long[])shape.Clone();
         }
 
-        public virtual FloatBuffer GetData() {
-            return ((FloatBuffer)data.Duplicate());
+        public virtual float[] GetData() {
+            return ((float[])data.Clone());
         }
 
         public virtual long[] GetShape() {
-            return shape.Clone();
+            return (long[])shape.Clone();
         }
 
         public virtual int GetDimensionCount() {
@@ -75,19 +67,13 @@ namespace iText.Pdfocr.Onnxtr {
             }
             long[] newShape = new long[shape.Length - 1];
             Array.Copy(shape, 1, newShape, 0, newShape.Length);
-            int subArraySize = (data.Remaining() / (int)shape[0]);
-            FloatBuffer newData = ((FloatBuffer)data.Duplicate());
-            newData.Position(index * subArraySize);
-            newData = ((FloatBuffer)newData.Slice());
-            newData.Limit(subArraySize);
+            int subArraySize = (data.Length / (int)shape[0]);
+            float[] newData = ((float[])data.Clone()).Skip(index * subArraySize).Take(subArraySize).ToArray();
             return new iText.Pdfocr.Onnxtr.FloatBufferMdArray(newData, newShape);
         }
 
         public virtual float GetScalar(int index) {
-            if (shape.Length != 0 && (OrtUtil.ElementCount(shape) != shape[0])) {
-                throw new InvalidOperationException();
-            }
-            return data.Get(index);
+            return data[index];
         }
     }
 }

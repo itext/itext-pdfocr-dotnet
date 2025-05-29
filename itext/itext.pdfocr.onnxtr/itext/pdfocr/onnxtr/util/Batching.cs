@@ -30,42 +30,33 @@ namespace iText.Pdfocr.Onnxtr.Util {
         }
 
         /// <summary>Wraps an existing iterator into a new one, which output List-based batches,</summary>
-        /// <param name="iterator">Iterator to wrap.</param>
-        /// <param name="batchSize">Target batch size. Last batch might have smaller size.</param>
-        /// <returns>Batch iterator wrapper.</returns>
-        /// <typeparam name="E">Input iterator element type.</typeparam>
-        public static IEnumerator<IList<E>> Wrap<E>(IEnumerator<E> iterator, int batchSize) {
-            Objects.RequireNonNull(iterator);
-            if (batchSize <= 0) {
-                throw new ArgumentException("batchSize should be positive");
-            }
-            return new _IEnumerator_53(iterator, batchSize);
-        }
+        /// <param name="iterator">iterator to wrap</param>
+        /// <param name="batchSize">target batch size. Last batch might have smaller size</param>
+        /// <returns>batch iterator wrapper</returns>
+        /// <typeparam name="E">input iterator element type</typeparam>
+        public static IEnumerator<IList<E>> Wrap<E>(IEnumerator<E> iterator, int batchSize)
+        {
+            if (iterator == null)
+                throw new ArgumentNullException(nameof(iterator));
+            if (batchSize <= 0)
+                throw new ArgumentException("batchSize should be positive", nameof(batchSize));
 
-        private sealed class _IEnumerator_53 : IEnumerator<IList<E>> {
-            public _IEnumerator_53(IEnumerator<E> iterator, int batchSize) {
-                this.iterator = iterator;
-                this.batchSize = batchSize;
-            }
+            while (true)
+            {
+                var batch = new List<E>(batchSize);
+                int count = 0;
 
-            public bool HasNext() {
-                return iterator.HasNext();
-            }
-
-            public IList<E> Next() {
-                if (!this.HasNext()) {
-                    throw new NullReferenceException();
+                while (count < batchSize && iterator.MoveNext())
+                {
+                    batch.Add(iterator.Current);
+                    count++;
                 }
-                IList<E> batch = new List<E>(batchSize);
-                for (int i = 0; i < batchSize && iterator.HasNext(); ++i) {
-                    batch.Add(iterator.Next());
-                }
-                return batch;
+
+                if (batch.Count == 0)
+                    yield break;
+
+                yield return batch;
             }
-
-            private readonly IEnumerator<E> iterator;
-
-            private readonly int batchSize;
         }
     }
 }

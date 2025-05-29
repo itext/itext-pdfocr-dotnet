@@ -22,10 +22,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using AI.Onnxruntime;
+using System.IO;
+using System.Linq;
+using Microsoft.ML.OnnxRuntime;
 using iText.Commons.Utils;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Util;
+using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>Abstract predictor, based on models running over ONNX runtime.</summary>
@@ -37,18 +40,17 @@ namespace iText.Pdfocr.Onnxtr {
 
         /// <summary>ONNX runtime session options.</summary>
         /// <remarks>
-        /// ONNX runtime session options. TODO DEVSIX-9154 Not sure, whether
+        /// ONNX runtime session options.
         /// <see cref="AI.Onnxruntime.OrtSession"/>
-        /// takes
-        /// ownership of options, when you pass them, so it might not be safe to
-        /// close the object just after the session creation. So storing to dispose
+        /// does not take ownership of the options, when you pass them.
+        /// It uses the options during initialization but does not manage their lifetime afterward. So storing to dispose
         /// it after session disposal.
         /// </remarks>
-        private readonly OrtSession.SessionOptions sessionOptions;
+        private readonly SessionOptions sessionOptions;
 
         /// <summary>ONNX runtime session.</summary>
         /// <remarks>ONNX runtime session. Contains the machine learning model.</remarks>
-        private readonly OrtSession session;
+        private readonly InferenceSession session;
 
         /// <summary>Key for the singular input of a model.</summary>
         private readonly String inputName;
@@ -67,15 +69,15 @@ namespace iText.Pdfocr.Onnxtr {
         /// </param>
         protected internal AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape
             ) {
-            this.inputProperties = Objects.RequireNonNull(inputProperties);
+            this.inputProperties = inputProperties;
             try {
                 this.sessionOptions = CreateDefaultSessionOptions();
             }
-            catch (OrtException e) {
+            catch (OnnxRuntimeException e) {
                 throw new PdfOcrException("Failed to init ONNX Runtime session options", e);
             }
             try {
-                this.session = OrtEnvironment.GetEnvironment().CreateSession(modelPath, sessionOptions);
+                this.session = new InferenceSession(File.ReadAllBytes(modelPath), sessionOptions);
             }
             catch (Exception e) {
                 this.sessionOptions.Close();
@@ -87,10 +89,10 @@ namespace iText.Pdfocr.Onnxtr {
             catch (Exception e) {
                 PdfOcrException userException = new PdfOcrException("ONNX Runtime model did not pass validation", e);
                 try {
-                    this.session.Close();
+                    this.session.Dispose();
                 }
-                catch (OrtException closeException) {
-                    userException.AddSuppressed(closeException);
+                catch (OnnxRuntimeException closeException) {
+                    userException = new PdfOcrException("ONNX Runtime model did not pass validation: " + e.Message, closeException);
                 }
                 this.sessionOptions.Close();
                 throw userException;
@@ -98,28 +100,59 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         public virtual IEnumerator<R> Predict(IEnumerator<T> inputs) {
-            return new BatchProcessingGenerator<T, R>(Batching.Wrap(inputs, inputProperties.GetBatchSize()), (batch) => {
-                try {
-                    using (OnnxTensor inputTensor = CreateTensor(ToInputBuffer(batch))) {
-                        using (OrtSession.Result outputTensor = session.Run(JavaCollectionsUtil.SingletonMap(inputName, inputTensor
-                            ))) {
-                            return FromOutputBuffer(batch, ParseModelOutput(outputTensor));
-                        }
+            Func<IList<T>, IList<R>> processor = (batch) => {
+                try
+                {
+                    DenseTensor<float> inputTensor = CreateTensor(ToInputBuffer(batch));
+                    NamedOnnxValue namedOnnxValue = NamedOnnxValue.CreateFromTensor(inputName, inputTensor);
+                    using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> outputTensor = session.Run(new[] { namedOnnxValue })) {
+                        return FromOutputBuffer(batch, ParseModelOutput(outputTensor));
                     }
                 }
-                catch (OrtException e) {
+                catch (OnnxRuntimeException e) {
                     throw new PdfOcrException("ONNX Runtime operation failed", e);
                 }
-            }
+            };
+            return new BatchProcessingGenerator<T, R>(Batching.Wrap((IEnumerator<T>)inputs, inputProperties.GetBatchSize()),
+                new BatchProcessor(processor)
             );
         }
 
+        public IEnumerator<R> Predict(IEnumerable<T> inputs) {
+            Func<IList<T>, IList<R>> processor = (batch) => {
+                try
+                {
+                    DenseTensor<float> inputTensor = CreateTensor(ToInputBuffer(batch));
+                    NamedOnnxValue namedOnnxValue = NamedOnnxValue.CreateFromTensor(inputName, inputTensor);
+                    using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> outputTensor = session.Run(new[] { namedOnnxValue })) {
+                        return FromOutputBuffer(batch, ParseModelOutput(outputTensor));
+                    }
+                }
+                catch (OnnxRuntimeException e) {
+                    throw new PdfOcrException("ONNX Runtime operation failed", e);
+                }
+            };
+            return new BatchProcessingGenerator<T, R>(Batching.Wrap(inputs.GetEnumerator(), inputProperties.GetBatchSize()),
+                new BatchProcessor(processor)
+            );
+        }
+
+        public class BatchProcessor : IBatchProcessor<T, R> {
+            private Func<IList<T>, IList<R>> processor;
+            public BatchProcessor(Func<IList<T>, IList<R>> processor) {
+                this.processor = processor;
+            }
+
+            public IList<R> ProcessBatch(IList<T> batch) {
+                return processor.Invoke(batch);
+            }
+        }
         public virtual void Close() {
             try {
-                session.Close();
+                session.Dispose();
                 sessionOptions.Close();
             }
-            catch (OrtException e) {
+            catch (OnnxRuntimeException e) {
                 throw new PdfOcrException("Failed to close an ONNX Runtime session", e);
             }
         }
@@ -135,17 +168,15 @@ namespace iText.Pdfocr.Onnxtr {
         /// <returns>a list of predictor output</returns>
         protected internal abstract IList<R> FromOutputBuffer(IList<T> inputBatch, FloatBufferMdArray outputBatch);
 
-        private static OrtSession.SessionOptions CreateDefaultSessionOptions() {
-            OrtSession.SessionOptions ortOptions = new OrtSession.SessionOptions();
+        private static SessionOptions CreateDefaultSessionOptions() {
+            SessionOptions ortOptions = new SessionOptions();
             try {
-                ortOptions.AddCPU(true);
-                if (OrtEnvironment.GetAvailableProviders().Contains(OrtProvider.CUDA)) {
-                    ortOptions.AddCUDA();
-                }
-                ortOptions.SetExecutionMode(OrtSession.SessionOptions.ExecutionMode.SEQUENTIAL);
-                ortOptions.SetOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT);
-                ortOptions.SetIntraOpNumThreads(-1);
-                ortOptions.SetInterOpNumThreads(-1);
+                ortOptions.AppendExecutionProvider_CPU();
+                //ortOptions.AppendExecutionProvider_CUDA();
+                ortOptions.ExecutionMode = ExecutionMode.ORT_SEQUENTIAL;
+                ortOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
+                ortOptions.IntraOpNumThreads = -1;
+                ortOptions.InterOpNumThreads = -1;
                 return ortOptions;
             }
             catch (Exception e) {
@@ -154,8 +185,9 @@ namespace iText.Pdfocr.Onnxtr {
             }
         }
 
-        private static OnnxTensor CreateTensor(FloatBufferMdArray batch) {
-            return OnnxTensor.CreateTensor(OrtEnvironment.GetEnvironment(), batch.GetData(), batch.GetShape());
+        private static DenseTensor<float> CreateTensor(FloatBufferMdArray batch) {
+            int[] shape = Array.ConvertAll(batch.GetShape(), item => (int)item);
+            return new DenseTensor<float>(new Memory<float>(batch.GetData()), new ReadOnlySpan<int>(shape));
         }
 
         /// <summary>Validates model, loaded in session, against expected inputs and outputs.</summary>
@@ -163,55 +195,49 @@ namespace iText.Pdfocr.Onnxtr {
         /// Validates model, loaded in session, against expected inputs and outputs.
         /// If model is invalid, then an exception is thrown.
         /// </remarks>
-        /// <param name="session">TODO DEVSIX-9154</param>
-        /// <param name="properties">TODO DEVSIX-9154</param>
-        /// <param name="outputShape">TODO DEVSIX-9154</param>
+        /// <param name="session">
+        /// current
+        /// <see cref="AI.Onnxruntime.OrtSession"/>
+        /// with the loaded ONNX runtime model
+        /// </param>
+        /// <param name="properties">
+        /// 
+        /// <see cref="OnnxInputProperties"/>
+        /// properties of the input of an ONNX model which expects an RGB image
+        /// </param>
+        /// <param name="outputShape">expected shape of the output. -1 entries mean that the dimension can be of any size
+        ///     </param>
         /// <returns>input info</returns>
-        private static String ValidateModel(OrtSession session, OnnxInputProperties properties, long[] outputShape
+        private static String ValidateModel(InferenceSession session, OnnxInputProperties properties, long[] outputShape
             ) {
             String inputName = ValidateModelInput(session, properties);
             ValidateModelOutput(session, outputShape);
             return inputName;
         }
 
-        private static String ValidateModelInput(OrtSession session, OnnxInputProperties properties) {
-            ICollection<NodeInfo> inputInfo = session.GetInputInfo().Values;
-            if (inputInfo.Count != 1) {
-                throw new ArgumentException("Expected 1 input, but got " + inputInfo.Count + " instead");
+        private static String ValidateModelInput(InferenceSession session, OnnxInputProperties properties) {
+            IEnumerable<NodeMetadata> inputInfo = session.InputMetadata.Values;
+            if (inputInfo.Count() != 1) {
+                throw new ArgumentException("Expected 1 input, but got " + inputInfo.Count() + " instead");
             }
-            NodeInfo inputNodeInfo = inputInfo.Iterator().Next();
-            ValueInfo inputNodeValueInfo = inputNodeInfo.GetInfo();
-            if (!(inputNodeValueInfo is TensorInfo)) {
-                throw new ArgumentException("Unexpected input type, expected float32 tensor");
-            }
-            TensorInfo inputTensorInfo = (TensorInfo)inputNodeValueInfo;
-            if (inputTensorInfo.type != OnnxJavaType.FLOAT) {
-                throw new ArgumentException("Unexpected input type, expected float32 tensor");
-            }
-            long[] inputShape = inputTensorInfo.GetShape();
+            NodeMetadata inputNodeInfo = inputInfo.First();
+            long[] inputShape = Array.ConvertAll(inputNodeInfo.Dimensions, item => (long)item);
             if (IsShapeIncompatible(properties.GetShape(), inputShape)) {
                 throw new ArgumentException("Expected " + JavaUtil.ArraysToString(properties.GetShape()) + " input shape, "
                      + "but got " + JavaUtil.ArraysToString(inputShape) + " instead");
             }
-            return inputNodeInfo.GetName();
+            return session.InputNames.First();
         }
 
-        private static void ValidateModelOutput(OrtSession session, long[] expectedOutputShape) {
-            ICollection<NodeInfo> outputInfo = session.GetOutputInfo().Values;
-            if (outputInfo.Count != 1) {
-                throw new ArgumentException("Expected 1 output, but got " + outputInfo.Count + " instead");
+        private static void ValidateModelOutput(InferenceSession session, long[] expectedOutputShape) {
+            IEnumerable<NodeMetadata> outputInfo = session.OutputMetadata.Values;
+            if (outputInfo.Count() != 1) {
+                throw new ArgumentException("Expected 1 output, but got " + outputInfo.Count() + " instead");
             }
-            NodeInfo outputNodeInfo = outputInfo.Iterator().Next();
-            ValueInfo outputNodeValueInfo = outputNodeInfo.GetInfo();
-            if (!(outputNodeValueInfo is TensorInfo)) {
-                throw new ArgumentException("Unexpected output type, expected float32 tensor");
-            }
-            TensorInfo outputTensorInfo = (TensorInfo)outputNodeValueInfo;
-            if (outputTensorInfo.type != OnnxJavaType.FLOAT) {
-                throw new ArgumentException("Unexpected output type, expected float32 tensor");
-            }
-            long[] actualOutputShape = outputTensorInfo.GetShape();
-            if (IsShapeIncompatible(expectedOutputShape, actualOutputShape)) {
+            NodeMetadata outputNodeInfo = outputInfo.First();
+            
+            int[] actualOutputShape = outputNodeInfo.Dimensions;
+            if (IsShapeIncompatible(expectedOutputShape, Array.ConvertAll(actualOutputShape, item => (long)item))) {
                 throw new ArgumentException("Expected " + JavaUtil.ArraysToString(expectedOutputShape) + " output shape, "
                      + "but got " + JavaUtil.ArraysToString(actualOutputShape) + " instead");
             }
@@ -220,12 +246,12 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Wraps a model output into an MD-array.</summary>
         /// <param name="result">model output</param>
         /// <returns>MD-array wrapper</returns>
-        private static FloatBufferMdArray ParseModelOutput(OrtSession.Result result) {
-            OnnxValue output = result.Get(0);
-            TensorInfo outputInfo = (TensorInfo)output.GetInfo();
-            long[] outputShape = outputInfo.GetShape();
-            FloatBuffer outputBuffer = ((OnnxTensor)output).GetFloatBuffer();
-            return new FloatBufferMdArray(outputBuffer, outputShape);
+        private static FloatBufferMdArray ParseModelOutput(IDisposableReadOnlyCollection<DisposableNamedOnnxValue> result) {
+            DisposableNamedOnnxValue output = result[0];
+            Tensor<float> outputInfo = output.AsTensor<float>();
+            ReadOnlySpan<int> outputShape = outputInfo.Dimensions;
+            float[] outputBuffer = outputInfo.ToArray();
+            return new FloatBufferMdArray(outputBuffer, Array.ConvertAll(outputShape.ToArray(), item => (long)item));
         }
 
         /// <summary>Returns whether two shapes are compatible.</summary>
@@ -245,6 +271,10 @@ namespace iText.Pdfocr.Onnxtr {
                 }
             }
             return false;
+        }
+
+        public void Dispose() {
+            Close();
         }
     }
 }

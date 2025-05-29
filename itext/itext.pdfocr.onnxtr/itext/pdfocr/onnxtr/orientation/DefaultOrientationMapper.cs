@@ -41,7 +41,6 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     /// an integer index via an
     /// <c>argmax</c>
     /// function.
-    /// 
     /// </remarks>
     public class DefaultOrientationMapper : IOutputLabelMapper<TextOrientation> {
         public DefaultOrientationMapper() {
