@@ -27,7 +27,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     internal class VocabularyTest {
 //\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
-        internal virtual void InitWithInvalidArgs() {
+        public virtual void InitWithInvalidArgs() {
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new Vocabulary(null));
             NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => 
                         //                            U+1FAE0
@@ -37,7 +37,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
 
 //\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
-        internal virtual void Valid() {
+        public virtual void Valid() {
             Vocabulary vocabulary = new Vocabulary("ABC");
             NUnit.Framework.Assert.AreEqual("ABC", vocabulary.GetLookUpString());
             NUnit.Framework.Assert.AreEqual("ABC", vocabulary.ToString());

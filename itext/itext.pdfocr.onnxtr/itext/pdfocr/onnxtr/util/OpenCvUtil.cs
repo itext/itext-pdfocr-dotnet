@@ -42,7 +42,8 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// Bottom as in bottom of the image, not the lowest Y coordinate.
         /// </remarks>
         /// <param name="rect">RotatedRect to normalize</param>
-        public static void NormalizeRotatedRect(RotatedRect rect) {
+        /// <returns>normalized RotatedRect</returns>
+        public static RotatedRect NormalizeRotatedRect(RotatedRect rect) {
             float angle = rect.Angle;
             float clampedAngle = MathUtil.EuclideanModulo(angle, 360);
             /*
@@ -51,6 +52,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
             if ((45F <= clampedAngle && clampedAngle < 135F) || (225F <= clampedAngle && clampedAngle < 315F)) {
                 Size2f rectSize = rect.Size;
                 (rectSize.Width, rectSize.Height) = (rectSize.Height, rectSize.Width);
+                rect.Size = rectSize;
                 if (clampedAngle < 135F) {
                     rect.Angle = clampedAngle - 90F;
                 }
@@ -72,6 +74,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
                     }
                 }
             }
+            return rect;
         }
     }
 }

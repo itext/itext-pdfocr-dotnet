@@ -27,7 +27,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
     internal class MathUtilTest {
 //\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
-        internal virtual void ArgmaxWithInvalidArgs() {
+        public virtual void ArgmaxWithInvalidArgs() {
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => MathUtil.Argmax(null));
             NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Argmax(new float[0]));
         }
@@ -35,7 +35,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
 
 //\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
-        internal virtual void ArgmaxWithValidArgs() {
+        public virtual void ArgmaxWithValidArgs() {
             NUnit.Framework.Assert.AreEqual(0, MathUtil.Argmax(new float[] { 1 }));
             NUnit.Framework.Assert.AreEqual(1, MathUtil.Argmax(new float[] { 1, 3, 2 }));
             NUnit.Framework.Assert.AreEqual(1, MathUtil.Argmax(new float[] { 1, 3, 3 }));
@@ -44,14 +44,14 @@ namespace iText.Pdfocr.Onnxtr.Util {
 
 //\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
-        internal virtual void ClampWithInvalidArgs() {
+        public virtual void ClampWithInvalidArgs() {
             NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Clamp(2, 3, 1));
         }
 //\endcond
 
 //\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
-        internal virtual void ClampWithValidArgs() {
+        public virtual void ClampWithValidArgs() {
             NUnit.Framework.Assert.AreEqual(1.1, MathUtil.Clamp(1.0, 1.1, 1.9));
             NUnit.Framework.Assert.AreEqual(1.5, MathUtil.Clamp(1.5, 1.1, 1.9));
             NUnit.Framework.Assert.AreEqual(1.9, MathUtil.Clamp(2.0, 1.1, 1.9));

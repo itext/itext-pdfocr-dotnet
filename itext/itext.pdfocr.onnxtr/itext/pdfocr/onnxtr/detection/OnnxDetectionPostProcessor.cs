@@ -151,32 +151,30 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             double sum = 0;
             long nonZeroCount = 0;
             
-            OpenCvSharp.Point[] contourPoints = new OpenCvSharp.Point[contour.Rows];
-            for (int i = 0; i < contour.Rows; i++) {
-                // suppose contour is either Nx1x2 or Nx2 matrix of the points
-                var pointData = contour.Get<Point2f>(i);
-                contourPoints[i] = new OpenCvSharp.Point((int)pointData.X, (int)pointData.Y);
-            }
-            IEnumerable<IEnumerable<OpenCvSharp.Point>> polygons = new List<IEnumerable<OpenCvSharp.Point>> { contourPoints };
-            Cv2.FillPoly(scoreMask, polygons, new Scalar(1));
+            Cv2.FillPoly(scoreMask, contour, Scalar.White);
+
             int yBegin = Math.Max(0, contourBox.Y);
             int yEnd = Math.Min(height, contourBox.Y + contourBox.Height);
             int xBegin = Math.Max(0, contourBox.X);
             int xEnd = Math.Min(width, contourBox.X + contourBox.Width);
-            for (int y = yBegin; y < yEnd; ++y) {
-                FloatBufferMdArray predictionsRow = hwMdArray.GetSubArray(y);
-                for (int x = xBegin; x < xEnd; ++x) {
-                    if (scoreMask.Get<byte>(y, x) != 1) {
+
+            for (int y = yBegin; y < yEnd; y++) {
+                var predictionsRow = hwMdArray.GetSubArray(y);
+                for (int x = xBegin; x < xEnd; x++) {
+                    if (scoreMask.At<byte>(y, x) != 255) {
                         continue;
                     }
+
                     float prediction = predictionsRow.GetScalar(x);
                     if (prediction > 0) {
                         sum += prediction;
-                        ++nonZeroCount;
+                        nonZeroCount++;
                     }
+
                     scoreMask.Set<byte>(y, x, 0);
                 }
             }
+
             // Should not happen
             if (nonZeroCount == 0) {
                 return 0;
@@ -185,8 +183,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         }
 
         private static Point2f[] GetPaddedBox(Mat points) {
-            RotatedRect rect = Cv2.MinAreaRect(points);
-            OpenCvUtil.NormalizeRotatedRect(rect);
+            RotatedRect rect = OpenCvUtil.NormalizeRotatedRect(Cv2.MinAreaRect(points));
             Size2f rectSize = rect.Size;
             float rectWidth = rectSize.Width;
             float rectHeight = rectSize.Height;
@@ -195,6 +192,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             float expandAmount = 2 * (area * UNCLIP_RATIO / length);
             rectSize.Width = (float)MathematicUtil.Round(rectWidth + expandAmount);
             rectSize.Height = (float)MathematicUtil.Round(rectHeight + expandAmount);
+            rect.Size = rectSize;
             return rect.Points();
         }
 

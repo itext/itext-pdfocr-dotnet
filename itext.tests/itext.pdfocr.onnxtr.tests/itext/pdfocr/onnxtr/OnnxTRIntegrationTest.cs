@@ -23,11 +23,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using iText.Commons.Utils;
-using iText.IO.Util;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
-using iText.Pdfocr;
 using iText.Pdfocr.Onnxtr.Detection;
+using iText.Pdfocr.Onnxtr.Orientation;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Test;
 
@@ -50,12 +49,14 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_DIRECTORY + "images/example_04.png";
             String dest = TARGET_DIRECTORY + "basicTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_basicTest.pdf";
-            System.Console.Out.WriteLine("Out pdf: " + UrlUtil.GetNormalizedFileUriString(dest));
             String fast = TEST_DIRECTORY + "models/rep_fast_tiny-28867779.onnx";
             String crnnVgg16 = TEST_DIRECTORY + "models/crnn_vgg16_bn-662979cc.onnx";
+            String mobileNetV3 = TEST_DIRECTORY + "models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(fast);
+            IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(mobileNetV3);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(crnnVgg16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
+                );
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(ocrEngine);
             using (PdfWriter writer = new PdfWriter(dest)) {
                 ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(src)), writer).Close();

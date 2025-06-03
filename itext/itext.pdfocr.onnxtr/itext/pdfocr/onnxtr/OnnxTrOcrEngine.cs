@@ -318,7 +318,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
             else {
                 collector.Length = Math.Max(0, collector.Length - 1);
-                collector.Append(nextString, index - 1, nextString.Length);
+                collector.Append(nextString, index - 1, nextString.Length - 1);
             }
         }
 

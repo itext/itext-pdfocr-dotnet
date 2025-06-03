@@ -26,6 +26,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using iText.Commons.Utils;
+using iText.IO.Font.Constants;
+using iText.Kernel.Font;
+using iText.Kernel.Pdf.Canvas;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Util;
 using Microsoft.ML.OnnxRuntime.Tensors;
@@ -100,53 +103,34 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         public virtual IEnumerator<R> Predict(IEnumerator<T> inputs) {
-            Func<IList<T>, IList<R>> processor = (batch) => {
-                try
-                {
-                    DenseTensor<float> inputTensor = CreateTensor(ToInputBuffer(batch));
-                    NamedOnnxValue namedOnnxValue = NamedOnnxValue.CreateFromTensor(inputName, inputTensor);
-                    using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> outputTensor = session.Run(new[] { namedOnnxValue })) {
-                        return FromOutputBuffer(batch, ParseModelOutput(outputTensor));
-                    }
-                }
-                catch (OnnxRuntimeException e) {
-                    throw new PdfOcrException("ONNX Runtime operation failed", e);
-                }
-            };
-            return new BatchProcessingGenerator<T, R>(Batching.Wrap((IEnumerator<T>)inputs, inputProperties.GetBatchSize()),
-                new BatchProcessor(processor)
-            );
+            return new BatchProcessingGenerator<T, R>(Batching.Wrap(inputs, inputProperties.GetBatchSize()),
+                new BatchProcessor(this));
         }
 
         public IEnumerator<R> Predict(IEnumerable<T> inputs) {
-            Func<IList<T>, IList<R>> processor = (batch) => {
-                try
-                {
-                    DenseTensor<float> inputTensor = CreateTensor(ToInputBuffer(batch));
-                    NamedOnnxValue namedOnnxValue = NamedOnnxValue.CreateFromTensor(inputName, inputTensor);
-                    using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> outputTensor = session.Run(new[] { namedOnnxValue })) {
-                        return FromOutputBuffer(batch, ParseModelOutput(outputTensor));
+            return Predict(inputs.GetEnumerator());
+        }
+
+        private sealed class BatchProcessor : IBatchProcessor<T, R> {
+            private AbstractOnnxPredictor<T, R> predictor;
+            public BatchProcessor(AbstractOnnxPredictor<T, R> predictor) {
+                this.predictor = predictor;
+            }
+
+            public IList<R> ProcessBatch(IList<T> batch) {
+                try {
+                    DenseTensor<float> inputTensor = CreateTensor(predictor.ToInputBuffer(batch));
+                    NamedOnnxValue namedOnnxValue = NamedOnnxValue.CreateFromTensor(predictor.inputName, inputTensor);
+                    using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> outputTensor = predictor.session.Run(new[] { namedOnnxValue })) {
+                        return predictor.FromOutputBuffer(batch, ParseModelOutput(outputTensor));
                     }
                 }
                 catch (OnnxRuntimeException e) {
                     throw new PdfOcrException("ONNX Runtime operation failed", e);
                 }
-            };
-            return new BatchProcessingGenerator<T, R>(Batching.Wrap(inputs.GetEnumerator(), inputProperties.GetBatchSize()),
-                new BatchProcessor(processor)
-            );
-        }
-
-        public class BatchProcessor : IBatchProcessor<T, R> {
-            private Func<IList<T>, IList<R>> processor;
-            public BatchProcessor(Func<IList<T>, IList<R>> processor) {
-                this.processor = processor;
-            }
-
-            public IList<R> ProcessBatch(IList<T> batch) {
-                return processor.Invoke(batch);
             }
         }
+
         public virtual void Close() {
             try {
                 session.Dispose();
@@ -186,8 +170,14 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         private static DenseTensor<float> CreateTensor(FloatBufferMdArray batch) {
-            int[] shape = Array.ConvertAll(batch.GetShape(), item => (int)item);
-            return new DenseTensor<float>(new Memory<float>(batch.GetData()), new ReadOnlySpan<int>(shape));
+            float[] byteData = batch.GetData();
+            float[] floatData = new float[byteData.Length / sizeof(float)];
+            Buffer.BlockCopy(byteData, 0, floatData, 0, byteData.Length);
+
+            long[] shape = batch.GetShape();
+            int[] intShape = shape.Select(s => (int)s).ToArray();
+
+            return new DenseTensor<float>(floatData, intShape);
         }
 
         /// <summary>Validates model, loaded in session, against expected inputs and outputs.</summary>

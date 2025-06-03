@@ -40,7 +40,7 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         public virtual float[] GetData() {
-            return ((float[])data.Clone());
+            return data;
         }
 
         public virtual long[] GetShape() {
@@ -68,7 +68,7 @@ namespace iText.Pdfocr.Onnxtr {
             long[] newShape = new long[shape.Length - 1];
             Array.Copy(shape, 1, newShape, 0, newShape.Length);
             int subArraySize = (data.Length / (int)shape[0]);
-            float[] newData = ((float[])data.Clone()).Skip(index * subArraySize).Take(subArraySize).ToArray();
+            float[] newData = ((float[])data).Skip(index * subArraySize).Take(subArraySize).ToArray();
             return new iText.Pdfocr.Onnxtr.FloatBufferMdArray(newData, newShape);
         }
 

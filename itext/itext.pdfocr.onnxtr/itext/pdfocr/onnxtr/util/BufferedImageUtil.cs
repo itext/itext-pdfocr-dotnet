@@ -63,57 +63,67 @@ namespace iText.Pdfocr.Onnxtr.Util {
             long[] inputShape = new long[] { images.Count, properties.GetChannelCount(), properties.GetHeight(), properties
                 .GetWidth() };
             /*
-            * It is important to do it via ByteBuffer with allocateDirect. If the
-            * buffer is non-direct, it will allocate a direct buffer within the
-            * ONNX runtime and copy the buffer there instead. So we will waste
-            * twice the memory for no reason.
-            *
-            * For some reason there doesn't seem to be a way to allocate a direct
-            * buffer via FloatBuffer itself...
-            */
+             * It is important to do it via ByteBuffer with allocateDirect. If the
+             * buffer is non-direct, it will allocate a direct buffer within the
+             * ONNX runtime and copy the buffer there instead. So we will waste
+             * twice the memory for no reason.
+             *
+             * For some reason there doesn't seem to be a way to allocate a direct
+             * buffer via FloatBuffer itself...
+             */
             int bufferSize = CalculateBufferCapacity(inputShape);
             float[] inputData = new float[bufferSize];
+            int imageSize = properties.GetWidth() * properties.GetHeight();
+
             int offset = 0;
             foreach (System.Drawing.Bitmap image in images) {
-                System.Drawing.Bitmap resizedImage = Resize(image, properties.GetWidth(), properties.GetHeight(), properties
-                    .UseSymmetricPad());
-                // Doing normalization at the same time as we fill the buffer
-                var rect = new Rectangle(0, 0, resizedImage.Width, resizedImage.Height);
-                BitmapData raster = resizedImage.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-                try
-                {
-                    int stride = raster.Stride;
-                    IntPtr ptr = raster.Scan0;
-                    byte[] pixelBytes = new byte[stride * resizedImage.Height];
-                    Marshal.Copy(ptr, pixelBytes, 0, pixelBytes.Length);
+                using (System.Drawing.Bitmap resizedImage = Resize(image, properties.GetWidth(), properties.GetHeight(),
+                           properties.UseSymmetricPad())) {
+                    var rect = new Rectangle(0, 0, resizedImage.Width, resizedImage.Height);
+                    BitmapData raster = resizedImage.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                    try {
+                        int stride = raster.Stride;
+                        byte[] pixelBytes = new byte[stride * resizedImage.Height];
+                        Marshal.Copy(raster.Scan0, pixelBytes, 0, pixelBytes.Length);
 
-                    // Индексы для каналов: B=2, G=1, R=0 (в формате BGR)
-                    for (int y = 0; y < properties.GetHeight(); y++)
-                    {
-                        for (int x = 0; x < properties.GetWidth(); x++)
-                        {
-                            int index = y * stride + x * 3;
-                            byte bByte = pixelBytes[index];
-                            byte gByte = pixelBytes[index + 1];
-                            byte rByte = pixelBytes[index + 2];
+                        int baseIndex = offset * 3 * imageSize;
 
-                            // R
-                            float r = rByte / 255f;
-                            inputData[offset++] = (r - properties.GetRedMean()) / properties.GetRedStd();
+                        // 1. R
+                        for (int y = 0; y < properties.GetHeight(); y++) {
+                            for (int x = 0; x < properties.GetWidth(); x++) {
+                                int index = y * stride + x * 3 + 2; 
+                                float r = pixelBytes[index] / 255f;
+                                inputData[baseIndex + y * properties.GetWidth() + x] =
+                                    (r - properties.GetRedMean()) / properties.GetRedStd();
+                            }
+                        }
 
-                            // G
-                            float gVal = gByte / 255f;
-                            inputData[offset++] = (gVal - properties.GetGreenMean()) / properties.GetGreenStd();
+                        // 2. G
+                        int greenOffset = imageSize;
+                        for (int y = 0; y < properties.GetHeight(); y++) {
+                            for (int x = 0; x < properties.GetWidth(); x++) {
+                                int index = y * stride + x * 3 + 1; 
+                                float g = pixelBytes[index] / 255f;
+                                inputData[baseIndex + greenOffset + y * properties.GetWidth() + x] =
+                                    (g - properties.GetGreenMean()) / properties.GetGreenStd();
+                            }
+                        }
 
-                            // B
-                            float bVal = bByte / 255f;
-                            inputData[offset++] = (bVal - properties.GetBlueMean()) / properties.GetBlueStd();
+                        // 3. B
+                        int blueOffset = 2 * imageSize;
+                        for (int y = 0; y < properties.GetHeight(); y++) {
+                            for (int x = 0; x < properties.GetWidth(); x++) {
+                                int index = y * stride + x * 3; 
+                                float b = pixelBytes[index] / 255f;
+                                inputData[baseIndex + blueOffset + y * properties.GetWidth() + x] =
+                                    (b - properties.GetBlueMean()) / properties.GetBlueStd();
+                            }
                         }
                     }
-                }
-                finally
-                {
-                    resizedImage.UnlockBits(raster);
+                    finally {
+                        resizedImage.UnlockBits(raster);
+                    }
+                    offset++;
                 }
             }
             return new FloatBufferMdArray(inputData, inputShape);
@@ -132,13 +142,16 @@ namespace iText.Pdfocr.Onnxtr.Util {
 
             try {
                 int stride = bitmapData.Stride;
-                int totalBytes = stride * height;
+                int effectiveWidth = width * 3;
 
-                byte[] buffer = new byte[totalBytes];
-                Marshal.Copy(bitmapData.Scan0, buffer, 0, totalBytes);
-                byte[] matData = resultMat.ToBytes();
-                Buffer.BlockCopy(buffer, 0, matData, 0, buffer.Length);
-                resultMat.SetArray(matData);
+                for (int y = 0; y < height; y++) {
+                    IntPtr srcLine = bitmapData.Scan0 + y * stride;
+                    IntPtr targetLine = resultMat.Ptr(y);
+
+                    byte[] lineData = new byte[effectiveWidth];
+                    Marshal.Copy(srcLine, lineData, 0, effectiveWidth);
+                    Marshal.Copy(lineData, 0, targetLine, effectiveWidth);
+                }
             }
             finally {
                 image.UnlockBits(bitmapData);
@@ -155,19 +168,17 @@ namespace iText.Pdfocr.Onnxtr.Util {
             }
             System.Drawing.Bitmap image = new System.Drawing.Bitmap(rgb.Cols, rgb.Rows, PixelFormat.Format24bppRgb
                 );
-            
-            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
-            BitmapData bmpData = image.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
-            try {
-                int stride = bmpData.Stride;
-                int totalBytes = stride * image.Height;
-
-                byte[] buffer = rgb.ToBytes();
-                Marshal.Copy(buffer, 0, bmpData.Scan0, totalBytes);
-            }
-            finally {
-                image.UnlockBits(bmpData);
+            var indexer = rgb.GetGenericIndexer<Vec3b>();
+            for (int y = 0; y < rgb.Height; y++) {
+                for (int x = 0; x < rgb.Width; x++) {
+                    Vec3b color = indexer[y, x];
+                    image.SetPixel(x, y, Color.FromArgb(
+                        color.Item2, // R
+                        color.Item1, // G
+                        color.Item0  // B
+                    ));
+                }
             }
             return image;
         }
@@ -225,8 +236,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         public static System.Drawing.Bitmap Resize(System.Drawing.Bitmap image, int width, int height, bool symmetricPad
             ) {
             // It is pretty unlikely, that the image is already the correct size, so no need for an exception
-            System.Drawing.Bitmap result = new System.Drawing.Bitmap(width, height, PixelFormat.Format24bppRgb
-                );
+            System.Drawing.Bitmap result = new System.Drawing.Bitmap(width, height, PixelFormat.Format24bppRgb);
             using (Graphics graphics = Graphics.FromImage(result)) {
                 graphics.Clear(Color.Black);
                 graphics.InterpolationMode = InterpolationMode.Bilinear;

@@ -2,18 +2,15 @@
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup Label="Configuration">
     <RootNamespace />
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.onnxtr.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>library</OutputType>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyName>itext.pdfocr.onnxtr</AssemblyName>
-    <RootNamespace />
-  </PropertyGroup>
-  <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
+
   <PropertyGroup>
     <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
   </PropertyGroup>
@@ -22,24 +19,15 @@
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.0" />
     <PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
-    <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.11.0.20250507" />
+    <PackageReference Include="OpenCvSharp4.runtime.osx.10.15-x64" Version="4.6.0.20230105" />
+    <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc" />
+    <PackageReference Include="OpenCvSharp4.official.runtime.linux-x64" Version="4.11.0.20250507" />
+    <PackageReference Include="OpenCvSharp4.runtime.linux-arm" Version="4.11.0.20250506" />
     <ProjectReference Include="..\itext.pdfocr.api\itext.pdfocr.api.csproj" />
-  </ItemGroup>
-  <PropertyGroup>
-    <RestoreAdditionalProjectSources></RestoreAdditionalProjectSources>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Update="dll\**\*.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="~\.nuget\packages\opencvsharp4.runtime.osx_arm64\4.8.1-rc\runtimes\osx-arm64\native\*.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>
