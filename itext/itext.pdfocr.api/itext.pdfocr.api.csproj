@@ -29,7 +29,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext" Version="9.3.0-SNAPSHOT"/>
-    <PackageReference Include="itext.commons" Version="9.3.0-SNAPSHOT"/>
+    <PackageReference Include="itext" Version="9.3.0-SNAPSHOT" />
+    <PackageReference Include="itext.commons" Version="9.3.0-SNAPSHOT" />
   </ItemGroup>
 </Project>

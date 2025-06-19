@@ -30,7 +30,7 @@
 	<ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.0" />
-    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

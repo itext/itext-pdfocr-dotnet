@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using iText.Commons.Utils;
 using iText.Test;
@@ -30,43 +31,84 @@ namespace iText.Pdfocr.Onnxtr.Util {
     public class BatchProcessingGeneratorTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void InitWithInvalidArgs() {
-            //NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new BatchProcessingGenerator<Object, Object
-            //    >(null, null));
-            //NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new BatchProcessingGenerator<Object, Object
-            //    >(JavaCollectionsUtil.EmptyIterator(), null));
-            //NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new BatchProcessingGenerator<Object, int
-            //    >(null, (batch) => JavaCollectionsUtil.NCopies(batch.Count, 1)));
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new BatchProcessingGenerator<Object, Object
+                >(null, null));
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new BatchProcessingGenerator<Object, Object
+                >(JavaCollectionsUtil.EmptyIterator<IList<Object>>(), null));
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new BatchProcessingGenerator<Object, int
+                >(null, new _IBatchProcessor_53()));
+        }
+
+        private sealed class _IBatchProcessor_53 : IBatchProcessor<Object, int> {
+            public _IBatchProcessor_53() {
+            }
+
+            public IList<int> ProcessBatch(IList<Object> batch) {
+                return Enumerable.Repeat(1, batch.Count).ToList();
+            }
         }
 
         [NUnit.Framework.Test]
         public virtual void ProcessorReturnsNull() {
-            //BatchProcessingGenerator<int, Object> generator = new BatchProcessingGenerator<int, Object>(JavaCollectionsUtil
-            //    .SingletonList(JavaCollectionsUtil.SingletonList(1)).GetEnumerator(), (batch) => null);
-            //NUnit.Framework.Assert.Catch(typeof(InvalidOperationException), generator);
+            BatchProcessingGenerator<int, Object> generator = new BatchProcessingGenerator<int, Object>(JavaCollectionsUtil
+                .SingletonList(JavaCollectionsUtil.SingletonList(1)).GetEnumerator(), new _IBatchProcessor_67());
+            NUnit.Framework.Assert.Catch(typeof(InvalidOperationException), () => generator.Next());
+        }
+
+        private sealed class _IBatchProcessor_67 : IBatchProcessor<int, Object> {
+            public _IBatchProcessor_67() {
+            }
+
+            public IList<Object> ProcessBatch(IList<int> batch) {
+                return null;
+            }
         }
 
         [NUnit.Framework.Test]
         public virtual void ProcessorReturnsIncorrectSize() {
-            //BatchProcessingGenerator<int, Object> generator = new BatchProcessingGenerator<int, Object>(JavaCollectionsUtil
-            //    .SingletonList(JavaCollectionsUtil.SingletonList(1)).GetEnumerator(), (batch) => JavaCollectionsUtil.NCopies
-            //    (batch.Count + 1, batch[0]));
-            //NUnit.Framework.Assert.Catch(typeof(InvalidOperationException), generator);
+            BatchProcessingGenerator<int, int> generator = new BatchProcessingGenerator<int, int>(JavaCollectionsUtil
+                .SingletonList(JavaCollectionsUtil.SingletonList(1)).GetEnumerator(), new _IBatchProcessor_84());
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => generator.Next());
+        }
+
+        private sealed class _IBatchProcessor_84 : IBatchProcessor<int, int> {
+            public _IBatchProcessor_84() {
+            }
+
+            public IList<int> ProcessBatch(IList<int> batch)
+            {
+                return Enumerable.Repeat(batch[0], batch.Count + 1).ToList();
+            }
         }
 
         [NUnit.Framework.Test]
         public virtual void Valid() {
             int[] processorCallCount = new int[] { 0 };
-            //BatchProcessingGenerator<int, String> generator = new BatchProcessingGenerator<int, String>(JavaUtil.ArraysAsList
-            //    (JavaCollectionsUtil.SingletonList(1), JavaUtil.ArraysAsList(2, 3)).GetEnumerator(), (batch) => {
-            //    ++processorCallCount[0];
-            //    return batch.Select((x) => JavaUtil.IntegerToString(x * 2)).ToList();
-            //}
-            //);
-            //NUnit.Framework.Assert.AreEqual("2", generator.Next());
-            //NUnit.Framework.Assert.AreEqual("4", generator.Next());
-            //NUnit.Framework.Assert.AreEqual("6", generator.Next());
-            //NUnit.Framework.Assert.Catch(typeof(NullReferenceException), generator);
-            //NUnit.Framework.Assert.AreEqual(2, processorCallCount[0]);
+            BatchProcessingGenerator<int, String> generator = new BatchProcessingGenerator<int, String>(JavaUtil.ArraysAsList
+                (JavaCollectionsUtil.SingletonList(1), JavaUtil.ArraysAsList(2, 3)).GetEnumerator(), new _IBatchProcessor_102
+                (processorCallCount));
+            generator.HasNext();
+            NUnit.Framework.Assert.AreEqual("2", generator.Next());
+            generator.HasNext();
+            NUnit.Framework.Assert.AreEqual("4", generator.Next());
+            generator.HasNext();
+            NUnit.Framework.Assert.AreEqual("6", generator.Next());
+            generator.HasNext();
+            NUnit.Framework.Assert.Catch(typeof(ArgumentNullException), () => generator.Next());
+            NUnit.Framework.Assert.AreEqual(3, processorCallCount[0]);
+        }
+
+        private sealed class _IBatchProcessor_102 : IBatchProcessor<int, String> {
+            public _IBatchProcessor_102(int[] processorCallCount) {
+                this.processorCallCount = processorCallCount;
+            }
+
+            public IList<String> ProcessBatch(IList<int> batch) {
+                ++processorCallCount[0];
+                return batch.Select((x) => JavaUtil.IntegerToString(x * 2)).ToList();
+            }
+
+            private readonly int[] processorCallCount;
         }
     }
 }

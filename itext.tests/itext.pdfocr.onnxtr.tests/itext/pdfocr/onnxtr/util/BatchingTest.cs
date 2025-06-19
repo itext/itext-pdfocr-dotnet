@@ -32,18 +32,28 @@ namespace iText.Pdfocr.Onnxtr.Util {
         public virtual void WrapWithValidArgs() {
             IEnumerator<IList<int>> wrapped = Batching.Wrap(JavaUtil.ArraysAsList(1, 2, 3, 4, 5, 6, 7).GetEnumerator()
                 , 2);
-            //NUnit.Framework.Assert.AreEqual(JavaUtil.ArraysAsList(1, 2), wrapped.Next());
-            //NUnit.Framework.Assert.AreEqual(JavaUtil.ArraysAsList(3, 4), wrapped.Next());
-            //NUnit.Framework.Assert.AreEqual(JavaUtil.ArraysAsList(5, 6), wrapped.Next());
-            //NUnit.Framework.Assert.AreEqual(JavaCollectionsUtil.SingletonList(7), wrapped.Next());
-            //NUnit.Framework.Assert.Catch(typeof(NullReferenceException), wrapped);
+            wrapped.MoveNext();
+            NUnit.Framework.Assert.AreEqual(JavaUtil.ArraysAsList(1, 2), wrapped.Current);
+            wrapped.MoveNext();
+            NUnit.Framework.Assert.AreEqual(JavaUtil.ArraysAsList(3, 4), wrapped.Current);
+            wrapped.MoveNext();
+            NUnit.Framework.Assert.AreEqual(JavaUtil.ArraysAsList(5, 6), wrapped.Current);
+            wrapped.MoveNext();
+            NUnit.Framework.Assert.AreEqual(JavaCollectionsUtil.SingletonList(7), wrapped.Current);
+            NUnit.Framework.Assert.IsFalse(wrapped.MoveNext());
         }
-
+        
+        
         [NUnit.Framework.Test]
-        public virtual void WrapWithInvalidArgs() {
-            //NUnit.Framework.Assert.AssertThrowsExactly<NullReferenceException>(() => Batching.Wrap(null, 2));
-            //NUnit.Framework.Assert.AssertThrowsExactly<ArgumentException>(() => Batching.Wrap(JavaCollectionsUtil.EmptyIterator
-            //    (), 0));
+        public virtual void WrapWithInvalidArgs()
+        {
+            IEnumerator<IList<Object>> test = Batching.Wrap<Object>(null, 2);
+            Exception nullPtrException = NUnit.Framework.Assert.Catch(typeof(ArgumentNullException), () =>
+                test.MoveNext());
+            NUnit.Framework.Assert.AreEqual(typeof(ArgumentNullException), nullPtrException.GetType());
+            test = Batching.Wrap(JavaCollectionsUtil.EmptyIterator<Object>(), 0);
+            Exception illegalArgException = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => test.MoveNext());
+            NUnit.Framework.Assert.AreEqual(typeof(ArgumentException), illegalArgException.GetType());
         }
     }
 }
