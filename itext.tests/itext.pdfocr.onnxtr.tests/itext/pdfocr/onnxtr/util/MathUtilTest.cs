@@ -21,42 +21,34 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Test;
 
 namespace iText.Pdfocr.Onnxtr.Util {
-//\cond DO_NOT_DOCUMENT
-    internal class MathUtilTest {
-//\cond DO_NOT_DOCUMENT
+    [NUnit.Framework.Category("UnitTest")]
+    public class MathUtilTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void ArgmaxWithInvalidArgs() {
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => MathUtil.Argmax(null));
             NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Argmax(new float[0]));
         }
-//\endcond
 
-//\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
         public virtual void ArgmaxWithValidArgs() {
             NUnit.Framework.Assert.AreEqual(0, MathUtil.Argmax(new float[] { 1 }));
             NUnit.Framework.Assert.AreEqual(1, MathUtil.Argmax(new float[] { 1, 3, 2 }));
             NUnit.Framework.Assert.AreEqual(1, MathUtil.Argmax(new float[] { 1, 3, 3 }));
         }
-//\endcond
 
-//\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
         public virtual void ClampWithInvalidArgs() {
             NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Clamp(2, 3, 1));
         }
-//\endcond
 
-//\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
         public virtual void ClampWithValidArgs() {
             NUnit.Framework.Assert.AreEqual(1.1, MathUtil.Clamp(1.0, 1.1, 1.9));
             NUnit.Framework.Assert.AreEqual(1.5, MathUtil.Clamp(1.5, 1.1, 1.9));
             NUnit.Framework.Assert.AreEqual(1.9, MathUtil.Clamp(2.0, 1.1, 1.9));
         }
-//\endcond
     }
-//\endcond
 }

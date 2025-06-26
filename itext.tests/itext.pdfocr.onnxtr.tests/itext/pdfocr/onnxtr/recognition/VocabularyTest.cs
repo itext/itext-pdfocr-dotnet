@@ -21,11 +21,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Test;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
-//\cond DO_NOT_DOCUMENT
-    internal class VocabularyTest {
-//\cond DO_NOT_DOCUMENT
+    [NUnit.Framework.Category("UnitTest")]
+    public class VocabularyTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void InitWithInvalidArgs() {
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new Vocabulary(null));
@@ -33,9 +33,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                         //                            U+1FAE0
                         new Vocabulary("ABC" + "\uD83E\uDEE0" + "DEF"));
         }
-//\endcond
 
-//\cond DO_NOT_DOCUMENT
         [NUnit.Framework.Test]
         public virtual void Valid() {
             Vocabulary vocabulary = new Vocabulary("ABC");
@@ -51,7 +49,5 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             NUnit.Framework.Assert.AreEqual(new Vocabulary("ABC"), vocabulary);
             NUnit.Framework.Assert.AreNotEqual(new Vocabulary("ABCD"), vocabulary);
         }
-//\endcond
     }
-//\endcond
 }

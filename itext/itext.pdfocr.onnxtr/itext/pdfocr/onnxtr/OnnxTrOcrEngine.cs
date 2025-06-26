@@ -10,6 +10,7 @@ using iText.Pdfocr.Onnxtr.Detection;
 using iText.Pdfocr.Onnxtr.Orientation;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Pdfocr.Onnxtr.Util;
+using iText.Pdfocr.Util;
 using Point = iText.Kernel.Geom.Point;
 using Rectangle = iText.Kernel.Geom.Rectangle;
 using iText.Pdfocr.Util;
@@ -145,23 +146,43 @@ namespace iText.Pdfocr.Onnxtr {
 
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
             ) {
-            /*
-            * TODO DEVSIX-9153: Implement this interface.
-            *
-            * With how this engine is build, there is no concept of "lines" or "paragraphs". It just
-            * find boxes with text and recognizes them.
-            *
-            * OnnxTR/DocTR doesn't have a text output. But they have a doc builder, which sorts out
-            * recognized text boxes into blocks/lines/words/... for output.
-            *
-            * Ideally we would want a default implementation, which just takes doImageOcr output and
-            * builds a text document out of it. Some of this already happens with Tesseract, IIRC.
-            */
-            throw new NotSupportedException();
+            StringBuilder content = new StringBuilder();
+            foreach (FileInfo inputImage in inputImages) {
+                IDictionary<int, IList<TextInfo>> outputMap = DoImageOcr(inputImage, ocrProcessContext);
+                content.Append(PdfOcrTextBuilder.BuildText(outputMap));
+            }
+            WriteToTextFile(txtFile.FullName, content.ToString());
         }
 
         public virtual bool IsTaggingSupported() {
             return false;
+        }
+
+        /// <summary>
+        /// Writes provided
+        /// <see cref="System.String"/>
+        /// to text file using provided path.
+        /// </summary>
+        /// <param name="path">
+        /// path as
+        /// <see cref="System.String"/>
+        /// to file to be created
+        /// </param>
+        /// <param name="data">
+        /// text data in required format as
+        /// <see cref="System.String"/>
+        /// </param>
+        private static void WriteToTextFile(String path, String data) {
+            try {
+                using (TextWriter writer = new StreamWriter(FileUtil.GetFileOutputStream(path), System.Text.Encoding.UTF8)
+                    ) {
+                    writer.Write(data);
+                }
+            }
+            catch (System.IO.IOException e) {
+                throw new PdfOcrException(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_WRITE_TO_FILE, path
+                    , e.Message), e);
+            }
         }
 
         /// <summary>Runs text recognition on the provided text images.</summary>
@@ -320,7 +341,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
             else {
                 collector.Length = Math.Max(0, collector.Length - 1);
-                collector.Append(nextString, index - 1, nextString.Length - 1);
+                collector.Append(nextString.Substring(index - 1, nextString.Length - index + 1));
             }
         }
 

@@ -33,6 +33,8 @@ namespace iText.Pdfocr.Exceptions {
 
         public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create PDF document: {0}";
 
+        public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
+
         public const String STATISTICS_EVENT_TYPE_CANT_BE_NULL = "Statistics event type can't be null";
 
         public const String STATISTICS_EVENT_TYPE_IS_NOT_DETECTED = "Statistics event type is not detected.";
