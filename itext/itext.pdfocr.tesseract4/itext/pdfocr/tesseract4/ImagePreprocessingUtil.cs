@@ -28,9 +28,9 @@ using iText.Commons;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Source;
-using iText.IO.Util;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Tesseract4 {
 //\cond DO_NOT_DOCUMENT
@@ -61,43 +61,6 @@ namespace iText.Pdfocr.Tesseract4 {
             int numOfPages = TiffImageData.GetNumberOfPages(raf);
             raf.Close();
             return numOfPages;
-        }
-//\endcond
-
-//\cond DO_NOT_DOCUMENT
-        /// <summary>Checks whether image format is TIFF.</summary>
-        /// <param name="inputImage">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
-        /// </param>
-        /// <returns>true if provided image has 'tiff' or 'tif' extension</returns>
-        internal static bool IsTiffImage(FileInfo inputImage) {
-            return GetImageType(inputImage) == ImageType.TIFF;
-        }
-//\endcond
-
-//\cond DO_NOT_DOCUMENT
-        /// <summary>Gets the image type.</summary>
-        /// <param name="inputImage">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
-        /// </param>
-        /// <returns>
-        /// image type
-        /// <see cref="iText.IO.Image.ImageType"/>
-        /// </returns>
-        internal static ImageType GetImageType(FileInfo inputImage) {
-            ImageType type;
-            try {
-                type = ImageTypeDetector.DetectImageType(UrlUtil.ToURL(inputImage.FullName));
-            }
-            catch (Exception e) {
-                ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImagePreprocessingUtil)).LogError(MessageFormatUtil
-                    .Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
-                    ).SetMessageParams(inputImage.FullName);
-            }
-            return type;
         }
 //\endcond
 
@@ -168,7 +131,7 @@ namespace iText.Pdfocr.Tesseract4 {
             ) {
             Pix pix;
             // read image
-            if (IsTiffImage(inputFile)) {
+            if (TiffImageUtil.IsTiffImage(inputFile)) {
                 pix = TesseractOcrUtil.ReadPixPageFromTiff(inputFile, pageNumber - 1);
             }
             else {

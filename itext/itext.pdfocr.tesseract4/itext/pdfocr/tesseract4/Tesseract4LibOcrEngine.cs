@@ -33,6 +33,7 @@ using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4.Actions.Events;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -173,8 +174,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 // if preprocessing is not needed and provided image is tiff,
                 // the image will be paginated and separate pages will be OCRed
                 IList<String> resultList = new List<String>();
-                if (!GetTesseract4OcrEngineProperties().IsPreprocessingImages() && ImagePreprocessingUtil.IsTiffImage(inputImage
-                    )) {
+                if (!GetTesseract4OcrEngineProperties().IsPreprocessingImages() && TiffImageUtil.IsTiffImage(inputImage)) {
                     resultList = GetOcrResultForMultiPage(inputImage, outputFormat);
                 }
                 else {

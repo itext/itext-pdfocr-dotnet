@@ -22,7 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Detection;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Test;
 
@@ -108,7 +110,7 @@ namespace iText.Pdfocr.Onnxtr {
 
         [NUnit.Framework.Test]
         [NUnit.Framework.Ignore("This test is failing on java 8 with ImageIO exception. In newer versions it works that is why we don't"
-             + "want to use Leptonica or any other 3rd-party to read such images.")]
+             + " want to use Leptonica or any other 3rd-party to read such images.")]
         public virtual void Numbers2DoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "numbers_02.jpg";
             FileInfo imageFile = new FileInfo(src);
@@ -160,6 +162,7 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void CorruptedDoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "corrupted.jpg";
             FileInfo imageFile = new FileInfo(src);
+
             NUnit.Framework.Assert.Catch(typeof(OutOfMemoryException), () => OnnxTestUtils.GetTextFromImage(imageFile
                 , OCR_ENGINE));
         }

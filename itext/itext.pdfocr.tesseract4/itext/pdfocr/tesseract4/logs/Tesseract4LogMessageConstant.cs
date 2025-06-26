@@ -35,6 +35,7 @@ namespace iText.Pdfocr.Tesseract4.Logs {
 
         public const String CANNOT_USE_USER_WORDS = "Cannot use custom user words: {0}";
 
+        [Obsolete]
         public const String CANNOT_RETRIEVE_PAGES_FROM_IMAGE = "Cannot get pages from image {0}: {1}";
 
         public const String PAGE_NUMBER_IS_INCORRECT = "Provided number of page ({0}) is incorrect for {1}";

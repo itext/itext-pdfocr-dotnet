@@ -53,7 +53,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         }
 
         public virtual bool HasNext() {
-            return batchIterator.MoveNext() || batchResult != null;
+            return batchResult != null || batchIterator.MoveNext();
         }
 
         public virtual R Next() {

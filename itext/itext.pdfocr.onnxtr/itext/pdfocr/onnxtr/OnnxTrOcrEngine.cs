@@ -12,6 +12,8 @@ using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Pdfocr.Onnxtr.Util;
 using Point = iText.Kernel.Geom.Point;
 using Rectangle = iText.Kernel.Geom.Rectangle;
+using iText.Pdfocr.Util;
+using iText.Pdfocr.Onnxtr.Exceptions;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>
@@ -357,10 +359,23 @@ namespace iText.Pdfocr.Onnxtr {
 
         private static IList<System.Drawing.Bitmap> GetImages(FileInfo input) {
             try {
-                return JavaCollectionsUtil.SingletonList((System.Drawing.Bitmap)System.Drawing.Image.FromFile(input.FullName));
+                if (TiffImageUtil.IsTiffImage(input)) {
+                    IList<System.Drawing.Bitmap> images = TiffImageUtil.GetAllImages(input);
+                    if (images.Count == 0) {
+                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
+                    }
+                    return images;
+                }
+                else {
+                    System.Drawing.Bitmap image = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(input.FullName);
+                    if (image == null) {
+                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
+                    }
+                    return JavaCollectionsUtil.SingletonList(image);
+                }
             }
             catch (System.IO.IOException e) {
-                throw new PdfOcrException("Failed to read image", e);
+                throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
             }
         }
 

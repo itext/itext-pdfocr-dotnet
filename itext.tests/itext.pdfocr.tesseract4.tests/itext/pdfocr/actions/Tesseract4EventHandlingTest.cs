@@ -158,7 +158,7 @@ namespace iText.Pdfocr.Actions {
             FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
-            NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => ocrPdfCreator.CreatePdf(images, pdfWriter
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => ocrPdfCreator.CreatePdf(images, pdfWriter
                 ));
             pdfWriter.Dispose();
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);

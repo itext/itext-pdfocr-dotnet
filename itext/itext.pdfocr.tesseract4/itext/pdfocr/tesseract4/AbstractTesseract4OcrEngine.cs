@@ -38,6 +38,7 @@ using iText.Pdfocr.Tesseract4.Actions.Data;
 using iText.Pdfocr.Tesseract4.Actions.Events;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Tesseract4 {
     /// <summary>
@@ -548,8 +549,8 @@ namespace iText.Pdfocr.Tesseract4 {
             try {
                 // image needs to be paginated only if it's tiff
                 // or preprocessing isn't required
-                int realNumOfPages = !ImagePreprocessingUtil.IsTiffImage(input) ? 1 : ImagePreprocessingUtil.GetNumberOfPageTiff
-                    (input);
+                int realNumOfPages = !TiffImageUtil.IsTiffImage(input) ? 1 : ImagePreprocessingUtil.GetNumberOfPageTiff(input
+                    );
                 int numOfPages = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? realNumOfPages : 1;
                 int numOfFiles = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? 1 : realNumOfPages;
                 for (int page = 1; page <= numOfPages; page++) {
@@ -626,7 +627,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
         private void VerifyImageFormatValidity(FileInfo image) {
-            ImageType type = ImagePreprocessingUtil.GetImageType(image);
+            ImageType type = TiffImageUtil.GetImageType(image);
             bool isValid = SUPPORTED_IMAGE_FORMATS.Contains(type);
             if (!isValid) {
                 ITextLogManager.GetLogger(GetType()).LogError(MessageFormatUtil.Format(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE

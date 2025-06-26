@@ -27,6 +27,8 @@ namespace iText.Pdfocr.Exceptions {
     public class PdfOcrExceptionMessageConstant {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
+        public const String CANNOT_READ_INPUT_IMAGE_PARAMS = "Cannot read input image {0}";
+
         public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve any of provided fonts. Please check provided FontProvider.";
 
         public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create PDF document: {0}";

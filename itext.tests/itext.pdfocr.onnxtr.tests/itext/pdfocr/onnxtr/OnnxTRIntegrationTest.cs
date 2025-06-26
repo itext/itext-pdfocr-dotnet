@@ -69,13 +69,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        public virtual void CorruptedTest() {
-            String src = TEST_IMAGE_DIRECTORY + "corrupted.jpg";
-            String dest = TARGET_DIRECTORY + "corruptedTest.pdf";
-            NUnit.Framework.Assert.Catch(typeof(OutOfMemoryException), () => DoOcrAndCreatePdf(src, dest));
-        }
-
-        [NUnit.Framework.Test]
         public virtual void BmpTest() {
             String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
             String dest = TARGET_DIRECTORY + "bmpTest.pdf";
@@ -163,7 +156,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9193")]
         public virtual void MultipageTiffTest() {
             String src = TEST_IMAGE_DIRECTORY + "multipage.tiff";
             String dest = TARGET_DIRECTORY + "multipageTiffTest.pdf";
@@ -174,6 +166,13 @@ namespace iText.Pdfocr.Onnxtr {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
                 NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\n1\nPage", extractionStrategy.GetResultantText()
+                    );
+                extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 7, "Text1");
+                // Model glitch
+                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\n/\nPage", extractionStrategy.GetResultantText()
+                    );
+                extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 9, "Text1");
+                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\n9\nPage", extractionStrategy.GetResultantText()
                     );
             }
         }

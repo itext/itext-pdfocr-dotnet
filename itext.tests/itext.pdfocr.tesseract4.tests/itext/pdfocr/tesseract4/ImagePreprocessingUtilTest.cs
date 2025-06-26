@@ -26,26 +26,19 @@ using Tesseract;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Pdfocr;
-using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tesseract4 {
     public class ImagePreprocessingUtilTest : IntegrationTestHelper {
-        [NUnit.Framework.Test]
-        public virtual void TestCheckForInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_04.png";
-            FileInfo imgFile = new FileInfo(path);
-            NUnit.Framework.Assert.IsFalse(ImagePreprocessingUtil.IsTiffImage(imgFile));
-        }
-
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
         public virtual void TestReadingInvalidImagePath() {
             String path = TEST_IMAGES_DIRECTORY + "numbers_02";
             FileInfo imgFile = new FileInfo(path);
-            NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => ImagePreprocessingUtil.PreprocessImage
-                (imgFile, 1, new ImagePreprocessingOptions()));
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => ImagePreprocessingUtil.PreprocessImage(imgFile
+                , 1, new ImagePreprocessingOptions()));
         }
 
         [NUnit.Framework.Test]

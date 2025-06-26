@@ -39,12 +39,6 @@ namespace iText.Pdfocr {
     /// required format.
     /// </remarks>
     public interface IOcrEngine {
-        // TODO DEVSIX-9193: mark this on breaking changes page. Make this interface better.
-        //  There are two problems. First, we get only one image per call in {@link #doImageOcr}. But the text detector
-        //  can batch multiple images and for on them at once, which is a performance improvement, at least on GPU.
-        //  Second problem is that it forces all OCR engines to reimplement image reading code. Image reading should happen on
-        //  a layer higher, so that the code is common. This should also be a performance improvement, since images get read
-        //  again anyway to create the final PDF. Check com.itextpdf.pdfocr.onnxtr.OnnxTrOcrEngine.getImages
         /// <summary>
         /// Reads data from the provided input image file and returns retrieved data
         /// in the format described below.

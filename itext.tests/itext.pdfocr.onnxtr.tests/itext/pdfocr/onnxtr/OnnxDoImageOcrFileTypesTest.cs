@@ -76,7 +76,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9193")]
         public virtual void Example10mvTIFFDoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "example_03_10MB.tiff";
             FileInfo imageFile = new FileInfo(src);
@@ -85,14 +84,14 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9193")]
         public virtual void MultipageTiffDoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "multipage.tiff";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("1\nPage\nExample\nTIFF\nMultipage\n-\n2\nPage\nExample\nTIFF\n" + "Multipage\nPage\n3\nExample\nTIFF\nMultipage\n4\nPage\nExample\nTIFF\nMultipage\nPage5\nExample\n"
-                 + "TIFF\nMultipage\nPage\n6\nExample\nTIFF\nMultipage\n/\nPage\nExample\nTIFF\nMultipage\n8\nPage\n" 
-                + "Example\nTIFF\nMultipage\nPage\n9\nExample\nTIFF\nMultipage\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("1\nPage\nExample\nTIFF\nMultipage\n" + "-\nPage\n2\nExample\nTIFF\nMultipage\n"
+                 + "Page\n3\nExample\nTIFF\nMultipage\n" + "4\nPage\nExample\nTIFF\nMultipage\n" + "Page5\nExample\nTIFF\nMultipage\n"
+                 + "Page\n6\nExample\nTIFF\nMultipage\n" + "/\nPage\nExample\nTIFF\nMultipage\n" + "8\nPage\nExample\nTIFF\nMultipage\n"
+                 + "Page\n9\nExample\nTIFF\nMultipage\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -112,7 +111,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9193")]
         public virtual void NumbersTifDoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "numbers_01.tif";
             FileInfo imageFile = new FileInfo(src);
