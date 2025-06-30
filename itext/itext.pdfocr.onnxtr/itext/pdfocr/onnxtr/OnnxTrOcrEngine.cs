@@ -341,7 +341,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
             else {
                 collector.Length = Math.Max(0, collector.Length - 1);
-                collector.Append(nextString.Substring(index - 1, nextString.Length - index + 1));
+                collector.JAppend(nextString, index - 1, nextString.Length);
             }
         }
 

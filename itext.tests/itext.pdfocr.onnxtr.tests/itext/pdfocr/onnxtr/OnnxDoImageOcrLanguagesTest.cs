@@ -185,33 +185,36 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9232")]
         public virtual void Thai1DoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "thai_01.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual(textFromImage, "19008791914497907597\n15790707047005\n19n8\n3581991\n19n8\n1\n&\na\nI\n1\nA\nA\n"
+            NUnit.Framework.Assert.AreEqual(textFromImage, "3900879191497907597\n15790707047005\n19n8\n35819F1\n19n8\n11\n&\na\n1\n11\nA\nA\n"
                 , textFromImage);
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9232")]
         public virtual void Thai2DoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "thai_02.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("GNwwInygEnAnUONEDNMENEnMEVouDoruRE\nWsruilunaMASIwOyuEAL"
-                 + "\nwialwwnnaurw)\nLmniloumwnounguwyuEREngenananuidwwéryenshuluwenennl"));
+            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("GNILwEnyEwaUChYONWEnNAVoupruselisurulunaunwwuryeuAu\n"
+                + "wsoluwnanaurw)\n"
+                + "lniloumenounguivyuEREnRonananuituwdryensahluwun"));
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9232")]
         public virtual void Thai3DoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "thai_03.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("bn\nOimnsAa\nAEnEyna\ninneflsuauoniyadusunnaui\n" + 
-                "ae50wasDlgouwyWWMLTSUNR\nlaiA\n12051951A1Slnasu9as\nMosus\nLYSSAW"));
+            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("masnduingunilfuinisn\n" +
+                "sosna\n" +
+                "Laiuinss\n" +
+                "aMWASuOADA\n" +
+                "vOng\n" +
+                "WwunnlASMElNOunalnuar\n" +
+                "Loninaclae"));
         }
     }
 }

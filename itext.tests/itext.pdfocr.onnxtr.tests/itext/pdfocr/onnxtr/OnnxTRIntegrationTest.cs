@@ -99,7 +99,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9193")]
         public virtual void Tiff10MBTest() {
             String src = TEST_IMAGE_DIRECTORY + "example_03_10MB.tiff";
             String dest = TARGET_DIRECTORY + "tiff10MBTest.pdf";
@@ -178,7 +177,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9232")]
         public virtual void ScannedTest() {
             String src = TEST_IMAGE_DIRECTORY + "scanned_spa_01.png";
             String dest = TARGET_DIRECTORY + "scannedTest.pdf";
@@ -188,17 +186,17 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("SI\n1Y ENSAYARA\nCOMO\nACTUAR?\nTanto\nlo\npeor,\nmejor es\ndescansar\n" 
-                    + "no\ny\npensar\nla\nsi\nse\nfiesta,\npuede. No\nnada\nhay\nmas\ndesalentador\nver las\nen\n" + "fiestas\na\njovenes\ncon\ncara de\nlastima\ny\niluslonadas\nse han\ny que\npasado todo\nel dia\n"
-                     + "tratando\nhallar lo\nla\nmejor\natractiva\nmas\ny\nmanera\nde\npres\ntarse en\npublico.\nactuar" +
-                     "\nHay\nque\ncon calma\nno\ny\ncansaremos\nde\nrepetirlo, Lo\nmas\nimportante\nes saber\nque se\n" + 
-                    "va a\ntener\nponer\ny todo\na\nmano,\nSi\nintenta\nprobar\nun\nnuevo\nlapiz\nlabial\nla\npara a" + "\nsion,\nasegurese\nque\narmonice\ncon\nel vestido\nlle\nque\nTambién\nrà.\nel\nmaquillaje\nde\n"
-                     + "los\ndebe\nojos\narmonil\ncon el\nconjunto,", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("SI\nAY ENSAYARA\nCOMO\nACTUAR?\nTanto\nlo\npeor,\nmejor es\ndescansar\n" 
+                    + "no\ny\npensar\nla\nsi\nse\nfiesta,\npuede. No\nnada\nhay\nmâs\ndesalentador\nver las\nen\n" + "fiestas\na\njovenes\ncon cara de\nlastima\ny\niluslonadas\nhan\nse\ny que\ntodo\npasado\nel dia\n"
+                     + "tratando\nhallar lo\nla\nmejor\nmas atractiva\ny\nmanera\nde\npres\ntarse en\npublico.\nHay actuar\n" +
+                     "que con calma\nno\ny\ncansaremos\nde\nrepetirlo, Lo\nmas\nimportante\nes saber\nque se va\n" + 
+                    "a\ntener\nponer\ny todo\na\nmano.\nSi\nintenta\nprobar\nun\nnueyvo\nlapiz labial\nla\npara a" +
+                    "\nsion,\nasegurese\nque armonice\ncon el\nvestido\nlle\nque\nTambién\nra.\nel\nmaquillaje\nde los"
+                     + "\ndebe\nojos\narmoni\ncon el\nconjunto.", extractionStrategy.GetResultantText());
             }
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9232")]
         public virtual void HalftoneTest() {
             String src = TEST_IMAGE_DIRECTORY + "halftone.jpg";
             String dest = TARGET_DIRECTORY + "halftoneTest.pdf";
@@ -208,12 +206,12 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("INVOICE\nSilliness\nEnablers\nit\n" + "You dream we enable\nit\nNowhere\nMiddle\nof\nINVOICE #100\n9\n22 22\nPhone +32 "
-                     + "292\nDATE:\n" + "6/30/2020\n9\n00 00\nFax +32 270\nTO: SHIP TO:\nAndré Lemos\nLe\nAndré emos\nTycoor Corp"
-                     + "\nTycoon Corp.\nWonderfu Street\nWonderfulStreet\nLand\nLala Land\nLala\n111\n911\n" + "+351 911 111 111 +351 111\nAMENTS SPFCIAI INSTRUCTIONS\nC\nOR\nITEMS FULLY\nDELIVERED "
-                     + "ASSEMBLED" + "\nBE\nMUST\nPOINT TERMS\nSHIPPED VIA F.O.B\nREQUISITIONER\nS/ ES ON\nRSC P.O " + "NUMBER\nDue\nR\n"
-                     + "V Al on\n3Vi Vebsite form receipt\n#7394009320 Delivery\nUNIT PRICE " + "TOTAL\nDESCRIPTION\nQUANTITY"
-                     + "\n$3000 $30000\n10\nLasers\n$1 $2\nBand-Aids\n2\n$499995\n$99999\nSharks", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("INVOICE\nEnablers\nSilliness\nenable\nit\n" + "You dream we\nit\nNowhere\nof\nMiddle\nINVOICE #I100\nQ\nPhone +32 "
+                     + "292\n22 22\nDATE:\n" + "6/30/2020\n9\nFax +32 270\n00 00\nSHIP TO\nTO:\nAndré\nAndré Lemos\nLemos\nTycoon Corp"
+                     + "\nTycoon Corp.\nStreet\nWonderfu\nWonderful\nStreet\nLala Land\nLala Land\n" + "+351 911 111 111\n+351 911 111 111\nMENTS OR SPFCIAI INSTRUCTIONS\nC\n- ED\nITEMS MUST DELIVERED "
+                     + "FUL ASSEM MBLI" + "\nBE\nPOINT TERMS\non\nNUMBER SHIPPED VIA F.O.B\nREQUISITIONER\nSA\nP.O\nAIR Due\non\n#7394009320\n"
+                     + "3Vi Website form receipt\nDelivery\nUNIT PRICE TOTAL\nDESCRIPTION\nQUANTITY"
+                     + "\n$30000\n$3000\n10\nLasers\n$1 $2\nBand-Aids\n2\n$99999 $499995\nSharks\n5", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -309,7 +307,6 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9232")]
         public virtual void ThaiDocTest() {
             String src = TEST_IMAGE_DIRECTORY + "thai_01.jpg";
             String dest = TARGET_DIRECTORY + "thaiTest.pdf";

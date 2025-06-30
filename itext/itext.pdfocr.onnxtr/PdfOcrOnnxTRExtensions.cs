@@ -73,5 +73,8 @@ internal static class PdfOcrOnnxTRExtensions
         }
     }
 
+    public static StringBuilder JAppend(this StringBuilder sb, String str, int begin, int end) {
+        return sb.Append(str, begin, end - begin);
+    }
 }
 //\endcond
