@@ -1,35 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <PropertyGroup Label="Configuration">
-    <RootNamespace />
-    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.api.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputType>library</OutputType>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>itext.pdfocr.api</AssemblyName>
-    <RootNamespace />
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\com\itextpdf\ocr\fonts\LiberationSans-Regular.ttf">
-      <LogicalName>iText.Pdfocr.Api.font.LiberationSans-Regular.ttf</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="itext" Version="9.3.0-SNAPSHOT" />
-    <PackageReference Include="itext.commons" Version="9.3.0-SNAPSHOT" />
-  </ItemGroup>
+    <PropertyGroup Label="Configuration">
+        <RootNamespace/>
+        <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.api.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>library</OutputType>
+    </PropertyGroup>
+    <PropertyGroup>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AssemblyName>itext.pdfocr.api</AssemblyName>
+        <RootNamespace/>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net461</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup>
+        <NoWarn>CS1591;CS1570;CS1572;CS1573;CS1574;CS1580;CS1584;CS1658</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup>
+        <SignAssembly>true</SignAssembly>
+        <DelaySign>False</DelaySign>
+        <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="resources\com\itextpdf\ocr\fonts\LiberationSans-Regular.ttf">
+            <LogicalName>iText.Pdfocr.Api.font.LiberationSans-Regular.ttf</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="itext" Version="9.3.0-SNAPSHOT"/>
+        <PackageReference Include="itext.commons" Version="9.3.0-SNAPSHOT"/>
+        <PackageReference Include="IronSoftware.System.Drawing" Version="2025.6.2"/>
+    </ItemGroup>
 </Project>

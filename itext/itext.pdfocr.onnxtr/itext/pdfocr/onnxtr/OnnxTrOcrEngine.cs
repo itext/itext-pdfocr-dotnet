@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using iText.Commons;
 using iText.Commons.Actions.Data;
 using iText.Commons.Utils;
@@ -35,7 +36,6 @@ using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Onnxtr.Orientation;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Pdfocr.Util;
-using Microsoft.Extensions.Logging;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>
@@ -96,20 +96,22 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         public virtual void Close() {
-            detectionPredictor.Dispose();
+            detectionPredictor.Close();
             if (orientationPredictor != null) {
-                orientationPredictor.Dispose();
+                orientationPredictor.Close();
             }
-            recognitionPredictor.Dispose();
+            recognitionPredictor.Close();
         }
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
             return DoImageOcr(input, new OcrProcessContext(new OnnxTrEventHelper()));
         }
 
-        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext) {
-            IList<System.Drawing.Bitmap> images = GetImages(input);
-            OnnxTrProcessor onnxTrProcessor = new OnnxTrProcessor(detectionPredictor, orientationPredictor, recognitionPredictor);
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
+            ) {
+            IList<IronSoftware.Drawing.AnyBitmap> images = GetImages(input);
+            OnnxTrProcessor onnxTrProcessor = new OnnxTrProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
+                );
             return onnxTrProcessor.DoOcr(images, ocrProcessContext);
         }
 
@@ -117,32 +119,30 @@ namespace iText.Pdfocr.Onnxtr {
             CreateTxtFile(inputImages, txtFile, new OcrProcessContext(new OnnxTrEventHelper()));
         }
 
-        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext) {
-            
-            ITextLogManager.GetLogger(typeof(OnnxTrOcrEngine)).LogInformation(
-                MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.Count));
-
+        public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
+            ) {
+            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES
+                , inputImages.Count));
             AbstractPdfOcrEventHelper storedEventHelper;
             if (ocrProcessContext.GetOcrEventHelper() == null) {
                 storedEventHelper = new OnnxTrEventHelper();
-            } else {
+            }
+            else {
                 storedEventHelper = ocrProcessContext.GetOcrEventHelper();
             }
-
             try {
                 // save confirm events from doImageOcr, to send them only after successful writing to the file
                 OnnxTrFileResultEventHelper fileResultEventHelper = new OnnxTrFileResultEventHelper(storedEventHelper);
                 ocrProcessContext.SetOcrEventHelper(fileResultEventHelper);
-
                 StringBuilder content = new StringBuilder();
                 foreach (FileInfo inputImage in inputImages) {
                     IDictionary<int, IList<TextInfo>> outputMap = DoImageOcr(inputImage, ocrProcessContext);
                     content.Append(PdfOcrTextBuilder.BuildText(outputMap));
                 }
                 PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content.ToString());
-
                 fileResultEventHelper.RegisterAllSavedEvents();
-            } finally {
+            }
+            finally {
                 ocrProcessContext.SetOcrEventHelper(storedEventHelper);
             }
         }
@@ -150,28 +150,26 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual bool IsTaggingSupported() {
             return false;
         }
-        
-        public PdfOcrMetaInfoContainer GetMetaInfoContainer()
-        {
+
+        public virtual PdfOcrMetaInfoContainer GetMetaInfoContainer() {
             return new PdfOcrMetaInfoContainer(new OnnxTrMetaInfo());
         }
 
-        public ProductData GetProductData()
-        {
+        public virtual ProductData GetProductData() {
             return null;
         }
 
-        private static IList<System.Drawing.Bitmap> GetImages(FileInfo input) {
+        private static IList<IronSoftware.Drawing.AnyBitmap> GetImages(FileInfo input) {
             try {
                 if (TiffImageUtil.IsTiffImage(input)) {
-                    IList<System.Drawing.Bitmap> images = TiffImageUtil.GetAllImages(input);
-                    if (images.Count == 0) {
+                    IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(input);
+                    if (images.IsEmpty()) {
                         throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
                     }
                     return images;
                 }
                 else {
-                    System.Drawing.Bitmap image = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(input.FullName);
+                    IronSoftware.Drawing.AnyBitmap image = IronSoftware.Drawing.AnyBitmap.FromFile(input.FullName);
                     if (image == null) {
                         throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
                     }

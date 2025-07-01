@@ -81,8 +81,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             : this(0.1F, 0.1F) {
         }
 
-        public virtual IList<iText.Kernel.Geom.Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output
-            ) {
+        public virtual IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, 
+            FloatBufferMdArray output) {
             int height = output.GetDimension(1);
             int width = output.GetDimension(2);
             IList<iText.Kernel.Geom.Point[]> boxes = new List<iText.Kernel.Geom.Point[]>();

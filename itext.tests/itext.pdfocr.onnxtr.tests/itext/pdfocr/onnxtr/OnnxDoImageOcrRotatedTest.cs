@@ -90,7 +90,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedTextBasic.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("TEST\nThis\ntext\nLIS\nTxT\nsideways\nDiagonal\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("TEST\nThis\ntext\nIS\nTxT\nsideways\nDiagonal\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -114,7 +114,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedColorsMix2.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("not\nhave\na\nproblem.\n&%!Housten\nwe\nshould\n123456789-Fdppt\nwork?\nthis\ndoes\n"
+            NUnit.Framework.Assert.AreEqual("not\nhave\na\nproblem.\n&%!Housten\nwe\nshould\n123456789-FIdpt\nwork?\nthis\ndoes\n"
                 , textFromImage);
         }
 

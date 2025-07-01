@@ -32,6 +32,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// Interface for predictors, which take a full image and find text boxes on
     /// them. Output boxes can be rotated, which is why output is 4 points.
     /// </remarks>
-    public interface IDetectionPredictor : IPredictor<System.Drawing.Bitmap, IList<iText.Kernel.Geom.Point[]>> {
+    public interface IDetectionPredictor : IPredictor<IronSoftware.Drawing.AnyBitmap, IList<iText.Kernel.Geom.Point
+        []>> {
     }
 }

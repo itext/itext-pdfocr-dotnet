@@ -31,7 +31,8 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     /// A crop orientation predictor implementation, which is using ONNX Runtime and
     /// its ML models to figure out, how text is oriented in a cropped image of text.
     /// </summary>
-    public class OnnxOrientationPredictor : AbstractOnnxPredictor<System.Drawing.Bitmap, TextOrientation>, IOrientationPredictor {
+    public class OnnxOrientationPredictor : AbstractOnnxPredictor<IronSoftware.Drawing.AnyBitmap, TextOrientation
+        >, IOrientationPredictor {
         /// <summary>Configuration properties of the predictor.</summary>
         private readonly OnnxOrientationPredictorProperties properties;
 
@@ -78,13 +79,13 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             return properties;
         }
 
-        protected internal override FloatBufferMdArray ToInputBuffer(IList<System.Drawing.Bitmap> batch) {
+        protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
-        protected internal override IList<TextOrientation> FromOutputBuffer(IList<System.Drawing.Bitmap> inputBatch
-            , FloatBufferMdArray outputBatch) {
+        protected internal override IList<TextOrientation> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap> 
+            inputBatch, FloatBufferMdArray outputBatch) {
             // Just extracting the highest scoring "orientation class" for each image via argmax
             IList<TextOrientation> orientations = new List<TextOrientation>(outputBatch.GetDimension(0));
             float[] values = new float[outputBatch.GetDimension(1)];

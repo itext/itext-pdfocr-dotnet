@@ -151,7 +151,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("a\ndoes\nthis\nwork?\n123456789-Fdppt\nshould\nwe\n&%!Housten\nproblem.\nhave\nnot"
+                NUnit.Framework.Assert.AreEqual("does\nthis\nwork?\n123456789-FIdpt\nshould\nwe\n&%!Housten\nproblem.\na\nhave\nnot"
                     , extractionStrategy.GetResultantText());
             }
         }
@@ -166,7 +166,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("270\nTEXT\nTEXT 0\n-\n90\nTEXT\nTEXT 180", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("270\nTEXT\nTEXT 0\n90\nTEXT\nTEXT 180\n-", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -181,7 +181,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nLIS\nThis text\nsideways", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nThis text IS\nsideways", extractionStrategy.GetResultantText
                     ());
             }
         }

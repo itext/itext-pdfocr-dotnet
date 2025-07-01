@@ -48,6 +48,6 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <param name="input">input image, which was used to produce the inputs to the ML model</param>
         /// <param name="output">normalized output of the ML model</param>
         /// <returns>a list of detected objects. See interface documentation for more information</returns>
-        IList<iText.Kernel.Geom.Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output);
+        IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, FloatBufferMdArray output);
     }
 }

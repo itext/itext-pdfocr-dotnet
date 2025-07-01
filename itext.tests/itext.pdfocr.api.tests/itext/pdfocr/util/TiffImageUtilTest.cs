@@ -35,14 +35,14 @@ namespace iText.Pdfocr.Util {
         [NUnit.Framework.Test]
         public virtual void GetAllImagesMissingFileTest() {
             String path = PdfHelper.GetImagesTestDirectory() + "missing.tiff";
-            IList<System.Drawing.Bitmap> images = TiffImageUtil.GetAllImages(new FileInfo(path));
+            IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(new FileInfo(path));
             NUnit.Framework.Assert.AreEqual(0, images.Count);
         }
 
         [NUnit.Framework.Test]
         public virtual void GetAllImagesTest() {
             String path = PdfHelper.GetImagesTestDirectory() + "multipage.tiff";
-            IList<System.Drawing.Bitmap> images = TiffImageUtil.GetAllImages(new FileInfo(path));
+            IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(new FileInfo(path));
             NUnit.Framework.Assert.AreEqual(9, images.Count);
         }
 

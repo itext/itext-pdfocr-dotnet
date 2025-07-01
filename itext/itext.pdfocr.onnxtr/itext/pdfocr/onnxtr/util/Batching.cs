@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Util {
     /// <summary>Static utility class to help with batching.</summary>
@@ -34,20 +35,17 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// <param name="batchSize">target batch size. Last batch might have smaller size</param>
         /// <returns>batch iterator wrapper</returns>
         /// <typeparam name="E">input iterator element type</typeparam>
-        public static IEnumerator<IList<E>> Wrap<E>(IEnumerator<E> iterator, int batchSize)
-        {
-            if (iterator == null)
-                throw new ArgumentNullException(nameof(iterator));
-            if (batchSize <= 0)
+        public static IEnumerator<IList<E>> Wrap<E>(IEnumerator<E> iterator, int batchSize) {
+            Objects.RequireNonNull(iterator);
+            if (batchSize <= 0) {
                 throw new ArgumentException("batchSize should be positive", nameof(batchSize));
+            }
 
-            while (true)
-            {
+            while (true) {
                 var batch = new List<E>(batchSize);
                 int count = 0;
 
-                while (count < batchSize && iterator.MoveNext())
-                {
+                while (count < batchSize && iterator.MoveNext()) {
                     batch.Add(iterator.Current);
                     count++;
                 }

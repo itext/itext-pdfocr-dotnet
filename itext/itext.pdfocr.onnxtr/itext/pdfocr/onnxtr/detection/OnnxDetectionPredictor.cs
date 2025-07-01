@@ -31,7 +31,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// A text detection predictor implementation, which is using ONNX Runtime and
     /// its ML models to find, where text is located on an image.
     /// </summary>
-    public class OnnxDetectionPredictor : AbstractOnnxPredictor<System.Drawing.Bitmap, IList<iText.Kernel.Geom.Point
+    public class OnnxDetectionPredictor : AbstractOnnxPredictor<IronSoftware.Drawing.AnyBitmap, IList<iText.Kernel.Geom.Point
         []>>, IDetectionPredictor {
         /// <summary>Configuration properties of the predictor.</summary>
         private readonly OnnxDetectionPredictorProperties properties;
@@ -172,12 +172,12 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return properties;
         }
 
-        protected internal override FloatBufferMdArray ToInputBuffer(IList<System.Drawing.Bitmap> batch) {
+        protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
-        protected internal override IList<IList<iText.Kernel.Geom.Point[]>> FromOutputBuffer(IList<System.Drawing.Bitmap
+        protected internal override IList<IList<iText.Kernel.Geom.Point[]>> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap
             > inputBatch, FloatBufferMdArray outputBatch) {
             IDetectionPostProcessor postProcessor = properties.GetPostProcessor();
             // Normalizing pixel values via a sigmoid expit function
@@ -189,7 +189,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             IList<IList<iText.Kernel.Geom.Point[]>> batchTextBoxes = new List<IList<iText.Kernel.Geom.Point[]>>(inputBatch
                 .Count);
             for (int i = 0; i < inputBatch.Count; ++i) {
-                System.Drawing.Bitmap image = inputBatch[i];
+                IronSoftware.Drawing.AnyBitmap image = inputBatch[i];
                 IList<iText.Kernel.Geom.Point[]> textBoxes = postProcessor.Process(image, outputBatch.GetSubArray(i));
                 /*
                 * Post-processor returns points with relative floating-point
@@ -203,10 +203,10 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return batchTextBoxes;
         }
 
-        private static void ConvertToAbsoluteInputBoxes(System.Drawing.Bitmap image, IList<iText.Kernel.Geom.Point
+        private static void ConvertToAbsoluteInputBoxes(IronSoftware.Drawing.AnyBitmap image, IList<iText.Kernel.Geom.Point
             []> boxes, OnnxInputProperties properties) {
-            int sourceWidth = image.Width;
-            int sourceHeight = image.Height;
+            int sourceWidth = BufferedImageUtil.GetWidth(image);
+            int sourceHeight = BufferedImageUtil.GetHeight(image);
             float targetWidth = properties.GetWidth();
             float targetHeight = properties.GetHeight();
             float widthRatio = targetWidth / sourceWidth;

@@ -1,47 +1,52 @@
-﻿This 1S a test
+﻿This a test
 message for
 OCR Scanner
 Test
 BMPTest
-.
+ST
+-
 Diagonal
 TxT
 TEST
-This textLIS sideways
+This textIS sideways
 SI ENSAYARA COMO ACTUAR?
 Tanto peor, lo mejor es descansar no pensar
-la fiesta, si se puede. No hay nada mâs desalentador
-ver en las fiestas a jovenes con cara de lastima
-iluslonadas que se han pasado todo el dia tratando
-hallar lo mejor y la mas atractiva manera de pres
-tarse en publico. Hay que actuar con calma no
+la fiesta, si se puede. No hay nada mas desalentador
+ver en las fiestas jovenes con cara de lastima y
+ilusionadas que se han pasado todo el dia tratando
+hallar lo mejor la mas atractiva manera de pres
+tarse en publico. Hay que actuar con calma y
 cansaremos de repetirlo, Lo mas importante es saber
-que se va a poner tener todo a mano.
-Si intenta probar un nueyvo lapiz labial para la
+que se va a poner tener todo a
+Si intenta probar un nuevo lapiz labial para la
 sion, asegurese que armonice con el vestido que lle
-ra. También el maquillaje de los ojos debe armoni
+rà. También el maquillaje de los ojos debe armoni
 con el conjunto.
+C
 4
-4
-D
-A
+o
+oueur A
+ou
 K
 K
-A?
+X?
+-
+a
 what is Lovew
-Lorem Ipsum simply dummy text of the printing and typesetting
-industry Lorem Ipsum has been the industry's standard dummy
-text ever since the 1500s, when an unknown printer took a galley
-of type and scrambled to make a type specimen book It has
-survived not only five centuries but also the leap into electronid
-typesetting remaining essentially unchanged. It was popularised
+Lorem Ipsum simply dummy text of the printing typesetting
+industry. Lorem Ipsum has been the standard dummy
+text ever since the 1500s, when an unknown printer took galley
+of type and scrambled it to make type specimen book. It has
+survived not only five centuries, but also the leap into electronic
+typesetting remaining essentially unchanged. It was popularised in
 the 1960s with the release of Letraset sheets containing Lorem
 Ipsum passages, and more recently with desktop publishing
 software like Aldus PageMaker including versions of Lorem Ipsum.
-3
+sAusnpur
+pue s!
+jwMsdI
 a
-wnsdI
-in
+a
 thousand
 eighty nineteen
 thirteen
@@ -51,15 +56,17 @@ fifteen fourS1X fifty
 million tenthree cight forty
 ones
 sixteen two
-fiveseventeen
-thirty nine
+nine fiveseventeen
+thirty
 eleven Sixty
 fourteen
-eighteen ninety
+eighteen
+ninety
 seventy
 billion
 -
-L
+-
+-
 eighteen
 nineteen sixty
 thousandten
@@ -74,16 +81,17 @@ ninety
 seventeen twenty thirteen
 six
 thirtyfourteen sixteen
-seven two- eight
+eight
+seven two
 one nine
 fifteen
 twelve
-es Six
+SIX
 five
-
-.
-Sseventy
-e eeven
+ele
+S
+seventy
+ven
 Tour
-thre
+three
 ten

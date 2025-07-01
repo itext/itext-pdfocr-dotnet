@@ -87,15 +87,14 @@ namespace iText.Pdfocr.Onnxtr.Util {
             BatchProcessingGenerator<int, String> generator = new BatchProcessingGenerator<int, String>(JavaUtil.ArraysAsList
                 (JavaCollectionsUtil.SingletonList(1), JavaUtil.ArraysAsList(2, 3)).GetEnumerator(), new _IBatchProcessor_102
                 (processorCallCount));
-            generator.HasNext();
-            NUnit.Framework.Assert.AreEqual("2", generator.Next());
-            generator.HasNext();
-            NUnit.Framework.Assert.AreEqual("4", generator.Next());
-            generator.HasNext();
-            NUnit.Framework.Assert.AreEqual("6", generator.Next());
-            generator.HasNext();
-            NUnit.Framework.Assert.Catch(typeof(ArgumentNullException), () => generator.Next());
-            NUnit.Framework.Assert.AreEqual(3, processorCallCount[0]);
+            NUnit.Framework.Assert.IsTrue(generator.MoveNext());
+            NUnit.Framework.Assert.AreEqual("2", generator.Current);
+            NUnit.Framework.Assert.IsTrue(generator.MoveNext());
+            NUnit.Framework.Assert.AreEqual("4", generator.Current);
+            NUnit.Framework.Assert.IsTrue(generator.MoveNext());
+            NUnit.Framework.Assert.AreEqual("6", generator.Current);
+            NUnit.Framework.Assert.IsFalse(generator.MoveNext());
+            NUnit.Framework.Assert.AreEqual(2, processorCallCount[0]);
         }
 
         private sealed class _IBatchProcessor_102 : IBatchProcessor<int, String> {

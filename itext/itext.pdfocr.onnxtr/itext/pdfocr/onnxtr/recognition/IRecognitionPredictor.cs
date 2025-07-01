@@ -28,6 +28,6 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// Interface for predictors, which take a cropped image of text and recognize
     /// text characters on it.
     /// </summary>
-    public interface IRecognitionPredictor : IPredictor<System.Drawing.Bitmap, String> {
+    public interface IRecognitionPredictor : IPredictor<IronSoftware.Drawing.AnyBitmap, String> {
     }
 }

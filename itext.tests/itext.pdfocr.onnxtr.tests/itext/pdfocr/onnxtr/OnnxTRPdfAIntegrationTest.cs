@@ -84,7 +84,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceRgb.BLUE, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("This test\n1S\na\nfor\nmessage\n.\nOCR\nScanner\nTest\nBMPTest", extractionStrategy
+                NUnit.Framework.Assert.AreEqual("This\n1S test\na\nfor\nmessage\n-\nOCR\nScanner\nTest\nBMPTest", extractionStrategy
                     .GetResultantText());
             }
         }

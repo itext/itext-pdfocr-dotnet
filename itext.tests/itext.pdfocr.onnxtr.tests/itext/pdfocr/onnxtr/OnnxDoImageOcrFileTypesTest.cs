@@ -77,7 +77,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_02.JFIF";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Test\nOCR\nScanner\nmessage\nfor\n1S\na\ntest\nIhis\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Test\nOCR\nScanner\n-\nmessage\nfor\n1S\na\ntest\nIhis\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -93,9 +93,9 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "multipage.tiff";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("1\nPage\nExample\nTIFF\nMultipage\n" + "-\nPage\n2\nExample\nTIFF\nMultipage\n"
+            NUnit.Framework.Assert.AreEqual("1\nPage\nExample\nTIFF\nMultipage\n" + ":\n2\nPage\nExample\nTIFF\nMultipage\n"
                  + "Page\n3\nExample\nTIFF\nMultipage\n" + "4\nPage\nExample\nTIFF\nMultipage\n" + "Page5\nExample\nTIFF\nMultipage\n"
-                 + "Page\n6\nExample\nTIFF\nMultipage\n" + "/\nPage\nExample\nTIFF\nMultipage\n" + "8\nPage\nExample\nTIFF\nMultipage\n"
+                 + "Page\n6\nExample\nTIFF\nMultipage\n" + "Page\n/\nExample\nTIFF\nMultipage\n" + "8\nPage\nExample\nTIFF\nMultipage\n"
                  + "Page\n9\nExample\nTIFF\nMultipage\n", textFromImage);
         }
 

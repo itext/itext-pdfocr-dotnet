@@ -30,7 +30,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// A text recognition predictor implementation, which is using ONNX Runtime and
     /// its ML models to recognize text characters on an image.
     /// </summary>
-    public class OnnxRecognitionPredictor : AbstractOnnxPredictor<System.Drawing.Bitmap, String>, IRecognitionPredictor {
+    public class OnnxRecognitionPredictor : AbstractOnnxPredictor<IronSoftware.Drawing.AnyBitmap, String>, IRecognitionPredictor {
         /// <summary>Configuration properties of the predictor.</summary>
         private readonly OnnxRecognitionPredictorProperties properties;
 
@@ -239,13 +239,13 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return properties;
         }
 
-        protected internal override FloatBufferMdArray ToInputBuffer(IList<System.Drawing.Bitmap> batch) {
+        protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
-        protected internal override IList<String> FromOutputBuffer(IList<System.Drawing.Bitmap> inputBatch, FloatBufferMdArray
-             outputBatch) {
+        protected internal override IList<String> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap> inputBatch
+            , FloatBufferMdArray outputBatch) {
             int batchSize = outputBatch.GetDimension(0);
             IList<String> words = new List<String>(batchSize);
             for (int i = 0; i < batchSize; ++i) {

@@ -116,5 +116,24 @@ internal static class PdfOcrOnnxTRExtensions
     public static String Substring(this StringBuilder collector, int beginIndex) {
         return collector.ToString().Substring(beginIndex);
     }
+    
+    public static IronSoftware.Drawing.AnyBitmap GetSubimage(this IronSoftware.Drawing.AnyBitmap image, 
+        int x, int y, int width, int height) {
+        return image.Clone(new IronSoftware.Drawing.Rectangle(x, y, width, height));
+    }
+    
+    public static void ForEachRemaining<E>(this IEnumerator<E> iterator, IList<E> list) {
+        while (iterator.MoveNext()) {
+            list.Add(iterator.Current);
+        }
+    }
+    
+    public static void Close<T,R>(this iText.Pdfocr.Onnxtr.IPredictor<T,R> predictor) {
+        predictor.Dispose();
+    }
+
+    public static bool IsEmpty<T>(this IList<T> list) {
+        return list.Count == 0;
+    }
 }
 //\endcond

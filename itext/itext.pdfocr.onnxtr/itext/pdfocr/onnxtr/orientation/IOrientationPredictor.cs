@@ -25,6 +25,6 @@ using iText.Pdfocr.Onnxtr;
 
 namespace iText.Pdfocr.Onnxtr.Orientation {
     /// <summary>Interface for predictors, which take a cropped image of text and determine its orientation.</summary>
-    public interface IOrientationPredictor : IPredictor<System.Drawing.Bitmap, TextOrientation> {
+    public interface IOrientationPredictor : IPredictor<IronSoftware.Drawing.AnyBitmap, TextOrientation> {
     }
 }

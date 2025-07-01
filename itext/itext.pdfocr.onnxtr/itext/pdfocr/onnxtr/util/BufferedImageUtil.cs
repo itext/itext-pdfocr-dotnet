@@ -22,21 +22,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-#if !NETSTANDARD2_0
-using System.Drawing;
-#endif // !NETSTANDARD2_0
 using iText.Commons.Utils;
 using OpenCvSharp;
-using Point = iText.Kernel.Geom.Point;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace iText.Pdfocr.Onnxtr.Util {
     /// <summary>
     /// Additional algorithms for working with
-    /// <see cref="System.Drawing.Bitmap"/>.
+    /// <see cref="SkiaSharp.SKBitmap"/>.
     /// </summary>
     public sealed class BufferedImageUtil {
         private BufferedImageUtil() {
@@ -50,7 +43,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// <param name="images">collection of images to convert to model input</param>
         /// <param name="properties">model input properties</param>
         /// <returns>batched BCHW model input MD-array</returns>
-        public static FloatBufferMdArray ToBchwInput(ICollection<System.Drawing.Bitmap> images, OnnxInputProperties
+        public static FloatBufferMdArray ToBchwInput(ICollection<IronSoftware.Drawing.AnyBitmap> images, OnnxInputProperties
              properties) {
             // Currently properties guarantee RGB, this is just in case this changes later
             if (properties.GetChannelCount() != 3) {
@@ -62,125 +55,53 @@ namespace iText.Pdfocr.Onnxtr.Util {
             }
             long[] inputShape = new long[] { images.Count, properties.GetChannelCount(), properties.GetHeight(), properties
                 .GetWidth() };
-            /*
-             * It is important to do it via ByteBuffer with allocateDirect. If the
-             * buffer is non-direct, it will allocate a direct buffer within the
-             * ONNX runtime and copy the buffer there instead. So we will waste
-             * twice the memory for no reason.
-             *
-             * For some reason there doesn't seem to be a way to allocate a direct
-             * buffer via FloatBuffer itself...
-             */
             int bufferSize = CalculateBufferCapacity(inputShape);
             float[] inputData = new float[bufferSize / sizeof(float)];
-            int imageSize = properties.GetWidth() * properties.GetHeight();
 
-            int offset = 0;
-            foreach (System.Drawing.Bitmap image in images) {
-                using (System.Drawing.Bitmap resizedImage = Resize(image, properties.GetWidth(), properties.GetHeight(),
+            int currentIndex = 0;
+            foreach (IronSoftware.Drawing.AnyBitmap image in images) {
+                using (SkiaSharp.SKBitmap resizedImage = Resize(image, properties.GetWidth(), properties.GetHeight(),
                            properties.UseSymmetricPad())) {
-                    var rect = new Rectangle(0, 0, resizedImage.Width, resizedImage.Height);
-                    BitmapData raster = resizedImage.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-                    try {
-                        int stride = raster.Stride;
-                        byte[] pixelBytes = new byte[stride * resizedImage.Height];
-                        Marshal.Copy(raster.Scan0, pixelBytes, 0, pixelBytes.Length);
+                    using (SkiaSharp.SKPixmap raster = resizedImage.PeekPixels()) {
+                        byte[] pixelBytes = new byte[raster.BytesSize];
+                        Marshal.Copy(raster.GetPixels(), pixelBytes, 0, pixelBytes.Length);
 
-                        int baseIndex = offset * 3 * imageSize;
+                        int stride = raster.RowBytes;
+                        int bytesPerPixel = raster.Info.BytesPerPixel;
 
                         // 1. R
                         for (int y = 0; y < properties.GetHeight(); y++) {
+                            int rowStart = y * stride;
                             for (int x = 0; x < properties.GetWidth(); x++) {
-                                int index = y * stride + x * 3 + 2; 
-                                float r = pixelBytes[index] / 255f;
-                                inputData[baseIndex + y * properties.GetWidth() + x] =
-                                    (r - properties.GetRedMean()) / properties.GetRedStd();
+                                int index = rowStart + x * bytesPerPixel;
+                                float r = pixelBytes[index + 2] / 255f;
+                                inputData[currentIndex++] = (r - properties.GetRedMean()) / properties.GetRedStd();
                             }
                         }
 
                         // 2. G
-                        int greenOffset = imageSize;
                         for (int y = 0; y < properties.GetHeight(); y++) {
+                            int rowStart = y * stride;
                             for (int x = 0; x < properties.GetWidth(); x++) {
-                                int index = y * stride + x * 3 + 1; 
-                                float g = pixelBytes[index] / 255f;
-                                inputData[baseIndex + greenOffset + y * properties.GetWidth() + x] =
-                                    (g - properties.GetGreenMean()) / properties.GetGreenStd();
+                                int index = rowStart + x * bytesPerPixel;
+                                float g = pixelBytes[index + 1] / 255f;
+                                inputData[currentIndex++] = (g - properties.GetGreenMean()) / properties.GetGreenStd();
                             }
                         }
 
                         // 3. B
-                        int blueOffset = 2 * imageSize;
                         for (int y = 0; y < properties.GetHeight(); y++) {
+                            int rowStart = y * stride;
                             for (int x = 0; x < properties.GetWidth(); x++) {
-                                int index = y * stride + x * 3; 
+                                int index = rowStart + x * bytesPerPixel;
                                 float b = pixelBytes[index] / 255f;
-                                inputData[baseIndex + blueOffset + y * properties.GetWidth() + x] =
-                                    (b - properties.GetBlueMean()) / properties.GetBlueStd();
+                                inputData[currentIndex++] = (b - properties.GetBlueMean()) / properties.GetBlueStd();
                             }
                         }
                     }
-                    finally {
-                        resizedImage.UnlockBits(raster);
-                    }
-                    offset++;
                 }
             }
             return new FloatBufferMdArray(inputData, inputShape);
-        }
-
-        /// <summary>Converts an image to an RGB Mat for use in OpenCV.</summary>
-        /// <param name="image">image to convert</param>
-        /// <returns>RGB 8UC3 OpenCV Mat with the image</returns>
-        public static Mat ToRgbMat(System.Drawing.Bitmap image) {
-            int width = image.Width;
-            int height = image.Height;
-            Mat resultMat = new Mat(height, width, MatType.CV_8UC3);
-            
-            Rectangle rect = new Rectangle(0, 0, width, height);
-            BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-
-            try {
-                int stride = bitmapData.Stride;
-                int effectiveWidth = width * 3;
-
-                for (int y = 0; y < height; y++) {
-                    IntPtr srcLine = bitmapData.Scan0 + y * stride;
-                    IntPtr targetLine = resultMat.Ptr(y);
-
-                    byte[] lineData = new byte[effectiveWidth];
-                    Marshal.Copy(srcLine, lineData, 0, effectiveWidth);
-                    Marshal.Copy(lineData, 0, targetLine, effectiveWidth);
-                }
-            }
-            finally {
-                image.UnlockBits(bitmapData);
-            }
-            return resultMat;
-        }
-
-        /// <summary>Converts an RGB 8UC3 OpenCV Mat to a buffered image.</summary>
-        /// <param name="rgb">RGB 8UC3 OpenCV Mat to convert</param>
-        /// <returns>buffered image based on Mat</returns>
-        public static System.Drawing.Bitmap FromRgbMat(Mat rgb) {
-            if (rgb.Type() != MatType.CV_8UC3) {
-                throw new ArgumentException("Unexpected Mat type");
-            }
-            System.Drawing.Bitmap image = new System.Drawing.Bitmap(rgb.Cols, rgb.Rows, PixelFormat.Format24bppRgb
-                );
-
-            var indexer = rgb.GetGenericIndexer<Vec3b>();
-            for (int y = 0; y < rgb.Height; y++) {
-                for (int x = 0; x < rgb.Width; x++) {
-                    Vec3b color = indexer[y, x];
-                    image.SetPixel(x, y, Color.FromArgb(
-                        color.Item2, // R
-                        color.Item1, // G
-                        color.Item0  // B
-                    ));
-                }
-            }
-            return image;
         }
 
         /// <summary>Rotates image based on text orientation.</summary>
@@ -188,12 +109,12 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// <param name="image">image to rotate</param>
         /// <param name="orientation">text orientation used to rotate the image</param>
         /// <returns>new rotated image, or same image, if no rotation is required</returns>
-        public static System.Drawing.Bitmap Rotate(System.Drawing.Bitmap image, TextOrientation orientation) {
+        public static IronSoftware.Drawing.AnyBitmap Rotate(IronSoftware.Drawing.AnyBitmap image, TextOrientation orientation) {
             if (orientation == TextOrientation.HORIZONTAL) {
                 return image;
             }
-            int oldW = image.Width;
-            int oldH = image.Height;
+            int oldW = BufferedImageUtil.GetWidth(image);
+            int oldH = BufferedImageUtil.GetHeight(image);
             int newW;
             int newH;
             double angle;
@@ -212,70 +133,18 @@ namespace iText.Pdfocr.Onnxtr.Util {
                     angle = 270;
                 }
             }
-            System.Drawing.Bitmap rotated = new System.Drawing.Bitmap(newW, newH, PixelFormat.Format24bppRgb);
-            using (Graphics graphics = Graphics.FromImage(rotated)) {
-                graphics.TranslateTransform((float)((newW - oldW) / 2.0), (float)((newH - oldH) / 2.0));
-                float centerX = image.Width / 2.0f;
-                float centerY = image.Height / 2.0f;
-                graphics.TranslateTransform(centerX, centerY);
-                graphics.RotateTransform((float)angle);
-                graphics.TranslateTransform(-centerX, -centerY);
+            SkiaSharp.SKBitmap rotated = 
+                new SkiaSharp.SKBitmap(newW, newH, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Premul);
+            using (SkiaSharp.SKCanvas graphics = new SkiaSharp.SKCanvas(rotated)) {
+                graphics.Translate((float)((newW - oldW) / 2.0), (float)((newH - oldH) / 2.0));
+                float centerX = BufferedImageUtil.GetWidth(image) / 2.0f;
+                float centerY = BufferedImageUtil.GetHeight(image) / 2.0f;
+                graphics.Translate(centerX, centerY);
+                graphics.RotateDegrees((float)angle);
+                graphics.Translate(-centerX, -centerY);
                 graphics.DrawImage(image, 0, 0);
             }
             return rotated;
-        }
-
-        /// <summary>Creates a new image with an aspect ratio preserving resize.</summary>
-        /// <remarks>Creates a new image with an aspect ratio preserving resize. New blank pixel will have black color.
-        ///     </remarks>
-        /// <param name="image">image to resize</param>
-        /// <param name="width">target width</param>
-        /// <param name="height">target height</param>
-        /// <param name="symmetricPad">whether padding should be symmetric or should it be bottom-right</param>
-        /// <returns>new resized image</returns>
-        public static System.Drawing.Bitmap Resize(System.Drawing.Bitmap image, int width, int height, bool symmetricPad
-            ) {
-            // It is pretty unlikely, that the image is already the correct size, so no need for an exception
-            System.Drawing.Bitmap result = new System.Drawing.Bitmap(width, height, PixelFormat.Format24bppRgb);
-            using (Graphics graphics = Graphics.FromImage(result)) {
-                graphics.Clear(Color.Black);
-                graphics.InterpolationMode = InterpolationMode.Bilinear;
-
-                int sourceWidth = image.Width;
-                int sourceHeight = image.Height;
-                double widthRatio = (double)width / sourceWidth;
-                double heightRatio = (double)height / sourceHeight;
-                if (heightRatio > widthRatio) {
-                    int scaledHeight = (int)MathematicUtil.Round(sourceHeight * widthRatio);
-                    int yPos;
-                    if (symmetricPad) {
-                        yPos = (height - scaledHeight) / 2;
-                        graphics.FillRectangle(new SolidBrush(Color.Black), 0, 0, width, yPos);
-                    }
-                    else {
-                        yPos = 0;
-                    }
-
-                    graphics.FillRectangle(new SolidBrush(Color.Black), 0, yPos + scaledHeight, width, height - scaledHeight - yPos);
-                    graphics.DrawImage(image, 0, yPos, width, scaledHeight);
-                }
-                else {
-                    int scaledWidth = (int)MathematicUtil.Round(sourceWidth * heightRatio);
-                    int xPos;
-                    if (symmetricPad) {
-                        xPos = (width - scaledWidth) / 2;
-                        graphics.FillRectangle(new SolidBrush(Color.Black), 0, 0, xPos, height);
-                    }
-                    else {
-                        xPos = 0;
-                    }
-
-                    graphics.FillRectangle(new SolidBrush(Color.Black), xPos + scaledWidth, 0, width - scaledWidth - xPos, height);
-                    graphics.DrawImage(image, xPos, 0, scaledWidth, height);
-                }
-            }
-
-            return result;
         }
 
         /// <summary>Extracts sub-images from an image, based on provided rotated 4-point boxes.</summary>
@@ -286,15 +155,16 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// <param name="image">original image to be used for extraction</param>
         /// <param name="boxes">list of 4-point boxes. Points should be in the following order: BL, TL, TR, BR</param>
         /// <returns>list of extracted image boxes</returns>
-        public static IList<System.Drawing.Bitmap> ExtractBoxes(System.Drawing.Bitmap image, ICollection<Point[]> 
-            boxes) {
-            IList<System.Drawing.Bitmap> boxesImages = new List<System.Drawing.Bitmap>(boxes.Count);
+        public static IList<IronSoftware.Drawing.AnyBitmap> ExtractBoxes(IronSoftware.Drawing.AnyBitmap image, 
+            ICollection<iText.Kernel.Geom.Point[]> boxes) {
+            IList<IronSoftware.Drawing.AnyBitmap> boxesImages = new List<IronSoftware.Drawing.AnyBitmap>(boxes.Count);
+
             using (Mat imageMat = iText.Pdfocr.Onnxtr.Util.BufferedImageUtil.ToRgbMat(image)) {
-                foreach (Point[] box in boxes) {
+                foreach (iText.Kernel.Geom.Point[] box in boxes) {
                     float boxWidth = (float)box[1].Distance(box[2]);
                     float boxHeight = (float)box[1].Distance(box[0]);
                     using (Mat transformationMat = CalculateBoxTransformationMat(box, boxWidth, boxHeight)) {
-                        using (Mat boxImageMat = new Mat((int)boxHeight, (int)boxWidth, MatType.CV_8UC3)) {
+                        using (Mat boxImageMat = new Mat((int)boxHeight, (int)boxWidth, MatType.CV_8UC4)) {
                             OpenCvSharp.Size size = new OpenCvSharp.Size((int)boxWidth, (int)boxHeight);
                             Cv2.WarpAffine(imageMat, boxImageMat, transformationMat, size);
                             boxesImages.Add(iText.Pdfocr.Onnxtr.Util.BufferedImageUtil.FromRgbMat(boxImageMat));
@@ -305,7 +175,147 @@ namespace iText.Pdfocr.Onnxtr.Util {
             return boxesImages;
         }
 
-        private static Mat CalculateBoxTransformationMat(Point[] box, float boxWidth, float boxHeight) {
+        /// <summary>Gets width of an image.</summary>
+        /// <remarks>
+        /// IronSoftware.Drawing.AnyBitmap.Width uses SixLabors.ImageSharp under the hood to load the image size info,
+        /// but in that case image is auto oriented and sometimes page is rotated causing swapped width and height.
+        /// That's why we always use SkiaSharp implementation to get correct size we work with.
+        /// </remarks>
+        /// <param name="image">image to get width</param>
+        /// <returns>image width</returns>
+        public static int GetWidth(IronSoftware.Drawing.AnyBitmap image) {
+            return ((SkiaSharp.SKBitmap)image).Width;
+        }
+
+        /// <summary>Gets height of an image.</summary>
+        /// <remarks>
+        /// IronSoftware.Drawing.AnyBitmap.Height uses SixLabors.ImageSharp under the hood to load the image size info,
+        /// but in that case image is auto oriented and sometimes page is rotated causing swapped width and height.
+        /// That's why we always use SkiaSharp implementation to get correct size we work with.
+        /// </remarks>
+        /// <param name="image">image to get height</param>
+        /// <returns>image height</returns>
+        public static int GetHeight(IronSoftware.Drawing.AnyBitmap image) {
+            return ((SkiaSharp.SKBitmap)image).Height;
+        }
+
+        /// <summary>Converts an image to an RGBA Mat for use in OpenCV.</summary>
+        /// <param name="image">image to convert</param>
+        /// <returns>RGBA 8UC4 OpenCV Mat with the image</returns>
+        private static Mat ToRgbMat(IronSoftware.Drawing.AnyBitmap image) {
+            int width = BufferedImageUtil.GetWidth(image);
+            int height = BufferedImageUtil.GetHeight(image);
+            Mat resultMat = new Mat(height, width, MatType.CV_8UC4);
+
+            SkiaSharp.SKBitmap bgraImage = GetBgraBitmap(image);
+            using (SkiaSharp.SKPixmap bitmapData = ((SkiaSharp.SKBitmap)bgraImage).PeekPixels()) {
+
+                int stride = bitmapData.RowBytes;
+                int effectiveWidth = width * bitmapData.Info.BytesPerPixel;
+
+                for (int y = 0; y < height; y++) {
+                    IntPtr srcLine = bitmapData.GetPixels() + y * stride;
+                    IntPtr targetLine = resultMat.Ptr(y);
+
+                    byte[] lineData = new byte[effectiveWidth];
+                    Marshal.Copy(srcLine, lineData, 0, effectiveWidth);
+                    Marshal.Copy(lineData, 0, targetLine, effectiveWidth);
+                }
+            }
+
+            return resultMat;
+        }
+
+        /// <summary>Converts an RGBA 8UC4 OpenCV Mat to a buffered image.</summary>
+        /// <param name="rgb">RGBA 8UC4 OpenCV Mat to convert</param>
+        /// <returns>buffered image based on Mat</returns>
+        private static IronSoftware.Drawing.AnyBitmap FromRgbMat(Mat rgb) {
+            if (rgb.Type() != MatType.CV_8UC4) {
+                throw new ArgumentException("Unexpected Mat type");
+            }
+            SkiaSharp.SKBitmap image = new SkiaSharp.SKBitmap(rgb.Cols, rgb.Rows, 
+                SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Premul);
+
+            var indexer = rgb.GetGenericIndexer<Vec4b>();
+            for (int y = 0; y < rgb.Height; y++) {
+                for (int x = 0; x < rgb.Width; x++) {
+                    Vec4b color = indexer[y, x];
+                    image.SetPixel(x, y, new SkiaSharp.SKColor(
+                        color.Item0, // R
+                        color.Item1, // G
+                        color.Item2,  // B
+                        color.Item3 // A
+                    ));
+                }
+            }
+            return image;
+        }
+
+        /// <summary>Creates a new image with an aspect ratio preserving resize.</summary>
+        /// <remarks>Creates a new image with an aspect ratio preserving resize. New blank pixel will have black color.
+        ///     </remarks>
+        /// <param name="image">image to resize</param>
+        /// <param name="width">target width</param>
+        /// <param name="height">target height</param>
+        /// <param name="symmetricPad">whether padding should be symmetric or should it be bottom-right</param>
+        /// <returns>new resized image</returns>
+        private static SkiaSharp.SKBitmap Resize(IronSoftware.Drawing.AnyBitmap image, int width, int height, 
+            bool symmetricPad) {
+            // It is pretty unlikely, that the image is already the correct size, so no need for an exception
+            SkiaSharp.SKBitmap result = 
+                new SkiaSharp.SKBitmap(width, height, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Premul);
+            using (SkiaSharp.SKCanvas graphics = new SkiaSharp.SKCanvas(result)) {
+                // Decided to use white background color for the cases when the image is transparent (e.g. PNG),
+                // see WeirdWordsDoImageOcrTest for example. With transparent background text is not recognized,
+                // on the black one the most frequent black text won't be visible.
+                graphics.Clear(SkiaSharp.SKColors.White);
+
+                int sourceWidth = BufferedImageUtil.GetWidth(image);
+                int sourceHeight = BufferedImageUtil.GetHeight(image);
+                double widthRatio = (double)width / sourceWidth;
+                double heightRatio = (double)height / sourceHeight;
+                using (SkiaSharp.SKPaint fillPaint = new SkiaSharp.SKPaint()) {
+                    fillPaint.Color = SkiaSharp.SKColors.Black;
+                    fillPaint.Style = SkiaSharp.SKPaintStyle.Fill;
+                    fillPaint.IsAntialias = true;
+                    using (SkiaSharp.SKPaint imagePaint = new SkiaSharp.SKPaint()) {
+                        SkiaSharp.SKSamplingOptions options = new SkiaSharp.SKSamplingOptions(
+                            SkiaSharp.SKFilterMode.Linear, SkiaSharp.SKMipmapMode.Linear);
+                        imagePaint.IsAntialias = true;
+                        if (heightRatio > widthRatio) {
+                            int scaledHeight = (int)MathematicUtil.Round(sourceHeight * widthRatio);
+                            int yPos;
+                            if (symmetricPad) {
+                                yPos = (height - scaledHeight) / 2;
+                                graphics.DrawRect(0, 0, width, yPos, fillPaint);
+                            } else {
+                                yPos = 0;
+                            }
+
+                            graphics.DrawRect(0, yPos + scaledHeight, width, height - scaledHeight - yPos, fillPaint);
+                            graphics.DrawImage(image, new SkiaSharp.SKRect(0, yPos, width, yPos + scaledHeight), 
+                                options, imagePaint);
+                        } else {
+                            int scaledWidth = (int)MathematicUtil.Round(sourceWidth * heightRatio);
+                            int xPos;
+                            if (symmetricPad) {
+                                xPos = (width - scaledWidth) / 2;
+                                graphics.DrawRect(0, 0, xPos, height, new SkiaSharp.SKPaint());
+                            } else {
+                                xPos = 0;
+                            }
+
+                            graphics.DrawRect(xPos + scaledWidth, 0, width - scaledWidth - xPos, height, fillPaint);
+                            graphics.DrawImage(image, 
+                                new SkiaSharp.SKRect(xPos, 0, xPos + scaledWidth, height), options, imagePaint);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        private static Mat CalculateBoxTransformationMat(iText.Kernel.Geom.Point[] box, float boxWidth, float boxHeight) {
             using (Mat srcPoints = new Mat(3, 2, MatType.CV_32F)) {
                 using (Mat dstPoints = new Mat(3, 2, MatType.CV_32F)) {
                     for (int i = 0; i < 3; ++i) {
@@ -333,6 +343,22 @@ namespace iText.Pdfocr.Onnxtr.Util {
                 capacity *= (int)dim;
             }
             return capacity;
+        }
+
+        /// <summary>Converts image to BGRA pixel format.</summary>
+        /// <param name="image">IronSoftware.Drawing.AnyBitmap to convert</param>
+        /// <returns>SkiaSharp.SKBitmap in BGRA pixel format</returns>
+        private static SkiaSharp.SKBitmap GetBgraBitmap(IronSoftware.Drawing.AnyBitmap image) {
+            SkiaSharp.SKBitmap skiaImage = (SkiaSharp.SKBitmap)image;
+            if (skiaImage.ColorType == SkiaSharp.SKColorType.Bgra8888) {
+                return skiaImage;
+            }
+            SkiaSharp.SKBitmap bgraImage = new SkiaSharp.SKBitmap(skiaImage.Width, skiaImage.Height,
+                SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Premul);
+            using (SkiaSharp.SKCanvas graphics = new SkiaSharp.SKCanvas(bgraImage)) {
+                graphics.DrawBitmap(image, 0, 0);
+            }
+            return bgraImage;
         }
     }
 }

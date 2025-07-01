@@ -30,8 +30,6 @@ using iText.IO.Image;
 using iText.IO.Util;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
-using System.Drawing.Imaging;
-using System.Drawing;
 
 namespace iText.Pdfocr.Util {
     /// <summary>Utility class to handle tiff images.</summary>
@@ -47,35 +45,19 @@ namespace iText.Pdfocr.Util {
         /// <param name="inputFile">TIFF file to retrieve images from</param>
         /// <returns>
         /// the list of
-        /// <see cref="System.Drawing.Bitmap"/>
+        /// <see cref="IronSoftware.Drawing.AnyBitmap"/>
         /// 's in the TIFF file
         /// </returns>
-        public static IList<System.Drawing.Bitmap> GetAllImages(FileInfo inputFile) {
-            try
-            {
-                Image originalImage = Image.FromFile(inputFile.FullName);
-                List<Bitmap> bitmapList = new List<Bitmap>();
-                var xResolution = originalImage.HorizontalResolution;
-                var yResolution = originalImage.VerticalResolution;
-
-                FrameDimension frameDimension = new FrameDimension(originalImage.FrameDimensionsList[0]);
-                int frameCount = originalImage.GetFrameCount(FrameDimension.Page);
-                for (int i = 0; i < frameCount; ++i)
-                {
-                    originalImage.SelectActiveFrame(frameDimension, i);
-                    Bitmap temp = new Bitmap(originalImage);
-                    temp.SetResolution(2 * xResolution, 2 * yResolution);
-                    bitmapList.Add(temp);
-                }
-
-                return bitmapList;
-            } catch (Exception e)
-            {
+        public static IList<IronSoftware.Drawing.AnyBitmap> GetAllImages(FileInfo inputFile) {
+            try {
+                IronSoftware.Drawing.AnyBitmap originalImage = IronSoftware.Drawing.AnyBitmap.FromFile(inputFile.FullName);
+                return (List<IronSoftware.Drawing.AnyBitmap>)originalImage.GetAllFrames;
+            } catch (Exception e) {
                 LOGGER.LogError(MessageFormatUtil.Format(
                     PdfOcrLogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE, inputFile.FullName, e.Message));
             }
 
-            return new List<System.Drawing.Bitmap>();
+            return new List<IronSoftware.Drawing.AnyBitmap>();
         }
 
         /// <summary>Checks whether image type is TIFF.</summary>

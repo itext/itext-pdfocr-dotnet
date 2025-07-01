@@ -57,8 +57,8 @@ namespace iText.Pdfocr.Onnxtr {
         private readonly IRecognitionPredictor recognitionPredictor;
 
 //\cond DO_NOT_DOCUMENT
-        internal OnnxTrProcessor(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, IRecognitionPredictor
-             recognitionPredictor) {
+        internal OnnxTrProcessor(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor
+            , IRecognitionPredictor recognitionPredictor) {
             this.detectionPredictor = detectionPredictor;
             this.orientationPredictor = orientationPredictor;
             this.recognitionPredictor = recognitionPredictor;
@@ -66,18 +66,18 @@ namespace iText.Pdfocr.Onnxtr {
 //\endcond
 
 //\cond DO_NOT_DOCUMENT
-        internal virtual IDictionary<int, IList<TextInfo>> DoOcr(IList<System.Drawing.Bitmap> images, OcrProcessContext ocrProcessContext) {
+        internal virtual IDictionary<int, IList<TextInfo>> DoOcr(IList<IronSoftware.Drawing.AnyBitmap> images, OcrProcessContext
+             ocrProcessContext) {
             IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>(images.Count);
             int imageIndex = 0;
             IEnumerator<IList<iText.Kernel.Geom.Point[]>> textBoxGenerator = detectionPredictor.Predict(images);
             while (textBoxGenerator.MoveNext()) {
-                AbstractPdfOcrEventHelper eventHelper = ocrProcessContext.GetOcrEventHelper() == null ?
-                    new OnnxTrEventHelper() : ocrProcessContext.GetOcrEventHelper();
+                AbstractPdfOcrEventHelper eventHelper = ocrProcessContext.GetOcrEventHelper() == null ? new OnnxTrEventHelper
+                    () : ocrProcessContext.GetOcrEventHelper();
                 // usage event
-                PdfOcrOnnxTrProductEvent ocrEvent = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(
-                    eventHelper.GetSequenceId(), null, eventHelper.GetConfirmationType());
-                eventHelper.OnEvent(ocrEvent);
-                
+                PdfOcrOnnxTrProductEvent @event = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(eventHelper.GetSequenceId
+                    (), null, eventHelper.GetConfirmationType());
+                eventHelper.OnEvent(@event);
                 /*
                 * TODO DEVSIX-9153: Potential performance improvement (at least for GPU).
                 *
@@ -89,9 +89,9 @@ namespace iText.Pdfocr.Onnxtr {
                 * Ideally, we should process all text boxes together, regardless of the origin image,
                 * and then separate the results afterwards.
                 */
-                System.Drawing.Bitmap image = images[imageIndex];
+                IronSoftware.Drawing.AnyBitmap image = images[imageIndex];
                 IList<iText.Kernel.Geom.Point[]> textBoxes = textBoxGenerator.Current;
-                IList<System.Drawing.Bitmap> textImages = BufferedImageUtil.ExtractBoxes(image, textBoxes);
+                IList<IronSoftware.Drawing.AnyBitmap> textImages = BufferedImageUtil.ExtractBoxes(image, textBoxes);
                 IList<TextOrientation> textOrientations = null;
                 if (orientationPredictor != null) {
                     textOrientations = ToList(orientationPredictor.Predict(textImages));
@@ -104,16 +104,15 @@ namespace iText.Pdfocr.Onnxtr {
                     if (textOrientations != null) {
                         textOrientation = textOrientations[i];
                     }
-                    textInfos.Add(new TextInfo(textString[i], ToPdfRectangle(textBoxes[i], image.Height), textOrientation));
+                    textInfos.Add(new TextInfo(textString[i], ToPdfRectangle(textBoxes[i], BufferedImageUtil.GetHeight(image))
+                        , textOrientation));
                 }
                 result.Put(imageIndex + 1, textInfos);
                 ++imageIndex;
-                
                 // here can be statistics event sending
-
                 // confirm on_demand event
-                if (ocrEvent.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
-                    eventHelper.OnEvent(new ConfirmEvent(ocrEvent));
+                if (@event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    eventHelper.OnEvent(new ConfirmEvent(@event));
                 }
             }
             return result;
@@ -123,12 +122,12 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Splits text images to smaller images with better aspect ratios.</summary>
         /// <param name="images">text images to split</param>
         /// <returns>a list with image splits together with a map to restore them back</returns>
-        private static OnnxTrProcessor.SplitResult SplitTextImages(IList<System.Drawing.Bitmap> images) {
+        private static OnnxTrProcessor.SplitResult SplitTextImages(IList<IronSoftware.Drawing.AnyBitmap> images) {
             OnnxTrProcessor.SplitResult result = new OnnxTrProcessor.SplitResult(images.Count);
             for (int i = 0; i < images.Count; ++i) {
-                System.Drawing.Bitmap image = images[i];
-                int width = image.Width;
-                int height = image.Height;
+                IronSoftware.Drawing.AnyBitmap image = images[i];
+                int width = BufferedImageUtil.GetWidth(image);
+                int height = BufferedImageUtil.GetHeight(image);
                 float aspectRatio = (float)width / height;
                 if (aspectRatio < SPLIT_CROPS_MAX_RATIO) {
                     result.splitImages.Add(image);
@@ -149,7 +148,7 @@ namespace iText.Pdfocr.Onnxtr {
                         continue;
                     }
                     ++nonEmptySplitCount;
-                    result.splitImages.Add(image.Clone(new System.Drawing.Rectangle(minX, 0, currentSplitWidth, height), image.PixelFormat));
+                    result.splitImages.Add(image.GetSubimage(minX, 0, currentSplitWidth, height));
                 }
                 result.restoreMap[i] = nonEmptySplitCount;
             }
@@ -202,9 +201,9 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Runs text recognition on the provided text images.</summary>
         /// <param name="textImages">images with text to recognize</param>
         /// <returns>list of strings, recognized in the images</returns>
-        private IList<String> RecognizeText(IList<System.Drawing.Bitmap> textImages) {
+        private IList<String> RecognizeText(IList<IronSoftware.Drawing.AnyBitmap> textImages) {
             // For better recognition results we want to split text images to have better aspect ratios
-            OnnxTrProcessor.SplitResult split = SplitTextImages(textImages);
+            OnnxTrProcessor.SplitResult split = iText.Pdfocr.Onnxtr.OnnxTrProcessor.SplitTextImages(textImages);
             IEnumerator<String> recognitionIterator = recognitionPredictor.Predict(split.splitImages);
             // And now we merge results back
             IList<String> textStrings = new List<String>(split.restoreMap.Length);
@@ -217,7 +216,7 @@ namespace iText.Pdfocr.Onnxtr {
                 else {
                     StringBuilder sb = new StringBuilder();
                     while (stringPartsLeft > 0 && recognitionIterator.MoveNext()) {
-                        MergeStrings(sb, recognitionIterator.Current);
+                        iText.Pdfocr.Onnxtr.OnnxTrProcessor.MergeStrings(sb, recognitionIterator.Current);
                         --stringPartsLeft;
                     }
                     testString = sb.ToString();
@@ -233,8 +232,8 @@ namespace iText.Pdfocr.Onnxtr {
         /// </summary>
         /// <param name="textImages">text images to rotate</param>
         /// <param name="textOrientations">orientations of text images. Should be the same size as textImages</param>
-        private static void CorrectOrientations(IList<System.Drawing.Bitmap> textImages, IList<TextOrientation> textOrientations
-            ) {
+        private static void CorrectOrientations(IList<IronSoftware.Drawing.AnyBitmap> textImages, IList<TextOrientation
+            > textOrientations) {
             System.Diagnostics.Debug.Assert(textImages.Count == textOrientations.Count);
             for (int i = 0; i < textImages.Count; ++i) {
                 textImages[i] = BufferedImageUtil.Rotate(textImages[i], textOrientations[i]);
@@ -275,17 +274,15 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         private static IList<E> ToList<E>(IEnumerator<E> iterator) {
-            var list = new List<E>();
-            while (iterator.MoveNext()) {
-                list.Add(iterator.Current);
-            }
+            IList<E> list = new List<E>();
+            iterator.ForEachRemaining(list);
             return list;
         }
 
         /// <summary>Contains results of a text image split.</summary>
         public class SplitResult {
             /// <summary>List of sub-images, that the original images were split into.</summary>
-            public readonly IList<System.Drawing.Bitmap> splitImages;
+            public readonly IList<IronSoftware.Drawing.AnyBitmap> splitImages;
 
             /// <summary>A map of splits.</summary>
             /// <remarks>
@@ -301,7 +298,7 @@ namespace iText.Pdfocr.Onnxtr {
             /// </summary>
             /// <param name="capacity">capacity of the list of sub-images</param>
             public SplitResult(int capacity) {
-                this.splitImages = new List<System.Drawing.Bitmap>(capacity);
+                this.splitImages = new List<IronSoftware.Drawing.AnyBitmap>(capacity);
                 this.restoreMap = new int[capacity];
             }
         }
