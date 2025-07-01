@@ -200,26 +200,26 @@ namespace iText.Pdfocr.Onnxtr.Util {
             if (orientation == TextOrientation.HORIZONTAL_ROTATED_180) {
                 newW = oldW;
                 newH = oldH;
-                angle = Math.PI;
+                angle = 180;
             }
             else {
                 newW = oldH;
                 newH = oldW;
                 if (orientation == TextOrientation.HORIZONTAL_ROTATED_90) {
-                    angle = 0.5 * Math.PI;
+                    angle = 90;
                 }
                 else {
-                    angle = 1.5 * Math.PI;
+                    angle = 270;
                 }
             }
             System.Drawing.Bitmap rotated = new System.Drawing.Bitmap(newW, newH, PixelFormat.Format24bppRgb);
             using (Graphics graphics = Graphics.FromImage(rotated)) {
-                graphics.Transform.Translate((float)((newW - oldW) / 2.0), (float)((newH - oldH) / 2.0));
+                graphics.TranslateTransform((float)((newW - oldW) / 2.0), (float)((newH - oldH) / 2.0));
                 float centerX = image.Width / 2.0f;
                 float centerY = image.Height / 2.0f;
-                graphics.Transform.Translate(centerX, centerY);
-                graphics.Transform.Rotate((float)angle);
-                graphics.Transform.Translate(-centerX, -centerY);
+                graphics.TranslateTransform(centerX, centerY);
+                graphics.RotateTransform((float)angle);
+                graphics.TranslateTransform(-centerX, -centerY);
                 graphics.DrawImage(image, 0, 0);
             }
             return rotated;

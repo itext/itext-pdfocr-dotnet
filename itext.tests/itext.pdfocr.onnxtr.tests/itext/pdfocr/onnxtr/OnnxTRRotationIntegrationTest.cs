@@ -34,7 +34,6 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnxtr {
     [NUnit.Framework.Category("IntegrationTest")]
-    //TODO DEVSIX-9233: Adapt tests after fix.
     public class OnnxTRRotationIntegrationTest : ExtendedITextTest {
         private static readonly String FAST = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
@@ -75,7 +74,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("0\n00\n00\nde", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("90\ndegrees\nrotated\nimage", extractionStrategy.GetResultantText());
             }
         }
 
@@ -89,7 +88,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("081\nsoau8ap\npageto.\n08eur", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("180\ndegrees\nrotated\nimage", extractionStrategy.GetResultantText());
             }
         }
 
@@ -103,7 +102,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("2\nde\nbn\nbn", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("270\ndegrees\nrotated\nimage", extractionStrategy.GetResultantText());
             }
         }
 
@@ -117,7 +116,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("a\nB\n9\nmix\nTEsTinG", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("anD\nCapITALS\nlowerCaSE\nmix\nTEsTinG", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -132,7 +131,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("TEXT\nColored\nMixed\nCOIORS\nE\na", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("TEXT\nColored\nMixed\nCOIORS\ntEXT\nReD", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -162,7 +161,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("2\n1E\nTEXT 0\n-\n0\nH\nLX3 08L", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("270\nTEXT\nTEXT 0\n-\n90\nTEXT\nTEXT 180", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -177,7 +176,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nS\nist\n5", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nLIS\nThis text\nsideways", extractionStrategy.GetResultantText
                     ());
             }
         }
