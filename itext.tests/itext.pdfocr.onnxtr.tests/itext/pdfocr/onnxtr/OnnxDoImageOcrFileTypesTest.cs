@@ -51,6 +51,11 @@ namespace iText.Pdfocr.Onnxtr {
             OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
+        [NUnit.Framework.OneTimeTearDown]
+        public static void AfterClass() {
+            OCR_ENGINE.Close();
+        }
+
         [NUnit.Framework.Test]
         public virtual void NumbersJPEDoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "numbers_01.jpe";

@@ -23,8 +23,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using iText.Kernel.Colors;
-using iText.Kernel.Font;
-using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
@@ -33,13 +31,9 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
 namespace iText.Pdfocr.Onnxtr {
     public class ExtractionStrategy : LocationTextExtractionStrategy {
-        private Rectangle imageBBoxRectangle;
+        private readonly String layerName;
 
         private Color fillColor;
-
-        private String layerName;
-
-        private PdfFont pdfFont;
 
         public ExtractionStrategy(String name)
             : base() {
@@ -54,22 +48,6 @@ namespace iText.Pdfocr.Onnxtr {
             fillColor = color;
         }
 
-        public virtual PdfFont GetPdfFont() {
-            return pdfFont;
-        }
-
-        public virtual void SetPdfFont(PdfFont font) {
-            pdfFont = font;
-        }
-
-        public virtual Rectangle GetImageBBoxRectangle() {
-            return this.imageBBoxRectangle;
-        }
-
-        public virtual void SetImageBBoxRectangle(Rectangle imageBBoxRectangle) {
-            this.imageBBoxRectangle = imageBBoxRectangle;
-        }
-
         public override void EventOccurred(IEventData data, EventType type) {
             if (type.Equals(EventType.RENDER_TEXT) || type.Equals(EventType.RENDER_IMAGE)) {
                 String tagName = GetTagName(data, type);
@@ -77,15 +55,7 @@ namespace iText.Pdfocr.Onnxtr {
                     if (type.Equals(EventType.RENDER_TEXT)) {
                         TextRenderInfo renderInfo = (TextRenderInfo)data;
                         SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
-                        SetPdfFont(renderInfo.GetGraphicsState().GetFont());
                         base.EventOccurred(data, type);
-                    }
-                    else {
-                        if (type.Equals(EventType.RENDER_IMAGE)) {
-                            ImageRenderInfo renderInfo = (ImageRenderInfo)data;
-                            Matrix ctm = renderInfo.GetImageCtm();
-                            SetImageBBoxRectangle(new Rectangle(ctm.Get(6), ctm.Get(7), ctm.Get(0), ctm.Get(4)));
-                        }
                     }
                 }
             }

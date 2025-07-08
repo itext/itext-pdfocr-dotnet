@@ -56,6 +56,11 @@ namespace iText.Pdfocr.Onnxtr {
             OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
         }
 
+        [NUnit.Framework.OneTimeTearDown]
+        public static void AfterClass() {
+            OCR_ENGINE.Close();
+        }
+
         [NUnit.Framework.Test]
         public virtual void Rotated270DoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "270_degrees_rotated.jpg";

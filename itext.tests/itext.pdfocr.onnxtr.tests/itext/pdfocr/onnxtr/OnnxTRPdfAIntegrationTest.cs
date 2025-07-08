@@ -62,6 +62,11 @@ namespace iText.Pdfocr.Onnxtr {
             OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
+        [NUnit.Framework.OneTimeTearDown]
+        public static void AfterClass() {
+            OCR_ENGINE.Close();
+        }
+
         [NUnit.Framework.Test]
         public virtual void RgbPdfATest() {
             String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";

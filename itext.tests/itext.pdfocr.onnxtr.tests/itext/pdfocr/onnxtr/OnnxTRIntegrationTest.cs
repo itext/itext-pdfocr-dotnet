@@ -59,6 +59,11 @@ namespace iText.Pdfocr.Onnxtr {
             OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
+        [NUnit.Framework.OneTimeTearDown]
+        public static void AfterClass() {
+            OCR_ENGINE.Close();
+        }
+
         [NUnit.Framework.Test]
         public virtual void BasicTest() {
             String src = TEST_IMAGE_DIRECTORY + "example_04.png";

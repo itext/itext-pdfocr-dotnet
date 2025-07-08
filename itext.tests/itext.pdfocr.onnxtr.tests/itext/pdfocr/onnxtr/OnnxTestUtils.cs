@@ -30,11 +30,6 @@ using iText.Pdfocr;
 
 namespace iText.Pdfocr.Onnxtr {
     public class OnnxTestUtils {
-        public static String GetTextFromLayer(PdfDocument pdfDocument, int pageNr, String layerName) {
-            ExtractionStrategy extractionStrategy = ExtractTextFromLayer(pdfDocument, pageNr, layerName);
-            return extractionStrategy.GetResultantText();
-        }
-
         public static ExtractionStrategy ExtractTextFromLayer(PdfDocument pdfDocument, int pageNr, String layerName
             ) {
             ExtractionStrategy strategy = new ExtractionStrategy(layerName);

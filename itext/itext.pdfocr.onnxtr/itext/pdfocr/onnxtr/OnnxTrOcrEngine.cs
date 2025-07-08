@@ -21,6 +21,14 @@ namespace iText.Pdfocr.Onnxtr {
     /// <see cref="iText.Pdfocr.IOcrEngine"/>
     /// implementation, based on OnnxTR/DocTR machine learning OCR projects.
     /// </summary>
+    /// <remarks>
+    /// <see cref="iText.Pdfocr.IOcrEngine"/>
+    /// implementation, based on OnnxTR/DocTR machine learning OCR projects.
+    /// <para />
+    /// NOTE:
+    /// <see cref="OnnxTrOcrEngine"/>
+    /// instance shall be closed after all usages to avoid native allocations leak.
+    /// </remarks>
     public class OnnxTrOcrEngine : IOcrEngine, IDisposable {
         /// <summary>Image pixel to PDF point ratio.</summary>
         private const float PX_TO_PT = 0.75F;
@@ -395,7 +403,7 @@ namespace iText.Pdfocr.Onnxtr {
                     return JavaCollectionsUtil.SingletonList(image);
                 }
             }
-            catch (System.IO.IOException e) {
+            catch (System.Exception e) {
                 throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
             }
         }

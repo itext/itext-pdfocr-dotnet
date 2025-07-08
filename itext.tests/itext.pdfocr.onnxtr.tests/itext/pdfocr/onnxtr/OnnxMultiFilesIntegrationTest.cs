@@ -60,6 +60,11 @@ namespace iText.Pdfocr.Onnxtr {
             OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
+        [NUnit.Framework.OneTimeTearDown]
+        public static void AfterClass() {
+            OCR_ENGINE.Close();
+        }
+
         [NUnit.Framework.Test]
         public virtual void MultiFilesTest() {
             IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(TEST_IMAGE_DIRECTORY + "german_01.jpg"), new FileInfo

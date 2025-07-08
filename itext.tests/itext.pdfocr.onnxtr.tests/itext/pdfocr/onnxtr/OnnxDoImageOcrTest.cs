@@ -22,7 +22,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Detection;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Test;
 
@@ -49,6 +51,11 @@ namespace iText.Pdfocr.Onnxtr {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+        }
+
+        [NUnit.Framework.OneTimeTearDown]
+        public static void AfterClass() {
+            OCR_ENGINE.Close();
         }
 
         [NUnit.Framework.Test]
@@ -142,6 +149,8 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "weirdwords.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
+            // The image is now drawn after resize due to PNG transparency alpha-channel, we should use Format32bppArgb:
+            // https://stackoverflow.com/questions/10658994/using-graphics-drawimage-to-draw-image-with-transparency-alpha-channel
             NUnit.Framework.Assert.AreEqual("", textFromImage);
         }
 
@@ -158,9 +167,9 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void CorruptedDoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "corrupted.jpg";
             FileInfo imageFile = new FileInfo(src);
-
-            NUnit.Framework.Assert.Catch(typeof(OutOfMemoryException), () => OnnxTestUtils.GetTextFromImage(imageFile
-                , OCR_ENGINE));
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => OnnxTestUtils.GetTextFromImage
+                (imageFile, OCR_ENGINE));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
         }
     }
 }
