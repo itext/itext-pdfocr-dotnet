@@ -50,5 +50,17 @@ namespace iText.Pdfocr.Onnxtr.Util {
             NUnit.Framework.Assert.AreEqual(1.5, MathUtil.Clamp(1.5, 1.1, 1.9));
             NUnit.Framework.Assert.AreEqual(1.9, MathUtil.Clamp(2.0, 1.1, 1.9));
         }
+        
+        [NUnit.Framework.Test]
+        public virtual void CalculateLevenshteinDistance() {
+            NUnit.Framework.Assert.AreEqual(5, MathUtil.CalculateLevenshteinDistance("kitten", "meat"));
+            NUnit.Framework.Assert.AreEqual(1, MathUtil.CalculateLevenshteinDistance("kitten", "kitte"));
+            NUnit.Framework.Assert.AreEqual(7, MathUtil.CalculateLevenshteinDistance("kitten", "testString"));
+            NUnit.Framework.Assert.AreEqual(10, MathUtil.CalculateLevenshteinDistance("", "testString"));
+            NUnit.Framework.Assert.AreEqual(6, MathUtil.CalculateLevenshteinDistance("kitten", ""));
+            NUnit.Framework.Assert.AreEqual(0, MathUtil.CalculateLevenshteinDistance("", ""));
+            NUnit.Framework.Assert.AreEqual(0, MathUtil.CalculateLevenshteinDistance(null, null));
+            NUnit.Framework.Assert.AreEqual(10, MathUtil.CalculateLevenshteinDistance(null, "testString"));
+        }
     }
 }

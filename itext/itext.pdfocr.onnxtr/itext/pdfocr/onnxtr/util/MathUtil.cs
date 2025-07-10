@@ -42,6 +42,40 @@ namespace iText.Pdfocr.Onnxtr.Util {
             }
             return resultIndex;
         }
+        
+        /// <summary>Calculates the Levenshtein distance between two input strings.</summary>
+        /// <param name="source">the original string to be transformed</param>
+        /// <param name="target">the target string to transform into</param>
+        /// <returns>
+        /// the minimum number of single-character edits required
+        /// to convert the source string into the target string
+        /// </returns>
+        public static int CalculateLevenshteinDistance(String source, String target) {
+            if (source == null || String.IsNullOrEmpty(source)) {
+                return target == null || String.IsNullOrEmpty(target) ? 0 : target.Length;
+            }
+            if (target == null || String.IsNullOrEmpty(target)) {
+                return source.Length;
+            }
+            char[] sourceChars = source.ToCharArray();
+            char[] targetChars = target.ToCharArray();
+            int[] previousRow = new int[targetChars.Length + 1];
+            for (int i = 0; i <= targetChars.Length; i++) {
+                previousRow[i] = i;
+            }
+            for (int i = 1; i <= sourceChars.Length; i++) {
+                int[] currentRow = new int[targetChars.Length + 1];
+                currentRow[0] = i;
+                for (int j = 1; j <= targetChars.Length; j++) {
+                    int costDelete = previousRow[j] + 1;
+                    int costInsert = currentRow[j - 1] + 1;
+                    int costReplace = previousRow[j - 1] + (sourceChars[i - 1] == targetChars[j - 1] ? 0 : 1);
+                    currentRow[j] = Math.Min(Math.Min(costDelete, costInsert), costReplace);
+                }
+                previousRow = currentRow;
+            }
+            return previousRow[targetChars.Length];
+        }
 
         public static float Expit(float x) {
             return (float)(1 / (1 + Math.Exp(-x)));

@@ -270,37 +270,6 @@ namespace iText.Pdfocr.Onnxtr {
             }
             return result;
         }
-
-        private static int LevenshteinDistance(string s, string t)
-        {
-            if (string.IsNullOrEmpty(s))
-                return string.IsNullOrEmpty(t) ? 0 : t.Length;
-            if (string.IsNullOrEmpty(t))
-                return s.Length;
-
-            int n = s.Length;
-            int m = t.Length;
-            int[,] d = new int[n + 1, m + 1];
-
-            for (int i = 0; i <= n; i++)
-                d[i, 0] = i;
-            for (int j = 0; j <= m; j++)
-                d[0, j] = j;
-
-            for (int i = 1; i <= n; i++)
-            {
-                for (int j = 1; j <= m; j++)
-                {
-                    int cost = s[i - 1] == t[j - 1] ? 0 : 1;
-
-                    d[i, j] = Math.Min(
-                        Math.Min(d[i - 1, j] + 1,
-                            d[i, j - 1] + 1),
-                        d[i - 1, j - 1] + cost);
-                }
-            }
-            return d[n, m];
-        }
         
         /// <summary>Merges strings, collected from splits of text images.</summary>
         /// <remarks>
@@ -315,10 +284,7 @@ namespace iText.Pdfocr.Onnxtr {
             int commonLength = Math.Min(collector.Length, nextString.Length);
             double[] scores = new double[commonLength];
             for (int i = 0; i < commonLength; ++i) {
-                // TODO DEVSIX-9153: org.apache.commons.commons-text is used only for this, but
-                //        since Levenshtein distance is relatively trivial, might be
-                //        better to just reimplement it
-                scores[i] = LevenshteinDistance(collector.ToString().Substring(collector.Length - i - 1), 
+                scores[i] = MathUtil.CalculateLevenshteinDistance(collector.ToString().Substring(collector.Length - i - 1), 
                     nextString.Substring(0, i + 1)) / (i + 1.0);
             }
             int index = 0;
