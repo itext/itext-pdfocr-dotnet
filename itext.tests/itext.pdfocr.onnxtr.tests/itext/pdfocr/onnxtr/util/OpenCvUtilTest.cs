@@ -33,35 +33,19 @@ namespace iText.Pdfocr.Onnxtr.Util {
         public virtual void NormalizeRotatedRect() {
             for (int rotationIdx = -2; rotationIdx <= 2; ++rotationIdx) {
                 float baseAngle = rotationIdx * 360;
-                TestNormalizeRotatedRect(baseAngle + 0, WIDTH, HEIGHT, 0);
-                TestNormalizeRotatedRect(baseAngle + 30, WIDTH, HEIGHT, 30);
-                TestNormalizeRotatedRect(baseAngle + 60, HEIGHT, WIDTH, -30);
-                TestNormalizeRotatedRect(baseAngle + 90, HEIGHT, WIDTH, 0);
-                TestNormalizeRotatedRect(baseAngle + 120, HEIGHT, WIDTH, 30);
-                TestNormalizeRotatedRect(baseAngle + 150, WIDTH, HEIGHT, -30);
-                TestNormalizeRotatedRect(baseAngle + 180, WIDTH, HEIGHT, 0);
-                TestNormalizeRotatedRect(baseAngle + 210, WIDTH, HEIGHT, 30);
-                TestNormalizeRotatedRect(baseAngle + 240, HEIGHT, WIDTH, -30);
-                TestNormalizeRotatedRect(baseAngle + 270, HEIGHT, WIDTH, 0);
-                TestNormalizeRotatedRect(baseAngle + 300, HEIGHT, WIDTH, 30);
-                TestNormalizeRotatedRect(baseAngle + 330, WIDTH, HEIGHT, -30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 0, WIDTH, HEIGHT, 0);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 30, WIDTH, HEIGHT, 30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 60, HEIGHT, WIDTH, -30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 90, HEIGHT, WIDTH, 0);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 120, HEIGHT, WIDTH, 30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 150, WIDTH, HEIGHT, -30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 180, WIDTH, HEIGHT, 0);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 210, WIDTH, HEIGHT, 30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 240, HEIGHT, WIDTH, -30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 270, HEIGHT, WIDTH, 0);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 300, HEIGHT, WIDTH, 30);
+                OnnxTRTestUtil.TestNormalizeRotatedRect(baseAngle + 330, WIDTH, HEIGHT, -30);
             }
-        }
-
-        private void TestNormalizeRotatedRect(float originalAngle, float newWidth, float newHeight, float newAngle
-            ) {
-            //using (Point2f center = new Point2f(0, 0)) {
-            //    using (Size2f size = new Size2f(WIDTH, HEIGHT)) {
-            //        using (RotatedRect rect = new RotatedRect(center, size, originalAngle)) {
-            //            OpenCvUtil.NormalizeRotatedRect(rect);
-            //            using (Size2f newSize = rect.Size()) {
-            //                NUnit.Framework.Assert.AreEqual(newWidth, newSize.Width(), 1e-6);
-            //                NUnit.Framework.Assert.AreEqual(newHeight, newSize.Height(), 1e-6);
-            //            }
-            //            NUnit.Framework.Assert.AreEqual(newAngle, rect.Angle(), 1e-6);
-            //        }
-            //    }
-            //}
         }
     }
 }

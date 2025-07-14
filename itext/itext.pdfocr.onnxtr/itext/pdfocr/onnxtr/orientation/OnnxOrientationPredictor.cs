@@ -22,7 +22,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Util;
@@ -92,13 +91,11 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             IList<TextOrientation> orientations = new List<TextOrientation>(outputBatch.GetDimension(0));
             float[] values = new float[outputBatch.GetDimension(1)];
             float[] outputBuffer = outputBatch.GetData();
-            int offset = 0;
-            int length = values.Length;
-            while (offset < outputBuffer.Length) {
-                Array.Copy(outputBuffer, offset, values, 0, length);
+            int offset = outputBatch.GetArrayOffset();
+            for (int i = offset; i < offset + outputBatch.GetArraySize(); i += values.Length) {
+                Array.Copy(outputBuffer, i, values, 0, values.Length);
                 int label = MathUtil.Argmax(values);
                 orientations.Add(properties.GetOutputMapper().Map(label));
-                offset += length;
             }
             return orientations;
         }

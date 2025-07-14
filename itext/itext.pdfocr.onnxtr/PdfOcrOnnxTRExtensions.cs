@@ -31,6 +31,38 @@ internal static class PdfOcrOnnxTRExtensions
     {
         return e.WebName.ToUpperInvariant();
     }
+    
+    /// <summary>Returns the number of Unicode code points in the specified text range of this String.</summary>
+    /// <remarks>
+    /// Returns the number of Unicode code points in the specified text range of this String.
+    /// The text range begins at the specified beginIndex and extends to the char at index endIndex - 1.
+    /// Thus the length (in chars) of the text range is endIndex-beginIndex.
+    /// Unpaired surrogates within the text range count as one code point each.
+    /// </remarks>
+    /// <param name="str">str to search codepoints for.</param>
+    /// <param name="beginIndex">– the index to the first char of the text range.</param>
+    /// <param name="endIndex">– the index after the last char of the text range.</param>
+    /// <returns>the number of Unicode code points in the specified text range</returns>
+    public static int CodePointCount(this String str, int beginIndex, int endIndex) {
+        if (str == null)
+            throw new ArgumentNullException(nameof(str));
+        if (beginIndex < 0 || endIndex > str.Length || beginIndex > endIndex)
+            throw new ArgumentOutOfRangeException();
+
+        int count = 0;
+        for (int i = beginIndex; i < endIndex; i++)
+        {
+            if (char.IsHighSurrogate(str[i]))
+            {
+                if (i + 1 < endIndex && char.IsLowSurrogate(str[i + 1]))
+                {
+                    i++; 
+                }
+            }
+            count++;
+        }
+        return count;
+    }
 
     public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> col, TKey key)
     {
@@ -75,6 +107,14 @@ internal static class PdfOcrOnnxTRExtensions
 
     public static StringBuilder JAppend(this StringBuilder sb, String str, int begin, int end) {
         return sb.Append(str, begin, end - begin);
+    }
+
+    public static String JSubstring(this String str, int beginIndex, int endIndex) {
+        return str.Substring(beginIndex, endIndex - beginIndex);
+    }
+    
+    public static String Substring(this StringBuilder collector, int beginIndex) {
+        return collector.ToString().Substring(beginIndex);
     }
 }
 //\endcond

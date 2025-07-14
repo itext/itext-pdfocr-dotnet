@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Util;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <summary>
@@ -32,7 +33,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <param name="additionalTokens">amount of additional tokens in the total vocabulary after the end-of-string token
         ///     </param>
         public EndOfStringPostProcessor(Vocabulary vocabulary, int additionalTokens) {
-            this.vocabulary = vocabulary;
+            this.vocabulary = Objects.RequireNonNull(vocabulary);
             this.additionalTokens = additionalTokens;
         }
 
@@ -52,10 +53,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
             float[] values = new float[LabelDimension()];
             float[] outputBuffer = output.GetData();
-            int offset = 0;
-            int length = values.Length;
-            while (offset < outputBuffer.Length) {
-                Array.Copy(outputBuffer, offset, values, 0, length);
+            int arrayOffset = output.GetArrayOffset();
+            for (int i = arrayOffset; i < arrayOffset + output.GetArraySize(); i += values.Length) {
+                Array.Copy(outputBuffer, i, values, 0, values.Length);
                 int letterIndex = MathUtil.Argmax(values);
                 if (letterIndex < vocabulary.Size()) {
                     wordBuilder.Append(vocabulary.Map(letterIndex));
@@ -66,7 +66,6 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                         break;
                     }
                 }
-                offset += length;
             }
             return wordBuilder.ToString();
         }

@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Util;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <summary>
@@ -23,7 +24,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <summary>Creates a new post-processor.</summary>
         /// <param name="vocabulary">vocabulary used for the model output (without special tokens)</param>
         public CrnnPostProcessor(Vocabulary vocabulary) {
-            this.vocabulary = vocabulary;
+            this.vocabulary = Objects.RequireNonNull(vocabulary);
         }
 
         /// <summary>Creates a new post-processor with the default vocabulary.</summary>
@@ -37,17 +38,15 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             float[] values = new float[LabelDimension()];
             float[] outputBuffer = output.GetData();
             int prevLetterIndex = -1;
-            int offset = 0;
-            int length = values.Length;
-            while (offset < outputBuffer.Length) {
-                Array.Copy(outputBuffer, offset, values, 0, length);
+            int arrayOffset = output.GetArrayOffset();
+            for (int i = arrayOffset; i < arrayOffset + output.GetArraySize(); i += values.Length) {
+                Array.Copy(outputBuffer, i, values, 0, values.Length);
                 int letterIndex = MathUtil.Argmax(values);
                 // Last letter is <blank>
                 if (prevLetterIndex != letterIndex && letterIndex < vocabulary.Size()) {
                     wordBuilder.Append(vocabulary.Map(letterIndex));
                 }
                 prevLetterIndex = letterIndex;
-                offset += length;
             }
             return wordBuilder.ToString();
         }

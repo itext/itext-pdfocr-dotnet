@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using iText.Commons.Utils;
-using iText.Pdfocr;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Detection;
 using iText.Pdfocr.Onnxtr.Orientation;
@@ -13,7 +12,6 @@ using iText.Pdfocr.Onnxtr.Util;
 using iText.Pdfocr.Util;
 using Point = iText.Kernel.Geom.Point;
 using Rectangle = iText.Kernel.Geom.Rectangle;
-using iText.Pdfocr.Util;
 using iText.Pdfocr.Onnxtr.Exceptions;
 
 namespace iText.Pdfocr.Onnxtr {
@@ -77,9 +75,9 @@ namespace iText.Pdfocr.Onnxtr {
         /// </param>
         public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
             IRecognitionPredictor recognitionPredictor) {
-            this.detectionPredictor = detectionPredictor;
+            this.detectionPredictor = Objects.RequireNonNull(detectionPredictor);
             this.orientationPredictor = orientationPredictor;
-            this.recognitionPredictor = recognitionPredictor;
+            this.recognitionPredictor = Objects.RequireNonNull(recognitionPredictor);
         }
 
         /// <summary>Create a new OCR engine with the provided predictors, without text orientation prediction.</summary>
@@ -109,7 +107,7 @@ namespace iText.Pdfocr.Onnxtr {
             IList<System.Drawing.Bitmap> images = GetImages(input);
             IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>(images.Count);
             int imageIndex = 0;
-            IEnumerator<IList<Point[]>> textBoxGenerator = detectionPredictor.Predict(images);
+            IEnumerator<IList<iText.Kernel.Geom.Point[]>> textBoxGenerator = detectionPredictor.Predict(images);
             while (textBoxGenerator.MoveNext()) {
                 /*
                 * TODO DEVSIX-9153: Potential performance improvement (at least for GPU).
@@ -137,10 +135,7 @@ namespace iText.Pdfocr.Onnxtr {
                     if (textOrientations != null) {
                         textOrientation = textOrientations[i];
                     }
-                    textInfos.Add(new TextInfo(textString[i], /* * FIXME DEVSIX-9154: Why not return rectangles in image pixels?.. 
-                        * * Seems odd, that an OCR engine should be concerned by PDF specific. It * would make sense for an engine to return results, which could be directly 
-                        * applied to images inputs instead... */ ToPdfRectangle(textBoxes[i], image.Height), textOrientation
-                        ));
+                    textInfos.Add(new TextInfo(textString[i], ToPdfRectangle(textBoxes[i], image.Height), textOrientation));
                 }
                 result.Put(imageIndex + 1, textInfos);
                 ++imageIndex;
@@ -270,7 +265,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
             return result;
         }
-        
+
         /// <summary>Merges strings, collected from splits of text images.</summary>
         /// <remarks>
         /// Merges strings, collected from splits of text images.
@@ -284,8 +279,8 @@ namespace iText.Pdfocr.Onnxtr {
             int commonLength = Math.Min(collector.Length, nextString.Length);
             double[] scores = new double[commonLength];
             for (int i = 0; i < commonLength; ++i) {
-                scores[i] = MathUtil.CalculateLevenshteinDistance(collector.ToString().Substring(collector.Length - i - 1), 
-                    nextString.Substring(0, i + 1)) / (i + 1.0);
+                scores[i] = MathUtil.CalculateLevenshteinDistance(collector.Substring(collector.Length - i - 1), nextString
+                    .JSubstring(0, i + 1)) / (i + 1.0);
             }
             int index = 0;
             // Comparing floats to 0 is fine here, as it only happens, when the
@@ -294,7 +289,7 @@ namespace iText.Pdfocr.Onnxtr {
                 // Edge case (split in the middle of char repetitions): if it starts with 2 or more 0
                 // Compute n_overlap (number of overlapping chars, geometrically determined)
                 int overlap = (int)MathematicUtil.Round(nextString.Length * (iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR
-                                                                             - 1) / iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR);
+                     - 1) / iText.Pdfocr.Onnxtr.OnnxTrOcrEngine.SPLIT_CROPS_DILATION_FACTOR);
                 // Find the number of consecutive zeros in the scores list
                 // Impossible to have a zero after a non-zero score in that case
                 int zeros = (int)JavaUtil.ArraysToEnumerable(scores).Where((x) => x == 0).Count();
@@ -323,7 +318,7 @@ namespace iText.Pdfocr.Onnxtr {
         /// <param name="polygon">polygon to convert</param>
         /// <param name="imageHeight">height of the image (to change the y origin)</param>
         /// <returns>a bounding box in PDF points</returns>
-        private static Rectangle ToPdfRectangle(Point[] polygon, int imageHeight) {
+        private static Rectangle ToPdfRectangle(iText.Kernel.Geom.Point[] polygon, int imageHeight) {
             float minX = (float)polygon[0].GetX();
             float maxX = minX;
             float minY = (float)polygon[0].GetY();
@@ -369,7 +364,7 @@ namespace iText.Pdfocr.Onnxtr {
                     return JavaCollectionsUtil.SingletonList(image);
                 }
             }
-            catch (System.Exception e) {
+            catch (Exception e) {
                 throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
             }
         }

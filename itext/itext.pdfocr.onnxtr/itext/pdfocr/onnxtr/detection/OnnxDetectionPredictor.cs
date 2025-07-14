@@ -22,18 +22,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Util;
-using Point = iText.Kernel.Geom.Point;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
     /// <summary>
     /// A text detection predictor implementation, which is using ONNX Runtime and
     /// its ML models to find, where text is located on an image.
     /// </summary>
-    public class OnnxDetectionPredictor : AbstractOnnxPredictor<System.Drawing.Bitmap, IList<Point[]>>, IDetectionPredictor {
+    public class OnnxDetectionPredictor : AbstractOnnxPredictor<System.Drawing.Bitmap, IList<iText.Kernel.Geom.Point
+        []>>, IDetectionPredictor {
         /// <summary>Configuration properties of the predictor.</summary>
         private readonly OnnxDetectionPredictorProperties properties;
 
@@ -193,18 +192,20 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
-        protected internal override IList<IList<Point[]>> FromOutputBuffer(IList<System.Drawing.Bitmap> inputBatch
-            , FloatBufferMdArray outputBatch) {
+        protected internal override IList<IList<iText.Kernel.Geom.Point[]>> FromOutputBuffer(IList<System.Drawing.Bitmap
+            > inputBatch, FloatBufferMdArray outputBatch) {
             IDetectionPostProcessor postProcessor = properties.GetPostProcessor();
             // Normalizing pixel values via a sigmoid expit function
             float[] outputBuffer = outputBatch.GetData();
-            for (int i = 0; i < outputBuffer.Length; ++i) {
+            int offset = outputBatch.GetArrayOffset();
+            for (int i = offset; i < offset + outputBatch.GetArraySize(); ++i) {
                 outputBuffer[i] = MathUtil.Expit(outputBuffer[i]);
             }
-            IList<IList<Point[]>> batchTextBoxes = new List<IList<Point[]>>(inputBatch.Count);
+            IList<IList<iText.Kernel.Geom.Point[]>> batchTextBoxes = new List<IList<iText.Kernel.Geom.Point[]>>(inputBatch
+                .Count);
             for (int i = 0; i < inputBatch.Count; ++i) {
                 System.Drawing.Bitmap image = inputBatch[i];
-                IList<Point[]> textBoxes = postProcessor.Process(image, outputBatch.GetSubArray(i));
+                IList<iText.Kernel.Geom.Point[]> textBoxes = postProcessor.Process(image, outputBatch.GetSubArray(i));
                 /*
                 * Post-processor returns points with relative floating-point
                 * coordinates in the [0, 1] range. We need to convert these to
@@ -217,8 +218,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return batchTextBoxes;
         }
 
-        private static void ConvertToAbsoluteInputBoxes(System.Drawing.Bitmap image, IList<Point[]> boxes, OnnxInputProperties
-             properties) {
+        private static void ConvertToAbsoluteInputBoxes(System.Drawing.Bitmap image, IList<iText.Kernel.Geom.Point
+            []> boxes, OnnxInputProperties properties) {
             int sourceWidth = image.Width;
             int sourceHeight = image.Height;
             float targetWidth = properties.GetWidth();
@@ -229,14 +230,14 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             float heightScale;
             // We preserve ratio, when resizing input
             if (heightRatio > widthRatio) {
-                heightScale = (float)(targetHeight / MathematicUtil.Round(sourceHeight * widthRatio));
+                heightScale = targetHeight / (float)MathematicUtil.Round(sourceHeight * widthRatio);
                 widthScale = 1;
             }
             else {
-                widthScale = (float)(targetWidth / MathematicUtil.Round(sourceWidth * heightRatio));
+                widthScale = targetWidth / (float)MathematicUtil.Round(sourceWidth * heightRatio);
                 heightScale = 1;
             }
-            Action<Point> updater;
+            Action<iText.Kernel.Geom.Point> updater;
             if (properties.UseSymmetricPad()) {
                 updater = (p) => p.SetLocation(MathUtil.Clamp(sourceWidth * (0.5 + (p.GetX() - 0.5) * widthScale), 0, sourceWidth
                     ), MathUtil.Clamp(sourceHeight * (0.5 + (p.GetY() - 0.5) * heightScale), 0, sourceHeight));
@@ -245,8 +246,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                 updater = (p) => p.SetLocation(MathUtil.Clamp(sourceWidth * (p.GetX() * widthScale), 0, sourceWidth), MathUtil
                     .Clamp(sourceHeight * (p.GetY() * heightScale), 0, sourceHeight));
             }
-            foreach (Point[] box in boxes) {
-                foreach (Point p in box) {
+            foreach (iText.Kernel.Geom.Point[] box in boxes) {
+                foreach (iText.Kernel.Geom.Point p in box) {
                     updater(p);
                 }
             }

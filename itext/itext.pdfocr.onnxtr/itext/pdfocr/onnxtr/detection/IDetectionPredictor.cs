@@ -21,7 +21,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Collections.Generic;
-using iText.Kernel.Geom;
 using iText.Pdfocr.Onnxtr;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
@@ -33,6 +32,6 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// Interface for predictors, which take a full image and find text boxes on
     /// them. Output boxes can be rotated, which is why output is 4 points.
     /// </remarks>
-    public interface IDetectionPredictor : IPredictor<System.Drawing.Bitmap, IList<Point[]>> {
+    public interface IDetectionPredictor : IPredictor<System.Drawing.Bitmap, IList<iText.Kernel.Geom.Point[]>> {
     }
 }

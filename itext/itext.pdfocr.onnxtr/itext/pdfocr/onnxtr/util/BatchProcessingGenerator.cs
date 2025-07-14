@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Util {
     /// <summary>Generator with batch processing.</summary>
@@ -48,8 +49,8 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// <param name="batchIterator">input batch iterator</param>
         /// <param name="batchProcessor">batch processor</param>
         public BatchProcessingGenerator(IEnumerator<IList<T>> batchIterator, IBatchProcessor<T, R> batchProcessor) {
-            this.batchIterator = batchIterator;
-            this.batchProcessor = batchProcessor;
+            this.batchIterator = Objects.RequireNonNull(batchIterator);
+            this.batchProcessor = Objects.RequireNonNull(batchProcessor);
         }
 
         public virtual bool HasNext() {

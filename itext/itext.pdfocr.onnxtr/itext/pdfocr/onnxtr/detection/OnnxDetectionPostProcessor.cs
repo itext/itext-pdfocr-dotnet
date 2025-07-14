@@ -4,7 +4,6 @@ using iText.Commons.Utils;
 using iText.Pdfocr.Onnxtr.Util;
 using OpenCvSharp;
 using OpenCvSharp.Internal.Vectors;
-using Point = iText.Kernel.Geom.Point;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
     /// <summary>
@@ -76,10 +75,11 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             : this(0.1F, 0.1F) {
         }
 
-        public virtual IList<Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output) {
+        public virtual IList<iText.Kernel.Geom.Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output
+            ) {
             int height = output.GetDimension(1);
             int width = output.GetDimension(2);
-            IList<Point[]> boxes = new List<Point[]>();
+            IList<iText.Kernel.Geom.Point[]> boxes = new List<iText.Kernel.Geom.Point[]>();
             // TODO DEVSIX-9153: Ideally we would want to either cache the score mask (as model
             //       dimensions won't change) or use a smaller mask with only the
             //       contour. Though based on profiling, it doesn't look like it is
@@ -196,13 +196,13 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return rect.Points();
         }
 
-        private static Point[] CalculateTextBox(Mat points, int width, int height) {
+        private static iText.Kernel.Geom.Point[] CalculateTextBox(Mat points, int width, int height) {
             Point2f[] cvBox = GetPaddedBox(points);
-            Point[] textBox = new Point[4];
+            iText.Kernel.Geom.Point[] textBox = new iText.Kernel.Geom.Point[4];
             for (int i = 0; i < 4; ++i) {
                 Point2f cvPoint = cvBox[i];
-                textBox[i] = new Point(MathUtil.Clamp((double)cvPoint.X / width, 0, 1), 
-                    MathUtil.Clamp((double)cvPoint.Y / height, 0, 1));
+                textBox[i] = new iText.Kernel.Geom.Point(MathUtil.Clamp((double)cvPoint.X / width, 0, 1), MathUtil.Clamp
+                    ((double)cvPoint.Y / height, 0, 1));
             }
             return textBox;
         }

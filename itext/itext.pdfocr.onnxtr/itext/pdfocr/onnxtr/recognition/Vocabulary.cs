@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <summary>A string-based LUT for mapping text recognition model results to characters.</summary>
@@ -53,34 +54,13 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <summary>Creates a new vocabulary based on a look-up string.</summary>
         /// <param name="lookUpString">look-up string to be used as LUT for the vocabulary</param>
         public Vocabulary(String lookUpString) {
-            if (CodePointCount(lookUpString, 0, lookUpString.Length) != lookUpString.Length) {
+            Objects.RequireNonNull(lookUpString);
+            if (lookUpString.CodePointCount(0, lookUpString.Length) != lookUpString.Length) {
                 throw new ArgumentException("Look-up string contains code points, which are encoded with 2 code units");
             }
             this.lookUpString = lookUpString;
         }
 
-        private static int CodePointCount(string str, int beginIndex, int endIndex)
-        {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str));
-            if (beginIndex < 0 || endIndex > str.Length || beginIndex > endIndex)
-                throw new ArgumentOutOfRangeException();
-
-            int count = 0;
-            for (int i = beginIndex; i < endIndex; i++)
-            {
-                if (char.IsHighSurrogate(str[i]))
-                {
-                    if (i + 1 < endIndex && char.IsLowSurrogate(str[i + 1]))
-                    {
-                        i++; 
-                    }
-                }
-                count++;
-            }
-            return count;
-        }
-        
         /// <summary>Creates a new vocabulary by concatenating multiple ones.</summary>
         /// <param name="vocabularies">vocabularies to concatenate</param>
         /// <returns>the new aggregated vocabulary</returns>

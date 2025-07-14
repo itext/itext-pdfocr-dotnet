@@ -72,7 +72,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
              * buffer via FloatBuffer itself...
              */
             int bufferSize = CalculateBufferCapacity(inputShape);
-            float[] inputData = new float[bufferSize];
+            float[] inputData = new float[bufferSize / sizeof(float)];
             int imageSize = properties.GetWidth() * properties.GetHeight();
 
             int offset = 0;

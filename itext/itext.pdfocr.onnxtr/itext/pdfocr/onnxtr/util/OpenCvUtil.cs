@@ -20,7 +20,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 using OpenCvSharp;
 
 namespace iText.Pdfocr.Onnxtr.Util {
@@ -51,8 +50,14 @@ namespace iText.Pdfocr.Onnxtr.Util {
             */
             if ((45F <= clampedAngle && clampedAngle < 135F) || (225F <= clampedAngle && clampedAngle < 315F)) {
                 Size2f rectSize = rect.Size;
-                (rectSize.Width, rectSize.Height) = (rectSize.Height, rectSize.Width);
-                rect.Size = rectSize;
+                try {
+                    float tempWidth = rectSize.Width;
+                    rectSize.Width = rectSize.Height;
+                    rectSize.Height = tempWidth;
+                    rect.Size = rectSize;
+                }
+                finally {
+                }
                 if (clampedAngle < 135F) {
                     rect.Angle = clampedAngle - 90F;
                 }

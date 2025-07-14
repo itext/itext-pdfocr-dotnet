@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using iText.Kernel.Geom;
 using iText.Pdfocr.Structuretree;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -116,7 +117,7 @@ namespace iText.Pdfocr {
         public TextInfo(String text, Rectangle bbox, TextOrientation orientation) {
             this.text = text;
             this.bboxRect = new Rectangle(bbox);
-            this.orientation = orientation;
+            this.orientation = Objects.RequireNonNull(orientation);
         }
 
         /// <summary>Gets text element.</summary>
@@ -168,7 +169,7 @@ namespace iText.Pdfocr {
         /// describing the orientation of the text (i.e. rotation)
         /// </param>
         public virtual void SetOrientation(TextOrientation orientation) {
-            this.orientation = orientation;
+            this.orientation = Objects.RequireNonNull(orientation);
         }
 
         /// <summary>Retrieves structure tree item for the text item.</summary>

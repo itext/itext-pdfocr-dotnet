@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Linq;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>
@@ -35,7 +36,15 @@ namespace iText.Pdfocr.Onnxtr {
         private readonly long[] shape;
 
         public FloatBufferMdArray(float[] data, long[] shape) {
-            this.data = ((float[])data.Clone());
+            Objects.RequireNonNull(data);
+            Objects.RequireNonNull(shape);
+            if (!ValidateShape(shape)) {
+                throw new ArgumentException("Shape is not valid");
+            }
+            if (data.Length != ElementCount(shape)) {
+                throw new ArgumentException("Data element count does not match shape");
+            }
+            this.data = data;
             this.shape = (long[])shape.Clone();
         }
 
@@ -68,12 +77,47 @@ namespace iText.Pdfocr.Onnxtr {
             long[] newShape = new long[shape.Length - 1];
             Array.Copy(shape, 1, newShape, 0, newShape.Length);
             int subArraySize = (data.Length / (int)shape[0]);
-            float[] newData = ((float[])data).Skip(index * subArraySize).Take(subArraySize).ToArray();
+            float[] newData = data.Skip(index * subArraySize).Take(subArraySize).ToArray();
             return new iText.Pdfocr.Onnxtr.FloatBufferMdArray(newData, newShape);
         }
 
         public virtual float GetScalar(int index) {
+            if (shape.Length != 0 && (ElementCount(shape) != shape[0])) {
+                throw new InvalidOperationException();
+            }
             return data[index];
+        }
+
+        public int GetArrayOffset() {
+            return 0;
+        }
+
+        public int GetArraySize() {
+            return data.Length;
+        }
+
+        private bool ValidateShape(long[] shape) {
+            Boolean valid = true;
+
+            for (int i = 0; i < shape.Length; ++i) {
+                valid &= shape[i] > 0L;
+                valid &= (long)((int)shape[i]) == shape[i];
+            }
+
+            return valid && shape.Length <= 8;
+        }
+
+        private long ElementCount(long[] shape) {
+            long count = 1L;
+
+            for (int i = 0; i < shape.Length; ++i) {
+                if (shape[i] < 0L) {
+                    throw new ArgumentException("Received negative value in shape " + shape + " .");
+                }
+                count *= shape[i];
+            }
+
+            return count;
         }
     }
 }

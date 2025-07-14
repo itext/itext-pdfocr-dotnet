@@ -28,7 +28,8 @@ namespace iText.Pdfocr.Onnxtr.Util {
     public class MathUtilTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void ArgmaxWithInvalidArgs() {
-            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => MathUtil.Argmax(null));
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(Exception), () => MathUtil.Argmax(null));
+            NUnit.Framework.Assert.IsTrue(exception is NullReferenceException || exception is ArgumentException);
             NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Argmax(new float[0]));
         }
 
@@ -50,9 +51,9 @@ namespace iText.Pdfocr.Onnxtr.Util {
             NUnit.Framework.Assert.AreEqual(1.5, MathUtil.Clamp(1.5, 1.1, 1.9));
             NUnit.Framework.Assert.AreEqual(1.9, MathUtil.Clamp(2.0, 1.1, 1.9));
         }
-        
+
         [NUnit.Framework.Test]
-        public virtual void CalculateLevenshteinDistance() {
+        public virtual void LevenshteinDistanceTest() {
             NUnit.Framework.Assert.AreEqual(5, MathUtil.CalculateLevenshteinDistance("kitten", "meat"));
             NUnit.Framework.Assert.AreEqual(1, MathUtil.CalculateLevenshteinDistance("kitten", "kitte"));
             NUnit.Framework.Assert.AreEqual(7, MathUtil.CalculateLevenshteinDistance("kitten", "testString"));

@@ -26,11 +26,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using iText.Commons.Utils;
-using iText.IO.Font.Constants;
-using iText.Kernel.Font;
-using iText.Kernel.Pdf.Canvas;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnxtr.Util;
+using iText.Pdfocr.Util;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace iText.Pdfocr.Onnxtr {
@@ -72,7 +70,7 @@ namespace iText.Pdfocr.Onnxtr {
         /// </param>
         protected internal AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape
             ) {
-            this.inputProperties = inputProperties;
+            this.inputProperties = Objects.RequireNonNull(inputProperties);
             try {
                 this.sessionOptions = CreateDefaultSessionOptions();
             }
@@ -156,7 +154,9 @@ namespace iText.Pdfocr.Onnxtr {
             SessionOptions ortOptions = new SessionOptions();
             try {
                 ortOptions.AppendExecutionProvider_CPU();
-                //ortOptions.AppendExecutionProvider_CUDA();
+#if USE_CUDA
+                ortOptions.AppendExecutionProvider_CUDA(0);
+#endif
                 ortOptions.ExecutionMode = ExecutionMode.ORT_SEQUENTIAL;
                 ortOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
                 ortOptions.IntraOpNumThreads = -1;
@@ -170,10 +170,7 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         private static DenseTensor<float> CreateTensor(FloatBufferMdArray batch) {
-            float[] byteData = batch.GetData();
-            float[] floatData = new float[byteData.Length / sizeof(float)];
-            Buffer.BlockCopy(byteData, 0, floatData, 0, byteData.Length);
-
+            float[] floatData = batch.GetData();
             long[] shape = batch.GetShape();
             int[] intShape = shape.Select(s => (int)s).ToArray();
 

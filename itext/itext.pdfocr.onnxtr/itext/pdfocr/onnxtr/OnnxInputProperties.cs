@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using iText.Commons.Utils;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>Properties of the input of an ONNX model, which expects an RGB image.</summary>
@@ -62,12 +63,15 @@ namespace iText.Pdfocr.Onnxtr {
         /// <param name="shape">target input shape. Should be EXPECTED_SHAPE_SIZE length</param>
         /// <param name="symmetricPad">whether padding should be symmetrical during input resizing</param>
         public OnnxInputProperties(float[] mean, float[] std, long[] shape, bool symmetricPad) {
+            Objects.RequireNonNull(mean);
             if (mean.Length != EXPECTED_CHANNEL_COUNT) {
                 throw new ArgumentException("mean should be a " + EXPECTED_CHANNEL_COUNT + "-element array");
             }
+            Objects.RequireNonNull(std);
             if (std.Length != EXPECTED_CHANNEL_COUNT) {
                 throw new ArgumentException("std should be a " + EXPECTED_CHANNEL_COUNT + "-element array");
             }
+            Objects.RequireNonNull(shape);
             if (shape.Length != EXPECTED_SHAPE_SIZE) {
                 throw new ArgumentException("shape should be a " + EXPECTED_SHAPE_SIZE + "-element array (BCHW)");
             }
@@ -79,16 +83,21 @@ namespace iText.Pdfocr.Onnxtr {
                     throw new ArgumentException("Unexpected dimension value: " + dim);
                 }
             }
-            this.mean = (float[])mean.Clone();
-            this.std = (float[])std.Clone();
-            this.shape = (long[])shape.Clone();
+            this.mean = new float[mean.Length];
+            Array.Copy(mean, 0, this.mean, 0, mean.Length);
+            this.std = new float[std.Length];
+            Array.Copy(std, 0, this.std, 0, std.Length);
+            this.shape = new long[shape.Length];
+            Array.Copy(shape, 0, this.shape, 0, shape.Length);
             this.symmetricPad = symmetricPad;
         }
 
         /// <summary>Returns per-channel mean, used for normalization.</summary>
         /// <returns>per-channel mean, used for normalization</returns>
         public virtual float[] GetMean() {
-            return (float[])mean.Clone();
+            float[] copy = new float[shape.Length];
+            Array.Copy(mean, 0, copy, 0, copy.Length);
+            return copy;
         }
 
         /// <summary>Returns channel-specific mean, used for normalization.</summary>
@@ -119,7 +128,9 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Returns per-channel standard deviation, used for normalization.</summary>
         /// <returns>per-channel standard deviation, used for normalization</returns>
         public virtual float[] GetStd() {
-            return (float[])std.Clone();
+            float[] copy = new float[shape.Length];
+            Array.Copy(std, 0, copy, 0, copy.Length);
+            return copy;
         }
 
         /// <summary>Returns channel-specific standard deviation, used for normalization.</summary>
@@ -150,7 +161,9 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Returns target input shape.</summary>
         /// <returns>target input shape</returns>
         public virtual long[] GetShape() {
-            return (long[])shape.Clone();
+            long[] copy = new long[shape.Length];
+            Array.Copy(shape, 0, copy, 0, copy.Length);
+            return copy;
         }
 
         /// <summary>Returns target input dimension value.</summary>
@@ -191,7 +204,7 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode<object>(JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), JavaUtil.ArraysHashCode
+            return JavaUtil.ArraysHashCode((Object)JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), JavaUtil.ArraysHashCode
                 (shape), symmetricPad);
         }
 
@@ -203,8 +216,8 @@ namespace iText.Pdfocr.Onnxtr {
                 return false;
             }
             iText.Pdfocr.Onnxtr.OnnxInputProperties that = (iText.Pdfocr.Onnxtr.OnnxInputProperties)o;
-            return symmetricPad == that.symmetricPad && Object.Equals(mean, that.mean) && Object.Equals(std, 
-                that.std) && Object.Equals(shape, that.shape);
+            return symmetricPad == that.symmetricPad && JavaUtil.ArraysEquals(mean, that.mean) && JavaUtil.ArraysEquals
+                (std, that.std) && JavaUtil.ArraysEquals(shape, that.shape);
         }
 
         public override String ToString() {

@@ -8,11 +8,11 @@ namespace iText.Pdfocr.Util
 {
     public class Objects
     {
-        public static T RequireNonNull<T> (T obj, string message = "Object cannot be null")
+        public static T RequireNonNull<T> (T obj)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException(nameof(obj), message);
+                throw new NullReferenceException(nameof(obj));
             }
             return obj;
         }

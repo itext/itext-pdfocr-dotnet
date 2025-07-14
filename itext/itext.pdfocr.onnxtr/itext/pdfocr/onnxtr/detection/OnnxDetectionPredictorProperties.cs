@@ -1,6 +1,7 @@
 using System;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnxtr;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
     /// <summary>Properties for configuring text detection ONNX models.</summary>
@@ -47,9 +48,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <param name="postProcessor">ONNX model output post-processor</param>
         public OnnxDetectionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IDetectionPostProcessor
              postProcessor) {
-            this.modelPath = modelPath;
-            this.inputProperties = inputProperties;
-            this.postProcessor = postProcessor;
+            this.modelPath = Objects.RequireNonNull(modelPath);
+            this.inputProperties = Objects.RequireNonNull(inputProperties);
+            this.postProcessor = Objects.RequireNonNull(postProcessor);
         }
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode<object>(modelPath, inputProperties, postProcessor);
+            return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor);
         }
 
         public override String ToString() {

@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Util {
     /// <summary>Additional math functions.</summary>
@@ -29,6 +30,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         }
 
         public static int Argmax(float[] values) {
+            Objects.RequireNonNull(values);
             if (values.Length == 0) {
                 throw new ArgumentException("values should be a non-empty array");
             }
@@ -42,7 +44,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
             }
             return resultIndex;
         }
-        
+
         /// <summary>Calculates the Levenshtein distance between two input strings.</summary>
         /// <param name="source">the original string to be transformed</param>
         /// <param name="target">the target string to transform into</param>

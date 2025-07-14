@@ -21,7 +21,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Collections.Generic;
-using iText.Kernel.Geom;
 using iText.Pdfocr.Onnxtr;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
@@ -49,6 +48,6 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <param name="input">input image, which was used to produce the inputs to the ML model</param>
         /// <param name="output">normalized output of the ML model</param>
         /// <returns>a list of detected objects. See interface documentation for more information</returns>
-        IList<Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output);
+        IList<iText.Kernel.Geom.Point[]> Process(System.Drawing.Bitmap input, FloatBufferMdArray output);
     }
 }

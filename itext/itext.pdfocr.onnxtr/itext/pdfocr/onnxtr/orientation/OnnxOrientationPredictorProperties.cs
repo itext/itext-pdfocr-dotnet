@@ -2,6 +2,7 @@ using System;
 using iText.Commons.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnxtr;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Orientation {
     /// <summary>Properties for configuring crop orientation ONNX models.</summary>
@@ -41,9 +42,9 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         /// <param name="outputMapper">ONNX model output mapper</param>
         public OnnxOrientationPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IOutputLabelMapper
             <TextOrientation> outputMapper) {
-            this.modelPath = modelPath;
-            this.inputProperties = inputProperties;
-            this.outputMapper = outputMapper;
+            this.modelPath = Objects.RequireNonNull(modelPath);
+            this.inputProperties = Objects.RequireNonNull(inputProperties);
+            this.outputMapper = Objects.RequireNonNull(outputMapper);
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         }
 
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode<object>(modelPath, inputProperties, outputMapper);
+            return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, outputMapper);
         }
 
         public override bool Equals(Object o) {
