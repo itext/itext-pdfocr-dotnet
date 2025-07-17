@@ -82,8 +82,7 @@ namespace iText.Pdfocr.Util {
                             sb.Append(chunk.GetText());
                         }
                         else {
-                            sb.Append('\n');
-                            sb.Append(chunk.GetText());
+                            sb.Append('\n').Append(chunk.GetText());
                         }
                     }
                     lastChunk = chunk;

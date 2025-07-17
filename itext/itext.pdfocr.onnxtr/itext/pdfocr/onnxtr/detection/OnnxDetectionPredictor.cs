@@ -54,37 +54,31 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/db_resnet50-69ba0015.onnx">
         /// db_resnet50
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/db_resnet50_static_8_bit-09a6104f.onnx">
         /// db_resnet50 (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/db_resnet34-b4873198.onnx">
         /// db_resnet34
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/db_resnet34_static_8_bit-027e2c7f.onnx">
         /// db_resnet34 (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.2.0/db_mobilenet_v3_large-4987e7bd.onnx">
         /// db_mobilenet_v3_large
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.2.0/db_mobilenet_v3_large_static_8_bit-535a6f25.onnx">
         /// db_mobilenet_v3_large (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
@@ -106,19 +100,16 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/rep_fast_base-1b89ebf9.onnx">
         /// fast_base
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/rep_fast_small-10428b70.onnx">
         /// fast_small
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/rep_fast_tiny-28867779.onnx">
         /// fast_tiny
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
@@ -140,37 +131,31 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/linknet_resnet50-15d8c4ec.onnx">
         /// linknet_resnet50
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/linknet_resnet50_static_8_bit-65d6b0b8.onnx">
         /// linknet_resnet50 (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/linknet_resnet34-93e39a39.onnx">
         /// linknet_resnet34
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/linknet_resnet34_static_8_bit-2824329d.onnx">
         /// linknet_resnet34 (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/linknet_resnet18-e0e0b9dc.onnx">
         /// linknet_resnet18
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/linknet_resnet18_static_8_bit-3b3a37dd.onnx">
         /// linknet_resnet18 (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>

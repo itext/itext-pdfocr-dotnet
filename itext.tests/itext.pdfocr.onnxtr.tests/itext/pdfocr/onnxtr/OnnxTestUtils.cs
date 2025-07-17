@@ -38,7 +38,7 @@ namespace iText.Pdfocr.Onnxtr {
             return strategy;
         }
 
-        protected internal static String GetTextFromImage(FileInfo imageFile, OnnxTrOcrEngine ocrEngine) {
+        protected internal static String GetTextFromImage(FileInfo imageFile, IOcrEngine ocrEngine) {
             IDictionary<int, IList<TextInfo>> integerListMap = ocrEngine.DoImageOcr(imageFile);
             return GetStringFromListMap(integerListMap);
         }
@@ -48,7 +48,7 @@ namespace iText.Pdfocr.Onnxtr {
             foreach (KeyValuePair<int, IList<TextInfo>> entry in listMap) {
                 foreach (TextInfo textInfo in entry.Value) {
                     if (textInfo.GetText() != null) {
-                        stringBuilder.Append(textInfo.GetText()).Append("\n");
+                        stringBuilder.Append(textInfo.GetText()).Append('\n');
                     }
                 }
             }

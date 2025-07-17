@@ -194,8 +194,8 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "thai_01.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual(textFromImage, "3900879191497907597\n15790707047005\n19n8\n35819F1\n19n8\n11\n&\na\n1\n11\nA\nA\n"
-                , textFromImage);
+            NUnit.Framework.Assert.AreEqual("3900879191497907597\n15790707047005\n19n8\n35819F1\n19n8\n11\n&\na\n1\n11\nA\nA\n", textFromImage,
+                textFromImage);
         }
 
         [NUnit.Framework.Test]

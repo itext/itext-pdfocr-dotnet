@@ -223,7 +223,7 @@ namespace iText.Pdfocr {
             // values:
             // map pageNumber -> retrieved text data(text and its coordinates)
             IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
-                <int, IList<TextInfo>>>();
+                <int, IList<TextInfo>>>(inputImages.Count * 2);
             foreach (FileInfo inputImage in inputImages) {
                 imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage, ocrProcessContext));
             }

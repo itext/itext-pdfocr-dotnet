@@ -35,7 +35,7 @@ using System.Drawing;
 
 namespace iText.Pdfocr.Util {
     /// <summary>Utility class to handle tiff images.</summary>
-    public class TiffImageUtil {
+    public sealed class TiffImageUtil {
         private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Util.TiffImageUtil)
             );
 

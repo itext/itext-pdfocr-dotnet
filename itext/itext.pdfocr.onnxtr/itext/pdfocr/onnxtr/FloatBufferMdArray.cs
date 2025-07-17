@@ -35,6 +35,16 @@ namespace iText.Pdfocr.Onnxtr {
 
         private readonly long[] shape;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FloatBufferMdArray"/> class with the specified data buffer and shape.
+        /// </summary>
+        /// 
+        /// <param name="data">The <see cref="FloatBuffer"/> containing the data for this array</param>
+        /// <param name="shape">The shape of the multidimensional array, where each entry specifies the size of a dimension</param>
+        /// 
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="data"/> or <paramref name="shape"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="shape"/> is invalid or the number of elements in <paramref name="data"/>
+        /// does not match the element count derived from <paramref name="shape"/>.</exception>
         public FloatBufferMdArray(float[] data, long[] shape) {
             Objects.RequireNonNull(data);
             Objects.RequireNonNull(shape);
@@ -48,18 +58,44 @@ namespace iText.Pdfocr.Onnxtr {
             this.shape = (long[])shape.Clone();
         }
 
+        /// <summary>
+        /// Returns a duplicate of the backing <see cref="FloatBuffer"/>.
+        /// </summary>
+        /// 
+        /// <returns>A duplicate of the backing <see cref="FloatBuffer"/></returns>
         public virtual float[] GetData() {
             return data;
         }
 
+        /// <summary>
+        /// Returns a copy of the shape array that defines the dimensions of this multidimensional array.
+        /// </summary>
+        /// 
+        /// <returns>A copy of the shape array</returns>
         public virtual long[] GetShape() {
             return (long[])shape.Clone();
         }
 
+        /// <summary>
+        /// Returns the number of dimensions of this multidimensional array.
+        /// </summary>
+        /// 
+        /// <returns>The number of dimensions</returns>
         public virtual int GetDimensionCount() {
             return shape.Length;
         }
 
+        /// <summary>
+        /// Returns the size of the specified dimension.
+        /// </summary>
+        /// 
+        /// <param name="index">The zero-based index of the dimension to query</param>
+        /// 
+        /// <returns>The size of the dimension at the specified index</returns>
+        /// 
+        /// <exception cref="IndexOutOfRangeException">
+        /// Thrown if <paramref name="index"/> is negative or greater than or equal to the number of dimensions.
+        /// </exception>
         public virtual int GetDimension(int index) {
             if (index < 0 || index >= shape.Length) {
                 throw new IndexOutOfRangeException();
@@ -67,6 +103,20 @@ namespace iText.Pdfocr.Onnxtr {
             return (int)shape[index];
         }
 
+        /// <summary>
+        /// Returns a sub-array representing the slice at the specified index of the first dimension.
+        /// </summary>
+        /// 
+        /// <param name="index">The index along the first dimension to retrieve</param>
+        /// 
+        /// <returns>A <see cref="FloatBufferMdArray"/> representing the specified sub-array</returns>
+        /// 
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if this array has no dimensions
+        /// </exception>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Thrown if <paramref name="index"/> is negative or exceeds the bounds of the first dimension
+        /// </exception>
         public virtual iText.Pdfocr.Onnxtr.FloatBufferMdArray GetSubArray(int index) {
             if (shape.Length == 0) {
                 throw new InvalidOperationException();
@@ -81,6 +131,20 @@ namespace iText.Pdfocr.Onnxtr {
             return new iText.Pdfocr.Onnxtr.FloatBufferMdArray(newData, newShape);
         }
 
+        /// <summary>
+        /// Returns the scalar value at the specified index.
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// This method only works on one-dimensional arrays, where the total element count matches the size of the first dimension.
+        /// </remarks>
+        /// 
+        /// <param name="index">The index of the scalar to retrieve</param>
+        /// <returns>The scalar <c>float</c> value at the specified index</returns>
+        /// 
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if this array is not properly shaped as a one-dimensional array
+        /// </exception>
         public virtual float GetScalar(int index) {
             if (shape.Length != 0 && (ElementCount(shape) != shape[0])) {
                 throw new InvalidOperationException();
@@ -88,10 +152,20 @@ namespace iText.Pdfocr.Onnxtr {
             return data[index];
         }
 
+        /// <summary>
+        /// Gets the internal offset of the provided float buffer array.
+        /// </summary>
+        /// 
+        /// <returns>The internal offset</returns>
         public int GetArrayOffset() {
             return 0;
         }
 
+        /// <summary>
+        /// Gets the number of available bytes for reading from the provided float buffer array.
+        /// </summary>
+        /// 
+        /// <returns>The number of available bytes for read</returns>
         public int GetArraySize() {
             return data.Length;
         }

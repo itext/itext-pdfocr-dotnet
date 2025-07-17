@@ -33,6 +33,13 @@ namespace iText.Pdfocr.Onnxtr.Util {
     /// <typeparam name="R">output batch type</typeparam>
     [FunctionalInterfaceAttribute]
     public interface IBatchProcessor<T, R> {
+        /// <summary>Processes a batch of input items and produces a corresponding batch of output items.</summary>
+        /// <param name="batch">the list of input items to process</param>
+        /// <returns>
+        /// a list of output items corresponding to the input batch.
+        /// The size and ordering of the output list should correspond to the input list,
+        /// unless otherwise specified by the implementation
+        /// </returns>
         IList<R> ProcessBatch(IList<T> batch);
     }
 }

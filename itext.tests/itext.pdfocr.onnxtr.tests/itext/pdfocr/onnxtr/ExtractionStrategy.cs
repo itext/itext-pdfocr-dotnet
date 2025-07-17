@@ -51,12 +51,11 @@ namespace iText.Pdfocr.Onnxtr {
         public override void EventOccurred(IEventData data, EventType type) {
             if (type.Equals(EventType.RENDER_TEXT) || type.Equals(EventType.RENDER_IMAGE)) {
                 String tagName = GetTagName(data, type);
-                if ((tagName == null && layerName == null) || (layerName != null && layerName.Equals(tagName))) {
-                    if (type.Equals(EventType.RENDER_TEXT)) {
-                        TextRenderInfo renderInfo = (TextRenderInfo)data;
-                        SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
-                        base.EventOccurred(data, type);
-                    }
+                if (((tagName == null && layerName == null) || (layerName != null && layerName.Equals(tagName))) && type.Equals
+                    (EventType.RENDER_TEXT)) {
+                    TextRenderInfo renderInfo = (TextRenderInfo)data;
+                    SetFillColor(renderInfo.GetGraphicsState().GetFillColor());
+                    base.EventOccurred(data, type);
                 }
             }
         }

@@ -25,13 +25,29 @@ using System.Collections.Generic;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>Interface of a generic predictor.</summary>
+    /// 
     /// <remarks>Interface of a generic predictor. It takes a stream of inputs and returns a same-sizes stream of outputs.
     ///     </remarks>
+    /// 
     /// <typeparam name="T">input type</typeparam>
     /// <typeparam name="R">output type</typeparam>
     public interface IPredictor<T, R> : IDisposable {
+        /// <summary>
+        /// Performs prediction on a sequence of input items.
+        /// </summary>
+        /// 
+        /// <param name="inputs">An <see cref="IEnumerator{T}"/> over the input items to be processed</param>
+        /// 
+        /// <returns>An <see cref="IEnumerator{R}"/> over the predicted output items</returns>
         IEnumerator<R> Predict(IEnumerator<T> inputs);
 
+        /// <summary>
+        /// Performs prediction on a sequence of input items provided as an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// 
+        /// <param name="inputs">An <see cref="IEnumerable{T}"/> over the input items to be processed</param>
+        /// 
+        /// <returns>An <see cref="IEnumerator{R}"/> over the predicted output items</returns>
         IEnumerator<R> Predict(IEnumerable<T> inputs);
     }
 }

@@ -72,7 +72,7 @@ namespace iText.Pdfocr.Onnxtr {
             String[] sourceImages = new String[] { TEST_IMAGE_DIRECTORY + "englishText.bmp", TEST_IMAGE_DIRECTORY + "rotatedTextBasic.png"
                 , TEST_IMAGE_DIRECTORY + "scanned_spa_01.png", SOURCE_DIRECTORY + "regularText.png", SOURCE_DIRECTORY 
                 + "basicCloud.png", SOURCE_DIRECTORY + "differentSizes.png", SOURCE_DIRECTORY + "rotated.png" };
-            IList<FileInfo> images = new List<FileInfo>();
+            IList<FileInfo> images = new List<FileInfo>(sourceImages.Length * 2);
             foreach (String sourceImage in sourceImages) {
                 images.Add(new FileInfo(sourceImage));
             }

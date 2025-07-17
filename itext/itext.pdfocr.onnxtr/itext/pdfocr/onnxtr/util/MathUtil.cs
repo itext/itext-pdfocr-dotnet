@@ -29,6 +29,9 @@ namespace iText.Pdfocr.Onnxtr.Util {
         private MathUtil() {
         }
 
+        /// <summary>Returns the index of the maximum value in the given array.</summary>
+        /// <param name="values">the array of float values (must not be null or empty)</param>
+        /// <returns>the index of the maximum value in the array</returns>
         public static int Argmax(float[] values) {
             Objects.RequireNonNull(values);
             if (values.Length == 0) {
@@ -79,10 +82,27 @@ namespace iText.Pdfocr.Onnxtr.Util {
             return previousRow[targetChars.Length];
         }
 
+        /// <summary>Computes the sigmoid function, also known as the logistic function, for the given input.</summary>
+        /// <param name="x">the input value</param>
+        /// <returns>the sigmoid of the input value</returns>
         public static float Expit(float x) {
             return (float)(1 / (1 + Math.Exp(-x)));
         }
 
+        /// <summary>
+        /// Computes the Euclidean modulo (non-negative remainder) of
+        /// <paramref name="x"/>
+        /// modulo
+        /// <paramref name="y"/>.
+        /// </summary>
+        /// <param name="x">the dividend</param>
+        /// <param name="y">the divisor (must not be zero)</param>
+        /// <returns>
+        /// the non-negative remainder of
+        /// <paramref name="x"/>
+        /// modulo
+        /// <paramref name="y"/>
+        /// </returns>
         public static float EuclideanModulo(float x, float y) {
             float remainder = x % y;
             if (remainder < 0) {
@@ -91,6 +111,15 @@ namespace iText.Pdfocr.Onnxtr.Util {
             return remainder;
         }
 
+        /// <summary>Clamps a value between a specified minimum and maximum range.</summary>
+        /// <param name="value">the value to clamp</param>
+        /// <param name="min">the minimum allowed value</param>
+        /// <param name="max">the maximum allowed value</param>
+        /// <returns>
+        /// 
+        /// <paramref name="value"/>
+        /// if it falls within the range; otherwise, the nearest bound (min or max)
+        /// </returns>
         public static double Clamp(double value, double min, double max) {
             if (max < min) {
                 throw new ArgumentException("max should not be less than min");

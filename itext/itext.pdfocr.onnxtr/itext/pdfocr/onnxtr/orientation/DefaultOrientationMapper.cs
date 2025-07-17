@@ -43,6 +43,17 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     /// function.
     /// </remarks>
     public class DefaultOrientationMapper : IOutputLabelMapper<TextOrientation> {
+        /// <summary>
+        /// Constructs a new
+        /// <c>DefaultOrientationMapper</c>
+        /// with default behavior.
+        /// </summary>
+        /// <remarks>
+        /// Constructs a new
+        /// <c>DefaultOrientationMapper</c>
+        /// with default behavior.
+        /// This constructor performs no initialization logic.
+        /// </remarks>
         public DefaultOrientationMapper() {
         }
 
@@ -51,6 +62,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             return 4;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual TextOrientation Map(int index) {
             switch (index) {
                 case 0: {

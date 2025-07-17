@@ -56,13 +56,11 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/crnn_vgg16_bn-662979cc.onnx">
         /// crnn_vgg16_bn
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/crnn_vgg16_bn_static_8_bit-bce050c7.onnx">
         /// crnn_vgg16_bn (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
@@ -87,25 +85,21 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/crnn_mobilenet_v3_large-d42e8185.onnx">
         /// crnn_mobilenet_v3_large
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/crnn_mobilenet_v3_large_static_8_bit-459e856d.onnx">
         /// crnn_mobilenet_v3_large (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/crnn_mobilenet_v3_small-bded4d49.onnx">
         /// crnn_mobilenet_v3_small
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/crnn_mobilenet_v3_small_static_8_bit-4949006f.onnx">
         /// crnn_mobilenet_v3_small (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
@@ -130,16 +124,13 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/master-b1287fcd.onnx">
         /// MASTER
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/master_dynamic_8_bit-d8bd8206.onnx">
         /// MASTER (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
-        /// 
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the MASTER model loaded</returns>
@@ -162,13 +153,11 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/parseq-00b40714.onnx">
         /// parseq
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/parseq_dynamic_8_bit-5b04d9f7.onnx">
         /// parseq (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
@@ -193,13 +182,11 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/sar_resnet31-395f8005.onnx">
         /// sar_resnet31
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/sar_resnet31_static_8_bit-c07316bc.onnx">
         /// sar_resnet31 (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
@@ -221,25 +208,21 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/vitstr_base-ff62f5be.onnx">
         /// vitstr_base
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/vitstr_base_dynamic_8_bit-976c7cd6.onnx">
         /// vitstr_base (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/vitstr_small-3ff9c500.onnx">
         /// vitstr_small
         /// </a>
-        /// 
         /// </description></item>
         /// <item><description>
         /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/vitstr_small_dynamic_8_bit-bec6c796.onnx">
         /// vitstr_small (8-bit quantized)
         /// </a>
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
