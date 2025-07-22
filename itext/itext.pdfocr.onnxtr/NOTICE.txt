@@ -1,0 +1,16 @@
+This software uses the following third-party libraries under the following licenses:
+| OnnxTR | Apache-2.0 | Some code in iText.Pdfocr.Onnxtr package is adapted from and inspired by https://github.com/felixdittrich92/OnnxTR.
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+OnnxTR full license agreement text is below:
+
+    Copyright (C) 2021-2024, Mindee | Felix Dittrich.
+
+    This program is licensed under the Apache License 2.0.
+    See <https://opensource.org/licenses/Apache-2.0> for full license details.

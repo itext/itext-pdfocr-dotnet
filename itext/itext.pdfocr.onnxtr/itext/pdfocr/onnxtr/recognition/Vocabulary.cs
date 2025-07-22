@@ -1,3 +1,9 @@
+/*
+Copyright (C) 2021-2024, Mindee | Felix Dittrich.
+
+This program is licensed under the Apache License 2.0.
+See <https://opensource.org/licenses/Apache-2.0> for full license details.
+*/
 using System;
 using System.Text;
 using iText.Pdfocr.Util;

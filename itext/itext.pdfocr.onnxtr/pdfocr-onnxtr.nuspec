@@ -38,5 +38,6 @@
     <file src="ITSC-avatar.png" target="" />
     <file src="../../gnu-agpl-v3.0.md" target="" />
     <file src="../../LICENSE.md" target="" />
+    <file src="NOTICE.txt" target="" />
   </files>
 </package>
