@@ -36,9 +36,6 @@ namespace iText.Pdfocr.Tesseract4 {
 
         // do nothing
         public override void OnEvent(AbstractProductITextEvent @event) {
-            if (@event is AbstractContextBasedITextEvent) {
-                ((AbstractContextBasedITextEvent)@event).SetMetaInfo(new Tesseract4MetaInfo());
-            }
             EventManager.GetInstance().OnEvent(@event);
         }
 

@@ -8,9 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using iText.Commons.Actions.Confirmations;
 using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
+using iText.Pdfocr.Onnxtr.Actions.Events;
 using iText.Pdfocr.Onnxtr.Detection;
 using iText.Pdfocr.Onnxtr.Orientation;
 using iText.Pdfocr.Onnxtr.Recognition;
@@ -64,11 +66,18 @@ namespace iText.Pdfocr.Onnxtr {
 //\endcond
 
 //\cond DO_NOT_DOCUMENT
-        internal virtual IDictionary<int, IList<TextInfo>> DoOcr(IList<System.Drawing.Bitmap> images) {
+        internal virtual IDictionary<int, IList<TextInfo>> DoOcr(IList<System.Drawing.Bitmap> images, OcrProcessContext ocrProcessContext) {
             IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>(images.Count);
             int imageIndex = 0;
             IEnumerator<IList<iText.Kernel.Geom.Point[]>> textBoxGenerator = detectionPredictor.Predict(images);
             while (textBoxGenerator.MoveNext()) {
+                AbstractPdfOcrEventHelper eventHelper = ocrProcessContext.GetOcrEventHelper() == null ?
+                    new OnnxTrEventHelper() : ocrProcessContext.GetOcrEventHelper();
+                // usage event
+                PdfOcrOnnxTrProductEvent ocrEvent = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(
+                    eventHelper.GetSequenceId(), null, eventHelper.GetConfirmationType());
+                eventHelper.OnEvent(ocrEvent);
+                
                 /*
                 * TODO DEVSIX-9153: Potential performance improvement (at least for GPU).
                 *
@@ -99,6 +108,13 @@ namespace iText.Pdfocr.Onnxtr {
                 }
                 result.Put(imageIndex + 1, textInfos);
                 ++imageIndex;
+                
+                // here can be statistics event sending
+
+                // confirm on_demand event
+                if (ocrEvent.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
+                    eventHelper.OnEvent(new ConfirmEvent(ocrEvent));
+                }
             }
             return result;
         }

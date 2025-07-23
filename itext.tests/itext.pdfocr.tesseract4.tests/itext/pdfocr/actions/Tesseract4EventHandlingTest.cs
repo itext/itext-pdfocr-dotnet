@@ -380,6 +380,98 @@ namespace iText.Pdfocr.Actions {
             ValidateConfirmEvent(eventsHandler.GetEvents()[3], usageEvent);
         }
 
+        // Section with multipage TIFF image related tests
+        [NUnit.Framework.Test]
+        public virtual void OcrPdfCreatorCreatePdfFileMultipageTiffTest() {
+            FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
+            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
+            // check ocr events
+            // 2 pages in TIFF image
+            NUnit.Framework.Assert.AreEqual(5, eventsHandler.GetEvents().Count);
+            for (int i = 0; i < 2; i++) {
+                IEvent usageEvent = eventsHandler.GetEvents()[i];
+                ValidateUsageEvent(usageEvent, EventConfirmationType.ON_CLOSE);
+                ValidateConfirmEvent(eventsHandler.GetEvents()[3 + i], usageEvent);
+            }
+            ValidateStatisticEvent(eventsHandler.GetEvents()[2], PdfOcrOutputType.PDF);
+            // check producer line in the output pdf
+            String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetPdfOcrEvent() });
+            ValidatePdfProducerLine(outPdfFile.FullName, expectedProdLine);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void OcrPdfCreatorCreatePdfFileMultipageTiffNoPreprocessingTest() {
+            FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
+            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages(false);
+            new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
+            // check ocr events
+            // 2 pages in TIFF image
+            NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
+            IEvent usageEvent = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_CLOSE);
+            ValidateStatisticEvent(eventsHandler.GetEvents()[1], PdfOcrOutputType.PDF);
+            ValidateConfirmEvent(eventsHandler.GetEvents()[2], usageEvent);
+            // check producer line in the output pdf
+            String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetPdfOcrEvent() });
+            ValidatePdfProducerLine(outPdfFile.FullName, expectedProdLine);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreateTxtFileMultipageTiffTest() {
+            FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), FileUtil.CreateTempFile("test", ".txt"));
+            // 2 pages in TIFF image
+            NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
+            IEvent usageEvent = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            ValidateConfirmEvent(eventsHandler.GetEvents()[3], usageEvent);
+            for (int i = 1; i < 3; i++) {
+                ValidateStatisticEvent(eventsHandler.GetEvents()[i], PdfOcrOutputType.DATA);
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CreateTxtFileMultipageTiffNoPreprocessingTest() {
+            FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
+            tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages(false);
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), FileUtil.CreateTempFile("test", ".txt"));
+            // 2 pages in TIFF image
+            NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
+            IEvent usageEvent = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            ValidateStatisticEvent(eventsHandler.GetEvents()[1], PdfOcrOutputType.DATA);
+            ValidateConfirmEvent(eventsHandler.GetEvents()[2], usageEvent);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void DoImageOcrMultipageTiffTest() {
+            FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
+            tesseractReader.DoImageOcr(imgFile);
+            // 2 pages in TIFF image
+            NUnit.Framework.Assert.AreEqual(6, eventsHandler.GetEvents().Count);
+            for (int i = 0; i < 2; i++) {
+                IEvent usageEvent = eventsHandler.GetEvents()[i * 3];
+                ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+                ValidateStatisticEvent(eventsHandler.GetEvents()[i * 3 + 1], PdfOcrOutputType.DATA);
+                ValidateConfirmEvent(eventsHandler.GetEvents()[i * 3 + 2], usageEvent);
+            }
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void DoImageOcrMultipageTiffNoPreprocessingTest() {
+            FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
+            tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages(false);
+            tesseractReader.DoImageOcr(imgFile);
+            // 2 pages in TIFF image
+            NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
+            IEvent usageEvent = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            ValidateStatisticEvent(eventsHandler.GetEvents()[1], PdfOcrOutputType.DATA);
+            ValidateConfirmEvent(eventsHandler.GetEvents()[2], usageEvent);
+        }
+
         private class CustomEventHelper : AbstractPdfOcrEventHelper {
             public override void OnEvent(AbstractProductITextEvent @event) {
                 if (@event is AbstractContextBasedITextEvent) {

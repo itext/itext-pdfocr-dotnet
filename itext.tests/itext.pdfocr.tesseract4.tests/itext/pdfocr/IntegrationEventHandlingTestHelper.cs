@@ -109,7 +109,7 @@ namespace iText.Pdfocr {
         }
 
         protected internal static ConfirmedEventWrapper GetPdfOcrEvent() {
-            DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_HTML
+            DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_OCR_TESSERACT4
                 );
             return new ConfirmedEventWrapper(PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(new SequenceId(), null
                 , EventConfirmationType.ON_CLOSE), processor.GetUsageType(), processor.GetProducer());
