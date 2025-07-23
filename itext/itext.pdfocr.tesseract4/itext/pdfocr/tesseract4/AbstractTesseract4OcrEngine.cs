@@ -33,6 +33,7 @@ using iText.Commons.Actions.Data;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Pdfocr;
+using iText.Pdfocr.Logs;
 using iText.Pdfocr.Statistics;
 using iText.Pdfocr.Tesseract4.Actions.Data;
 using iText.Pdfocr.Tesseract4.Actions.Events;
@@ -151,8 +152,8 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <param name="ocrProcessContext">ocr process context</param>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
             ) {
-            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(Tesseract4LogMessageConstant.
-                START_OCR_FOR_IMAGES, inputImages.Count));
+            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES
+                , inputImages.Count));
             AbstractPdfOcrEventHelper storedEventHelper;
             if (ocrProcessContext.GetOcrEventHelper() == null) {
                 storedEventHelper = new Tesseract4EventHelper();
@@ -164,14 +165,12 @@ namespace iText.Pdfocr.Tesseract4 {
                 .GetSequenceId(), null, storedEventHelper.GetConfirmationType());
             storedEventHelper.OnEvent(@event);
             try {
-                // set Tesseract4FileResultEventHelper
                 ocrProcessContext.SetOcrEventHelper(new Tesseract4FileResultEventHelper(storedEventHelper));
                 StringBuilder content = new StringBuilder();
                 foreach (FileInfo inputImage in inputImages) {
                     content.Append(DoImageOcr(inputImage, OutputFormat.TXT, ocrProcessContext));
                 }
-                // write to file
-                TesseractHelper.WriteToTextFile(txtFile.FullName, content.ToString());
+                PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content.ToString());
                 if (@event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
                     storedEventHelper.OnEvent(new ConfirmEvent(@event));
                 }
@@ -381,7 +380,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         public virtual void ValidateLanguages(IList<String> languagesList) {
             String suffix = ".traineddata";
-            if (languagesList.Count == 0) {
+            if (languagesList.IsEmpty()) {
                 if (!new FileInfo(GetTessData() + System.IO.Path.DirectorySeparatorChar + GetTesseract4OcrEngineProperties
                     ().GetDefaultLanguage() + suffix).Exists) {
                     throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_LANGUAGE).SetMessageParams
@@ -419,6 +418,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <remarks>
         /// Performs tesseract OCR using command line tool
         /// or a wrapper for Tesseract OCR API.
+        /// <para />
         /// Please note that list of output files is accepted instead of a single file because
         /// page number parameter is not respected in case of TIFF images not requiring preprocessing.
         /// In other words, if the passed image is the TIFF image and according to the
@@ -456,6 +456,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <remarks>
         /// Performs tesseract OCR using command line tool
         /// or a wrapper for Tesseract OCR API.
+        /// <para />
         /// Please note that list of output files is accepted instead of a single file because
         /// page number parameter is not respected in case of TIFF images not requiring preprocessing.
         /// In other words, if the passed image is the TIFF image and according to the
@@ -547,8 +548,7 @@ namespace iText.Pdfocr.Tesseract4 {
             IList<FileInfo> tempFiles = new List<FileInfo>();
             AbstractTesseract4OcrEngine.ITesseractOcrResult result = null;
             try {
-                // image needs to be paginated only if it's tiff
-                // or preprocessing isn't required
+                // image needs to be paginated only if it's tiff or preprocessing isn't required
                 int realNumOfPages = TiffImageUtil.IsTiffImage(input) ? ImagePreprocessingUtil.GetNumberOfPageTiff(input) : 
                     1;
                 int numOfPages = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? realNumOfPages : 1;

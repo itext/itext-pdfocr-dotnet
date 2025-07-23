@@ -358,35 +358,6 @@ namespace iText.Pdfocr.Tesseract4 {
 //\endcond
 
 //\cond DO_NOT_DOCUMENT
-        /// <summary>
-        /// Writes provided
-        /// <see cref="System.String"/>
-        /// to text file using
-        /// provided path.
-        /// </summary>
-        /// <param name="path">
-        /// path as
-        /// <see cref="System.String"/>
-        /// to file to be created
-        /// </param>
-        /// <param name="data">
-        /// text data in required format as
-        /// <see cref="System.String"/>
-        /// </param>
-        internal static void WriteToTextFile(String path, String data) {
-            try {
-                using (TextWriter writer = new StreamWriter(new FileStream(path, FileMode.Create), System.Text.Encoding.UTF8
-                    )) {
-                    writer.Write(data);
-                }
-            }
-            catch (System.IO.IOException e) {
-                throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e);
-            }
-        }
-//\endcond
-
-//\cond DO_NOT_DOCUMENT
         /// <summary>Runs given command.</summary>
         /// <param name="execPath">path to the executable</param>
         /// <param name="paramsList">

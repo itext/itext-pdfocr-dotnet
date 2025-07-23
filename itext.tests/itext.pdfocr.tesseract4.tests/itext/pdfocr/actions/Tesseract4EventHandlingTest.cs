@@ -32,7 +32,6 @@ using iText.Kernel.Pdf;
 using iText.Pdfocr;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Statistics;
-using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
@@ -250,7 +249,7 @@ namespace iText.Pdfocr.Actions {
         }
 
         [NUnit.Framework.Test]
-        public virtual void CreateTxtFileTest() {
+        public virtual void CreateTxtFileTwoImagesTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
             tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"
                 ));
@@ -293,9 +292,12 @@ namespace iText.Pdfocr.Actions {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
             FileInfo outPdfFile = new FileInfo("nopath/nofile");
-            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => tesseractReader.CreateTxtFile
-                (images, outPdfFile));
-            NUnit.Framework.Assert.AreEqual(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e.Message);
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => tesseractReader.CreateTxtFile(images
+                , outPdfFile));
+            NUnit.Framework.Assert.IsTrue(e.Message.Contains(PdfOcrExceptionMessageConstant.CANNOT_WRITE_TO_FILE.JSubstring
+                (0, 20)));
+            NUnit.Framework.Assert.IsTrue(e.Message.Contains("nopath"));
+            NUnit.Framework.Assert.IsTrue(e.Message.Contains("nofile"));
             NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);

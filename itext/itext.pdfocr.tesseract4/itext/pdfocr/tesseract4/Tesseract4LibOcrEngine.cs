@@ -186,15 +186,7 @@ namespace iText.Pdfocr.Tesseract4 {
                     String result = resultList[i];
                     FileInfo outputFile = i >= outputFiles.Count ? null : outputFiles[i];
                     if (result != null && outputFile != null) {
-                        try {
-                            using (TextWriter writer = new StreamWriter(new FileStream(outputFile.FullName, FileMode.Create), System.Text.Encoding
-                                .UTF8)) {
-                                writer.Write(result);
-                            }
-                        }
-                        catch (System.IO.IOException e) {
-                            throw new PdfOcrInputTesseract4Exception(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_WRITE_TO_FILE, e);
-                        }
+                        PdfOcrFileUtil.WriteToTextFile(outputFile.FullName, result);
                     }
                 }
                 // statistics event
