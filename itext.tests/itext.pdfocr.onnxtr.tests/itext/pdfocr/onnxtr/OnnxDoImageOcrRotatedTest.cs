@@ -66,7 +66,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "270_degrees_rotated.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("image\ndegrees\n270\nrotated\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("270\ndegrees\nrotated\nimage\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -82,7 +82,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "90_degrees_rotated.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("90\nrotated\ndegrees\nimage\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("90\ndegrees\nrotated\nimage\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -90,7 +90,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedTextBasic.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("TEST\nThis\ntext\nIS\nTxT\nsideways\nDiagonal\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nThis\ntext\nIS\nsideways\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -98,7 +98,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedCapsLC.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("TEsTinG\nmix\nanD\nlowerCaSE\nCapITALS\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("mix\nTEsTinG\nCapITALS\nanD\nlowerCaSE\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -106,7 +106,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedColorsMix.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("ReD\nCOIORS\ntEXT\nMixed\nTEXT\nColored\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Colored\nTEXT\nMixed\nCOIORS\nReD\ntEXT\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -114,7 +114,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedColorsMix2.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("not\nhave\na\nproblem.\n&%!Housten\nwe\nshould\n123456789-FIdpt\nwork?\nthis\ndoes\n"
+            NUnit.Framework.Assert.AreEqual("does\nthis\nwork?\n123456789-FIdpt\nshould\n&%!Housten\nwe\nproblem.\nhave\na\nnot\n"
                 , textFromImage);
         }
 
@@ -123,7 +123,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedBy90Degrees.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("TEXT\n180\n270\nTEXT\n-\n90\nTEXT\nTEXT\n0\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("TEXT\n0\nTEXT\n90\nTEXT\n180\n-\nTEXT\n270\n", textFromImage);
         }
     }
 }

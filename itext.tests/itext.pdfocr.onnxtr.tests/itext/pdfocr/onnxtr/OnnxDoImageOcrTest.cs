@@ -63,8 +63,8 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_04.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("font?\nabowt\nWhat\ntris\n123456789\n123\nbigger\na\nabout\nfont?\nHow\nHi\nreally\nthing\nwork?\nOCR\nthis\nDoes\n"
-                , textFromImage);
+            NUnit.Framework.Assert.AreEqual("Does\nthis\nOCR\nthing\nreally\nwork\nHi\nHow\nabout\na\nbigger\nfont?\n"
+                 + "123456789\n123\nWhat\nabowt\ntis\nfont?\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -88,16 +88,17 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "halftone.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("5\nSharks\n$499995\n$99999\nBand-Aids\n2\n$2\n$1\nLasers\n10\n$30000" +
-                                            "\n$3000\nQUANTITY\nTOTAL\nRICE\nPR\nUNIT\nDESCRIPTION\nreceipt\nor\n" +
-                                            "Website\n#7394009320\n3Vi\nDue\nDelivery\nAIR\nform\nNUMBER\nP.O\nRSON\n" +
-                                            "TERMS\nPOINT\nF.O.B\nVIA\nSHIPPED\nREQUISITIONER\n-\nDELIVER\nMUST\n" +
-                                            "ITEMS\nASSEMBLED\nFUL\n-\nBF\nINSTRUCTIONS\nSPFCIAI\nCOMMENT\nOR\n111111" +
-                                            "\n911\n+351\n111\n111\n911\n+351\nLand\nLala\nLand\nLala\nStreet\nStreet" +
-                                            "\nWonderful\nWonderful\nCorp.\nTycoon\nCorp\nTycoon\nLemos\nLemos\nAndré" +
-                                            "\nAndré\nTO:\nTO\nSHIP\n9\n+32\n00\n00\n270\nFax\nDATE:\n6/30/2020\n22" +
-                                            "\n22\n292\n+329\nPhone\n#100\nINVOICE\nNowhere\nMiddle\nof\nwe\ndream\n" +
-                                            "You\nit\nenable\nit\nEnablers\nSilliness\nINVOICE\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Silliness\nEnablers\nINVOICE\nYou\ndream\nit\nwe\nenable\nit\n" +
+                                            "Middle\nof\nNowhere\nPhone\n+329\n292\n22\n22\nINVOICE\n#100\nFax\n+32" +
+                                            "\n9\n270\n00\n00\nDATE:\n6/30/2020\nTO:\nSHIP\nTO\nAndré\nLemos\nAndré\n" +
+                                            "Lemos\nTycoon\nCorp.\nTycoon\nCorp\nWonderful\nStreet\nWonderful\n" +
+                                            "Street\nLala\nLand\nLala\nLand\n+351\n911\n111111\n+351\n911\n111\n" +
+                                            "111\nCOMMENT\nOR\nSPFCIAI\nINSTRUCTIONS\nITEMS\nMUST\nBF\nDELIVER\n" +
+                                            "-\nFUL\n-\nASSEMBLED\nRSON\nP.O\nNUMBER\nREQUISITIONER\nSHIPPED\n" +
+                                            "VIA\nF.O.B\nPOINT\nTERMS\n3Vi\n#7394009320\nWebsite\nform\nAIR\n" +
+                                            "Delivery\nDue\nor\nreceipt\nQUANTITY\nDESCRIPTION\nUNIT\nPR\nRICE\n" +
+                                            "TOTAL\n10\nLasers\n$3000\n$30000\n2\nBand-Aids\n$1\n$2\n5\nSharks\n" +
+                                            "$99999\n$499995\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -105,7 +106,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "noisy_01.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Tesseract\nOCR\nto\ntest\nimage\nNoisy\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Noisy\nimage\nto\ntest\nTesseract\nOCR\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -117,6 +118,8 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("This test is failing on java 8 with ImageIO exception. In newer versions it works that is why we don't want to use Leptonica or any other 3rd-party to read such images."
+            )]
         public virtual void Numbers2DoImageOcrTest() {
             String src = TEST_IMAGE_DIRECTORY + "numbers_02.jpg";
             FileInfo imageFile = new FileInfo(src);
@@ -137,17 +140,17 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "scanned_spa_01.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("conjunto.\ncon\nel\narmoni\ndebe\nojos\nlos\nmaquillaje\nde\nel\nTambién" +
-                                            "\nrà.\nque\n-\nlle\nvestido\ncon\narmonice\nque\nel\nasegurese\nsion,\n" +
-                                            "para\no\nla\nlabial\nnuevo\nlapiz\nun\nprobar\nintenta\nSi\nmano,\na\n" +
-                                            "todo\ny\ntener\nponer\na\nva\nse\nque\nes\nsaber\nimportante\nmas\n" +
-                                            "repetirlo,\ncansaremos\nLo\nde\nno\ny\ncon\ncalma\nque\nactuar\nHay\n" +
-                                            "publico.\nen\ntarse\npres\nmanera\nde\natractiva\ny\nmas\nmejor\nla\n" +
-                                            "hallar\nlo\ntratando\ndia\nel\ntodo\npasado\nque\nse\ny\nhan\nilusionadas" +
-                                            "\ny\ncara\nlastima\ncon\nde\njovenes\na\nen\nfiestas\nver\nlas\n" +
-                                            "desalentador\nmas\nnada\nhay\npuede.\nse\nNo\nfiesta,\nsi\nla\n" +
-                                            "pensar\nno\ny\nes\ndescansar\nmejor\npeor,\nlo\nTanto\nACTUAR?" +
-                                            "\nCOMO\nENSAYARA\nSI\nAY\n(\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("(\nAY\nSI\nENSAYARA\nCOMO\nACTUAR?\nTanto\npeor,\nlo\nmejor\nes\n" +
+                                            "descansar\ny\nno\npensar\nla\nfiesta,\nsi\nse\npuede.\nNo\nhay\nnada\n" +
+                                            "mas\ndesalentador\nver\nen\nlas\nfiestas\na\njovenes\ncon\ncara\nde\n" +
+                                            "lastima\ny\nilusionadas\ny\nque\nse\nhan\npasado\ntodo\nel\ndia\n" +
+                                            "tratando\nhallar\nlo\nmejor\ny\nla\nmas\natractiva\nmanera\nde\npres\n" +
+                                            "tarse\nen\npublico.\nHay\nque\nactuar\ncon\ncalma\ny\nno\ncansaremos\n" +
+                                            "de\nrepetirlo,\nLo\nmas\nimportante\nes\nsaber\nque\nse\nva\na\nponer\n" +
+                                            "y\ntener\ntodo\na\nmano,\nSi\nintenta\nprobar\nun\nnuevo\nlapiz\n" +
+                                            "labial\npara\nla\no\nsion,\nasegurese\nque\narmonice\ncon\nel\n-\n" +
+                                            "vestido\nque\nlle\nrà.\nTambién\nel\nmaquillaje\nde\nlos\nojos\n" +
+                                            "debe\narmoni\ncon\nel\nconjunto.\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -155,7 +158,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "weirdwords.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("qwetyrtyqpwe-rty\nhe23llo\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("he23llo\nqwetyrtyqpwe-rty\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -163,8 +166,8 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_05_corrupted.bmp";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("a\nTest\nThis\nis\na\nTest\nThis\nis\na\nTest\nThis\nis\na\n" + "Test\nThis\nis\na\nTest\nis\nThis\na\nTest\nis\nThis\n"
-                , textFromImage);
+            NUnit.Framework.Assert.AreEqual("This\nis\na\nTest\nThis\nis\na\nTest\nThis\nis\na\nTest\nThis\nis\na\n" +
+                 "Test\nThis\nis\na\nTest\nThis\nis\na\nTest\n", textFromImage);
         }
 
         [NUnit.Framework.Test]

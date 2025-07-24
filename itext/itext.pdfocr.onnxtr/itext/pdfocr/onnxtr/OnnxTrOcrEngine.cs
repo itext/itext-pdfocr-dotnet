@@ -67,6 +67,9 @@ namespace iText.Pdfocr.Onnxtr {
         ///     </remarks>
         private readonly IRecognitionPredictor recognitionPredictor;
 
+        /// <summary>Set of properties.</summary>
+        private readonly OnnxTrEngineProperties properties;
+
         /// <summary>Create a new OCR engine with the provided predictors.</summary>
         /// <param name="detectionPredictor">text detector. For an input image it outputs a list of text boxes</param>
         /// <param name="orientationPredictor">
@@ -79,10 +82,28 @@ namespace iText.Pdfocr.Onnxtr {
         /// displayed string
         /// </param>
         public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
-            IRecognitionPredictor recognitionPredictor) {
+            IRecognitionPredictor recognitionPredictor)
+            : this(detectionPredictor, orientationPredictor, recognitionPredictor, new OnnxTrEngineProperties()) {
+        }
+
+        /// <summary>Create a new OCR engine with the provided predictors.</summary>
+        /// <param name="detectionPredictor">text detector. For an input image it outputs a list of text boxes</param>
+        /// <param name="orientationPredictor">
+        /// text orientation predictor. For an input image, which is a tight  crop of text,
+        /// it outputs its orientation in 90 degrees steps. Can be null, in that case all text
+        /// is assumed to be upright
+        /// </param>
+        /// <param name="recognitionPredictor">
+        /// text recognizer. For an input image, which is a tight crop of text, it outputs the
+        /// displayed string
+        /// </param>
+        /// <param name="properties">set of properties</param>
+        public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
+            IRecognitionPredictor recognitionPredictor, OnnxTrEngineProperties properties) {
             this.detectionPredictor = Objects.RequireNonNull(detectionPredictor);
             this.orientationPredictor = orientationPredictor;
             this.recognitionPredictor = Objects.RequireNonNull(recognitionPredictor);
+            this.properties = properties;
         }
 
         /// <summary>Create a new OCR engine with the provided predictors, without text orientation prediction.</summary>
@@ -109,10 +130,14 @@ namespace iText.Pdfocr.Onnxtr {
 
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
-            IList<IronSoftware.Drawing.AnyBitmap> images = GetImages(input);
-            OnnxTrProcessor onnxTrProcessor = new OnnxTrProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
-                );
-            return onnxTrProcessor.DoOcr(images, ocrProcessContext);
+            IDictionary<int, IList<TextInfo>> result = DoOnnxTrOcr(input, ocrProcessContext);
+            if (TextPositioning.BY_WORDS.Equals(properties.GetTextPositioning())) {
+                PdfOcrTextBuilder.SortTextInfosByLines(result);
+            }
+            else {
+                PdfOcrTextBuilder.GenerifyWordBBoxesByLine(result);
+            }
+            return result;
         }
 
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
@@ -136,7 +161,7 @@ namespace iText.Pdfocr.Onnxtr {
                 ocrProcessContext.SetOcrEventHelper(fileResultEventHelper);
                 StringBuilder content = new StringBuilder();
                 foreach (FileInfo inputImage in inputImages) {
-                    IDictionary<int, IList<TextInfo>> outputMap = DoImageOcr(inputImage, ocrProcessContext);
+                    IDictionary<int, IList<TextInfo>> outputMap = DoOnnxTrOcr(inputImage, ocrProcessContext);
                     content.Append(PdfOcrTextBuilder.BuildText(outputMap));
                 }
                 PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content.ToString());
@@ -157,6 +182,36 @@ namespace iText.Pdfocr.Onnxtr {
 
         public virtual ProductData GetProductData() {
             return null;
+        }
+
+        /// <summary>
+        /// Reads raw data from the provided input image file and returns retrieved data
+        /// in the format described below.
+        /// </summary>
+        /// <param name="input">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <param name="ocrProcessContext">ocr processing context</param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        private IDictionary<int, IList<TextInfo>> DoOnnxTrOcr(FileInfo input, OcrProcessContext ocrProcessContext) {
+            IList<IronSoftware.Drawing.AnyBitmap> images = GetImages(input);
+            OnnxTrProcessor onnxTrProcessor = new OnnxTrProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
+                );
+            return onnxTrProcessor.DoOcr(images, ocrProcessContext);
         }
 
         private static IList<IronSoftware.Drawing.AnyBitmap> GetImages(FileInfo input) {

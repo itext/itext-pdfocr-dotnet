@@ -83,7 +83,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("This\n1S test\na\nfor\nmessage\n-\nOCR\nScanner\nTest\nBMPTest", extractionStrategy
+                NUnit.Framework.Assert.AreEqual("This a test\n1S\nmessage for\n-\nOCR Scanner\nTest\nBMPTest", extractionStrategy
                     .GetResultantText());
             }
         }
@@ -98,7 +98,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Ihis\n1S test\na\nfor\nmessage\n-\nOCR\nScanner\nTest", extractionStrategy
+                NUnit.Framework.Assert.AreEqual("Ihis a test\n1S\nmessage for\n-\nOCR Scanner\nTest", extractionStrategy
                     .GetResultantText());
             }
         }
@@ -113,7 +113,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("File\nFormat\nTagged\nImage", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("Tagged Image File Format", extractionStrategy.GetResultantText());
             }
         }
 
@@ -155,7 +155,7 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("he23llo\nqwetyrtyqpwe-rty", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("qwetyrtyqpwe-rty\nhe23llo", extractionStrategy.GetResultantText());
             }
         }
 
@@ -169,14 +169,14 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\n1\nPage", extractionStrategy.GetResultantText()
+                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage\n1", extractionStrategy.GetResultantText()
                     );
                 extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 7, "Text1");
                 // Model glitch
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\n/\nPage", extractionStrategy.GetResultantText()
+                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage\n/", extractionStrategy.GetResultantText()
                     );
                 extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 9, "Text1");
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\n9\nPage", extractionStrategy.GetResultantText()
+                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage 9", extractionStrategy.GetResultantText()
                     );
             }
         }
@@ -191,17 +191,16 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("(\nSI\nAY ENSAYARA\nCOMO\nACTUAR?\nTanto\nlo\npeor,\nmejor es" +
-                                                "\ndescansar\nno\ny\npensar\nla\nsi\nfiesta, se\npuede. No\nnada" +
-                                                "\nhay\nmas\ndesalentador\nver las\nen\nfiestas\na\njovenes\ncon cara" +
-                                                "\nde\nlastima\ny\nilusionadas\nhan\nse\ny que\npasado todo\nel dia" +
-                                                "\ntratando\nhallar lo\nla\nmejor\nmas atractiva\ny\nmanera\nde\npres" +
-                                                "\ntarse en\npublico.\nHay actuar\nque\ncon calma\nno\ny\ncansaremos" +
-                                                "\nde\nrepetirlo, Lo\nmas\nimportante\nes saber\nque\nse va a\nponer" +
-                                                " tener\ny todo\na\nmano,\nSi\nintenta\nprobar\nun\nnuevo\nlapiz" +
-                                                " labial\nla\npara o\nsion,\nasegurese\n-\nque\narmonice\ncon\nel" +
-                                                " vestido\nlle\nque\nTambién\nrà.\nel\nmaquillaje\nde\nlos\ndebe\n" +
-                                                "ojos\narmoni\ncon el\nconjunto.", 
+                NUnit.Framework.Assert.AreEqual("(\nAY SI ENSAYARA COMO ACTUAR?\nTanto peor, lo mejor es" +
+                                                " descansar y no pensar\nla fiesta, si se puede. No hay nada mas " +
+                                                "desalentador\nver en las fiestas a jovenes con cara de lastima y\n" +
+                                                "ilusionadas y que se han pasado todo el dia tratando\nhallar lo" +
+                                                " mejor y la mas atractiva manera de pres\ntarse en publico. Hay que" +
+                                                " actuar con calma y no\ncansaremos de repetirlo, Lo mas importante" +
+                                                " es saber\nque se va a poner y tener todo a mano,\nSi intenta probar" +
+                                                " un nuevo lapiz labial para la o\nsion, asegurese que armonice con " +
+                                                "el vestido que lle\n-\nrà. También el maquillaje de los ojos debe " +
+                                                "armoni\ncon el conjunto.", 
                     extractionStrategy.GetResultantText());
             }
         }
@@ -216,16 +215,17 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("INVOICE\nEnablers\nSilliness\nenable\nit\nYou dream we\nit\n" +
-                                                "Nowhere\nof\nMiddle\nINVOICE #100\nPhone +329 292\n22 22\n6/30/2020" +
-                                                "\nDATE:\n9 00\n+32 270\nFax 00\nSHIP TO\nTO:\nAndré\nAndré Lemos\n" +
-                                                "Lemos\nTycoon Corp\nTycoon Corp.\nWonderful\nStreet Street\n" +
-                                                "Wonderful\nLala Land\nLala Land\n+351 911 111 111\n+351 911 111111\n" +
-                                                "COMMENT OR SPFCIAI INSTRUCTIONS\n-\nBF -\nITEMS MUST DELIVER FUL\n" +
-                                                "ASSEMBLED\nTERMS\nRSON NUMBER SHIPPED VIA F.O.B POINT\nREQUISITIONER" +
-                                                "\nP.O\nWebsite AIR Due\nor\n3Vi form receipt\n#7394009320 Delivery\n" +
-                                                "PR\nDESCRIPTION UNIT RICE TOTAL\nQUANTITY\n$3000 $30000\n10\nLasers" +
-                                                "\n$1 $2\n2 Band-Aids\n$99999 $499995\n5\nSharks", 
+                NUnit.Framework.Assert.AreEqual("Silliness Enablers INVOICE\nYou dream it we enable it\n" +
+                                                "Middle of Nowhere\nPhone +329 292 22 22 INVOICE #100\n" +
+                                                "Fax +32 9 270 00 00 DATE: 6/30/2020\nTO: SHIP TO\n" +
+                                                "André Lemos André Lemos\nTycoon Corp. Tycoon Corp\n" +
+                                                "Wonderful Street Wonderful Street\nLala Land Lala Land\n" +
+                                                "+351 911 111111 +351 911 111 111\nCOMMENT OR SPFCIAI INSTRUCTIONS\n" +
+                                                "ITEMS MUST BF DELIVER - FUL - ASSEMBLED\n" +
+                                                "RSON P.O NUMBER REQUISITIONER SHIPPED VIA F.O.B POINT TERMS\n" +
+                                                "3Vi #7394009320 Website form AIR Delivery Due or receipt\n" +
+                                                "QUANTITY DESCRIPTION UNIT TOTAL\nPR RICE\n10 Lasers $3000 $30000\n" +
+                                                "2 Band-Aids $1 $2\n5 Sharks $99999 $499995", 
                     extractionStrategy.GetResultantText());
             }
         }

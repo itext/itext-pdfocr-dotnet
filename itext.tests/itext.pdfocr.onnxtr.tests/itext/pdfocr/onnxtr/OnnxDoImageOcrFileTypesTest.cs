@@ -48,7 +48,8 @@ namespace iText.Pdfocr.Onnxtr {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxTrEngineProperties
+                ().SetTextPositioning(TextPositioning.BY_WORDS));
         }
 
         [NUnit.Framework.OneTimeTearDown]
@@ -69,7 +70,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_01.BMP";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Test\nOCR\nScanner\n-\nmessage\nfor\n1S\na\ntest\nIhis\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\n-\nfor\nOCR\nScanner\nTest\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -77,7 +78,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_02.JFIF";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Test\nOCR\nScanner\n-\nmessage\nfor\n1S\na\ntest\nIhis\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\n-\nfor\nOCR\nScanner\nTest\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -85,7 +86,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_03_10MB.tiff";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Image\nTagged\nFormat\nFile\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Tagged\nImage\nFile\nFormat\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -93,10 +94,12 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "multipage.tiff";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("1\nPage\nExample\nTIFF\nMultipage\n" + ":\n2\nPage\nExample\nTIFF\nMultipage\n"
-                 + "Page\n3\nExample\nTIFF\nMultipage\n" + "4\nPage\nExample\nTIFF\nMultipage\n" + "Page5\nExample\nTIFF\nMultipage\n"
-                 + "Page\n6\nExample\nTIFF\nMultipage\n" + "Page\n/\nExample\nTIFF\nMultipage\n" + "8\nPage\nExample\nTIFF\nMultipage\n"
-                 + "Page\n9\nExample\nTIFF\nMultipage\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "1\n" 
+                 + "Multipage\nTIFF\nExample\nPage\n:\n2\nMultipage\nTIFF\nExample\n" + "Page\n"
+                 + "3\n" + "Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "4\n" + "Multipage\n" + "TIFF\n" + "Example\n"
+                 + "Page5\n" + "Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "6\n" + "Multipage\n" + "TIFF\n" + 
+                "Example\n" + "Page\n" + "/\n" + "Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "8\n" + "Multipage\n"
+                 + "TIFF\n" + "Example\n" + "Page\n" + "9\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -128,7 +131,7 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "weirdwords.gif";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("qwetyrtyqpwe-rty\nhe23llo\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("he23llo\nqwetyrtyqpwe-rty\n", textFromImage);
         }
     }
 }

@@ -61,13 +61,11 @@ namespace iText.Pdfocr.Util {
         /// <returns>string output of the OCR result</returns>
         public static String BuildText(IDictionary<int, IList<TextInfo>> textInfos) {
             StringBuilder outputText = new StringBuilder();
+            iText.Pdfocr.Util.PdfOcrTextBuilder.SortTextInfosByLines(textInfos);
             foreach (int page in textInfos.Keys.OrderBy(i => i).ToList()) {
-                IList<TextInfo> textChunks = textInfos.Get(page);
-                JavaCollectionsUtil.Sort(textChunks, new _IComparer_59());
-                // Not really needed, but just in case.
                 StringBuilder sb = new StringBuilder();
                 TextInfo lastChunk = null;
-                foreach (TextInfo chunk in textChunks) {
+                foreach (TextInfo chunk in textInfos.Get(page)) {
                     if (lastChunk == null) {
                         sb.Append(chunk.GetText());
                     }
@@ -92,11 +90,82 @@ namespace iText.Pdfocr.Util {
             return outputText.ToString();
         }
 
-        private sealed class _IComparer_59 : IComparer<TextInfo> {
-            public _IComparer_59() {
+        /// <summary>
+        /// Sorts the provided
+        /// <see cref="iText.Pdfocr.IOcrEngine.DoImageOcr(System.IO.FileInfo)"/>
+        /// result by lines and updates line bboxes to match the largest words.
+        /// </summary>
+        /// <param name="textInfos">
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page
+        /// and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4 coordinates (bbox)
+        /// </param>
+        public static void GenerifyWordBBoxesByLine(IDictionary<int, IList<TextInfo>> textInfos) {
+            iText.Pdfocr.Util.PdfOcrTextBuilder.SortTextInfosByLines(textInfos);
+            foreach (int page in textInfos.Keys.OrderBy(i => i).ToList()) {
+                IList<TextInfo> line = new List<TextInfo>();
+                TextInfo lastChunk = null;
+                foreach (TextInfo chunk in textInfos.Get(page)) {
+                    if (lastChunk == null) {
+                        line.Add(chunk);
+                    }
+                    else {
+                        if (IsInTheSameLine(chunk, lastChunk)) {
+                            line.Add(chunk);
+                        }
+                        else {
+                            UpdateBBoxes(line);
+                            line.Clear();
+                            line.Add(chunk);
+                        }
+                    }
+                    lastChunk = chunk;
+                }
+                UpdateBBoxes(line);
+                line.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Sorts the provided
+        /// <see cref="iText.Pdfocr.IOcrEngine.DoImageOcr(System.IO.FileInfo)"/>
+        /// result by lines.
+        /// </summary>
+        /// <param name="textInfos">
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page
+        /// and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4 coordinates (bbox)
+        /// </param>
+        public static void SortTextInfosByLines(IDictionary<int, IList<TextInfo>> textInfos) {
+            foreach (KeyValuePair<int, IList<TextInfo>> entry in textInfos) {
+                JavaCollectionsUtil.Sort(entry.Value, new _IComparer_125());
+            }
+        }
+
+        private sealed class _IComparer_125 : IComparer<TextInfo> {
+            public _IComparer_125() {
             }
 
             public int Compare(TextInfo first, TextInfo second) {
+                // Not really needed, but just in case.
                 if (first == second) {
                     return 0;
                 }
@@ -147,6 +216,55 @@ namespace iText.Pdfocr.Util {
             return AreIntersect(currentTextInfo, previousTextInfo);
         }
 //\endcond
+
+        private static void UpdateBBoxes(IList<TextInfo> line) {
+            if (line.Count == 0) {
+                return;
+            }
+            float lineTop;
+            float lineHeight;
+            float lineBottom;
+            float delta;
+            switch (line[0].GetOrientation()) {
+                case TextOrientation.HORIZONTAL:
+                case TextOrientation.HORIZONTAL_ROTATED_180: {
+                    //Using orElseThrow instead of get for correct autoporting, orElseThrow won't be called since reduce()
+                    // will always return something if there is at least one element in stream
+                    lineTop = line.Aggregate((lhs, rhs) => JavaUtil.FloatCompare(lhs.GetBboxRect().GetTop(), rhs.GetBboxRect()
+                        .GetTop()) < 0 ? rhs : lhs).GetBboxRect().GetTop();
+                    lineHeight = line.Aggregate((lhs, rhs) => JavaUtil.FloatCompare(lhs.GetBboxRect().GetHeight(), rhs.GetBboxRect
+                        ().GetHeight()) < 0 ? rhs : lhs).GetBboxRect().GetHeight();
+                    lineBottom = line.Aggregate((lhs, rhs) => JavaUtil.FloatCompare(lhs.GetBboxRect().GetBottom(), rhs.GetBboxRect
+                        ().GetBottom()) > 0 ? rhs : lhs).GetBboxRect().GetBottom();
+                    delta = (lineTop - lineBottom - lineHeight) / 2;
+                    foreach (TextInfo word in line) {
+                        word.GetBboxRect().SetY(lineBottom + delta).SetHeight(lineHeight);
+                    }
+                    break;
+                }
+
+                case TextOrientation.HORIZONTAL_ROTATED_90:
+                case TextOrientation.HORIZONTAL_ROTATED_270: {
+                    //Using orElseThrow instead of get for correct autoporting, orElseThrow won't be called since reduce()
+                    // will always return something if there is at least one element in stream
+                    lineTop = line.Aggregate((lhs, rhs) => JavaUtil.FloatCompare(lhs.GetBboxRect().GetRight(), rhs.GetBboxRect
+                        ().GetRight()) < 0 ? rhs : lhs).GetBboxRect().GetRight();
+                    lineHeight = line.Aggregate((lhs, rhs) => JavaUtil.FloatCompare(lhs.GetBboxRect().GetWidth(), rhs.GetBboxRect
+                        ().GetWidth()) < 0 ? rhs : lhs).GetBboxRect().GetWidth();
+                    lineBottom = line.Aggregate((lhs, rhs) => JavaUtil.FloatCompare(lhs.GetBboxRect().GetLeft(), rhs.GetBboxRect
+                        ().GetLeft()) > 0 ? rhs : lhs).GetBboxRect().GetLeft();
+                    delta = (lineTop - lineBottom - lineHeight) / 2;
+                    foreach (TextInfo word in line) {
+                        word.GetBboxRect().SetX(lineBottom).SetWidth(lineHeight);
+                    }
+                    break;
+                }
+
+                default: {
+                    throw new NotSupportedException();
+                }
+            }
+        }
 
         private static bool AreIntersect(TextInfo first, TextInfo second) {
             float intersection = Math.Min(GetDistPerpendicularTop(first), GetDistPerpendicularTop(second)) - Math.Max(

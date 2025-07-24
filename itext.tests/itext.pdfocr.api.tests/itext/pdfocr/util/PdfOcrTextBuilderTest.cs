@@ -53,6 +53,25 @@ namespace iText.Pdfocr.Util {
         }
 
         [NUnit.Framework.Test]
+        public virtual void GenerifyLineTest() {
+            IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
+            IList<TextInfo> textInfos = new List<TextInfo>();
+            textInfos.Add(new TextInfo("Third", new Rectangle(200, 0, 100, 25)));
+            textInfos.Add(new TextInfo("Fourth", new Rectangle(310, 0, 100, 50)));
+            textInfos.Add(new TextInfo("Second", new Rectangle(100, 0, 120, 35)));
+            textInfos.Add(new TextInfo("First", new Rectangle(0, 0, 100, 30)));
+            textInfoMap.Put(1, textInfos);
+            PdfOcrTextBuilder.GenerifyWordBBoxesByLine(textInfoMap);
+            NUnit.Framework.Assert.IsTrue(new Rectangle(0, 0, 100, 50).EqualsWithEpsilon(textInfos[0].GetBboxRect()));
+            NUnit.Framework.Assert.IsTrue(new Rectangle(100, 0, 120, 50).EqualsWithEpsilon(textInfos[1].GetBboxRect())
+                );
+            NUnit.Framework.Assert.IsTrue(new Rectangle(200, 0, 100, 50).EqualsWithEpsilon(textInfos[2].GetBboxRect())
+                );
+            NUnit.Framework.Assert.IsTrue(new Rectangle(310, 0, 100, 50).EqualsWithEpsilon(textInfos[3].GetBboxRect())
+                );
+        }
+
+        [NUnit.Framework.Test]
         public virtual void PagesOrderTest() {
             IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
             textInfoMap.Put(3, JavaUtil.ArraysAsList(new TextInfo("Third", new Rectangle(200, 0, 100, 100))));
@@ -85,6 +104,43 @@ namespace iText.Pdfocr.Util {
             String actualResult = PdfOcrTextBuilder.BuildText(textInfoMap);
             String expectedResult = "First First 1\nSecond Second 1\nThird Third 1\nFourth Fourth 1\n";
             NUnit.Framework.Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void GenerifyLineOrientationsTest() {
+            IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
+            IList<TextInfo> textInfos = new List<TextInfo>();
+            textInfos.Add(new TextInfo("Third", new Rectangle(200, 0, 100, 50), TextOrientation.HORIZONTAL_ROTATED_180
+                ));
+            textInfos.Add(new TextInfo("Fourth", new Rectangle(300, 180, 40, 120), TextOrientation.HORIZONTAL_ROTATED_270
+                ));
+            textInfos.Add(new TextInfo(" Second 1", new Rectangle(100, 140, 60, 160), TextOrientation.HORIZONTAL_ROTATED_90
+                ));
+            textInfos.Add(new TextInfo("Fourth 1", new Rectangle(300, 10, 40, 160), TextOrientation.HORIZONTAL_ROTATED_270
+                ));
+            textInfos.Add(new TextInfo("First ", new Rectangle(0, 200, 100, 30), TextOrientation.HORIZONTAL));
+            textInfos.Add(new TextInfo("First 1", new Rectangle(110, 200, 140, 30), TextOrientation.HORIZONTAL));
+            textInfos.Add(new TextInfo("Third 1", new Rectangle(50, 0, 140, 50), TextOrientation.HORIZONTAL_ROTATED_180
+                ));
+            textInfos.Add(new TextInfo("Second", new Rectangle(100, 10, 60, 120), TextOrientation.HORIZONTAL_ROTATED_90
+                ));
+            textInfoMap.Put(1, textInfos);
+            PdfOcrTextBuilder.GenerifyWordBBoxesByLine(textInfoMap);
+            NUnit.Framework.Assert.IsTrue(new Rectangle(0, 200, 100, 30).EqualsWithEpsilon(textInfos[0].GetBboxRect())
+                );
+            NUnit.Framework.Assert.IsTrue(new Rectangle(110, 200, 140, 30).EqualsWithEpsilon(textInfos[1].GetBboxRect(
+                )));
+            NUnit.Framework.Assert.IsTrue(new Rectangle(100, 10, 60, 120).EqualsWithEpsilon(textInfos[2].GetBboxRect()
+                ));
+            NUnit.Framework.Assert.IsTrue(new Rectangle(100, 140, 60, 160).EqualsWithEpsilon(textInfos[3].GetBboxRect(
+                )));
+            NUnit.Framework.Assert.IsTrue(new Rectangle(200, 0, 100, 50).EqualsWithEpsilon(textInfos[4].GetBboxRect())
+                );
+            NUnit.Framework.Assert.IsTrue(new Rectangle(50, 0, 140, 50).EqualsWithEpsilon(textInfos[5].GetBboxRect()));
+            NUnit.Framework.Assert.IsTrue(new Rectangle(300, 180, 40, 120).EqualsWithEpsilon(textInfos[6].GetBboxRect(
+                )));
+            NUnit.Framework.Assert.IsTrue(new Rectangle(300, 10, 40, 160).EqualsWithEpsilon(textInfos[7].GetBboxRect()
+                ));
         }
 
         [NUnit.Framework.Test]
