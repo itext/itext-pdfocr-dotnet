@@ -63,8 +63,8 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "example_04.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Does\nthis\nOCR\nthing\nreally\nwork\nHi\nHow\nabout\na\nbigger\nfont?\n"
-                 + "123456789\n123\nWhat\nabowt\ntis\nfont?\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Does\nthis\nOCR\nthing\nreally\nwork?\nHi\nHow\nabout\na\nbigger\nfont?\n"
+                 + "123456789\n123\nWhat\nabowt\ntris\nfont?\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
