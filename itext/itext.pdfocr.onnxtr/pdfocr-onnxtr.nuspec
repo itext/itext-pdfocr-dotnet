@@ -28,6 +28,17 @@
                 <dependency id="OpenCvSharp4.runtime.linux-arm" version="4.11.0.20250506"/>
                 <dependency id="SkiaSharp" version="3.119.0"/>
             </group>
+            <group targetFramework="netstandard2.0">
+                <dependency id="itext.pdfocr.api" version="4.1.0-SNAPSHOT"/>
+                <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1"/>
+                <dependency id="OpenCvSharp4" version="4.11.0.20250507"/>
+                <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507"/>
+                <dependency id="OpenCvSharp4.runtime.osx.10.15-x64" version="4.6.0.20230105"/>
+                <dependency id="OpenCvSharp4.runtime.osx_arm64" version="4.8.1-rc"/>
+                <dependency id="OpenCvSharp4.official.runtime.linux-x64" version="4.11.0.20250507"/>
+                <dependency id="OpenCvSharp4.runtime.linux-arm" version="4.11.0.20250506"/>
+                <dependency id="SkiaSharp" version="3.119.0"/>
+            </group>
         </dependencies>
         <references>
             <reference file="itext.pdfocr.onnxtr.dll"/>
@@ -36,6 +47,8 @@
     <files>
         <file src="bin\Release\net461\itext.pdfocr.onnxtr.dll" target="lib\net461"/>
         <file src="bin\Release\net461\itext.pdfocr.onnxtr.xml" target="lib\net461"/>
+        <file src="bin\Release\netstandard2.0\itext.pdfocr.onnxtr.dll" target="lib\netstandard2.0"/>
+        <file src="bin\Release\netstandard2.0\itext.pdfocr.onnxtr.xml" target="lib\netstandard2.0"/>
         <file src="ITSC-avatar.png" target=""/>
         <file src="../../gnu-agpl-v3.0.md" target=""/>
         <file src="../../LICENSE.md" target=""/>
