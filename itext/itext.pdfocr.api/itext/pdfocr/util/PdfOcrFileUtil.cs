@@ -58,5 +58,13 @@ namespace iText.Pdfocr.Util {
                     , e.Message), e);
             }
         }
+
+        /// <summary>Gets path to temp file in current system temporary directory.</summary>
+        /// <param name="name">temp file name</param>
+        /// <param name="extension">temp file extension</param>
+        /// <returns>path to temp file in the system temporary directory</returns>
+        public static String GetTempFilePath(String name, String extension) {
+            return System.IO.Path.GetTempPath() + name + extension;
+        }
     }
 }
