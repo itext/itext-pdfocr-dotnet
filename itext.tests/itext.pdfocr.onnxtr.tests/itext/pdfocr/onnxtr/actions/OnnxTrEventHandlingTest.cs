@@ -479,6 +479,31 @@ namespace iText.Pdfocr.Onnxtr.Actions {
             }
         }
 
+        [NUnit.Framework.Test]
+        public virtual void OcrPdfCreatorMakeSearchableTest() {
+            FileInfo inPdfFile = new FileInfo(TEST_PDFS_DIRECTORY + "2pages.pdf");
+            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            try {
+                new OcrPdfCreator(OCR_ENGINE).MakePdfSearchable(inPdfFile, outPdfFile);
+                // Check ocr events. No stats events.
+                // 3 images == 6 events + 1 confirm event for process_pdf event which is not caught by eventHandler
+                NUnit.Framework.Assert.AreEqual(7, eventsHandler.GetEvents().Count);
+                for (int i = 0; i < 3; i++) {
+                    IEvent usageEvent = eventsHandler.GetEvents()[i];
+                    ValidateUsageEvent(usageEvent, EventConfirmationType.ON_CLOSE);
+                    // There is no statistic event
+                    ValidateConfirmEvent(eventsHandler.GetEvents()[4 + i], usageEvent);
+                }
+                // Check producer line in the output pdf
+                String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent(), GetPdfOcrEvent
+                    () });
+                ValidatePdfProducerLine(outPdfFile.FullName, expectedProdLine);
+            }
+            finally {
+                outPdfFile.Delete();
+            }
+        }
+
         private class CustomEventHelper : AbstractPdfOcrEventHelper {
             public override void OnEvent(AbstractProductITextEvent @event) {
                 if (@event is AbstractContextBasedITextEvent) {

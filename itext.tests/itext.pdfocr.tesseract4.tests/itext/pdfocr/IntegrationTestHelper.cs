@@ -73,8 +73,11 @@ namespace iText.Pdfocr {
         // directory with fonts
         protected internal static readonly String TEST_FONTS_DIRECTORY = TEST_DIRECTORY + "fonts" + System.IO.Path.DirectorySeparatorChar;
 
-        // directory with fonts
+        // directory with reference pdf files and other
         protected internal static readonly String TEST_DOCUMENTS_DIRECTORY = TEST_DIRECTORY + "documents" + System.IO.Path.DirectorySeparatorChar;
+
+        // directory with test pdf files
+        protected internal static readonly String TEST_PDFS_DIRECTORY = TEST_DIRECTORY + "pdfs" + System.IO.Path.DirectorySeparatorChar;
 
         // path to font for hindi
         protected internal static readonly String NOTO_SANS_FONT_PATH = TEST_FONTS_DIRECTORY + "NotoSans-Regular.ttf";
@@ -293,6 +296,12 @@ namespace iText.Pdfocr {
             DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fonts, color, false);
         }
 
+        protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
+            imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color, bool applyRotation
+            ) {
+            DoOcrAndSavePdfToPath(tesseractReader, imgPath, pdfPath, languages, fonts, color, applyRotation, true);
+        }
+
         /// <summary>
         /// Perform OCR using provided path to image (imgPath)
         /// and save result PDF document to "pdfPath".
@@ -304,15 +313,17 @@ namespace iText.Pdfocr {
         /// </remarks>
         protected internal virtual void DoOcrAndSavePdfToPath(AbstractTesseract4OcrEngine tesseractReader, String 
             imgPath, String pdfPath, IList<String> languages, IList<String> fonts, Color color, bool applyRotation
-            ) {
+            , bool addLangAndTitle) {
             if (languages != null) {
                 Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
                 properties.SetLanguages(languages);
                 tesseractReader.SetTesseract4OcrEngineProperties(properties);
             }
             OcrPdfCreatorProperties properties_1 = new OcrPdfCreatorProperties();
-            properties_1.SetPdfLang("en-US");
-            properties_1.SetTitle("");
+            if (addLangAndTitle) {
+                properties_1.SetPdfLang("en-US");
+                properties_1.SetTitle("");
+            }
             if (applyRotation) {
                 properties_1.SetImageRotationHandler(new LeptonicaImageRotationHandler());
             }
@@ -332,16 +343,21 @@ namespace iText.Pdfocr {
                     ().Count);
             }
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, properties_1);
-            try {
-                using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
-                    PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath
-                        )), pdfWriter);
-                    NUnit.Framework.Assert.IsNotNull(doc);
-                    doc.Close();
-                }
+            if (StringNormalizer.ToLowerCase(imgPath).EndsWith(".pdf")) {
+                ocrPdfCreator.MakePdfSearchable(new FileInfo(imgPath), new FileInfo(pdfPath));
             }
-            catch (System.IO.IOException e) {
-                LOGGER.LogError(e.Message);
+            else {
+                try {
+                    using (PdfWriter pdfWriter = GetPdfWriter(pdfPath)) {
+                        PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(new FileInfo(imgPath
+                            )), pdfWriter);
+                        NUnit.Framework.Assert.IsNotNull(doc);
+                        doc.Close();
+                    }
+                }
+                catch (System.IO.IOException e) {
+                    LOGGER.LogError(e.Message);
+                }
             }
         }
 

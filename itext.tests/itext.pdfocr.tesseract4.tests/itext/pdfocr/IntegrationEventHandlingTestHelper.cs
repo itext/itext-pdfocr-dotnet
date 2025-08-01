@@ -99,7 +99,7 @@ namespace iText.Pdfocr {
 
         protected internal virtual void ValidatePdfProducerLine(String filePath, String expected) {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(filePath))) {
-                NUnit.Framework.Assert.AreEqual(expected, pdfDocument.GetDocumentInfo().GetProducer());
+                NUnit.Framework.Assert.IsTrue(pdfDocument.GetDocumentInfo().GetProducer().Contains(expected));
             }
         }
 

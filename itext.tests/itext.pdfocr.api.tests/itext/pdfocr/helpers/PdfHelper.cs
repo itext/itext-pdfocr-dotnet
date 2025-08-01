@@ -54,6 +54,11 @@ namespace iText.Pdfocr.Helpers {
             return TEST_DIRECTORY + "images/";
         }
 
+        /// <summary>Returns pdfs test directory.</summary>
+        public static String GetPdfsTestDirectory() {
+            return TEST_DIRECTORY + "pdfs/";
+        }
+
         /// <summary>Returns path to default test image.</summary>
         public static String GetDefaultImagePath() {
             return GetImagesTestDirectory() + DEFAULT_IMAGE_NAME;

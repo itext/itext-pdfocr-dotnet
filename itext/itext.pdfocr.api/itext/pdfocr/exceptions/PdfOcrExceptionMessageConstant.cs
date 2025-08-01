@@ -41,6 +41,14 @@ namespace iText.Pdfocr.Exceptions {
 
         public const String TAGGING_IS_NOT_SUPPORTED = "Tagging is not supported by the OCR engine.";
 
+        public const String TAGGED_PDF_IS_NOT_SUPPORTED = "Tagged PDF is not supported";
+
+        public const String PDFA_IS_NOT_SUPPORTED = "PDF/A is not supported";
+
+        public const String PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE = "Pdf document must be opened in stamping mode";
+
+        public const String IO_EXCEPTION_OCCURRED = "IO exception occurred while reading the document";
+
         private PdfOcrExceptionMessageConstant() {
         }
         //Private constructor will prevent the instantiation of this class directly

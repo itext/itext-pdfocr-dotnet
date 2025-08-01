@@ -127,8 +127,9 @@ namespace iText.Pdfocr {
         /// <param name="imageSize">size of the image</param>
         /// <returns>list of two elements (coordinates): first - x, second - y.</returns>
         internal static Point CalculateImageCoordinates(Rectangle size, Rectangle imageSize) {
-            float x = 0;
-            float y = 0;
+            float x = imageSize.GetX();
+            float y = imageSize.GetY();
+            // In pdf2pdf mode page size is always null
             if (size != null) {
                 if (imageSize.GetHeight() < size.GetHeight()) {
                     y = (size.GetHeight() - imageSize.GetHeight()) / 2;

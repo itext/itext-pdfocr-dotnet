@@ -196,11 +196,19 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>
-        /// Sets scale mode for input images using available options
-        /// from
+        /// Sets scale mode for input images using available options from
         /// <see cref="ScaleMode"/>
         /// enumeration.
         /// </summary>
+        /// <remarks>
+        /// Sets scale mode for input images using available options from
+        /// <see cref="ScaleMode"/>
+        /// enumeration.
+        /// <para />
+        /// This property has no effect when pdf file is being OCRed (
+        /// <see cref="OcrPdfCreator.MakePdfSearchable(iText.Kernel.Pdf.PdfDocument)"/>
+        /// ).
+        /// </remarks>
         /// <param name="scaleMode">
         /// selected
         /// <see cref="ScaleMode"/>
@@ -219,7 +227,7 @@ namespace iText.Pdfocr {
         /// <remarks>
         /// Gets required size for output PDF document. Real size of the page will
         /// be calculated according to the selected
-        /// <see cref="ScaleMode"/>
+        /// <see cref="ScaleMode"/>.
         /// </remarks>
         /// <returns>
         /// required page size as
@@ -230,6 +238,13 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>Sets required size for output PDF document.</summary>
+        /// <remarks>
+        /// Sets required size for output PDF document.
+        /// <para />
+        /// This property has no effect when pdf file is being OCRed (
+        /// <see cref="OcrPdfCreator.MakePdfSearchable(iText.Kernel.Pdf.PdfDocument)"/>
+        /// ).
+        /// </remarks>
         /// <param name="pageSize">
         /// requested page
         /// size as
@@ -256,12 +271,23 @@ namespace iText.Pdfocr {
             return imageLayerName;
         }
 
-        /// <summary>Sets name for the image layer.</summary>
+        /// <summary>
+        /// Sets name for the image layer,
+        /// <see langword="null"/>
+        /// by default.
+        /// </summary>
         /// <remarks>
-        /// Sets name for the image layer.
-        /// <c>null</c> by default.
-        /// If null then image is placed directly in canvas instead of layer.
+        /// Sets name for the image layer,
+        /// <see langword="null"/>
+        /// by default.
+        /// <para />
+        /// If
+        /// <see langword="null"/>
+        /// then image is placed directly in canvas instead of layer.
         /// If image layer name is equal to text layer name then text and image placed in one layer.
+        /// This property has no effect when pdf file is being OCRed (
+        /// <see cref="OcrPdfCreator.MakePdfSearchable(iText.Kernel.Pdf.PdfDocument)"/>
+        /// ).
         /// </remarks>
         /// <param name="layerName">
         /// name of the image layer

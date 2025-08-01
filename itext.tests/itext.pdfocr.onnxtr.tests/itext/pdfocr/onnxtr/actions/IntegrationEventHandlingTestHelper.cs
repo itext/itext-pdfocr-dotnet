@@ -49,6 +49,8 @@ namespace iText.Pdfocr.Onnxtr.Actions {
 
         protected internal static readonly String TEST_IMAGE_DIRECTORY = TEST_DIRECTORY + "images/";
 
+        protected internal static readonly String TEST_PDFS_DIRECTORY = TEST_DIRECTORY + "pdfs/";
+
         private static readonly String FAST = TEST_DIRECTORY + "models/rep_fast_tiny-28867779.onnx";
 
         private static readonly String CRNNVGG16 = TEST_DIRECTORY + "models/crnn_vgg16_bn-662979cc.onnx";
@@ -109,7 +111,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
 
         protected internal virtual void ValidatePdfProducerLine(String filePath, String expected) {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(filePath))) {
-                NUnit.Framework.Assert.AreEqual(expected, pdfDocument.GetDocumentInfo().GetProducer());
+                NUnit.Framework.Assert.IsTrue(pdfDocument.GetDocumentInfo().GetProducer().Contains(expected));
             }
         }
 
