@@ -22,6 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Linq;
+using iText.Commons.Utils;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr {
@@ -49,20 +51,20 @@ namespace iText.Pdfocr.Onnxtr {
             Objects.RequireNonNull(data);
             Objects.RequireNonNull(shape);
             if (!ValidateShape(shape)) {
-                throw new ArgumentException("Shape is not valid");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.SHAPE_IS_NOT_VALID);
             }
             if (data.Length != ElementCount(shape)) {
-                throw new ArgumentException("Data element count does not match shape");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.ELEM_COUNT_DOES_NOT_MATCH_SHAPE);
             }
             this.data = data;
             this.shape = (long[])shape.Clone();
         }
 
         /// <summary>
-        /// Returns a duplicate of the backing <see cref="FloatBuffer"/>.
+        /// Returns the backing float array.
         /// </summary>
         /// 
-        /// <returns>A duplicate of the backing <see cref="FloatBuffer"/></returns>
+        /// <returns>The backing float array</returns>
         public virtual float[] GetData() {
             return data;
         }
@@ -186,7 +188,8 @@ namespace iText.Pdfocr.Onnxtr {
 
             for (int i = 0; i < shape.Length; ++i) {
                 if (shape[i] < 0L) {
-                    throw new ArgumentException("Received negative value in shape " + shape + " .");
+                    throw new ArgumentException(MessageFormatUtil.Format(
+                        PdfOcrOnnxTrExceptionMessageConstant.NEGATIVE_VALUE_IN_SHAPE, shape));
                 }
                 count *= shape[i];
             }

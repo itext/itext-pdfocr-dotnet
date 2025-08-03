@@ -21,8 +21,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Commons.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnxtr;
+using iText.Pdfocr.Onnxtr.Exceptions;
 
 namespace iText.Pdfocr.Onnxtr.Orientation {
     /// <summary>
@@ -82,7 +84,8 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
                 }
 
                 default: {
-                    throw new IndexOutOfRangeException("Index out of bounds: " + index);
+                    throw new IndexOutOfRangeException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
+                        , index));
                 }
             }
         }

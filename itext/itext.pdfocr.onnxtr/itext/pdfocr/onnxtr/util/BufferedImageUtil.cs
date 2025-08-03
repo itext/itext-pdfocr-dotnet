@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using iText.Commons.Utils;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using OpenCvSharp;
 
 namespace iText.Pdfocr.Onnxtr.Util {
@@ -47,11 +48,11 @@ namespace iText.Pdfocr.Onnxtr.Util {
              properties) {
             // Currently properties guarantee RGB, this is just in case this changes later
             if (properties.GetChannelCount() != 3) {
-                throw new ArgumentException("toBchwInput only support RGB images");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.ONLY_SUPPORT_RGB_IMAGES);
             }
             if (images.Count > properties.GetBatchSize()) {
-                throw new ArgumentException("Too many images (" + images.Count + ") " + "for the provided batch size (" + 
-                    properties.GetBatchSize() + ")");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.TOO_MANY_IMAGES, 
+                    images.Count, properties.GetBatchSize()));
             }
             long[] inputShape = new long[] { images.Count, properties.GetChannelCount(), properties.GetHeight(), properties
                 .GetWidth() };
@@ -231,7 +232,8 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// <returns>buffered image based on Mat</returns>
         private static IronSoftware.Drawing.AnyBitmap FromRgbMat(Mat rgb) {
             if (rgb.Type() != MatType.CV_8UC4) {
-                throw new ArgumentException("Unexpected Mat type");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MAT_TYPE
+                    , rgb.Type()));
             }
             SkiaSharp.SKBitmap image = new SkiaSharp.SKBitmap(rgb.Cols, rgb.Rows, 
                 SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Premul);

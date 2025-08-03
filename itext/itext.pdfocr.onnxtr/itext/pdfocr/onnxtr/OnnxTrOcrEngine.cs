@@ -184,6 +184,30 @@ namespace iText.Pdfocr.Onnxtr {
             return null;
         }
 
+//\cond DO_NOT_DOCUMENT
+        internal static IList<IronSoftware.Drawing.AnyBitmap> GetImages(FileInfo input) {
+            try {
+                if (TiffImageUtil.IsTiffImage(input)) {
+                    IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(input);
+                    if (images.IsEmpty()) {
+                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
+                    }
+                    return images;
+                }
+                else {
+                    IronSoftware.Drawing.AnyBitmap image = IronSoftware.Drawing.AnyBitmap.FromFile(input.FullName);
+                    if (image == null) {
+                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
+                    }
+                    return JavaCollectionsUtil.SingletonList(image);
+                }
+            }
+            catch (Exception e) {
+                throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
+            }
+        }
+//\endcond
+
         /// <summary>
         /// Reads raw data from the provided input image file and returns retrieved data
         /// in the format described below.
@@ -212,28 +236,6 @@ namespace iText.Pdfocr.Onnxtr {
             OnnxTrProcessor onnxTrProcessor = new OnnxTrProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
             return onnxTrProcessor.DoOcr(images, ocrProcessContext);
-        }
-
-        private static IList<IronSoftware.Drawing.AnyBitmap> GetImages(FileInfo input) {
-            try {
-                if (TiffImageUtil.IsTiffImage(input)) {
-                    IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(input);
-                    if (images.IsEmpty()) {
-                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
-                    }
-                    return images;
-                }
-                else {
-                    IronSoftware.Drawing.AnyBitmap image = IronSoftware.Drawing.AnyBitmap.FromFile(input.FullName);
-                    if (image == null) {
-                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
-                    }
-                    return JavaCollectionsUtil.SingletonList(image);
-                }
-            }
-            catch (Exception e) {
-                throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
-            }
         }
 
         void System.IDisposable.Dispose() {

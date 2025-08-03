@@ -89,6 +89,28 @@ namespace iText.Pdfocr.Onnxtr {
         }
 
         [NUnit.Framework.Test]
+        public virtual void BmpByWordsTest() {
+            String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
+            String dest = TARGET_DIRECTORY + "bmpTestByWords.pdf";
+            String cmp = TEST_DIRECTORY + "cmp_bmpTestByWords.pdf";
+            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
+            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor
+                , new OnnxTrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS)), CreatorProperties("Text1"
+                , DeviceCmyk.MAGENTA));
+            using (PdfWriter writer = new PdfWriter(dest)) {
+                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(src)), writer).Close();
+            }
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
+                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
+                NUnit.Framework.Assert.AreEqual("This\n1S test\na\nfor\nmessage\n-\nOCR\nScanner\nTest\nBMPTest", extractionStrategy
+                    .GetResultantText());
+            }
+        }
+
+        [NUnit.Framework.Test]
         public virtual void JfifTest() {
             String src = TEST_IMAGE_DIRECTORY + "example_02.JFIF";
             String dest = TARGET_DIRECTORY + "jfifTest.pdf";
@@ -98,8 +120,8 @@ namespace iText.Pdfocr.Onnxtr {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Ihis a test\n1S\nmessage for\n-\nOCR Scanner\nTest", extractionStrategy
-                    .GetResultantText());
+                NUnit.Framework.Assert.AreEqual("Ihis a test\n1S\nmessage for\n-\nOCR Scanner\nTest", extractionStrategy.GetResultantText
+                    ());
             }
         }
 
@@ -176,8 +198,7 @@ namespace iText.Pdfocr.Onnxtr {
                 NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage\n/", extractionStrategy.GetResultantText()
                     );
                 extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 9, "Text1");
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage 9", extractionStrategy.GetResultantText()
-                    );
+                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage 9", extractionStrategy.GetResultantText());
             }
         }
 

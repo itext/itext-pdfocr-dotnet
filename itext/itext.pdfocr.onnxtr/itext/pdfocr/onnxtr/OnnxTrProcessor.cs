@@ -20,7 +20,8 @@ using iText.Pdfocr.Onnxtr.Util;
 
 namespace iText.Pdfocr.Onnxtr {
 //\cond DO_NOT_DOCUMENT
-    /// <summary>Class containing OCRing methods adapted from https://github.com/felixdittrich92/OnnxTR.</summary>
+    /// <summary>Class containing OCRing methods adapted from <a href="https://github.com/felixdittrich92/onnxtr">OnnxTR</a>.
+    ///     </summary>
     internal class OnnxTrProcessor {
         /// <summary>Image pixel to PDF point ratio.</summary>
         private const float PX_TO_PT = 0.75F;
@@ -74,7 +75,7 @@ namespace iText.Pdfocr.Onnxtr {
             while (textBoxGenerator.MoveNext()) {
                 AbstractPdfOcrEventHelper eventHelper = ocrProcessContext.GetOcrEventHelper() == null ? new OnnxTrEventHelper
                     () : ocrProcessContext.GetOcrEventHelper();
-                // usage event
+                // Usage event.
                 PdfOcrOnnxTrProductEvent @event = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(eventHelper.GetSequenceId
                     (), null, eventHelper.GetConfirmationType());
                 eventHelper.OnEvent(@event);
@@ -109,8 +110,8 @@ namespace iText.Pdfocr.Onnxtr {
                 }
                 result.Put(imageIndex + 1, textInfos);
                 ++imageIndex;
-                // here can be statistics event sending
-                // confirm on_demand event
+                // Here can be statistics event sending.
+                // Confirm on_demand event.
                 if (@event.GetConfirmationType() == EventConfirmationType.ON_DEMAND) {
                     eventHelper.OnEvent(new ConfirmEvent(@event));
                 }

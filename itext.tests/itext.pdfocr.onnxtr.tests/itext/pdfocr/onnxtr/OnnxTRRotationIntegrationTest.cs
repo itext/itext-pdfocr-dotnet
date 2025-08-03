@@ -55,13 +55,18 @@ namespace iText.Pdfocr.Onnxtr {
 
         private static OnnxTrOcrEngine OCR_ENGINE;
 
+        private static OnnxTrOcrEngine OCR_ENGINE_GROUPING_BY_LINES;
+
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor, new OnnxTrEngineProperties
+                ().SetTextPositioning(TextPositioning.BY_WORDS));
+            OCR_ENGINE_GROUPING_BY_LINES = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
+                );
         }
 
         [NUnit.Framework.OneTimeTearDown]
@@ -73,13 +78,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void Rotated90Test() {
             String src = TEST_IMAGE_DIRECTORY + "90_degrees_rotated.jpg";
             String dest = TARGET_DIRECTORY + "rotated90Test.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotated90TestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotated90Test.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotated90TestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("90 degrees\nrotated image", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("90\ndegrees\nrotated\nimage", extractionStrategy.GetResultantText());
             }
         }
 
@@ -87,13 +96,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void Rotated180Test() {
             String src = TEST_IMAGE_DIRECTORY + "180_degrees_rotated.jpg";
             String dest = TARGET_DIRECTORY + "rotated180Test.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotated180TestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotated180Test.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotated180TestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("180 degrees\nrotated image", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("180\ndegrees\nrotated\nimage", extractionStrategy.GetResultantText());
             }
         }
 
@@ -101,13 +114,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void Rotated270Test() {
             String src = TEST_IMAGE_DIRECTORY + "270_degrees_rotated.jpg";
             String dest = TARGET_DIRECTORY + "rotated270Test.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotated270TestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotated270Test.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotated270TestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("270 degrees\nrotated image", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("270\ndegrees\nrotated\nimage", extractionStrategy.GetResultantText());
             }
         }
 
@@ -115,13 +132,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void RotatedCapsLCTest() {
             String src = TEST_IMAGE_DIRECTORY + "rotatedCapsLC.png";
             String dest = TARGET_DIRECTORY + "rotatedCapsLCTest.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotatedCapsLCTestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotatedCapsLCTest.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotatedCapsLCTestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("CapITALS anD\nlowerCaSE\nmix\nTEsTinG", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("anD\nCapITALS\nlowerCaSE\nmix\nTEsTinG", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -130,13 +151,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void RotatedColorsMixTest() {
             String src = TEST_IMAGE_DIRECTORY + "rotatedColorsMix.png";
             String dest = TARGET_DIRECTORY + "rotatedColorsMixTest.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotatedColorsMixTestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotatedColorsMixTest.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotatedColorsMixTestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Colored TEXT\nMixed\nCOIORS\nReD tEXT", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("TEXT\nColored\nMixed\nCOIORS\ntEXT\nReD", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -145,13 +170,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void RotatedColorsMix2Test() {
             String src = TEST_IMAGE_DIRECTORY + "rotatedColorsMix2.png";
             String dest = TARGET_DIRECTORY + "rotatedColorsMix2Test.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotatedColorsMix2TestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotatedColorsMix2Test.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotatedColorsMix2TestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("does\nthis\nwork?\n123456789-FIdpt\nshould\n&%!Housten\nwe\nproblem.\nhave a\nnot"
+                NUnit.Framework.Assert.AreEqual("does\nthis\nwork?\n123456789-FIdpt\nshould\nwe\n&%!Housten\nproblem.\na\nhave\nnot"
                     , extractionStrategy.GetResultantText());
             }
         }
@@ -160,13 +189,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void RotatedBy90DegreesTest() {
             String src = TEST_IMAGE_DIRECTORY + "rotatedBy90Degrees.png";
             String dest = TARGET_DIRECTORY + "rotatedBy90DegreesTest.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotatedBy90DegreesTestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotatedBy90DegreesTest.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotatedBy90DegreesTestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("TEXT 270\nTEXT 0\nTEXT 90\nTEXT 180\n-", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("270\nTEXT\nTEXT 0\n90\nTEXT\nTEXT 180\n-", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -175,13 +208,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void RotatedTextBasicTest() {
             String src = TEST_IMAGE_DIRECTORY + "rotatedTextBasic.png";
             String dest = TARGET_DIRECTORY + "rotatedTextBasicTest.pdf";
+            String dest2 = TARGET_DIRECTORY + "rotatedTextBasicTestByLines.pdf";
             String cmp = TEST_DIRECTORY + "cmp_rotatedTextBasicTest.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_rotatedTextBasicTestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+            DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nThis text IS sideways", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("Diagonal\nTxT\nTEST\nThis text IS\nsideways", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -197,6 +234,15 @@ namespace iText.Pdfocr.Onnxtr {
             ) {
             OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties
                 ) : new OcrPdfCreator(OCR_ENGINE);
+            using (PdfWriter writer = new PdfWriter(destPdfPath)) {
+                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
+            }
+        }
+
+        private void DoOcrAndCreatePdfByLines(String imagePath, String destPdfPath, OcrPdfCreatorProperties ocrPdfCreatorProperties
+            ) {
+            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties
+                ) : new OcrPdfCreator(OCR_ENGINE_GROUPING_BY_LINES);
             using (PdfWriter writer = new PdfWriter(destPdfPath)) {
                 ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
             }

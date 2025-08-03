@@ -6,10 +6,10 @@ See <https://opensource.org/licenses/Apache-2.0> for full license details.
 */
 using System;
 using System.Collections.Generic;
-using iText.Commons.Utils;
-using iText.Pdfocr.Onnxtr.Util;
 using OpenCvSharp;
 using OpenCvSharp.Internal.Vectors;
+using iText.Commons.Utils;
+using iText.Pdfocr.Onnxtr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
     /// <summary>
@@ -81,8 +81,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             : this(0.1F, 0.1F) {
         }
 
-        public virtual IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, 
-            FloatBufferMdArray output) {
+        public virtual IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, FloatBufferMdArray
+             output) {
             int height = output.GetDimension(1);
             int width = output.GetDimension(2);
             IList<iText.Kernel.Geom.Point[]> boxes = new List<iText.Kernel.Geom.Point[]>();

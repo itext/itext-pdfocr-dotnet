@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using iText.Commons.Utils;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr {
@@ -65,22 +66,26 @@ namespace iText.Pdfocr.Onnxtr {
         public OnnxInputProperties(float[] mean, float[] std, long[] shape, bool symmetricPad) {
             Objects.RequireNonNull(mean);
             if (mean.Length != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException("mean should be a " + EXPECTED_CHANNEL_COUNT + "-element array");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+                    , EXPECTED_CHANNEL_COUNT));
             }
             Objects.RequireNonNull(std);
             if (std.Length != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException("std should be a " + EXPECTED_CHANNEL_COUNT + "-element array");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+                    , EXPECTED_CHANNEL_COUNT));
             }
             Objects.RequireNonNull(shape);
             if (shape.Length != EXPECTED_SHAPE_SIZE) {
-                throw new ArgumentException("shape should be a " + EXPECTED_SHAPE_SIZE + "-element array (BCHW)");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
+                    , EXPECTED_SHAPE_SIZE));
             }
             if (shape[1] != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException("Model only supports RGB images with a BCHW input format");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB);
             }
             foreach (long dim in shape) {
                 if (dim <= 0 || ((int)dim) != dim) {
-                    throw new ArgumentException("Unexpected dimension value: " + dim);
+                    throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
+                        , dim));
                 }
             }
             this.mean = new float[mean.Length];

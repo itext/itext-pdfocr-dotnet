@@ -25,11 +25,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
 using iText.Commons.Utils;
 using iText.Pdfocr.Exceptions;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Onnxtr.Util;
 using iText.Pdfocr.Util;
-using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>Abstract predictor, based on models running over ONNX runtime.</summary>
@@ -56,6 +57,20 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Key for the singular input of a model.</summary>
         private readonly String inputName;
 
+        /// <summary>Close status of the predictor.</summary>
+        private bool closed = false;
+
+        static AbstractOnnxPredictor() {
+            try {
+                // OnnxRuntime initialization is called under the hood.
+                new SessionOptions().Close();
+            }
+            catch (Exception e) {
+                DependencyLoadChecker.ProcessException(e);
+                throw;
+            }
+        }
+
         /// <summary>Creates a new abstract predictor.</summary>
         /// <remarks>
         /// Creates a new abstract predictor.
@@ -75,25 +90,28 @@ namespace iText.Pdfocr.Onnxtr {
                 this.sessionOptions = CreateDefaultSessionOptions();
             }
             catch (OnnxRuntimeException e) {
-                throw new PdfOcrException("Failed to init ONNX Runtime session options", e);
+                throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_INIT_SESSION_OPTIONS, e);
             }
             try {
                 this.session = new InferenceSession(File.ReadAllBytes(modelPath), sessionOptions);
             }
             catch (Exception e) {
                 this.sessionOptions.Close();
-                throw new PdfOcrException("Failed to init ONNX Runtime session", e);
+                throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_INIT_ONNX_RUNTIME_SESSION, e);
             }
             try {
                 this.inputName = ValidateModel(this.session, inputProperties, outputShape);
             }
             catch (Exception e) {
-                PdfOcrException userException = new PdfOcrException("ONNX Runtime model did not pass validation", e);
+                PdfOcrException userException = new PdfOcrException(
+                    PdfOcrOnnxTrExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION, e);
                 try {
                     this.session.Dispose();
                 }
                 catch (OnnxRuntimeException closeException) {
-                    userException = new PdfOcrException("ONNX Runtime model did not pass validation: " + e.Message, closeException);
+                    userException = new PdfOcrException(
+                        PdfOcrOnnxTrExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION + " " + e.Message, 
+                        closeException);
                 }
                 this.sessionOptions.Close();
                 throw userException;
@@ -124,19 +142,23 @@ namespace iText.Pdfocr.Onnxtr {
                     }
                 }
                 catch (OnnxRuntimeException e) {
-                    throw new PdfOcrException("ONNX Runtime operation failed", e);
+                    throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.ONNX_RUNTIME_OPERATION_FAILED, e);
                 }
             }
         }
 
         public virtual void Close() {
+            if (closed) {
+                return;
+            }
             try {
                 session.Dispose();
                 sessionOptions.Close();
             }
             catch (OnnxRuntimeException e) {
-                throw new PdfOcrException("Failed to close an ONNX Runtime session", e);
+                throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_CLOSE_ONNX_RUNTIME_SESSION, e);
             }
+            closed = true;
         }
 
         /// <summary>Converts predictor inputs to an ONNX runtime model batched input MD-array buffer.</summary>
@@ -205,13 +227,14 @@ namespace iText.Pdfocr.Onnxtr {
         private static String ValidateModelInput(InferenceSession session, OnnxInputProperties properties) {
             IEnumerable<NodeMetadata> inputInfo = session.InputMetadata.Values;
             if (inputInfo.Count() != 1) {
-                throw new ArgumentException("Expected 1 input, but got " + inputInfo.Count() + " instead");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_INPUT_SIZE
+                    , inputInfo.Count()));
             }
             NodeMetadata inputNodeInfo = inputInfo.First();
             long[] inputShape = Array.ConvertAll(inputNodeInfo.Dimensions, item => (long)item);
             if (IsShapeIncompatible(properties.GetShape(), inputShape)) {
-                throw new ArgumentException("Expected " + JavaUtil.ArraysToString(properties.GetShape()) + " input shape, "
-                     + "but got " + JavaUtil.ArraysToString(inputShape) + " instead");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_INPUT_SHAPE
+                    , JavaUtil.ArraysToString(properties.GetShape()), JavaUtil.ArraysToString(inputShape)));
             }
             return session.InputNames.First();
         }
@@ -219,14 +242,15 @@ namespace iText.Pdfocr.Onnxtr {
         private static void ValidateModelOutput(InferenceSession session, long[] expectedOutputShape) {
             IEnumerable<NodeMetadata> outputInfo = session.OutputMetadata.Values;
             if (outputInfo.Count() != 1) {
-                throw new ArgumentException("Expected 1 output, but got " + outputInfo.Count() + " instead");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_OUTPUT_SIZE
+                    , outputInfo.Count()));
             }
             NodeMetadata outputNodeInfo = outputInfo.First();
             
             int[] actualOutputShape = outputNodeInfo.Dimensions;
             if (IsShapeIncompatible(expectedOutputShape, Array.ConvertAll(actualOutputShape, item => (long)item))) {
-                throw new ArgumentException("Expected " + JavaUtil.ArraysToString(expectedOutputShape) + " output shape, "
-                     + "but got " + JavaUtil.ArraysToString(actualOutputShape) + " instead");
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_OUTPUT_SHAPE
+                    , JavaUtil.ArraysToString(expectedOutputShape), JavaUtil.ArraysToString(actualOutputShape)));
             }
         }
 

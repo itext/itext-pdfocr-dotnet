@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Util {
@@ -35,7 +36,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         public static int Argmax(float[] values) {
             Objects.RequireNonNull(values);
             if (values.Length == 0) {
-                throw new ArgumentException("values should be a non-empty array");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.VALUES_SHOULD_BE_A_NON_EMPTY_ARRAY);
             }
             float resultValue = float.NegativeInfinity;
             int resultIndex = 0;
@@ -65,13 +66,13 @@ namespace iText.Pdfocr.Onnxtr.Util {
             char[] sourceChars = source.ToCharArray();
             char[] targetChars = target.ToCharArray();
             int[] previousRow = new int[targetChars.Length + 1];
-            for (int i = 0; i <= targetChars.Length; i++) {
+            for (int i = 0; i <= targetChars.Length; ++i) {
                 previousRow[i] = i;
             }
-            for (int i = 1; i <= sourceChars.Length; i++) {
+            for (int i = 1; i <= sourceChars.Length; ++i) {
                 int[] currentRow = new int[targetChars.Length + 1];
                 currentRow[0] = i;
-                for (int j = 1; j <= targetChars.Length; j++) {
+                for (int j = 1; j <= targetChars.Length; ++j) {
                     int costDelete = previousRow[j] + 1;
                     int costInsert = currentRow[j - 1] + 1;
                     int costReplace = previousRow[j - 1] + (sourceChars[i - 1] == targetChars[j - 1] ? 0 : 1);
@@ -122,7 +123,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// </returns>
         public static double Clamp(double value, double min, double max) {
             if (max < min) {
-                throw new ArgumentException("max should not be less than min");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.MAX_SHOULD_NOT_BE_LESS_THAN_MIN);
             }
             return Math.Min(max, Math.Max(value, min));
         }

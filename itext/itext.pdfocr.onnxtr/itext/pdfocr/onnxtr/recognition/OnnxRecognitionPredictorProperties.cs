@@ -268,7 +268,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             if (this == o) {
                 return true;
             }
-            if (o == null || GetType() != o.GetType()) {
+            if (o == null || this.GetType() != o.GetType()) {
                 return false;
             }
             iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties that = (iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties

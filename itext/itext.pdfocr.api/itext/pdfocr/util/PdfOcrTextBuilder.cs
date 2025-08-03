@@ -255,7 +255,7 @@ namespace iText.Pdfocr.Util {
                         ().GetLeft()) > 0 ? rhs : lhs).GetBboxRect().GetLeft();
                     delta = (lineTop - lineBottom - lineHeight) / 2;
                     foreach (TextInfo word in line) {
-                        word.GetBboxRect().SetX(lineBottom).SetWidth(lineHeight);
+                        word.GetBboxRect().SetX(lineBottom + delta).SetWidth(lineHeight);
                     }
                     break;
                 }

@@ -6,6 +6,7 @@ See <https://opensource.org/licenses/Apache-2.0> for full license details.
 */
 using System;
 using System.Text;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
@@ -62,7 +63,8 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         public Vocabulary(String lookUpString) {
             Objects.RequireNonNull(lookUpString);
             if (lookUpString.CodePointCount(0, lookUpString.Length) != lookUpString.Length) {
-                throw new ArgumentException("Look-up string contains code points, which are encoded with 2 code units");
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.LOOK_UP_STRING_CONTAINS_2_CODE_UNITS_POINTS
+                    );
             }
             this.lookUpString = lookUpString;
         }

@@ -51,9 +51,9 @@ namespace iText.Pdfocr.Onnxtr.Util {
             if ((45F <= clampedAngle && clampedAngle < 135F) || (225F <= clampedAngle && clampedAngle < 315F)) {
                 Size2f rectSize = rect.Size;
                 try {
-                    float tempWidth = rectSize.Width;
+                    float temp = rectSize.Width;
                     rectSize.Width = rectSize.Height;
-                    rectSize.Height = tempWidth;
+                    rectSize.Height = temp;
                     rect.Size = rectSize;
                 }
                 finally {

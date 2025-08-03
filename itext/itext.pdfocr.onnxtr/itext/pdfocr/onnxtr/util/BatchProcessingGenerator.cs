@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Util {
@@ -62,7 +63,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
                 IList<T> batch = batchIterator.Current;
                 batchResult = batchProcessor.ProcessBatch(batch);
                 if (batchResult == null || batchResult.Count != batch.Count) {
-                    throw new InvalidOperationException("Batch processing failed: invalid number of outputs");
+                    throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.INVALID_NUMBER_OF_OUTPUTS);
                 }
                 batchResultIndex = 0;
             }

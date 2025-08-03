@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Util {
@@ -38,7 +39,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         public static IEnumerator<IList<E>> Wrap<E>(IEnumerator<E> iterator, int batchSize) {
             Objects.RequireNonNull(iterator);
             if (batchSize <= 0) {
-                throw new ArgumentException("batchSize should be positive", nameof(batchSize));
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE);
             }
 
             while (true) {
