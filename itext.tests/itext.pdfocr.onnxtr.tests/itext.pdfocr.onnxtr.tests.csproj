@@ -65,6 +65,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="Sdcb.OpenCvSharp4.mini.runtime.linux-x64" Version="4.11.0.35" />
+    <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\itext\itext.pdfocr.onnxtr\itext.pdfocr.onnxtr.csproj" />
