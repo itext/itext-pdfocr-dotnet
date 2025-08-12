@@ -42,6 +42,7 @@ namespace iText.Pdfocr.Onnxtr {
         }
 //\endcond
 
+        /// <summary><inheritDoc/></summary>
         public override void OnEvent(AbstractProductITextEvent @event) {
             if (IsConfirmForProcessImageOnnxTrEvent(@event)) {
                 events.Add((ConfirmEvent)@event);
@@ -51,10 +52,12 @@ namespace iText.Pdfocr.Onnxtr {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         public override SequenceId GetSequenceId() {
             return wrappedEventHelper.GetSequenceId();
         }
 
+        /// <summary><inheritDoc/></summary>
         public override EventConfirmationType GetConfirmationType() {
             return wrappedEventHelper.GetConfirmationType();
         }

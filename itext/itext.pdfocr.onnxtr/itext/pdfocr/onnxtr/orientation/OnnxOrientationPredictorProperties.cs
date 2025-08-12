@@ -15,8 +15,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     /// <remarks>
     /// Properties for configuring crop orientation ONNX models.
     /// <para />
-    /// It contains a path to the model, model input properties and a model
-    /// output mapper.
+    /// It contains a path to the model, model input properties and a model output mapper.
     /// </remarks>
     public class OnnxOrientationPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
@@ -29,17 +28,11 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         private readonly String modelPath;
 
         /// <summary>Properties of the inputs of the ONNX model.</summary>
-        /// <remarks>
-        /// Properties of the inputs of the ONNX model. Used for validation and
-        /// pre-processing.
-        /// </remarks>
+        /// <remarks>Properties of the inputs of the ONNX model. Used for validation and pre-processing.</remarks>
         private readonly OnnxInputProperties inputProperties;
 
         /// <summary>Properties of the outputs of the ONNX model.</summary>
-        /// <remarks>
-        /// Properties of the outputs of the ONNX model. Used for validation and
-        /// post-processing.
-        /// </remarks>
+        /// <remarks>Properties of the outputs of the ONNX model. Used for validation and post-processing.</remarks>
         private readonly IOutputLabelMapper<TextOrientation> outputMapper;
 
         /// <summary>Creates new crop orientation predictor properties.</summary>
@@ -102,10 +95,12 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             return outputMapper;
         }
 
+        /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
             return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, outputMapper);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
             if (this == o) {
                 return true;
@@ -119,6 +114,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
                  Object.Equals(outputMapper, that.outputMapper);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return "OnnxOrientationPredictorProperties{" + "modelPath='" + modelPath + '\'' + ", inputProperties=" + inputProperties
                  + ", outputMapper=" + outputMapper + '}';

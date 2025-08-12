@@ -172,11 +172,13 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return properties;
         }
 
+        /// <summary><inheritDoc/></summary>
         protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
+        /// <summary><inheritDoc/></summary>
         protected internal override IList<IList<iText.Kernel.Geom.Point[]>> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap
             > inputBatch, FloatBufferMdArray outputBatch) {
             IDetectionPostProcessor postProcessor = properties.GetPostProcessor();

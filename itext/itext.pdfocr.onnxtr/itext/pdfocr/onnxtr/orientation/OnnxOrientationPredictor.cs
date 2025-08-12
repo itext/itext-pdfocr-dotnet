@@ -79,11 +79,13 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             return properties;
         }
 
+        /// <summary><inheritDoc/></summary>
         protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
+        /// <summary><inheritDoc/></summary>
         protected internal override IList<TextOrientation> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap> 
             inputBatch, FloatBufferMdArray outputBatch) {
             // Just extracting the highest scoring "orientation class" for each image via argmax

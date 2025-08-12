@@ -14,8 +14,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <remarks>
     /// Properties for configuring text recognition ONNX models.
     /// <para />
-    /// It contains a path to the model, model input properties and a model
-    /// output post-processor.
+    /// It contains a path to the model, model input properties and a model output post-processor.
     /// </remarks>
     public class OnnxRecognitionPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
@@ -297,6 +296,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return postProcessor;
         }
 
+        /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
             if (this == o) {
                 return true;
@@ -310,10 +310,12 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                  Object.Equals(postProcessor, that.postProcessor);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
             return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return "OnnxRecognitionPredictorProperties{" + "modelPath='" + modelPath + '\'' + ", inputProperties=" + inputProperties
                  + ", postProcessor=" + postProcessor + '}';

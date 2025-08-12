@@ -48,6 +48,7 @@ namespace iText.Pdfocr.Onnxtr {
             fillColor = color;
         }
 
+        /// <summary><inheritDoc/></summary>
         public override void EventOccurred(IEventData data, EventType type) {
             if (type.Equals(EventType.RENDER_TEXT) || type.Equals(EventType.RENDER_IMAGE)) {
                 String tagName = GetTagName(data, type);
@@ -60,6 +61,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         protected override bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
             ITextChunkLocation curLoc = chunk.GetLocation();
             ITextChunkLocation prevLoc = previousChunk.GetLocation();

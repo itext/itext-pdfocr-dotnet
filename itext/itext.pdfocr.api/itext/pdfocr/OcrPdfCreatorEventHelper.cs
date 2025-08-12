@@ -40,6 +40,7 @@ namespace iText.Pdfocr {
         }
 //\endcond
 
+        /// <summary><inheritDoc/></summary>
         public override void OnEvent(AbstractProductITextEvent @event) {
             if (@event is AbstractContextBasedITextEvent) {
                 ((AbstractContextBasedITextEvent)@event).SetMetaInfo(this.metaInfo);
@@ -53,10 +54,12 @@ namespace iText.Pdfocr {
             EventManager.GetInstance().OnEvent(@event);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override SequenceId GetSequenceId() {
             return sequenceId;
         }
 
+        /// <summary><inheritDoc/></summary>
         public override EventConfirmationType GetConfirmationType() {
             return EventConfirmationType.ON_CLOSE;
         }

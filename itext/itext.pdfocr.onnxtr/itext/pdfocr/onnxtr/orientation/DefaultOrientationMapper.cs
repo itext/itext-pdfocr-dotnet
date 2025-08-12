@@ -60,6 +60,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         }
 
         // noop
+        /// <summary><inheritDoc/></summary>
         public virtual int Size() {
             return 4;
         }

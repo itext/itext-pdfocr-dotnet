@@ -11,18 +11,14 @@ using iText.Pdfocr.Onnxtr.Util;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
-    /// <summary>
-    /// Implementation of a text recognition predictor post-processor, used for
-    /// OnnxTR non-CRNN model outputs.
-    /// </summary>
+    /// <summary>Implementation of a text recognition predictor post-processor, used for OnnxTR non-CRNN model outputs.
+    ///     </summary>
     /// <remarks>
-    /// Implementation of a text recognition predictor post-processor, used for
-    /// OnnxTR non-CRNN model outputs.
+    /// Implementation of a text recognition predictor post-processor, used for OnnxTR non-CRNN model outputs.
     /// <para />
-    /// This assumes there is an end-of-string token just after the vocabulary. You
-    /// can specify additional tokens afterwards, but they are not used in the
-    /// processing. No same character aggregation is done. Output is read till an
-    /// end-of-string token in encountered.
+    /// This assumes there is an end-of-string token just after the vocabulary. You can specify additional tokens afterward,
+    /// but they are not used in the processing. No same character aggregation is done. Output is read till an end-of-string
+    /// token in encountered.
     /// </remarks>
     public class EndOfStringPostProcessor : IRecognitionPostProcessor {
         /// <summary>Vocabulary used for the model output (without special tokens).</summary>
@@ -54,6 +50,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             : this(Vocabulary.FRENCH, 0) {
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual String Process(FloatBufferMdArray output) {
             int maxWordLength = output.GetDimension(0);
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
@@ -76,6 +73,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return wordBuilder.ToString();
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual int LabelDimension() {
             // +1 is for "<eos>" token itself
             return vocabulary.Size() + 1 + additionalTokens;

@@ -57,6 +57,7 @@ namespace iText.Pdfocr.Onnxtr.Actions.Events {
                 , eventConfirmationType);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override String GetEventType() {
             return eventType;
         }

@@ -207,6 +207,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             return postProcessor;
         }
 
+        /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
             if (this == o) {
                 return true;
@@ -220,10 +221,12 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                  Object.Equals(postProcessor, that.postProcessor);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
             return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return "OnnxDetectionPredictorProperties{" + "modelPath='" + modelPath + '\'' + ", inputProperties=" + inputProperties
                  + ", postProcessor=" + postProcessor + '}';

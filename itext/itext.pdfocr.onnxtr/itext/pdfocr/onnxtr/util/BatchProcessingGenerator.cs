@@ -54,10 +54,12 @@ namespace iText.Pdfocr.Onnxtr.Util {
             this.batchProcessor = Objects.RequireNonNull(batchProcessor);
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual bool HasNext() {
             return batchResult != null || batchIterator.MoveNext();
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual R Next() {
             if (batchResult == null) {
                 IList<T> batch = batchIterator.Current;

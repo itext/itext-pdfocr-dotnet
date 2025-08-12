@@ -272,11 +272,13 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return properties;
         }
 
+        /// <summary><inheritDoc/></summary>
         protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
         }
 
+        /// <summary><inheritDoc/></summary>
         protected internal override IList<String> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap> inputBatch
             , FloatBufferMdArray outputBatch) {
             int batchSize = outputBatch.GetDimension(0);

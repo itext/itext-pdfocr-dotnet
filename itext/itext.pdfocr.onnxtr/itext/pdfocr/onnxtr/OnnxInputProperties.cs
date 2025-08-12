@@ -208,11 +208,13 @@ namespace iText.Pdfocr.Onnxtr {
             return symmetricPad;
         }
 
+        /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
             return JavaUtil.ArraysHashCode((Object)JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), JavaUtil.ArraysHashCode
                 (shape), symmetricPad);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
             if (this == o) {
                 return true;
@@ -225,6 +227,7 @@ namespace iText.Pdfocr.Onnxtr {
                 (std, that.std) && JavaUtil.ArraysEquals(shape, that.shape);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return "OnnxInputProperties{" + "mean=" + JavaUtil.ArraysToString(mean) + ", std=" + JavaUtil.ArraysToString
                 (std) + ", shape=" + JavaUtil.ArraysToString(shape) + ", symmetricPad=" + symmetricPad + '}';

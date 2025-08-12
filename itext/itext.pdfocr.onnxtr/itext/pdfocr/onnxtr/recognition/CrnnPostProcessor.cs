@@ -38,6 +38,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             this.vocabulary = Vocabulary.FRENCH;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual String Process(FloatBufferMdArray output) {
             int maxWordLength = output.GetDimension(0);
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
@@ -57,6 +58,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return wordBuilder.ToString();
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual int LabelDimension() {
             // +1 is "<blank>" token
             return vocabulary.Size() + 1;

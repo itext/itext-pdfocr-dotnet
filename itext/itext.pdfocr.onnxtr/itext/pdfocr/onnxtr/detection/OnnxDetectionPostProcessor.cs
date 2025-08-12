@@ -81,6 +81,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             : this(0.1F, 0.1F) {
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, FloatBufferMdArray
              output) {
             int height = output.GetDimension(1);

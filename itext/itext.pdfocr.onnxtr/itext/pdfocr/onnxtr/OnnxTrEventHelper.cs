@@ -34,17 +34,20 @@ namespace iText.Pdfocr.Onnxtr {
         }
 //\endcond
 
-        // do nothing
+        // Do nothing.
+        /// <summary><inheritDoc/></summary>
         public override void OnEvent(AbstractProductITextEvent @event) {
             EventManager.GetInstance().OnEvent(@event);
         }
 
-        public override SequenceId GetSequenceId() {
-            return new SequenceId();
-        }
-
+        /// <summary><inheritDoc/></summary>
         public override EventConfirmationType GetConfirmationType() {
             return EventConfirmationType.ON_DEMAND;
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public override SequenceId GetSequenceId() {
+            return new SequenceId();
         }
     }
 //\endcond

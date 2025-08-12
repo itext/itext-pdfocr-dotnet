@@ -118,11 +118,13 @@ namespace iText.Pdfocr.Onnxtr {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual IEnumerator<R> Predict(IEnumerator<T> inputs) {
             return new BatchProcessingGenerator<T, R>(Batching.Wrap(inputs, inputProperties.GetBatchSize()),
                 new BatchProcessor(this));
         }
 
+        /// <summary><inheritDoc/></summary>
         public IEnumerator<R> Predict(IEnumerable<T> inputs) {
             return Predict(inputs.GetEnumerator());
         }
@@ -147,6 +149,7 @@ namespace iText.Pdfocr.Onnxtr {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual void Close() {
             if (closed) {
                 return;

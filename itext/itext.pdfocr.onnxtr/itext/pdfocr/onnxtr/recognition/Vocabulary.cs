@@ -1404,10 +1404,12 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return lookUpString[index];
         }
 
+        /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
             return lookUpString.GetHashCode();
         }
 
+        /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
             if (this == o) {
                 return true;
@@ -1419,6 +1421,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return Object.Equals(lookUpString, that.lookUpString);
         }
 
+        /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return lookUpString;
         }

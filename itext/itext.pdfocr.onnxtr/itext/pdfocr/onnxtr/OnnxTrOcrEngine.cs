@@ -116,6 +116,7 @@ namespace iText.Pdfocr.Onnxtr {
             : this(detectionPredictor, null, recognitionPredictor) {
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual void Close() {
             detectionPredictor.Close();
             if (orientationPredictor != null) {
@@ -124,10 +125,12 @@ namespace iText.Pdfocr.Onnxtr {
             recognitionPredictor.Close();
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
             return DoImageOcr(input, new OcrProcessContext(new OnnxTrEventHelper()));
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
             IDictionary<int, IList<TextInfo>> result = DoOnnxTrOcr(input, ocrProcessContext);
@@ -140,10 +143,12 @@ namespace iText.Pdfocr.Onnxtr {
             return result;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
             CreateTxtFile(inputImages, txtFile, new OcrProcessContext(new OnnxTrEventHelper()));
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
             ) {
             ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES
@@ -172,14 +177,17 @@ namespace iText.Pdfocr.Onnxtr {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual bool IsTaggingSupported() {
             return false;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual PdfOcrMetaInfoContainer GetMetaInfoContainer() {
             return new PdfOcrMetaInfoContainer(new OnnxTrMetaInfo());
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual ProductData GetProductData() {
             return null;
         }

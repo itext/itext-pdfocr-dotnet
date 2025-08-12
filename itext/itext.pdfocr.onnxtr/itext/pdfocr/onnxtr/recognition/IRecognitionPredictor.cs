@@ -24,10 +24,8 @@ using System;
 using iText.Pdfocr.Onnxtr;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
-    /// <summary>
-    /// Interface for predictors, which take a cropped image of text and recognize
-    /// text characters on it.
-    /// </summary>
+    /// <summary>Interface for predictors, which take a cropped image of text and recognize text characters on it.
+    ///     </summary>
     public interface IRecognitionPredictor : IPredictor<IronSoftware.Drawing.AnyBitmap, String> {
     }
 }
