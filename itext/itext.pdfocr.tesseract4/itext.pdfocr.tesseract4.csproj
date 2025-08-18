@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\itext.pdfocr.api\itext.pdfocr.api.csproj"/>
+    <ProjectReference Include="..\itext.pdfocr.api\itext.pdfocr.api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
