@@ -66,13 +66,13 @@
     <PackageReference Include="NUnit" Version="3.11.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="Sdcb.OpenCvSharp4.mini.runtime.linux-x64" Version="4.11.0.35" />
-    <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc"/>
+    <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\itext\itext.pdfocr.onnxtr\itext.pdfocr.onnxtr.csproj" />
-    <PackageReference Include="itext.pdftest" Version="9.3.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+    <PackageReference Include="itext.pdftest" Version="9.4.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
-    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.4.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
   </ItemGroup>
 </Project>

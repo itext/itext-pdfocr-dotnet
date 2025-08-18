@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
     <metadata>
         <id>itext.pdfocr.onnxtr</id>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.1-SNAPSHOT</version>
         <title>iText pdfOcr</title>
         <authors>Apryse Software</authors>
         <owners>Apryse Software</owners>
@@ -15,39 +15,39 @@
         <copyright>Copyright (c) 1998-2025 Apryse Group NV</copyright>
         <language>en-US</language>
         <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant onnxtr open-source opensource English Spanish French Portuguese scan image extractable data searchable diacritic sdk c# .net</tags>
-        <repository type="git" url="https://github.com/itext/i7n-pdfocr.git"/>
+        <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
         <dependencies>
             <group targetFramework="net461">
-                <dependency id="itext.pdfocr.api" version="4.1.0-SNAPSHOT"/>
-                <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1"/>
-                <dependency id="OpenCvSharp4" version="4.11.0.20250507"/>
-                <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507"/>
-                <dependency id="OpenCvSharp4.runtime.linux-arm" version="4.11.0.20250506"/>
-                <dependency id="SkiaSharp" version="3.119.0"/>
-                <dependency id="SkiaSharp.NativeAssets.Linux.NoDependencies" version="3.119.0"/>
+                <dependency id="itext.pdfocr.api" version="4.1.1-SNAPSHOT" />
+                <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1" />
+                <dependency id="OpenCvSharp4" version="4.11.0.20250507" />
+                <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507" />
+                <dependency id="OpenCvSharp4.runtime.linux-arm" version="4.11.0.20250506" />
+                <dependency id="SkiaSharp" version="3.119.0" />
+                <dependency id="SkiaSharp.NativeAssets.Linux.NoDependencies" version="3.119.0" />
             </group>
             <group targetFramework="netstandard2.0">
-                <dependency id="itext.pdfocr.api" version="4.1.0-SNAPSHOT"/>
-                <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1"/>
-                <dependency id="OpenCvSharp4" version="4.11.0.20250507"/>
-                <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507"/>
-                <dependency id="OpenCvSharp4.runtime.linux-arm" version="4.11.0.20250506"/>
-                <dependency id="SkiaSharp" version="3.119.0"/>
-                <dependency id="SkiaSharp.NativeAssets.Linux.NoDependencies" version="3.119.0"/>
+                <dependency id="itext.pdfocr.api" version="4.1.1-SNAPSHOT" />
+                <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1" />
+                <dependency id="OpenCvSharp4" version="4.11.0.20250507" />
+                <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507" />
+                <dependency id="OpenCvSharp4.runtime.linux-arm" version="4.11.0.20250506" />
+                <dependency id="SkiaSharp" version="3.119.0" />
+                <dependency id="SkiaSharp.NativeAssets.Linux.NoDependencies" version="3.119.0" />
             </group>
         </dependencies>
         <references>
-            <reference file="itext.pdfocr.onnxtr.dll"/>
+            <reference file="itext.pdfocr.onnxtr.dll" />
         </references>
     </metadata>
     <files>
-        <file src="bin\Release\net461\itext.pdfocr.onnxtr.dll" target="lib\net461"/>
-        <file src="bin\Release\net461\itext.pdfocr.onnxtr.xml" target="lib\net461"/>
-        <file src="bin\Release\netstandard2.0\itext.pdfocr.onnxtr.dll" target="lib\netstandard2.0"/>
-        <file src="bin\Release\netstandard2.0\itext.pdfocr.onnxtr.xml" target="lib\netstandard2.0"/>
-        <file src="ITSC-avatar.png" target=""/>
-        <file src="../../gnu-agpl-v3.0.md" target=""/>
-        <file src="../../LICENSE.md" target=""/>
-        <file src="NOTICE.txt" target=""/>
+        <file src="bin\Release\net461\itext.pdfocr.onnxtr.dll" target="lib\net461" />
+        <file src="bin\Release\net461\itext.pdfocr.onnxtr.xml" target="lib\net461" />
+        <file src="bin\Release\netstandard2.0\itext.pdfocr.onnxtr.dll" target="lib\netstandard2.0" />
+        <file src="bin\Release\netstandard2.0\itext.pdfocr.onnxtr.xml" target="lib\netstandard2.0" />
+        <file src="ITSC-avatar.png" target="" />
+        <file src="../../gnu-agpl-v3.0.md" target="" />
+        <file src="../../LICENSE.md" target="" />
+        <file src="NOTICE.txt" target="" />
     </files>
 </package>
