@@ -30,7 +30,7 @@ namespace iText.Pdfocr.Tesseract4 {
 //\cond DO_NOT_DOCUMENT
     /// <summary>Helper class for working with events.</summary>
     internal class Tesseract4FileResultEventHelper : AbstractPdfOcrEventHelper {
-        private AbstractPdfOcrEventHelper wrappedEventHelper;
+        private readonly AbstractPdfOcrEventHelper wrappedEventHelper;
 
 //\cond DO_NOT_DOCUMENT
         internal Tesseract4FileResultEventHelper()

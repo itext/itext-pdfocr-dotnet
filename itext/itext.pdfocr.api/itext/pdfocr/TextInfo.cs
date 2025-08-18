@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using iText.Kernel.Geom;
 using iText.Pdfocr.Structuretree;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -37,7 +38,26 @@ namespace iText.Pdfocr {
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
         /// describing text bbox (lower-left based) expressed in points.
         /// </summary>
+        /// <remarks>
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// describing text bbox (lower-left based) expressed in points.
+        /// <para />
+        /// TODO DEVSIX-9153: mark this on breaking changes page. Why not return rectangles in image pixels?
+        /// Seems odd, that an OCR engine should be concerned by PDF specific. It would make sense for an engine
+        /// to return results, which could be directly applied to images inputs instead.
+        /// </remarks>
         private Rectangle bboxRect;
+
+        /// <summary>
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation).
+        /// </summary>
+        /// <remarks>
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation). Text is
+        /// assumed to be horizontal without any rotation by default.
+        /// </remarks>
+        private TextOrientation orientation = TextOrientation.HORIZONTAL;
 
         /// <summary>
         /// If LogicalStructureTreeItem is set, then
@@ -63,6 +83,7 @@ namespace iText.Pdfocr {
         public TextInfo(iText.Pdfocr.TextInfo textInfo) {
             this.text = textInfo.text;
             this.bboxRect = new Rectangle(textInfo.bboxRect);
+            this.orientation = textInfo.orientation;
         }
 
         /// <summary>
@@ -79,6 +100,24 @@ namespace iText.Pdfocr {
         public TextInfo(String text, Rectangle bbox) {
             this.text = text;
             this.bboxRect = new Rectangle(bbox);
+        }
+
+        /// <summary>
+        /// Creates a new
+        /// <see cref="TextInfo"/>
+        /// instance.
+        /// </summary>
+        /// <param name="text">any text</param>
+        /// <param name="bbox">
+        /// 
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// describing text bbox
+        /// </param>
+        /// <param name="orientation">orientation of the text</param>
+        public TextInfo(String text, Rectangle bbox, TextOrientation orientation) {
+            this.text = text;
+            this.bboxRect = new Rectangle(bbox);
+            this.orientation = Objects.RequireNonNull(orientation);
         }
 
         /// <summary>Gets text element.</summary>
@@ -111,6 +150,26 @@ namespace iText.Pdfocr {
         /// </param>
         public virtual void SetBboxRect(Rectangle bbox) {
             this.bboxRect = new Rectangle(bbox);
+        }
+
+        /// <summary>Gets the text orientation.</summary>
+        /// <returns>
+        /// 
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation)
+        /// </returns>
+        public virtual TextOrientation GetOrientation() {
+            return orientation;
+        }
+
+        /// <summary>Sets the text orientation.</summary>
+        /// <param name="orientation">
+        /// 
+        /// <see cref="TextOrientation"/>
+        /// describing the orientation of the text (i.e. rotation)
+        /// </param>
+        public virtual void SetOrientation(TextOrientation orientation) {
+            this.orientation = Objects.RequireNonNull(orientation);
         }
 
         /// <summary>Retrieves structure tree item for the text item.</summary>

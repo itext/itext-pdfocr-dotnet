@@ -1,41 +1,41 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
-  <metadata>
-    <id>itext.pdfocr.tesseract4</id>
-    <version>4.0.2</version>
-    <title>iText pdfOcr</title>
-    <authors>Apryse Software</authors>
-    <owners>Apryse Software</owners>
-    <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
-    <projectUrl>https://itextpdf.com/en/products/itext-7/pdfocr</projectUrl>
-    <icon>ITSC-avatar.png</icon>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>pdfOCR is an iText add-on to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
-    <summary>pdfOCR is an iText add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
-    <copyright>Copyright (c) 1998-2025 Apryse Group NV</copyright>
-    <language>en-US</language>
-    <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
-    <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
-    <dependencies>
-      <group targetFramework="net461">
-        <dependency id="itext.pdfocr.api" version="4.0.2" />
-      </group>
-    </dependencies>
-    <references>
-      <reference file="itext.pdfocr.tesseract4.dll" />
-      <reference file="Tesseract.dll" />
-    </references>
-  </metadata>
-  <files>
-    <file src="bin\Release\net461\itext.pdfocr.tesseract4.dll" target="lib\net461" />
-    <file src="bin\Release\net461\itext.pdfocr.tesseract4.xml" target="lib\net461" />
-    <file src="itext.pdfocr.tesseract4.targets" target="build" />
-    <file src="lib\Tesseract.dll" target="lib\net461" />
-    <file src="lib\x64\*.dll" target="runtimes\x64" />
-    <file src="lib\x86\*.dll" target="runtimes\x86" />
-    <file src="NOTICE.txt" target="" />
-    <file src="ITSC-avatar.png" target="" />
-    <file src="../../gnu-agpl-v3.0.md" target="" />
-    <file src="../../LICENSE.md" target="" />
-  </files>
+    <metadata>
+        <id>itext.pdfocr.tesseract4</id>
+        <version>4.1.0</version>
+        <title>iText pdfOcr</title>
+        <authors>Apryse Software</authors>
+        <owners>Apryse Software</owners>
+        <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
+        <projectUrl>https://itextpdf.com/en/products/itext-7/pdfocr</projectUrl>
+        <icon>ITSC-avatar.png</icon>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>pdfOCR is an iText add-on to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
+        <summary>pdfOCR is an iText add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
+        <copyright>Copyright (c) 1998-2025 Apryse Group NV</copyright>
+        <language>en-US</language>
+        <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
+        <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
+        <dependencies>
+            <group targetFramework="net461">
+                <dependency id="itext.pdfocr.api" version="4.1.0" />
+            </group>
+        </dependencies>
+        <references>
+            <reference file="itext.pdfocr.tesseract4.dll" />
+            <reference file="Tesseract.dll" />
+        </references>
+    </metadata>
+    <files>
+        <file src="bin\Release\net461\itext.pdfocr.tesseract4.dll" target="lib\net461" />
+        <file src="bin\Release\net461\itext.pdfocr.tesseract4.xml" target="lib\net461" />
+        <file src="itext.pdfocr.tesseract4.targets" target="build" />
+        <file src="lib\Tesseract.dll" target="lib\net461" />
+        <file src="lib\x64\*.dll" target="runtimes\x64" />
+        <file src="lib\x86\*.dll" target="runtimes\x86" />
+        <file src="NOTICE.txt" target="" />
+        <file src="ITSC-avatar.png" target="" />
+        <file src="../../gnu-agpl-v3.0.md" target="" />
+        <file src="../../LICENSE.md" target="" />
+    </files>
 </package>

@@ -34,13 +34,13 @@ namespace iText.Pdfocr.Tesseract4.Actions.Data {
 
         private const String PDF_OCR_TESSERACT4_PUBLIC_PRODUCT_NAME = "pdfOCR-Tesseract4";
 
-        private const String PDF_OCR_VERSION = "4.0.2";
+        private const String PDF_OCR_VERSION = "4.1.0";
 
         private const int PDF_OCR_COPYRIGHT_SINCE = 2000;
 
         private const int PDF_OCR_COPYRIGHT_TO = 2025;
 
-        private static readonly ProductData PDF_OCR_PRODUCT_DATA = new ProductData(PDF_OCR_TESSERACT4_PUBLIC_PRODUCT_NAME
+        private static readonly ProductData PDF_OCR_TESSERACT4_PRODUCT_DATA = new ProductData(PDF_OCR_TESSERACT4_PUBLIC_PRODUCT_NAME
             , PDF_OCR_TESSERACT4_PRODUCT_NAME, PDF_OCR_VERSION, PDF_OCR_COPYRIGHT_SINCE, PDF_OCR_COPYRIGHT_TO);
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace iText.Pdfocr.Tesseract4.Actions.Data {
         /// </summary>
         /// <returns>iText pdfOcr Tesseract4 product description</returns>
         public static ProductData GetInstance() {
-            return PDF_OCR_PRODUCT_DATA;
+            return PDF_OCR_TESSERACT4_PRODUCT_DATA;
         }
     }
 }

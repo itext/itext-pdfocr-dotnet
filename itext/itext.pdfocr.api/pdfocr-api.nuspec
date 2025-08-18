@@ -1,33 +1,42 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
-  <metadata>
-    <id>itext.pdfocr.api</id>
-    <version>4.0.2</version>
-    <title>iText pdfOcr</title>
-    <authors>Apryse Software</authors>
-    <owners>Apryse Software</owners>
-    <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
-    <projectUrl>https://itextpdf.com/en/products/itext-7/pdfocr</projectUrl>
-    <icon>ITSC-avatar.png</icon>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>pdfOCR is an iText add-on to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
-    <summary>pdfOCR is an iText add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
-    <copyright>Copyright (c) 1998-2025 Apryse Group NV</copyright>
-    <language>en-US</language>
-    <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
-    <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
-    <dependencies>
-      <group targetFramework="net461">
-        <dependency id="itext" version="9.2.0" />
-      </group>
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="bin\Release\net461\itext.pdfocr.api.dll" target="lib\net461" />
-    <file src="bin\Release\net461\itext.pdfocr.api.xml" target="lib\net461" />
-    <file src="NOTICE.txt" target="" />
-    <file src="ITSC-avatar.png" target="" />
-    <file src="../../gnu-agpl-v3.0.md" target="" />
-    <file src="../../LICENSE.md" target="" />
-  </files>
+    <metadata>
+        <id>itext.pdfocr.api</id>
+        <version>4.1.0</version>
+        <title>iText pdfOcr</title>
+        <authors>Apryse Software</authors>
+        <owners>Apryse Software</owners>
+        <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
+        <projectUrl>https://itextpdf.com/en/products/itext-7/pdfocr</projectUrl>
+        <icon>ITSC-avatar.png</icon>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>pdfOCR is an iText add-on to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
+        <summary>pdfOCR is an iText add-on for C# (.NET) to recognize and extract text in scanned documents and images</summary>
+        <copyright>Copyright (c) 1998-2025 Apryse Group NV</copyright>
+        <language>en-US</language>
+        <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
+        <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
+        <dependencies>
+            <group targetFramework="net461">
+                <dependency id="itext" version="9.3.0" />
+                <dependency id="itext.commons" version="9.3.0" />
+                <dependency id="IronSoftware.System.Drawing" version="2025.6.2" />
+            </group>
+            <group targetFramework="netstandard2.0">
+                <dependency id="itext" version="9.3.0" />
+                <dependency id="itext.commons" version="9.3.0" />
+                <dependency id="IronSoftware.System.Drawing" version="2025.6.2" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\net461\itext.pdfocr.api.dll" target="lib\net461" />
+        <file src="bin\Release\net461\itext.pdfocr.api.xml" target="lib\net461" />
+        <file src="bin\Release\netstandard2.0\itext.pdfocr.api.dll" target="lib\netstandard2.0" />
+        <file src="bin\Release\netstandard2.0\itext.pdfocr.api.xml" target="lib\netstandard2.0" />
+        <file src="NOTICE.txt" target="" />
+        <file src="ITSC-avatar.png" target="" />
+        <file src="../../gnu-agpl-v3.0.md" target="" />
+        <file src="../../LICENSE.md" target="" />
+    </files>
 </package>

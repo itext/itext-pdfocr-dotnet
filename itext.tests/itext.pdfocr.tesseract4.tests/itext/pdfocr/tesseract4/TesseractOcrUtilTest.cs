@@ -25,6 +25,7 @@ using System.IO;
 using Tesseract;
 using iText.IO.Image;
 using iText.Pdfocr;
+using iText.Pdfocr.Logs;
 using iText.Pdfocr.Tesseract4.Logs;
 using iText.Test.Attributes;
 
@@ -69,23 +70,14 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.IsNull(page);
         }
 
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE)]
+        [LogMessage(Tesseract4LogMessageConstant.PAGE_NUMBER_IS_INCORRECT)]
         [NUnit.Framework.Test]
         public virtual void TestReadingPageFromInvalidTiff() {
             String path = TEST_IMAGES_DIRECTORY + "example_03.tiff";
             FileInfo imgFile = new FileInfo(path);
             Pix page = TesseractOcrUtil.ReadPixPageFromTiff(imgFile, 0);
             NUnit.Framework.Assert.IsNull(page);
-        }
-
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE)]
-        [NUnit.Framework.Test]
-        public virtual void TestInitializeImagesListFromInvalidTiff() {
-            String path = TEST_IMAGES_DIRECTORY + "example_03.tiff";
-            FileInfo imgFile = new FileInfo(path);
-            TesseractOcrUtil tesseractOcrUtil = new TesseractOcrUtil();
-            tesseractOcrUtil.InitializeImagesListFromTiff(imgFile);
-            NUnit.Framework.Assert.AreEqual(0, tesseractOcrUtil.GetListOfPages().Count);
         }
 
         [NUnit.Framework.Test]

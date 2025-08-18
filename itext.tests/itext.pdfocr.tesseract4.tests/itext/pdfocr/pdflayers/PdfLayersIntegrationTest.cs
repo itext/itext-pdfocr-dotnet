@@ -55,11 +55,10 @@ namespace iText.Pdfocr.Pdflayers {
             PdfDocument doc = ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList<FileInfo>(file), GetPdfWriter(
                 pdfPath));
             NUnit.Framework.Assert.IsNotNull(doc);
-            int numOfPages = doc.GetNumberOfPages();
             IList<PdfLayer> layers = doc.GetCatalog().GetOCProperties(true).GetLayers();
-            NUnit.Framework.Assert.AreEqual(numOfPages * 2, layers.Count);
-            NUnit.Framework.Assert.AreEqual("Image Layer", layers[2].GetPdfObject().Get(PdfName.Name).ToString());
-            NUnit.Framework.Assert.AreEqual("Text Layer", layers[3].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.AreEqual(2, layers.Count);
+            NUnit.Framework.Assert.AreEqual("Image Layer", layers[0].GetPdfObject().Get(PdfName.Name).ToString());
+            NUnit.Framework.Assert.AreEqual("Text Layer", layers[1].GetPdfObject().Get(PdfName.Name).ToString());
             doc.Close();
             // Text layer should contain all text
             // Image layer shouldn't contain any text

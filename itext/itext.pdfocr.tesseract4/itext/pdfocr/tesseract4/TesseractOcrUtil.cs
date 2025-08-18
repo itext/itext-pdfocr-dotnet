@@ -36,6 +36,9 @@ using iText.Pdfocr.Tesseract4.Logs;
 using Microsoft.Extensions.Logging;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using Tesseract;
+using iText.Pdfocr.Util;
+using iText.Forms.Form.Element;
+using iText.Pdfocr.Logs;
 
 namespace iText.Pdfocr.Tesseract4 {
     
@@ -489,31 +492,7 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </param>
         internal void InitializeImagesListFromTiff(FileInfo inputFile)
         {
-            try
-            {
-                Image originalImage = Image.FromFile(inputFile.FullName);
-                List<Bitmap> bitmapList = new List<Bitmap>();
-                var xResolution = originalImage.HorizontalResolution;
-                var yResolution = originalImage.VerticalResolution;
-
-                FrameDimension frameDimension = new FrameDimension(originalImage.FrameDimensionsList[0]);
-                int frameCount = originalImage.GetFrameCount(FrameDimension.Page);
-                for (int i = 0; i < frameCount; ++i)
-                {
-                    originalImage.SelectActiveFrame(frameDimension, i);
-                    Bitmap temp = new Bitmap(originalImage);
-                    temp.SetResolution(2 * xResolution, 2 * yResolution);
-                    bitmapList.Add(temp);
-                }
-                SetListOfPages(bitmapList);
-            } catch (Exception e)
-            {
-                ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
-                    .LogError(MessageFormatUtil.Format(
-                        Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE,
-                        inputFile.FullName,
-                        e.Message));
-            }
+            SetListOfPages(GetAllImages(inputFile));
         }
 
         /// <summary>
@@ -531,31 +510,17 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </returns>
         internal static Bitmap GetImagePage(FileInfo input, int page)
         {
-            Bitmap img = null;
-            try
-            {
-                Image image = Image.FromFile(input.FullName);
-                int pages = image.GetFrameCount(FrameDimension.Page);
-                if (page >= pages)
-                {
-                    ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
+            IList<Bitmap> pages = GetAllImages(input);
+            if (page >= pages.Count) {
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
                         .LogWarning(MessageFormatUtil.Format(
                             Tesseract4LogMessageConstant.PAGE_NUMBER_IS_INCORRECT,
                             page,
                             input.FullName));
-                    return null;
-                }
-                image.SelectActiveFrame(FrameDimension.Page, page);
-                img = new Bitmap(image);
-            } catch (Exception e)
-            {
-                ITextLogManager.GetLogger(typeof(TesseractOcrUtil))
-                    .LogError(MessageFormatUtil.Format(
-                        Tesseract4LogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE,
-                        input.FullName,
-                        e.Message));
+                return null;
             }
-            return img;
+
+            return pages[page];
         }
 
         /// <summary>
@@ -1073,6 +1038,41 @@ namespace iText.Pdfocr.Tesseract4 {
                 }
                 return newImageData;
             }
+        }
+
+        /// <summary>Retrieves all images from a TIFF file.</summary>
+        /// <param name="inputFile">TIFF file to retrieve images from</param>
+        /// <returns>
+        /// the list of
+        /// <see cref="System.Drawing.Bitmap"/>
+        /// 's in the TIFF file
+        /// </returns>
+        private static IList<System.Drawing.Bitmap> GetAllImages(FileInfo inputFile) {
+            // This method is a workaround for a missing cast from System.Drawing.Bitmap from System.Drawing to
+            // IronSoftware.Drawing.AnyBitmap (which works with more modern System.Drawing.Commons).
+            // Otherwise, we would use TiffImageUtil.
+            try {
+                Image originalImage = Image.FromFile(inputFile.FullName);
+                List<Bitmap> bitmapList = new List<Bitmap>();
+                var xResolution = originalImage.HorizontalResolution;
+                var yResolution = originalImage.VerticalResolution;
+
+                FrameDimension frameDimension = new FrameDimension(originalImage.FrameDimensionsList[0]);
+                int frameCount = originalImage.GetFrameCount(FrameDimension.Page);
+                for (int i = 0; i < frameCount; ++i) {
+                    originalImage.SelectActiveFrame(frameDimension, i);
+                    Bitmap temp = new Bitmap(originalImage);
+                    temp.SetResolution(2 * xResolution, 2 * yResolution);
+                    bitmapList.Add(temp);
+                }
+
+                return bitmapList;
+            } catch (Exception e) {
+                ITextLogManager.GetLogger(typeof(TesseractOcrUtil)).LogError(MessageFormatUtil.Format(
+                    PdfOcrLogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE, inputFile.FullName, e.Message));
+            }
+
+            return new List<System.Drawing.Bitmap>();
         }
     }
     //\endcond 

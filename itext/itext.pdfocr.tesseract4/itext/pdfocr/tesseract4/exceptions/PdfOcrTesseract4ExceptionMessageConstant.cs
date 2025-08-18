@@ -33,6 +33,7 @@ namespace iText.Pdfocr.Tesseract4.Exceptions {
 
         public const String CANNOT_READ_PROVIDED_IMAGE = "Cannot read input image {0}";
 
+        [Obsolete]
         public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
 
         public const String TESSERACT_FAILED = "Tesseract failed. Please check provided parameters";

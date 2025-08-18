@@ -203,10 +203,7 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         /// <summary>Sets true if image preprocessing is needed.</summary>
-        /// <param name="preprocess">
-        /// true if images need to be preprocessed,
-        /// otherwise - false
-        /// </param>
+        /// <param name="preprocess">true if images need to be preprocessed, otherwise - false</param>
         /// <returns>
         /// the
         /// <see cref="Tesseract4OcrEngineProperties"/>

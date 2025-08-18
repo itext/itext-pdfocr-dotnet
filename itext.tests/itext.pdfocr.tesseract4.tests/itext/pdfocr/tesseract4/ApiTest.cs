@@ -61,10 +61,10 @@ namespace iText.Pdfocr.Tesseract4 {
                 .Message);
         }
 
-        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 2)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         [NUnit.Framework.Test]
         public virtual void TestDoTesseractOcrForIncorrectImageForExecutable() {
-            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => {
                 String path = TEST_IMAGES_DIRECTORY + "numbers_01";
                 FileInfo imgFile = new FileInfo(path);
                 Tesseract4ExecutableOcrEngine engine = new Tesseract4ExecutableOcrEngine(new Tesseract4OcrEngineProperties
@@ -72,7 +72,7 @@ namespace iText.Pdfocr.Tesseract4 {
                 engine.DoTesseractOcr(imgFile, null, OutputFormat.HOCR);
             }
             );
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS
                 , new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01").FullName), exception.Message);
         }
 

@@ -31,6 +31,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Pdfocr;
+using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Tesseract4;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
@@ -105,6 +106,41 @@ namespace iText.Pdfocr.General {
         }
 
         [NUnit.Framework.Test]
+        public virtual void RotatedTextBasicTest() {
+            String path = TEST_IMAGES_DIRECTORY + "rotatedTextBasic.png";
+            String expectedOutput = "A N ™~ & S 0 TEST Q sAemapls sl 1xa3 sIyL";
+            TestImageOcrText(tesseractReader, path, expectedOutput);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void RotatedTextCapsLCTest() {
+            String path = TEST_IMAGES_DIRECTORY + "rotatedCapsLC.png";
+            String expectedOutput = "CapITALS anD .. lowerCaSE + .\\mm\\ 2% 7 . /\\/MJ% ‘¢";
+            TestImageOcrText(tesseractReader, path, expectedOutput);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void RotatedColorsMixTest() {
+            String path = TEST_IMAGES_DIRECTORY + "rotatedColorsMix.png";
+            String expectedOutput = "ReD tEXT Colored TEXT";
+            TestImageOcrText(tesseractReader, path, expectedOutput);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void RotatedColorsMix2Test() {
+            String path = TEST_IMAGES_DIRECTORY + "rotatedColorsMix2.png";
+            String expectedOutput = "";
+            TestImageOcrText(tesseractReader, path, expectedOutput);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void RotatedBy90DegreesTest() {
+            String path = TEST_IMAGES_DIRECTORY + "rotatedBy90Degrees.png";
+            String expectedOutput = "";
+            TestImageOcrText(tesseractReader, path, expectedOutput);
+        }
+
+        [NUnit.Framework.Test]
         public virtual void TestImageWithoutText() {
             String testName = "testImageWithoutText";
             String filePath = TEST_IMAGES_DIRECTORY + "pantone_blue.jpg";
@@ -124,7 +160,7 @@ namespace iText.Pdfocr.General {
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestInputInvalidImage() {
-            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrTesseract4Exception), () => {
+            Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => {
                 FileInfo file1 = new FileInfo(TEST_IMAGES_DIRECTORY + "example.txt");
                 FileInfo file2 = new FileInfo(TEST_IMAGES_DIRECTORY + "example_05_corrupted.bmp");
                 FileInfo file3 = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_02.jpg");
@@ -134,7 +170,7 @@ namespace iText.Pdfocr.General {
                 ocrPdfCreator.CreatePdf(JavaUtil.ArraysAsList(file3, file1, file2, file3), GetPdfWriter());
             }
             );
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.CANNOT_READ_PROVIDED_IMAGE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS
                 , new FileInfo(TEST_IMAGES_DIRECTORY + "example.txt").FullName), exception.Message);
         }
 

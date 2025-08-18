@@ -27,15 +27,27 @@ namespace iText.Pdfocr.Exceptions {
     public class PdfOcrExceptionMessageConstant {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
+        public const String CANNOT_READ_INPUT_IMAGE_PARAMS = "Cannot read input image {0}";
+
         public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve any of provided fonts. Please check provided FontProvider.";
 
         public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create PDF document: {0}";
+
+        public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
 
         public const String STATISTICS_EVENT_TYPE_CANT_BE_NULL = "Statistics event type can't be null";
 
         public const String STATISTICS_EVENT_TYPE_IS_NOT_DETECTED = "Statistics event type is not detected.";
 
         public const String TAGGING_IS_NOT_SUPPORTED = "Tagging is not supported by the OCR engine.";
+
+        public const String TAGGED_PDF_IS_NOT_SUPPORTED = "Tagged PDF is not supported";
+
+        public const String PDFA_IS_NOT_SUPPORTED = "PDF/A is not supported";
+
+        public const String PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE = "Pdf document must be opened in stamping mode";
+
+        public const String IO_EXCEPTION_OCCURRED = "IO exception occurred while reading the document";
 
         private PdfOcrExceptionMessageConstant() {
         }

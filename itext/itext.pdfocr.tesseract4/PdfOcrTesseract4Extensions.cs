@@ -73,5 +73,12 @@ internal static class PdfOcrTesseract4Extensions
         }
     }
 
+    public static bool IsEmpty<T>(this ICollection<T> collection) {
+        return collection.Count == 0;
+    }
+    
+    public static String JSubstring(this String str, int beginIndex, int endIndex) {
+        return str.Substring(beginIndex, endIndex - beginIndex);
+    }
 }
 //\endcond

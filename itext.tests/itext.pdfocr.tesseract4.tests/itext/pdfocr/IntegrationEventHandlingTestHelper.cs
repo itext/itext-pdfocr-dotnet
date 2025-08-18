@@ -99,7 +99,7 @@ namespace iText.Pdfocr {
 
         protected internal virtual void ValidatePdfProducerLine(String filePath, String expected) {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(filePath))) {
-                NUnit.Framework.Assert.AreEqual(expected, pdfDocument.GetDocumentInfo().GetProducer());
+                NUnit.Framework.Assert.IsTrue(pdfDocument.GetDocumentInfo().GetProducer().Contains(expected));
             }
         }
 
@@ -109,7 +109,7 @@ namespace iText.Pdfocr {
         }
 
         protected internal static ConfirmedEventWrapper GetPdfOcrEvent() {
-            DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_HTML
+            DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_OCR_TESSERACT4
                 );
             return new ConfirmedEventWrapper(PdfOcrTesseract4ProductEvent.CreateProcessImageEvent(new SequenceId(), null
                 , EventConfirmationType.ON_CLOSE), processor.GetUsageType(), processor.GetProducer());
