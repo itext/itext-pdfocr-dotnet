@@ -25,21 +25,24 @@ using System.IO;
 using iText.Commons.Actions;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Contexts;
-using iText.Commons.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Statistics;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class Tesseract4MetaInfoEventHandlingTest : IntegrationEventHandlingTestHelper {
-        public Tesseract4MetaInfoEventHandlingTest(IntegrationTestHelper.ReaderType type)
+        protected internal String destinationFolder;
+
+        public Tesseract4MetaInfoEventHandlingTest(IntegrationTestHelper.ReaderType type, String destinationFolder
+            )
             : base(type) {
+            this.destinationFolder = destinationFolder;
         }
 
         // set meta info tests
         [NUnit.Framework.Test]
         public virtual void SetEventCountingMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "setEventCountingMetaInfo,pdf");
             CreatePdfAndSetEventCountingMetaInfo(tesseractReader, outPdfFile, imgFile, new Tesseract4MetaInfoEventHandlingTest.TestMetaInfo
                 ());
             NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
@@ -54,7 +57,7 @@ namespace iText.Pdfocr.Tesseract4 {
         [NUnit.Framework.Test]
         public virtual void CreatePdfFileTestMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "createPdfFileTestMetaInfo.pdf");
             CreatePdfFileAndSetMetaInfoToProps(tesseractReader, outPdfFile, imgFile, new Tesseract4MetaInfoEventHandlingTest.TestMetaInfo
                 ());
             // check ocr events

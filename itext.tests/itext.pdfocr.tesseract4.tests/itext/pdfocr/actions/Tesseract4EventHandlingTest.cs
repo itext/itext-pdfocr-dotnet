@@ -37,14 +37,17 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Actions {
     public abstract class Tesseract4EventHandlingTest : IntegrationEventHandlingTestHelper {
-        public Tesseract4EventHandlingTest(IntegrationTestHelper.ReaderType type)
+        protected internal String destinationFolder;
+
+        public Tesseract4EventHandlingTest(IntegrationTestHelper.ReaderType type, String destinationFolder)
             : base(type) {
+            this.destinationFolder = destinationFolder;
         }
 
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfFile.pdf");
             new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             // check ocr events
             NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
@@ -62,7 +65,7 @@ namespace iText.Pdfocr.Actions {
         public virtual void OcrPdfCreatorCreatePdfFileNoImageTest() {
             FileInfo imgFile = new FileInfo("unknown");
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(imgFile);
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfFileNoImage.pdf");
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
             NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => ocrPdfCreator.CreatePdfFile(images, outPdfFile
                 ));
@@ -94,7 +97,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileTwoImagesTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfFileTwoImages.pdf");
             new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaUtil.ArraysAsList(imgFile, imgFile), outPdfFile);
             // check ocr events
             NUnit.Framework.Assert.AreEqual(5, eventsHandler.GetEvents().Count);
@@ -113,7 +116,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileTwoRunningsTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfFileTwoRunnings.pdf");
             new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             NUnit.Framework.Assert.AreEqual(6, eventsHandler.GetEvents().Count);
@@ -134,7 +137,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdf.pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             PdfDocument pdfDocument = new OcrPdfCreator(tesseractReader).CreatePdf(JavaCollectionsUtil.SingletonList(imgFile
                 ), pdfWriter);
@@ -154,7 +157,7 @@ namespace iText.Pdfocr.Actions {
         [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
         public virtual void OcrPdfCreatorCreatePdfNoImageTest() {
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(new FileInfo("no_image"));
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfNoImage.pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader);
             NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => ocrPdfCreator.CreatePdf(images, pdfWriter
@@ -176,7 +179,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfAFileTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfAFile.pdf");
             OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetPdfLang("en-US");
             new OcrPdfCreator(tesseractReader, props).CreatePdfAFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile
                 , GetRGBPdfOutputIntent());
@@ -194,7 +197,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfATest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfA.pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetPdfLang("en-US");
             PdfDocument pdfDocument = new OcrPdfCreator(tesseractReader, props).CreatePdfA(JavaCollectionsUtil.SingletonList
@@ -251,7 +254,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileTwoImagesTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(destinationFolder + "createTxtFileTwoImages.txt"
                 ));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
@@ -264,7 +267,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileNullEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(destinationFolder + "createTxtFileNullEventHelper.txt"
                 ), new OcrProcessContext(null));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
@@ -279,7 +282,7 @@ namespace iText.Pdfocr.Actions {
         public virtual void CreateTxtFileNoImageTest() {
             FileInfo imgFile = new FileInfo("no_image");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".txt");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "createTxtFileNoImage.pdf");
             NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => tesseractReader.CreateTxtFile(images, outPdfFile
                 ));
             // only one usage event is expected and it is not confirmed (no confirm event
@@ -322,7 +325,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void SetEventCountingMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "setEventCountingMetaInfo.pdf");
             CreatePdfAndSetEventCountingMetaInfo(tesseractReader, outPdfFile, imgFile, new Tesseract4EventHandlingTest.TestMetaInfo
                 ());
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
@@ -339,7 +342,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreatePdfFileTestMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "createPdfFileTestMetaInfo.pdf");
             CreatePdfFileAndSetMetaInfoToProps(tesseractReader, outPdfFile, imgFile, new Tesseract4EventHandlingTest.TestMetaInfo
                 ());
             // check ocr events
@@ -370,7 +373,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileCustomEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "numbers_01.jpg");
-            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(destinationFolder + "createTxtFileCustomEventHelper.txt"
                 ), new OcrProcessContext(new Tesseract4EventHandlingTest.CustomEventHelper()));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
@@ -384,7 +387,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileMultipageTiffTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfFileMultipageTiff.pdf");
             new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             // check ocr events
             // 2 pages in TIFF image
@@ -403,7 +406,8 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileMultipageTiffNoPreprocessingTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorCreatePdfFileMultipageTiffNoPreprocessing.pdf"
+                );
             tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages(false);
             new OcrPdfCreator(tesseractReader).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             // check ocr events
@@ -421,7 +425,8 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileMultipageTiffTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
-            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), FileUtil.CreateTempFile("test", ".txt"));
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), new FileInfo(destinationFolder + "createTxtFileMultipageTiff.txt"
+                ));
             // 2 pages in TIFF image
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
@@ -436,7 +441,8 @@ namespace iText.Pdfocr.Actions {
         public virtual void CreateTxtFileMultipageTiffNoPreprocessingTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGES_DIRECTORY + "two_pages.tiff");
             tesseractReader.GetTesseract4OcrEngineProperties().SetPreprocessingImages(false);
-            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), FileUtil.CreateTempFile("test", ".txt"));
+            tesseractReader.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), new FileInfo(destinationFolder + "createTxtFileMultipageTiffNoPreprocessing.txt"
+                ));
             // 2 pages in TIFF image
             NUnit.Framework.Assert.AreEqual(3, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
@@ -475,7 +481,7 @@ namespace iText.Pdfocr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorMakeSearchableTest() {
             FileInfo inPdfFile = new FileInfo(TEST_PDFS_DIRECTORY + "2pages.pdf");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(destinationFolder + "ocrPdfCreatorMakeSearchable.pdf");
             try {
                 new OcrPdfCreator(tesseractReader).MakePdfSearchable(inPdfFile, outPdfFile);
                 // Check ocr events. No stats events.

@@ -38,11 +38,19 @@ using iText.Test.Attributes;
 namespace iText.Pdfocr.Onnxtr.Actions {
     [NUnit.Framework.Category("IntegrationTest")]
     public class OnnxTrEventHandlingTest : IntegrationEventHandlingTestHelper {
+        private static readonly String DESTINATION_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory
+             + "/test/itext/pdfocr/onnxtr/actions/OnnxTrEventHandlingTest";
+
+        [NUnit.Framework.OneTimeSetUp]
+        public static void BeforeTests() {
+            CreateOrClearDestinationFolder(DESTINATION_FOLDER);
+        }
+
         // Section with OcrPdfCreator#createPdfFile related tests
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfFile.pdf");
             new OcrPdfCreator(OCR_ENGINE).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             // check ocr events
             NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
@@ -60,7 +68,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         public virtual void OcrPdfCreatorCreatePdfFileNoImageTest() {
             FileInfo imgFile = new FileInfo("unknown");
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(imgFile);
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfFileNoImage.pdf");
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OCR_ENGINE);
             NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => ocrPdfCreator.CreatePdfFile(images, outPdfFile
                 ));
@@ -94,7 +102,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileTwoImagesTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfFileTwoImages.pdf");
             new OcrPdfCreator(OCR_ENGINE).CreatePdfFile(JavaUtil.ArraysAsList(imgFile, imgFile), outPdfFile);
             // check ocr events
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
@@ -113,7 +121,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileTwoRunningsTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfFileTwoRunnings");
             new OcrPdfCreator(OCR_ENGINE).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             new OcrPdfCreator(OCR_ENGINE).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
@@ -135,7 +143,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdf.pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             PdfDocument pdfDocument = new OcrPdfCreator(OCR_ENGINE).CreatePdf(JavaCollectionsUtil.SingletonList(imgFile
                 ), pdfWriter);
@@ -155,7 +163,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
         public virtual void OcrPdfCreatorCreatePdfNoImageTest() {
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(new FileInfo("no_image"));
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfNoImage.pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OCR_ENGINE);
             NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => ocrPdfCreator.CreatePdf(images, pdfWriter
@@ -178,7 +186,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfAFileTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfAFile.pdf");
             OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetPdfLang("en-US");
             new OcrPdfCreator(OCR_ENGINE, props).CreatePdfAFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile
                 , GetRGBPdfOutputIntent());
@@ -197,7 +205,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfATest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfA.pdf");
             PdfWriter pdfWriter = new PdfWriter(outPdfFile);
             OcrPdfCreatorProperties props = new OcrPdfCreatorProperties().SetPdfLang("en-US");
             PdfDocument pdfDocument = new OcrPdfCreator(OCR_ENGINE, props).CreatePdfA(JavaCollectionsUtil.SingletonList
@@ -256,7 +264,8 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileTwoImagesTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"));
+            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(DESTINATION_FOLDER + "createTxtFileTwoImages.txt"
+                ));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent1 = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent1, EventConfirmationType.ON_DEMAND);
@@ -271,8 +280,8 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileNullEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"), 
-                new OcrProcessContext(null));
+            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(DESTINATION_FOLDER + "createTxtFileNullEventHelper.txt"
+                ), new OcrProcessContext(null));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent1 = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent1, EventConfirmationType.ON_DEMAND);
@@ -289,7 +298,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         public virtual void CreateTxtFileNoImageTest() {
             FileInfo imgFile = new FileInfo("no_image");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".txt");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + " createTxtFileNoImage.pdf");
             NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => OCR_ENGINE.CreateTxtFile(images, outPdfFile));
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
         }
@@ -334,7 +343,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void SetEventCountingMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "setEventCountingMetaInfo.pdf");
             CreatePdfAndSetEventCountingMetaInfo(OCR_ENGINE, outPdfFile, imgFile, new TestMetaInfo());
             // TestMetaInfo from com.itextpdf.pdfocr package which isn't
             // registered in ContextManager, it's why core events are passed
@@ -352,7 +361,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void SetEventCountingOnnxTrMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + " setEventCountingOnnxTrMetaInfo.pdf");
             CreatePdfAndSetEventCountingMetaInfo(OCR_ENGINE, outPdfFile, imgFile, new OnnxTrEventHandlingTest.TestOnnxTrMetaInfo
                 ());
             // TestOnnxTrMetaInfo from com.itextpdf.pdfocr.onnxtr package which
@@ -369,7 +378,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreatePdfFileTestMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "createPdfFileTestMetaInfo.pdf");
             CreatePdfFileAndSetMetaInfoToProps(OCR_ENGINE, outPdfFile, imgFile, new TestMetaInfo());
             // TestMetaInfo from com.itextpdf.pdfocr package which isn't
             // registered in ContextManager, it's why core events are passed
@@ -388,7 +397,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreatePdfFileTestOnnxTrMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "createPdfFileTestOnnxTrMetaInfo.pdf");
             CreatePdfFileAndSetMetaInfoToProps(OCR_ENGINE, outPdfFile, imgFile, new OnnxTrEventHandlingTest.TestOnnxTrMetaInfo
                 ());
             // TestOnnxTrMetaInfo from com.itextpdf.pdfocr.onnxtr package which
@@ -418,8 +427,8 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileCustomEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), FileUtil.CreateTempFile("test", ".txt"), 
-                new OcrProcessContext(new OnnxTrEventHandlingTest.CustomEventHelper()));
+            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(DESTINATION_FOLDER + "createTxtFileCustomEventHelper.txt"
+                ), new OcrProcessContext(new OnnxTrEventHandlingTest.CustomEventHelper()));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent1 = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent1, EventConfirmationType.ON_DEMAND);
@@ -435,7 +444,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorCreatePdfFileMultipageTiffTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "two_pages.tiff");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfFileMultipageTiff.pdf");
             new OcrPdfCreator(OCR_ENGINE).CreatePdfFile(JavaCollectionsUtil.SingletonList(imgFile), outPdfFile);
             // check ocr events
             // 2 pages in TIFF image
@@ -454,7 +463,8 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileMultipageTiffTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "two_pages.tiff");
-            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), FileUtil.CreateTempFile("test", ".txt"));
+            OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile), new FileInfo(DESTINATION_FOLDER + "createTxtFileMultipageTiff.txt"
+                ));
             // 2 pages in TIFF image
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             for (int i = 0; i < 2; i++) {
@@ -482,7 +492,7 @@ namespace iText.Pdfocr.Onnxtr.Actions {
         [NUnit.Framework.Test]
         public virtual void OcrPdfCreatorMakeSearchableTest() {
             FileInfo inPdfFile = new FileInfo(TEST_PDFS_DIRECTORY + "2pages.pdf");
-            FileInfo outPdfFile = FileUtil.CreateTempFile("test", ".pdf");
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorMakeSearchable.pdf");
             try {
                 new OcrPdfCreator(OCR_ENGINE).MakePdfSearchable(inPdfFile, outPdfFile);
                 // Check ocr events. No stats events.
