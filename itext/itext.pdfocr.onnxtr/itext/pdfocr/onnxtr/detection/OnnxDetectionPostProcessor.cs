@@ -87,10 +87,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             int height = output.GetDimension(1);
             int width = output.GetDimension(2);
             IList<iText.Kernel.Geom.Point[]> boxes = new List<iText.Kernel.Geom.Point[]>();
-            // TODO DEVSIX-9153: Ideally we would want to either cache the score mask (as model
-            //       dimensions won't change) or use a smaller mask with only the
-            //       contour. Though based on profiling, it doesn't look like it is
-            //       that bad, when it is only once per input image.
+            // Ideally we would want to either cache the score mask (as model dimensions won't change)
+            // or use a smaller mask with only the contour. Though based on profiling, it doesn't look
+            // like it is that bad, when it is only once per input image.
             using (Mat scoreMask = new Mat(height, width, MatType.CV_8UC1, new Scalar(0))) {
                 using (VectorOfMat contours = FindTextContours(output, binarizationThreshold)) {
                     long contourCount = contours.Size;
