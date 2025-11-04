@@ -20,7 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using iText.Commons.Utils;
@@ -41,12 +41,32 @@ namespace iText.Pdfocr.Onnxtr.Util {
             ToBchwInputBasicTest(expectedShape, expectedData, images, props);
         }
 
+        public static IEnumerable<Object[]> TruncateToRatioTestParams() {
+            return JavaUtil.ArraysAsList(new Object[][] { new Object[] { new Dimensions2D(100, 20), new Dimensions2D(100
+                , 20), 8.0 }, new Object[] { new Dimensions2D(160, 20), new Dimensions2D(1000, 20), 8.0 }, new Object[
+                ] { new Dimensions2D(100, 800), new Dimensions2D(100, 2000), 8.0 } });
+        }
+
+        [NUnit.Framework.TestCaseSource("TruncateToRatioTestParams")]
+        public virtual void TruncateToRatioTest(Dimensions2D expectedSize, Dimensions2D inputSize, double ratioLimit
+            ) {
+            IronSoftware.Drawing.AnyBitmap img = NewBlankInputImage(inputSize);
+            IronSoftware.Drawing.AnyBitmap truncated = BufferedImageUtil.TruncateToRatio(img, ratioLimit);
+            NUnit.Framework.Assert.AreEqual(expectedSize.GetWidth(), BufferedImageUtil.GetWidth(truncated));
+            NUnit.Framework.Assert.AreEqual(expectedSize.GetHeight(), BufferedImageUtil.GetHeight(truncated));
+        }
+
         private static void ToBchwInputBasicTest(long[] expectedShape, float[] expectedData, ICollection<IronSoftware.Drawing.AnyBitmap
             > images, OnnxInputProperties props) {
             FloatBufferMdArray result = BufferedImageUtil.ToBchwInput(images, props);
             NUnit.Framework.Assert.AreEqual(expectedShape, result.GetShape());
             float[] actualData = result.GetData();
             iText.Test.TestUtil.AreEqual(expectedData, actualData, 1E-6F);
+        }
+
+        private static IronSoftware.Drawing.AnyBitmap NewBlankInputImage(Dimensions2D dims) {
+            return new SkiaSharp.SKBitmap(dims.GetWidth(), dims.GetHeight(), 
+                SkiaSharp.SKColorType.Rgb888x, SkiaSharp.SKAlphaType.Premul);
         }
 
         private static IronSoftware.Drawing.AnyBitmap NewRgbImage(int width, int height, int[] pixels) {

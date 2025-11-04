@@ -317,6 +317,45 @@ namespace iText.Pdfocr.Onnxtr.Util {
             return result;
         }
 
+        /// <summary>
+        /// Truncates the input image, so that neither width/height, nor
+        /// height/width ratios exceed the limit.
+        /// </summary>
+        /// <remarks>
+        /// Truncates the input image, so that neither width/height, nor
+        /// height/width ratios exceed the limit.
+        /// <para />
+        /// If width/height ratio exceeds the limit, the image will be truncated
+        /// on left and right equally.
+        /// <para />
+        /// If height/width ratio exceeds the limit, the image will be truncated
+        /// on top and bottom equally.
+        /// </remarks>
+        /// <param name="image">input image to truncate</param>
+        /// <param name="ratioLimit">target ratio limit</param>
+        /// <returns>the truncated image</returns>
+        public static IronSoftware.Drawing.AnyBitmap TruncateToRatio(IronSoftware.Drawing.AnyBitmap image, double 
+            ratioLimit) {
+            int width = BufferedImageUtil.GetWidth(image);
+            int height = BufferedImageUtil.GetHeight(image);
+            // If w/h ratio is too big, truncating by width
+            double imageRatio = (double)width / height;
+            if (imageRatio > ratioLimit) {
+                int newWidth = Math.Max(1, (int)(ratioLimit * height));
+                int newX = (width - newWidth) / 2;
+                return image.GetSubimage(newX, 0, newWidth, height);
+            }
+            // If h/w ratio is too big, truncating by height
+            double imageRatioInv = 1.0 / imageRatio;
+            if (imageRatioInv > ratioLimit) {
+                int newHeight = Math.Max(1, (int)(ratioLimit * width));
+                int newY = (height - newHeight) / 2;
+                return image.GetSubimage(0, newY, width, newHeight);
+            }
+            // Otherwise leaving as-is
+            return image;
+        }
+
         private static Mat CalculateBoxTransformationMat(iText.Kernel.Geom.Point[] box, float boxWidth, float boxHeight) {
             using (Mat srcPoints = new Mat(3, 2, MatType.CV_32F)) {
                 using (Mat dstPoints = new Mat(3, 2, MatType.CV_32F)) {
