@@ -31,15 +31,42 @@ namespace iText.Pdfocr.Onnxtr.Util {
 
         private readonly int height;
 
+        /// <summary>
+        /// Creates new
+        /// <see cref="Dimensions2D"/>
+        /// instance.
+        /// </summary>
+        /// <param name="width">width dimension</param>
+        /// <param name="height">height dimension</param>
         public Dimensions2D(int width, int height) {
             this.width = width;
             this.height = height;
         }
 
+        /// <summary>
+        /// Gets width of the
+        /// <see cref="Dimensions2D"/>
+        /// instance.
+        /// </summary>
+        /// <returns>
+        /// width of the
+        /// <see cref="Dimensions2D"/>
+        /// instance
+        /// </returns>
         public virtual int GetWidth() {
             return width;
         }
 
+        /// <summary>
+        /// Gets height of the
+        /// <see cref="Dimensions2D"/>
+        /// instance.
+        /// </summary>
+        /// <returns>
+        /// height of the
+        /// <see cref="Dimensions2D"/>
+        /// instance
+        /// </returns>
         public virtual int GetHeight() {
             return height;
         }
