@@ -52,8 +52,12 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// Threshold value used, when binarizing a monochromatic image. If pixel
         /// value is greater or equal to the threshold, it is mapped to 1, otherwise
         /// it is mapped to 0.
+        /// <para />
+        /// This is not the original binarization threshold, provided by the user,
+        /// but the value of logit on it. This is so we don't need to run expit
+        /// over the model output for binarization.
         /// </remarks>
-        private readonly float binarizationThreshold;
+        private readonly float binarizationThresholdLogit;
 
         /// <summary>Score threshold for a detected box.</summary>
         /// <remarks>
@@ -72,7 +76,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// the box gets discarded
         /// </param>
         public OnnxDetectionPostProcessor(float binarizationThreshold, float scoreThreshold) {
-            this.binarizationThreshold = binarizationThreshold;
+            this.binarizationThresholdLogit = (float)MathUtil.Logit(MathUtil.Clamp(binarizationThreshold, 0.0, 1.0));
             this.scoreThreshold = scoreThreshold;
         }
 
@@ -91,7 +95,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             // or use a smaller mask with only the contour. Though based on profiling, it doesn't look
             // like it is that bad, when it is only once per input image.
             using (Mat scoreMask = new Mat(height, width, MatType.CV_8UC1, new Scalar(0))) {
-                using (VectorOfMat contours = FindTextContours(output, binarizationThreshold)) {
+                using (VectorOfMat contours = FindTextContours(output, binarizationThresholdLogit)) {
                     long contourCount = contours.Size;
                     for (long contourIdx = 0; contourIdx < contourCount; ++contourIdx) {
                         using (Mat contour = contours.ToArray()[contourIdx]) {
@@ -149,7 +153,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             /*
             * Algorithm here is pretty simple. We go over all the points, painted
             * by the contour shape, and calculate the mean prediction score
-            * value over the original normalized output array.
+            * value over the original output array, values of which we normalize
+            * via expit.
             */
             FloatBufferMdArray hwMdArray = predictions.GetSubArray(0);
             int height = hwMdArray.GetDimension(0);
@@ -171,7 +176,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                         continue;
                     }
 
-                    float prediction = predictionsRow.GetScalar(x);
+                    float prediction = MathUtil.Expit(predictionsRow.GetScalar(x));
                     if (prediction > 0) {
                         sum += prediction;
                         nonZeroCount++;

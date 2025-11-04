@@ -90,6 +90,29 @@ namespace iText.Pdfocr.Onnxtr.Util {
             return (float)(1 / (1 + Math.Exp(-x)));
         }
 
+        /// <summary>Computes the logit function, which is the inverse of expit, for the given input.</summary>
+        /// <param name="x">the input value</param>
+        /// <returns>the logit of the input value</returns>
+        public static double Logit(double x) {
+            if (0 < x && x < 1) {
+                return Math.Log(x / (1.0 - x));
+            }
+            if (x == 0F) {
+                return float.NegativeInfinity;
+            }
+            if (x == 1F) {
+                return float.PositiveInfinity;
+            }
+            throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.X_SHOULD_BE_IN_0_1_RANGE);
+        }
+
+        /// <summary>Computes the logit function, which is the inverse of expit, for the given input.</summary>
+        /// <param name="x">the input value</param>
+        /// <returns>the logit of the input value</returns>
+        public static float Logit(float x) {
+            return (float)Logit((double)x);
+        }
+
         /// <summary>
         /// Computes the Euclidean modulo (non-negative remainder) of
         /// <paramref name="x"/>

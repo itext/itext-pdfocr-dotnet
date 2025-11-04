@@ -53,6 +53,15 @@ namespace iText.Pdfocr.Onnxtr.Util {
         }
 
         [NUnit.Framework.Test]
+        public virtual void LogitTest() {
+            NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Logit(-0.1F));
+            NUnit.Framework.Assert.AreEqual(float.NegativeInfinity, MathUtil.Logit(0F));
+            NUnit.Framework.Assert.AreEqual(0F, MathUtil.Logit(0.5F));
+            NUnit.Framework.Assert.AreEqual(float.PositiveInfinity, MathUtil.Logit(1F));
+            NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => MathUtil.Logit(1.1F));
+        }
+
+        [NUnit.Framework.Test]
         public virtual void LevenshteinDistanceTest() {
             NUnit.Framework.Assert.AreEqual(5, MathUtil.CalculateLevenshteinDistance("kitten", "meat"));
             NUnit.Framework.Assert.AreEqual(1, MathUtil.CalculateLevenshteinDistance("kitten", "kitte"));

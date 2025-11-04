@@ -182,12 +182,6 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         protected internal override IList<IList<iText.Kernel.Geom.Point[]>> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap
             > inputBatch, FloatBufferMdArray outputBatch) {
             IDetectionPostProcessor postProcessor = properties.GetPostProcessor();
-            // Normalizing pixel values via a sigmoid expit function
-            float[] outputBuffer = outputBatch.GetData();
-            int offset = outputBatch.GetArrayOffset();
-            for (int i = offset; i < offset + outputBatch.GetArraySize(); ++i) {
-                outputBuffer[i] = MathUtil.Expit(outputBuffer[i]);
-            }
             IList<IList<iText.Kernel.Geom.Point[]>> batchTextBoxes = new List<IList<iText.Kernel.Geom.Point[]>>(inputBatch
                 .Count);
             for (int i = 0; i < inputBatch.Count; ++i) {
