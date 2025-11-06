@@ -33,13 +33,37 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// </summary>
     public class OnnxDetectionPredictor : AbstractOnnxPredictor<IronSoftware.Drawing.AnyBitmap, IList<iText.Kernel.Geom.Point
         []>>, IDetectionPredictor {
+        /// <summary>The expected output shape (BCHW).</summary>
+        /// <remarks>
+        /// The expected output shape (BCHW).
+        /// <para />
+        /// Batch size is dynamic, as usual, so -1 there.
+        /// <para />
+        /// For channels, ideally, there is just one "monochrome" image, but some
+        /// models put multiple different metrics in one output (ex. EasyOCR
+        /// returns 2), so we will assume dynamic size here as well.
+        /// <para />
+        /// As for height and width, while in OnnxTR the dimensions are static and
+        /// are equal to the input image dimensions, this is not the case
+        /// everywhere. For example, in EasyOCR output is quarter of the input
+        /// resolution, but still static. On the other hand, in PaddleOCR, input
+        /// and output resolutions are the same, but they are dynamic. So we cannot
+        /// statically check this here without knowing the exact dimensions of the
+        /// input.
+        /// <para />
+        /// Overall, this means, that the dimension checks for the output of the
+        /// models are useless here, except for checking, that there are 4
+        /// dimensions...
+        /// </remarks>
+        private static readonly long[] EXPECTED_OUTPUT_SHAPE = new long[] { -1, -1, -1, -1 };
+
         /// <summary>Configuration properties of the predictor.</summary>
         private readonly OnnxDetectionPredictorProperties properties;
 
         /// <summary>Creates a text detection predictor with the specified properties.</summary>
         /// <param name="properties">properties of the predictor</param>
         public OnnxDetectionPredictor(OnnxDetectionPredictorProperties properties)
-            : base(properties.GetModelPath(), properties.GetInputProperties(), GetExpectedOutputShape(properties)) {
+            : base(properties.GetModelPath(), properties.GetInputProperties(), EXPECTED_OUTPUT_SHAPE) {
             this.properties = properties;
         }
 
@@ -181,13 +205,10 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <summary><inheritDoc/></summary>
         protected internal override IList<IList<iText.Kernel.Geom.Point[]>> FromOutputBuffer(IList<IronSoftware.Drawing.AnyBitmap
             > inputBatch, FloatBufferMdArray outputBatch) {
+            int batchWidth = outputBatch.GetDimension(3);
+            int batchHeight = outputBatch.GetDimension(2);
+            bool usedSymmetricPadding = properties.GetInputProperties().UseSymmetricPad();
             IDetectionPostProcessor postProcessor = properties.GetPostProcessor();
-            // Normalizing pixel values via a sigmoid expit function
-            float[] outputBuffer = outputBatch.GetData();
-            int offset = outputBatch.GetArrayOffset();
-            for (int i = offset; i < offset + outputBatch.GetArraySize(); ++i) {
-                outputBuffer[i] = MathUtil.Expit(outputBuffer[i]);
-            }
             IList<IList<iText.Kernel.Geom.Point[]>> batchTextBoxes = new List<IList<iText.Kernel.Geom.Point[]>>(inputBatch
                 .Count);
             for (int i = 0; i < inputBatch.Count; ++i) {
@@ -199,33 +220,31 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                 * absolute coordinates in the input image. This means, that we need
                 * to revert resizing/padding changes as well.
                 */
-                ConvertToAbsoluteInputBoxes(image, textBoxes, properties.GetInputProperties());
+                ConvertToAbsoluteInputBoxes(image, textBoxes, batchWidth, batchHeight, usedSymmetricPadding);
                 batchTextBoxes.Add(textBoxes);
             }
             return batchTextBoxes;
         }
 
         private static void ConvertToAbsoluteInputBoxes(IronSoftware.Drawing.AnyBitmap image, IList<iText.Kernel.Geom.Point
-            []> boxes, OnnxInputProperties properties) {
+            []> boxes, int batchWidth, int batchHeight, bool usedSymmetricPadding) {
             int sourceWidth = BufferedImageUtil.GetWidth(image);
             int sourceHeight = BufferedImageUtil.GetHeight(image);
-            float targetWidth = properties.GetWidth();
-            float targetHeight = properties.GetHeight();
-            float widthRatio = targetWidth / sourceWidth;
-            float heightRatio = targetHeight / sourceHeight;
-            float widthScale;
-            float heightScale;
+            double widthRatio = (double)batchWidth / sourceWidth;
+            double heightRatio = (double)batchHeight / sourceHeight;
+            double widthScale;
+            double heightScale;
             // We preserve ratio, when resizing input
             if (heightRatio > widthRatio) {
-                heightScale = targetHeight / (float)MathematicUtil.Round(sourceHeight * widthRatio);
+                heightScale = batchHeight / (double)MathematicUtil.Round(sourceHeight * widthRatio);
                 widthScale = 1;
             }
             else {
-                widthScale = targetWidth / (float)MathematicUtil.Round(sourceWidth * heightRatio);
+                widthScale = batchWidth / (double)MathematicUtil.Round(sourceWidth * heightRatio);
                 heightScale = 1;
             }
             Action<iText.Kernel.Geom.Point> updater;
-            if (properties.UseSymmetricPad()) {
+            if (usedSymmetricPadding) {
                 updater = (p) => p.SetLocation(MathUtil.Clamp(sourceWidth * (0.5 + (p.GetX() - 0.5) * widthScale), 0, sourceWidth
                     ), MathUtil.Clamp(sourceHeight * (0.5 + (p.GetY() - 0.5) * heightScale), 0, sourceHeight));
             }
@@ -238,18 +257,6 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                     updater(p);
                 }
             }
-        }
-
-        private static long[] GetExpectedOutputShape(OnnxDetectionPredictorProperties properties) {
-            OnnxInputProperties inputProperties = properties.GetInputProperties();
-            // Dynamic batch size
-            long BATCH_SIZE = -1;
-            // Output is "monochrome"
-            long CHANNEL_COUNT = 1;
-            // Output retains the "image" dimension from the input
-            long height = inputProperties.GetHeight();
-            long width = inputProperties.GetWidth();
-            return new long[] { BATCH_SIZE, CHANNEL_COUNT, height, width };
         }
     }
 }

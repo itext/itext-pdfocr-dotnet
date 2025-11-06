@@ -20,13 +20,22 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
     [NUnit.Framework.Category("IntegrationTest")]
     public class Tesseract4MetaInfoEventHandlingLibTest : Tesseract4MetaInfoEventHandlingTest {
+        private static readonly String DESTINATION_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory
+             + "/test/itext/pdfocr/tesseract4/Tesseract4MetaInfoEventHandlingLibTest/";
+
+        [NUnit.Framework.OneTimeSetUp]
+        public static void BeforeTests() {
+            CreateOrClearDestinationFolder(DESTINATION_FOLDER);
+        }
+
         public Tesseract4MetaInfoEventHandlingLibTest()
-            : base(IntegrationTestHelper.ReaderType.LIB) {
+            : base(IntegrationTestHelper.ReaderType.LIB, DESTINATION_FOLDER) {
         }
     }
 }

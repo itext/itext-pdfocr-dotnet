@@ -25,11 +25,11 @@
     <PackageReference Include="IronSoftware.System.Drawing" Version="2025.6.2" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext" Version="9.3.0" Condition="!Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')" />
+    <PackageReference Include="itext" Version="9.4.0" Condition="!Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.layout\itext.layout.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.pdfa\itext.pdfa.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdfa\itext.pdfa.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.styledxmlparser\itext.styledxmlparser.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.styledxmlparser\itext.styledxmlparser.csproj')" />
-    <PackageReference Include="itext.commons" Version="9.3.0" Condition="!Exists('..\..\..\itextcore\itext\itext.commons\itext.commons.csproj')" />
+    <PackageReference Include="itext.commons" Version="9.4.0" Condition="!Exists('..\..\..\itextcore\itext\itext.commons\itext.commons.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.commons\itext.commons.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.commons\itext.commons.csproj')" />
   </ItemGroup>
 

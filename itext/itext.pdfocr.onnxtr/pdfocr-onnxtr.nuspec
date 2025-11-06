@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
     <metadata>
         <id>itext.pdfocr.onnxtr</id>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
         <title>iText pdfOcr</title>
         <authors>Apryse Software</authors>
         <owners>Apryse Software</owners>
@@ -18,7 +18,7 @@
         <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
         <dependencies>
             <group targetFramework="net461">
-                <dependency id="itext.pdfocr.api" version="4.1.0" />
+                <dependency id="itext.pdfocr.api" version="4.1.1" />
                 <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1" />
                 <dependency id="OpenCvSharp4" version="4.11.0.20250507" />
                 <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507" />
@@ -27,7 +27,7 @@
                 <dependency id="SkiaSharp.NativeAssets.Linux.NoDependencies" version="3.119.0" />
             </group>
             <group targetFramework="netstandard2.0">
-                <dependency id="itext.pdfocr.api" version="4.1.0" />
+                <dependency id="itext.pdfocr.api" version="4.1.1" />
                 <dependency id="Microsoft.ML.OnnxRuntime" version="1.22.1" />
                 <dependency id="OpenCvSharp4" version="4.11.0.20250507" />
                 <dependency id="OpenCvSharp4.runtime.win" version="4.11.0.20250507" />

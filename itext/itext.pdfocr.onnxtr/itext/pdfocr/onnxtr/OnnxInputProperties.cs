@@ -43,11 +43,11 @@ namespace iText.Pdfocr.Onnxtr {
         public const int EXPECTED_SHAPE_SIZE = 4;
 
         /// <summary>Per-channel mean, used for normalization.</summary>
-        /// <remarks>Per-channel mean, used for normalization. Should be EXPECTED_SHAPE_SIZE length.</remarks>
+        /// <remarks>Per-channel mean, used for normalization. Should be EXPECTED_CHANNEL_COUNT length.</remarks>
         private readonly float[] mean;
 
         /// <summary>Per-channel standard deviation, used for normalization.</summary>
-        /// <remarks>Per-channel standard deviation, used for normalization. Should be EXPECTED_SHAPE_SIZE length.</remarks>
+        /// <remarks>Per-channel standard deviation, used for normalization. Should be EXPECTED_CHANNEL_COUNT length.</remarks>
         private readonly float[] std;
 
         /// <summary>Target input shape.</summary>
@@ -58,8 +58,8 @@ namespace iText.Pdfocr.Onnxtr {
         private readonly bool symmetricPad;
 
         /// <summary>Creates model input properties.</summary>
-        /// <param name="mean">per-channel mean, used for normalization. Should be EXPECTED_SHAPE_SIZE length</param>
-        /// <param name="std">per-channel standard deviation, used for normalization. Should be EXPECTED_SHAPE_SIZE length
+        /// <param name="mean">per-channel mean, used for normalization. Should be EXPECTED_CHANNEL_COUNT length</param>
+        /// <param name="std">per-channel standard deviation, used for normalization. Should be EXPECTED_CHANNEL_COUNT length
         ///     </param>
         /// <param name="shape">target input shape. Should be EXPECTED_SHAPE_SIZE length</param>
         /// <param name="symmetricPad">whether padding should be symmetrical during input resizing</param>

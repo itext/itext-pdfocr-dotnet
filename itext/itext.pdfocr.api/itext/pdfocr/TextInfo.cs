@@ -38,14 +38,6 @@ namespace iText.Pdfocr {
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
         /// describing text bbox (lower-left based) expressed in points.
         /// </summary>
-        /// <remarks>
-        /// <see cref="iText.Kernel.Geom.Rectangle"/>
-        /// describing text bbox (lower-left based) expressed in points.
-        /// <para />
-        /// TODO DEVSIX-9153: mark this on breaking changes page. Why not return rectangles in image pixels?
-        /// Seems odd, that an OCR engine should be concerned by PDF specific. It would make sense for an engine
-        /// to return results, which could be directly applied to images inputs instead.
-        /// </remarks>
         private Rectangle bboxRect;
 
         /// <summary>

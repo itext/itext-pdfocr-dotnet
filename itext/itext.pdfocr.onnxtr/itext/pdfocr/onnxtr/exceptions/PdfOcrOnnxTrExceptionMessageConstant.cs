@@ -86,6 +86,8 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String VALUES_SHOULD_BE_A_NON_EMPTY_ARRAY = "Values should be a non-empty array.";
 
+        public const String X_SHOULD_BE_IN_0_1_RANGE = "X should be in [0; 1] range.";
+
         private PdfOcrOnnxTrExceptionMessageConstant() {
         }
         // Private constructor will prevent the instantiation of this class directly.

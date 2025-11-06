@@ -25,12 +25,12 @@ using iText.Pdfocr.Onnxtr;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
     /// <summary>
-    /// Interface for post-processors, which convert normalized, but still raw output
-    /// of an ML model and returns rotated boxes with the detected objects.
+    /// Interface for post-processors, which convert raw output of an ML model and
+    /// returns rotated boxes with the detected objects.
     /// </summary>
     /// <remarks>
-    /// Interface for post-processors, which convert normalized, but still raw output
-    /// of an ML model and returns rotated boxes with the detected objects.
+    /// Interface for post-processors, which convert raw output of an ML model and
+    /// returns rotated boxes with the detected objects.
     /// <para />
     /// Output point arrays should represent a rectangle and contain 4 points. Order
     /// of the points should be the following: Bottom-Left, Top-Left, Top-Right,
@@ -46,7 +46,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// detected objects.
         /// </summary>
         /// <param name="input">input image, which was used to produce the inputs to the ML model</param>
-        /// <param name="output">normalized output of the ML model</param>
+        /// <param name="output">output of the ML model</param>
         /// <returns>a list of detected objects. See interface documentation for more information</returns>
         IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, FloatBufferMdArray output);
     }
