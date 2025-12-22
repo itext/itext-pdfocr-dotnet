@@ -80,6 +80,7 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("DEVSIX-9261 Investigate test failures on Windows Server 2025 and Windows 11")]
         public virtual void CompareRotatedImage() {
             String testName = "compareRotatedImage";
             String filename = "90_degrees_rotated";
@@ -94,7 +95,7 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("eng"), JavaUtil.ArraysAsList(NOTO_SANS_FONT_PATH), null, true);
-            // Because of difference of tesseract 5 and tesseract 4 there're some differences in text recognition.
+            // Because of difference of tesseract 5 and tesseract 4 there are some differences in text recognition.
             // So the goal of this test is to make text invisible and check if image is rotated.
             // Proper text recognition is compared in testHocrRotatedImage test by checking HOCR file.
             bool javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory()
