@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -38,7 +38,7 @@ namespace iText.Pdfocr.Onnxtr.Actions.Data {
 
         private const int PDF_OCR_COPYRIGHT_SINCE = 2000;
 
-        private const int PDF_OCR_COPYRIGHT_TO = 2025;
+        private const int PDF_OCR_COPYRIGHT_TO = 2026;
 
         private static readonly ProductData PDF_OCR_ONNXTR_PRODUCT_DATA = new ProductData(PDF_OCR_ONNXTR_PUBLIC_PRODUCT_NAME
             , PDF_OCR_ONNXTR_PRODUCT_NAME, PDF_OCR_VERSION, PDF_OCR_COPYRIGHT_SINCE, PDF_OCR_COPYRIGHT_TO);
