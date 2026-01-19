@@ -37,7 +37,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// Bottom-Right. This is with "bottom" and "top" referring to how it would look
     /// on an image, not Y coordinate.
     /// <para />
-    /// Its box points are return in a different order, it will cause issues with
+    /// If box points are returned in a different order, it will cause issues with
     /// the following steps (like orientation prediction and text recognition).
     /// </remarks>
     public interface IDetectionPostProcessor {
