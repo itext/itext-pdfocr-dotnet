@@ -53,11 +53,12 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <summary><inheritDoc/></summary>
         public virtual String Process(FloatBufferMdArray output) {
             int maxWordLength = output.GetDimension(0);
+            int labelStride = output.GetDimension(1);
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
-            float[] values = new float[LabelDimension()];
+            float[] values = new float[Math.Min(LabelDimension(), labelStride)];
             float[] outputBuffer = output.GetData();
             int arrayOffset = output.GetArrayOffset();
-            for (int i = arrayOffset; i < arrayOffset + output.GetArraySize(); i += values.Length) {
+            for (int i = arrayOffset; i < arrayOffset + output.GetArraySize(); i += labelStride) {
                 Array.Copy(outputBuffer, i, values, 0, values.Length);
                 int letterIndex = MathUtil.Argmax(values);
                 if (letterIndex < vocabulary.Size()) {
