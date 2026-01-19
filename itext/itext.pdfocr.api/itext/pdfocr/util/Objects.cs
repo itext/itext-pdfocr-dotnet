@@ -38,5 +38,15 @@ namespace iText.Pdfocr.Util
             }
             return obj;
         }
+
+        public static bool DeepEquals<T>(T[] a, T[] b)
+        {
+            if (a == b)
+                return true;
+            else if (a == null || b == null)
+                return false;
+            else
+                return a.Length == b.Length && a.SequenceEqual(b);
+        }
     }
 }

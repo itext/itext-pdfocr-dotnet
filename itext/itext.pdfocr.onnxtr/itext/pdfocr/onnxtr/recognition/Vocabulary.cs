@@ -25,6 +25,13 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <see cref="char?"/>
     /// but since it would involve unnecessary boxing, it is a
     /// standalone thing instead.
+    /// <para />
+    /// If you need to map indices to multi-char sequences (including code points
+    /// outside the BMP range), use
+    /// <see cref="StringMapper"/>
+    /// instead. It maps indices
+    /// to strings instead, which makes it more versatile, but it is less memory
+    /// efficient.
     /// </remarks>
     public class Vocabulary {
         public static readonly iText.Pdfocr.Onnxtr.Recognition.Vocabulary ASCII_LOWERCASE = new iText.Pdfocr.Onnxtr.Recognition.Vocabulary
