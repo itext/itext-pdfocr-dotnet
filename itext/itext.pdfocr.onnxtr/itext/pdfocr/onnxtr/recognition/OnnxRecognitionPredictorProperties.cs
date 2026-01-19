@@ -17,9 +17,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// It contains a path to the model, model input properties and a model output post-processor.
     /// </remarks>
     public class OnnxRecognitionPredictorProperties {
-        private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
-             { 0.694F, 0.695F, 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, new long[] { 512, 3, 32, 128 }, false
-            );
+        private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
+            (ImageChannelConfiguration.RGB, 128, 32, PaddingStrategy.BOTTOM_RIGHT_BLACK), new float[] { 0.694F, 0.695F
+            , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 512);
 
         /// <summary>Path to the ONNX model to load.</summary>
         private readonly String modelPath;

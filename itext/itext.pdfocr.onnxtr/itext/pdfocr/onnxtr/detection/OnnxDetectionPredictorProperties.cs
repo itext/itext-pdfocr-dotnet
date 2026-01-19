@@ -18,9 +18,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
     /// output post-processor.
     /// </remarks>
     public class OnnxDetectionPredictorProperties {
-        private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
-             { 0.798F, 0.785F, 0.772F }, new float[] { 0.264F, 0.2749F, 0.287F }, new long[] { 2, 3, 1024, 1024 }, 
-            true);
+        private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
+            (ImageChannelConfiguration.RGB, 1024, 1024, PaddingStrategy.SYMMETRIC_BLACK), new float[] { 0.798F, 0.785F
+            , 0.772F }, new float[] { 0.264F, 0.2749F, 0.287F }, 2);
 
         private static readonly IDetectionPostProcessor DEFAULT_POST_PROCESSOR = new OnnxDetectionPostProcessor();
 

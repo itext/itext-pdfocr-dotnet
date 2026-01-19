@@ -39,6 +39,8 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String FAILED_TO_READ_IMAGE = "Failed to read image.";
 
+        public const String HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE = "HeightMultiple should be a positive value, found {0}.";
+
         public const String INDEX_OUT_OF_BOUNDS = "Index out of bounds: {0}.";
 
         public const String INVALID_NUMBER_OF_OUTPUTS = "Batch processing failed: invalid number of outputs.";
@@ -46,7 +48,19 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
         public const String LOOK_UP_STRING_CONTAINS_2_CODE_UNITS_POINTS = "Look-up string contains code points, " 
             + "which are encoded with 2 code units.";
 
+        public const String MAX_HEIGHT_SHOULD_BE_A_MULTIPLE = "MaxHeight should be a multiple of {0}, found {1}.";
+
+        public const String MAX_HEIGHT_SHOULD_NOT_BE_LESS_THAN_MIN = "MaxHeight should not be less than minHeight, found {0}.";
+
         public const String MAX_SHOULD_NOT_BE_LESS_THAN_MIN = "Max should not be less than min.";
+
+        public const String MAX_WIDTH_SHOULD_BE_A_MULTIPLE = "MaxWidth should be a multiple of {0}, found {1}.";
+
+        public const String MAX_WIDTH_SHOULD_NOT_BE_LESS_THAN_MIN = "MaxWidth should not be less than minWidth, found {0}.";
+
+        public const String MIN_HEIGHT_SHOULD_BE_POSITIVE = "MaxHeight should be a positive value, found {0}.";
+
+        public const String MIN_WIDTH_SHOULD_BE_POSITIVE = "MinWidth should be a positive value, found {0}.";
 
         public const String MODEL_DID_NOT_PASS_VALIDATION = "ONNX Runtime model did not pass validation.";
 
@@ -54,13 +68,18 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String NEGATIVE_VALUE_IN_SHAPE = "Received negative value in shape {0}.";
 
+        [Obsolete]
         public const String ONLY_SUPPORT_RGB_IMAGES = "Method toBchwInput only support RGB images.";
 
         public const String ONNX_RUNTIME_OPERATION_FAILED = "ONNX Runtime operation failed.";
 
         public const String SHAPE_IS_NOT_VALID = "The shape of the data buffer is not valid.";
 
+        public const String SHOULD_BE_AT_LEAST_ONE_IMAGE = "There should be at least one image.";
+
         public const String TOO_MANY_IMAGES = "Too many images ({0}) for the provided batch size ({1}).";
+
+        public const String UNEXPECTED_CHANNEL_CONFIGURATION = "Unexpected channel configuration.";
 
         public const String UNEXPECTED_DIMENSION_VALUE = "Unexpected dimension value: {0}.";
 
@@ -80,11 +99,15 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String UNEXPECTED_OUTPUT_TYPE = "Unexpected output type. Expected float32 tensor.";
 
+        public const String UNEXPECTED_PADDING_STRATEGY = "Unexpected padding strategy: {0}.";
+
         public const String UNEXPECTED_SHAPE_SIZE = "Shape should be a {0}-element array (BCHW).";
 
         public const String UNEXPECTED_STD_CHANNEL_COUNT = "Std should be a {0}-element array.";
 
         public const String VALUES_SHOULD_BE_A_NON_EMPTY_ARRAY = "Values should be a non-empty array.";
+
+        public const String WIDTH_MULTIPLE_SHOULD_BE_POSITIVE = "WidthMultiple should be a positive value, found {0}.";
 
         public const String X_SHOULD_BE_IN_0_1_RANGE = "X should be in [0; 1] range.";
 

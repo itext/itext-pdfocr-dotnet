@@ -49,7 +49,8 @@ namespace iText.Pdfocr.Onnxtr {
             long[] shape = new long[] { 2, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => BufferedImageUtil.ToBchwInput(
                 new List<IronSoftware.Drawing.AnyBitmap>(), new OnnxInputProperties(mean, std, shape, true)));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.SHAPE_IS_NOT_VALID, e.Message);
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE, e.Message
+                );
         }
 
         [NUnit.Framework.Test]

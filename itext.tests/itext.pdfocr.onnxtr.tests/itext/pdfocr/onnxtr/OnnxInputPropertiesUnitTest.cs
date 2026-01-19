@@ -81,5 +81,89 @@ namespace iText.Pdfocr.Onnxtr {
             NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
                 , -2), e.Message);
         }
+
+        [NUnit.Framework.Test]
+        public virtual void InitWithInvalidImageResizeOptions() {
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new OnnxInputProperties(null));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void InitWithInvalidMean() {
+            ImageResizeOptions resizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 800, 600);
+            // null
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new OnnxInputProperties(resizeOptions, 
+                null, new float[] { 1F, 2F, 3F }));
+            // invalid size
+            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(resizeOptions
+                , new float[] { 0.3F, 0.4F, 0.5F, 0.6F }, new float[] { 1F, 2F, 3F }));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+                , resizeOptions.GetChannelConfiguration().GetChannelCount()), e.Message);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void InitWithInvalidStd() {
+            ImageResizeOptions resizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 800, 600);
+            // null
+            NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new OnnxInputProperties(resizeOptions, 
+                new float[] { 0.3F, 0.4F, 0.5F }, null));
+            // invalid size
+            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(resizeOptions
+                , new float[] { 0.3F, 0.4F, 0.5F }, new float[] { 1F, 2F }));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+                , resizeOptions.GetChannelConfiguration().GetChannelCount()), e.Message);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void InitWithInvalidBatchSize() {
+            ImageResizeOptions resizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 800, 600);
+            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(resizeOptions
+                , 0));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE, e.Message
+                );
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void Valid() {
+            ImageResizeOptions resizeOptions = new ImageResizeOptions(ImageChannelConfiguration.BGR, 800, 600, 1024, 768
+                , 4, 2, PaddingStrategy.BOTTOM_RIGHT_WHITE);
+            float[] mean = new float[] { 0.1F, 0.2F, 0.3F };
+            float[] std = new float[] { 1F, 2F, 3F };
+            int batchSize = 5;
+            OnnxInputProperties props = new OnnxInputProperties(resizeOptions, mean, std, batchSize);
+            NUnit.Framework.Assert.AreSame(resizeOptions, props.GetImageResizeOptions());
+            NUnit.Framework.Assert.AreEqual(mean, props.GetMean());
+            NUnit.Framework.Assert.AreEqual(mean[0], props.GetGrayMean());
+            NUnit.Framework.Assert.AreEqual(mean[2], props.GetRedMean());
+            NUnit.Framework.Assert.AreEqual(mean[1], props.GetGreenMean());
+            NUnit.Framework.Assert.AreEqual(mean[0], props.GetBlueMean());
+            NUnit.Framework.Assert.AreEqual(std, props.GetStd());
+            NUnit.Framework.Assert.AreEqual(std[0], props.GetGrayStd());
+            NUnit.Framework.Assert.AreEqual(std[2], props.GetRedStd());
+            NUnit.Framework.Assert.AreEqual(std[1], props.GetGreenStd());
+            NUnit.Framework.Assert.AreEqual(std[0], props.GetBlueStd());
+            long[] expectedShape = new long[] { batchSize, resizeOptions.GetChannelConfiguration().GetChannelCount(), 
+                resizeOptions.GetMinHeight(), resizeOptions.GetMinWidth() };
+            NUnit.Framework.Assert.AreEqual(expectedShape, props.GetShape());
+            NUnit.Framework.Assert.Catch(typeof(IndexOutOfRangeException), () => props.GetShape(-1));
+            for (int i = 0; i < 4; ++i) {
+                NUnit.Framework.Assert.AreEqual(expectedShape[i], props.GetShape(i));
+            }
+            NUnit.Framework.Assert.Catch(typeof(IndexOutOfRangeException), () => props.GetShape(4));
+            NUnit.Framework.Assert.AreEqual(batchSize, props.GetBatchSize());
+            NUnit.Framework.Assert.AreEqual(resizeOptions.GetChannelConfiguration().GetChannelCount(), props.GetChannelCount
+                ());
+            NUnit.Framework.Assert.AreEqual(resizeOptions.GetMinHeight(), props.GetHeight());
+            NUnit.Framework.Assert.AreEqual(resizeOptions.GetMinWidth(), props.GetWidth());
+            NUnit.Framework.Assert.AreEqual(resizeOptions.GetPaddingStrategy().UsesSymmetricPadding(), props.UseSymmetricPad
+                ());
+            NUnit.Framework.Assert.AreEqual(resizeOptions.GetPaddingStrategy(), props.GetPaddingStrategy());
+            OnnxInputProperties propsCopy = new OnnxInputProperties(new ImageResizeOptions(ImageChannelConfiguration.BGR
+                , 800, 600, 1024, 768, 4, 2, PaddingStrategy.BOTTOM_RIGHT_WHITE), new float[] { 0.1F, 0.2F, 0.3F }, new 
+                float[] { 1F, 2F, 3F }, 5);
+            NUnit.Framework.Assert.AreEqual(propsCopy.GetHashCode(), props.GetHashCode());
+            NUnit.Framework.Assert.AreEqual(propsCopy, props);
+            NUnit.Framework.Assert.AreNotEqual(new OnnxInputProperties(new ImageResizeOptions(ImageChannelConfiguration
+                .GRAYSCALE, 800, 600)), props);
+        }
     }
 }

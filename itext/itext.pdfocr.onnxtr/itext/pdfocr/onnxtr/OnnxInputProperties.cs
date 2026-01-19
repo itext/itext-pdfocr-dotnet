@@ -26,36 +26,54 @@ using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr {
-    /// <summary>Properties of the input of an ONNX model, which expects an RGB image.</summary>
+    /// <summary>Properties of the input of an ONNX model, which expects an image.</summary>
     /// <remarks>
-    /// Properties of the input of an ONNX model, which expects an RGB image.
+    /// Properties of the input of an ONNX model, which expects an image.
     /// <para />
-    /// It contains the input shape, as a [batchSize, channel, height, width] array, mean and standard
-    /// deviation values for normalization, whether padding should be symmetrical or not.
+    /// It contains the input shape (batchSize, channel, height, width), mean and standard
+    /// deviation values for normalization, what type of padding should be used.
     /// </remarks>
     public class OnnxInputProperties {
         /// <summary>Expected channel count.</summary>
         /// <remarks>Expected channel count. We expect RGB format.</remarks>
+        [System.ObsoleteAttribute(@"Grayscale and BGR are now supported as well. Check the documentation for more information."
+            )]
         public const int EXPECTED_CHANNEL_COUNT = 3;
 
         /// <summary>Expected shape size.</summary>
-        /// <remarks>Expected shape size. We inspect the standard BCHW format (batch, channel, height, width).</remarks>
+        /// <remarks>Expected shape size. We expect the standard BCHW format (batch, channel, height, width).</remarks>
         public const int EXPECTED_SHAPE_SIZE = 4;
 
         /// <summary>Per-channel mean, used for normalization.</summary>
-        /// <remarks>Per-channel mean, used for normalization. Should be EXPECTED_CHANNEL_COUNT length.</remarks>
+        /// <remarks>
+        /// Per-channel mean, used for normalization. Expected length
+        /// of the array is based on the specified channel configuration in the
+        /// image resize options.
+        /// </remarks>
         private readonly float[] mean;
 
         /// <summary>Per-channel standard deviation, used for normalization.</summary>
-        /// <remarks>Per-channel standard deviation, used for normalization. Should be EXPECTED_CHANNEL_COUNT length.</remarks>
+        /// <remarks>
+        /// Per-channel standard deviation, used for normalization. Expected length
+        /// of the array is based on the specified channel configuration in the
+        /// image resize options.
+        /// </remarks>
         private readonly float[] std;
 
-        /// <summary>Target input shape.</summary>
-        /// <remarks>Target input shape. Should be EXPECTED_SHAPE_SIZE length.</remarks>
-        private readonly long[] shape;
+        /// <summary>
+        /// Options, that control the way the input images for the models will be
+        /// converted, resized and padded for ML model input.
+        /// </summary>
+        private readonly ImageResizeOptions imageResizeOptions;
 
-        /// <summary>Whether padding should be symmetrical during input resizing.</summary>
-        private readonly bool symmetricPad;
+        /// <summary>Batch size used for the ML model input.</summary>
+        /// <remarks>
+        /// Batch size used for the ML model input.
+        /// <para />
+        /// Default value is 1. If a GPU is used for calculations, it is worthwhile
+        /// to bump this value as high as your VRAM allows you to.
+        /// </remarks>
+        private readonly int batchSize;
 
         /// <summary>Creates model input properties.</summary>
         /// <param name="mean">per-channel mean, used for normalization. Should be EXPECTED_CHANNEL_COUNT length</param>
@@ -63,6 +81,8 @@ namespace iText.Pdfocr.Onnxtr {
         ///     </param>
         /// <param name="shape">target input shape. Should be EXPECTED_SHAPE_SIZE length</param>
         /// <param name="symmetricPad">whether padding should be symmetrical during input resizing</param>
+        [System.ObsoleteAttribute(@"This is the original constructor, which only supported RGB inputs with a static width/height and black pixel values padding. Use constructors with an ImageResizeOptions parameter instead."
+            )]
         public OnnxInputProperties(float[] mean, float[] std, long[] shape, bool symmetricPad) {
             Objects.RequireNonNull(mean);
             if (mean.Length != EXPECTED_CHANNEL_COUNT) {
@@ -92,15 +112,120 @@ namespace iText.Pdfocr.Onnxtr {
             Array.Copy(mean, 0, this.mean, 0, mean.Length);
             this.std = new float[std.Length];
             Array.Copy(std, 0, this.std, 0, std.Length);
-            this.shape = new long[shape.Length];
-            Array.Copy(shape, 0, this.shape, 0, shape.Length);
-            this.symmetricPad = symmetricPad;
+            this.imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, (int)shape[3], (int)shape[
+                2], (symmetricPad ? PaddingStrategy.SYMMETRIC_BLACK : PaddingStrategy.BOTTOM_RIGHT_BLACK));
+            this.batchSize = (int)shape[0];
+        }
+
+        /// <summary>Creates model input properties.</summary>
+        /// <param name="imageResizeOptions">
+        /// options, that control the way the input images for the models will
+        /// be converted, resized and padded for ML model input
+        /// </param>
+        /// <param name="mean">
+        /// per-channel mean, used for normalization. Length of the array
+        /// should match the channel count in the image resize options
+        /// </param>
+        /// <param name="std">
+        /// per-channel standard deviation, used for normalization. Length of
+        /// the array should match the channel count in the image resize
+        /// options
+        /// </param>
+        /// <param name="batchSize">
+        /// size of the batch used for the ML model. Should be a positive
+        /// number
+        /// </param>
+        public OnnxInputProperties(ImageResizeOptions imageResizeOptions, float[] mean, float[] std, int batchSize
+            ) {
+            Objects.RequireNonNull(imageResizeOptions);
+            this.imageResizeOptions = imageResizeOptions;
+            int channelCount = imageResizeOptions.GetChannelConfiguration().GetChannelCount();
+            Objects.RequireNonNull(mean);
+            if (mean.Length != channelCount) {
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+                    , channelCount));
+            }
+            this.mean = new float[mean.Length];
+            Array.Copy(mean, 0, this.mean, 0, mean.Length);
+            Objects.RequireNonNull(std);
+            if (std.Length != channelCount) {
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+                    , channelCount));
+            }
+            this.std = new float[std.Length];
+            Array.Copy(std, 0, this.std, 0, std.Length);
+            if (batchSize < 1) {
+                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE);
+            }
+            this.batchSize = batchSize;
+        }
+
+        /// <summary>Creates model input properties.</summary>
+        /// <remarks>
+        /// Creates model input properties.
+        /// <para />
+        /// With this constructor variant batching is disabled (i.e. batch size is set to 1).
+        /// </remarks>
+        /// <param name="imageResizeOptions">
+        /// options, that control the way the input images for the models will
+        /// be converted, resized and padded for ML model input
+        /// </param>
+        /// <param name="mean">
+        /// per-channel mean, used for normalization. Length of the array
+        /// should match the channel count in the image resize options
+        /// </param>
+        /// <param name="std">
+        /// per-channel standard deviation, used for normalization. Length of
+        /// the array should match the channel count in the image resize
+        /// options
+        /// </param>
+        public OnnxInputProperties(ImageResizeOptions imageResizeOptions, float[] mean, float[] std)
+            : this(imageResizeOptions, mean, std, 1) {
+        }
+
+        /// <summary>Creates model input properties.</summary>
+        /// <remarks>
+        /// Creates model input properties.
+        /// <para />
+        /// With this constructor variant no input normalization is done, only mapping to [0; 1].
+        /// </remarks>
+        /// <param name="imageResizeOptions">
+        /// options, that control the way the input images for the models will
+        /// be converted, resized and padded for ML model input
+        /// </param>
+        /// <param name="batchSize">
+        /// size of the batch used for the ML model. Should be a positive
+        /// number
+        /// </param>
+        public OnnxInputProperties(ImageResizeOptions imageResizeOptions, int batchSize)
+            : this(imageResizeOptions, NewNoopMean(imageResizeOptions), NewNoopStd(imageResizeOptions), batchSize) {
+        }
+
+        /// <summary>Creates model input properties.</summary>
+        /// <remarks>
+        /// Creates model input properties.
+        /// <para />
+        /// With this constructor variant no input normalization is done, only mapping to [0; 1], and
+        /// batching is disabled (i.e. batch size is set to 1).
+        /// </remarks>
+        /// <param name="imageResizeOptions">
+        /// options, that control the way the input images for the models will
+        /// be converted, resized and padded for ML model input
+        /// </param>
+        public OnnxInputProperties(ImageResizeOptions imageResizeOptions)
+            : this(imageResizeOptions, 1) {
+        }
+
+        /// <summary>Returns image resize options for the input.</summary>
+        /// <returns>image resize options for the input.</returns>
+        public virtual ImageResizeOptions GetImageResizeOptions() {
+            return imageResizeOptions;
         }
 
         /// <summary>Returns per-channel mean, used for normalization.</summary>
         /// <returns>per-channel mean, used for normalization</returns>
         public virtual float[] GetMean() {
-            float[] copy = new float[shape.Length];
+            float[] copy = new float[mean.Length];
             Array.Copy(mean, 0, copy, 0, copy.Length);
             return copy;
         }
@@ -112,28 +237,34 @@ namespace iText.Pdfocr.Onnxtr {
             return mean[index];
         }
 
+        /// <summary>Returns gray channel mean, used for normalization.</summary>
+        /// <returns>gray channel mean, used for normalization</returns>
+        public virtual float GetGrayMean() {
+            return GetMean(0);
+        }
+
         /// <summary>Returns red channel mean, used for normalization.</summary>
         /// <returns>red channel mean, used for normalization</returns>
         public virtual float GetRedMean() {
-            return GetMean(0);
+            return GetMean(imageResizeOptions.GetChannelConfiguration().GetRedChannelIndex());
         }
 
         /// <summary>Returns green channel mean, used for normalization.</summary>
         /// <returns>green channel mean, used for normalization</returns>
         public virtual float GetGreenMean() {
-            return GetMean(1);
+            return GetMean(imageResizeOptions.GetChannelConfiguration().GetGreenChannelIndex());
         }
 
         /// <summary>Returns blue channel mean, used for normalization.</summary>
         /// <returns>blue channel mean, used for normalization</returns>
         public virtual float GetBlueMean() {
-            return GetMean(2);
+            return GetMean(imageResizeOptions.GetChannelConfiguration().GetBlueChannelIndex());
         }
 
         /// <summary>Returns per-channel standard deviation, used for normalization.</summary>
         /// <returns>per-channel standard deviation, used for normalization</returns>
         public virtual float[] GetStd() {
-            float[] copy = new float[shape.Length];
+            float[] copy = new float[std.Length];
             Array.Copy(std, 0, copy, 0, copy.Length);
             return copy;
         }
@@ -145,92 +276,137 @@ namespace iText.Pdfocr.Onnxtr {
             return std[index];
         }
 
+        /// <summary>Returns gray channel standard deviation, used for normalization.</summary>
+        /// <returns>gray channel standard deviation, used for normalization</returns>
+        public virtual float GetGrayStd() {
+            return GetStd(0);
+        }
+
         /// <summary>Returns red channel standard deviation, used for normalization.</summary>
         /// <returns>red channel standard deviation, used for normalization</returns>
         public virtual float GetRedStd() {
-            return GetStd(0);
+            return GetStd(imageResizeOptions.GetChannelConfiguration().GetRedChannelIndex());
         }
 
         /// <summary>Returns green channel standard deviation, used for normalization.</summary>
         /// <returns>green channel standard deviation, used for normalization</returns>
         public virtual float GetGreenStd() {
-            return GetStd(1);
+            return GetStd(imageResizeOptions.GetChannelConfiguration().GetGreenChannelIndex());
         }
 
         /// <summary>Returns blue channel standard deviation, used for normalization.</summary>
         /// <returns>blue channel standard deviation, used for normalization</returns>
         public virtual float GetBlueStd() {
-            return GetStd(2);
+            return GetStd(imageResizeOptions.GetChannelConfiguration().GetBlueChannelIndex());
         }
 
         /// <summary>Returns target input shape.</summary>
+        /// <remarks>Returns target input shape. Minimum height and width are used.</remarks>
         /// <returns>target input shape</returns>
         public virtual long[] GetShape() {
-            long[] copy = new long[shape.Length];
-            Array.Copy(shape, 0, copy, 0, copy.Length);
-            return copy;
+            return new long[] { GetBatchSize(), GetChannelCount(), GetHeight(), GetWidth() };
         }
 
         /// <summary>Returns target input dimension value.</summary>
         /// <param name="index">index of the dimension</param>
         /// <returns>target input dimension value</returns>
         public virtual int GetShape(int index) {
-            return (int)shape[index];
+            switch (index) {
+                case 0: {
+                    return GetBatchSize();
+                }
+
+                case 1: {
+                    return GetChannelCount();
+                }
+
+                case 2: {
+                    return GetHeight();
+                }
+
+                case 3: {
+                    return GetWidth();
+                }
+
+                default: {
+                    break;
+                }
+            }
+            // Fallthrough
+            throw new IndexOutOfRangeException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
+                , index));
         }
 
         /// <summary>Returns input batch size.</summary>
         /// <returns>input batch size</returns>
         public virtual int GetBatchSize() {
-            return GetShape(0);
+            return batchSize;
         }
 
         /// <summary>Returns input channel count.</summary>
         /// <returns>input channel count</returns>
         public virtual int GetChannelCount() {
-            return GetShape(1);
+            return imageResizeOptions.GetChannelConfiguration().GetChannelCount();
         }
 
-        /// <summary>Returns input height.</summary>
-        /// <returns>input height</returns>
+        /// <summary>Returns input minimum height.</summary>
+        /// <returns>input minimum height</returns>
         public virtual int GetHeight() {
-            return GetShape(2);
+            return imageResizeOptions.GetMinHeight();
         }
 
-        /// <summary>Returns input width.</summary>
-        /// <returns>input width</returns>
+        /// <summary>Returns input minimum width.</summary>
+        /// <returns>input minimum width</returns>
         public virtual int GetWidth() {
-            return GetShape(3);
+            return imageResizeOptions.GetMinWidth();
         }
 
         /// <summary>Returns whether padding should be symmetrical during input resizing.</summary>
         /// <returns>whether padding should be symmetrical during input resizing</returns>
         public virtual bool UseSymmetricPad() {
-            return symmetricPad;
+            return imageResizeOptions.GetPaddingStrategy().UsesSymmetricPadding();
+        }
+
+        /// <summary>Returns the padding strategy for image inputs.</summary>
+        /// <returns>the padding strategy for image inputs</returns>
+        public virtual PaddingStrategy GetPaddingStrategy() {
+            return imageResizeOptions.GetPaddingStrategy();
         }
 
         /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode((Object)JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), JavaUtil.ArraysHashCode
-                (shape), symmetricPad);
+            return JavaUtil.ArraysHashCode((Object)JavaUtil.ArraysHashCode(mean), JavaUtil.ArraysHashCode(std), imageResizeOptions
+                , batchSize);
         }
 
         /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
-            if (this == o) {
-                return true;
-            }
             if (o == null || GetType() != o.GetType()) {
                 return false;
             }
             iText.Pdfocr.Onnxtr.OnnxInputProperties that = (iText.Pdfocr.Onnxtr.OnnxInputProperties)o;
-            return symmetricPad == that.symmetricPad && JavaUtil.ArraysEquals(mean, that.mean) && JavaUtil.ArraysEquals
-                (std, that.std) && JavaUtil.ArraysEquals(shape, that.shape);
+            return batchSize == that.batchSize && JavaUtil.ArraysEquals(mean, that.mean) && JavaUtil.ArraysEquals(std, 
+                that.std) && Object.Equals(imageResizeOptions, that.imageResizeOptions);
         }
 
         /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return "OnnxInputProperties{" + "mean=" + JavaUtil.ArraysToString(mean) + ", std=" + JavaUtil.ArraysToString
-                (std) + ", shape=" + JavaUtil.ArraysToString(shape) + ", symmetricPad=" + symmetricPad + '}';
+                (std) + ", imageResizeOptions=" + imageResizeOptions + ", batchSize=" + batchSize + '}';
+        }
+
+        private static float[] NewNoopMean(ImageResizeOptions imageResizeOptions) {
+            int channelCount = imageResizeOptions.GetChannelConfiguration().GetChannelCount();
+            float[] mean = new float[channelCount];
+            JavaUtil.Fill(mean, 0.0F);
+            return mean;
+        }
+
+        private static float[] NewNoopStd(ImageResizeOptions imageResizeOptions) {
+            int channelCount = imageResizeOptions.GetChannelConfiguration().GetChannelCount();
+            float[] std = new float[channelCount];
+            JavaUtil.Fill(std, 1.0F);
+            return std;
         }
     }
 }

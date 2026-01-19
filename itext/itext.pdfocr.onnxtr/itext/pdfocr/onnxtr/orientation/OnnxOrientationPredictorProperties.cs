@@ -18,9 +18,9 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     /// It contains a path to the model, model input properties and a model output mapper.
     /// </remarks>
     public class OnnxOrientationPredictorProperties {
-        private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new float[]
-             { 0.694F, 0.695F, 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, new long[] { 512, 3, 256, 256 }, 
-            true);
+        private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
+            (ImageChannelConfiguration.RGB, 256, 256, PaddingStrategy.SYMMETRIC_BLACK), new float[] { 0.694F, 0.695F
+            , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 512);
 
         private static readonly DefaultOrientationMapper DEFAULT_OUTPUT_MAPPER = new DefaultOrientationMapper();
 
