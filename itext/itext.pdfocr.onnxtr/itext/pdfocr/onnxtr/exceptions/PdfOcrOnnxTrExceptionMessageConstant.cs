@@ -43,6 +43,8 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE = "HeightMultiple should be a positive value, found {0}.";
 
+        public const String HW_ARRAY_SHOULD_BE_TWO_DIMENSIONAL = "HwMdArray should be two-dimensional";
+
         public const String INDEX_OUT_OF_BOUNDS = "Index out of bounds: {0}.";
 
         public const String INVALID_NUMBER_OF_OUTPUTS = "Batch processing failed: invalid number of outputs.";
