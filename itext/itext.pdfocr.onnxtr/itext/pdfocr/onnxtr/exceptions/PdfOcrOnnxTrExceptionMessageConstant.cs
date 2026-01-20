@@ -27,6 +27,8 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
     public sealed class PdfOcrOnnxTrExceptionMessageConstant {
         public const String BATCH_SIZE_SHOULD_BE_POSITIVE = "Target batch size should be positive.";
 
+        public const String CANNOT_START_ANOTHER_MAPPING_OPERATION = "Cannot start another mapping operation till the previous one is finished.";
+
         public const String ELEM_COUNT_DOES_NOT_MATCH_SHAPE = "Data buffer element count does not match the shape.";
 
         public const String FAILED_TO_CLOSE_ONNX_RUNTIME_SESSION = "Failed to close an ONNX Runtime session.";

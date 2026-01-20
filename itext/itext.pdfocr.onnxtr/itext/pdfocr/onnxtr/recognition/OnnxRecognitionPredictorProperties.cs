@@ -38,15 +38,46 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </remarks>
         private readonly IRecognitionPostProcessor postProcessor;
 
+        /// <summary>
+        /// Defines, whether input images to the recognition model should be split
+        /// into smaller ones with better aspect ratios.
+        /// </summary>
+        /// <remarks>
+        /// Defines, whether input images to the recognition model should be split
+        /// into smaller ones with better aspect ratios. Usually should be false
+        /// for models, which operates on lines, as merging of the text back could
+        /// cause errors.
+        /// </remarks>
+        private readonly bool splitImages;
+
         /// <summary>Creates new text recognition predictor properties.</summary>
         /// <param name="modelPath">path to the ONNX model to load</param>
         /// <param name="inputProperties">ONNX model input properties</param>
         /// <param name="postProcessor">ONNX model output post-processor</param>
+        /// <param name="splitImages">
+        /// whether input images to the ML model should be split
+        /// into smaller ones with better aspect ratios
+        /// </param>
         public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
-             postProcessor) {
+             postProcessor, bool splitImages) {
             this.modelPath = Objects.RequireNonNull(modelPath);
             this.inputProperties = Objects.RequireNonNull(inputProperties);
             this.postProcessor = Objects.RequireNonNull(postProcessor);
+            this.splitImages = splitImages;
+        }
+
+        /// <summary>Creates new text recognition predictor properties.</summary>
+        /// <remarks>
+        /// Creates new text recognition predictor properties.
+        /// <para />
+        /// Images will be split before passing them to the ML model.
+        /// </remarks>
+        /// <param name="modelPath">path to the ONNX model to load</param>
+        /// <param name="inputProperties">ONNX model input properties</param>
+        /// <param name="postProcessor">ONNX model output post-processor</param>
+        public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
+             postProcessor)
+            : this(modelPath, inputProperties, postProcessor, true) {
         }
 
         /// <summary>
@@ -296,6 +327,12 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             return postProcessor;
         }
 
+        /// <summary>Returns whether input images should be split.</summary>
+        /// <returns>whether input images should be split</returns>
+        public virtual bool ShouldSplitImages() {
+            return splitImages;
+        }
+
         /// <summary><inheritDoc/></summary>
         public override bool Equals(Object o) {
             if (this == o) {
@@ -306,19 +343,19 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             }
             iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties that = (iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties
                 )o;
-            return Object.Equals(modelPath, that.modelPath) && Object.Equals(inputProperties, that.inputProperties) &&
-                 Object.Equals(postProcessor, that.postProcessor);
+            return splitImages == that.splitImages && Object.Equals(modelPath, that.modelPath) && Object.Equals(inputProperties
+                , that.inputProperties) && Object.Equals(postProcessor, that.postProcessor);
         }
 
         /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor);
+            return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor, splitImages);
         }
 
         /// <summary><inheritDoc/></summary>
         public override String ToString() {
             return "OnnxRecognitionPredictorProperties{" + "modelPath='" + modelPath + '\'' + ", inputProperties=" + inputProperties
-                 + ", postProcessor=" + postProcessor + '}';
+                 + ", postProcessor=" + postProcessor + ", splitImages=" + splitImages + '}';
         }
     }
 }

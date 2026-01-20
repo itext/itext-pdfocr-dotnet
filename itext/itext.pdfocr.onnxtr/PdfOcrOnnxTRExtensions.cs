@@ -132,8 +132,8 @@ internal static class PdfOcrOnnxTRExtensions
         predictor.Dispose();
     }
 
-    public static bool IsEmpty<T>(this IList<T> list) {
-        return list.Count == 0;
+    public static bool IsEmpty<T>(this ICollection<T> collection) {
+        return collection.Count == 0;
     }
 }
 //\endcond

@@ -6,10 +6,7 @@ See <https://opensource.org/licenses/Apache-2.0> for full license details.
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using iText.Commons.Actions.Confirmations;
-using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnxtr.Actions.Events;
@@ -25,21 +22,6 @@ namespace iText.Pdfocr.Onnxtr {
     internal class OnnxTrProcessor {
         /// <summary>Image pixel to PDF point ratio.</summary>
         private const float PX_TO_PT = 0.75F;
-
-        /// <summary>Aspect ratio, at which a text box is split for better text recognition.</summary>
-        private const float SPLIT_CROPS_MAX_RATIO = 8;
-
-        /// <summary>Target aspect ratio for the text box splits.</summary>
-        private const float SPLIT_CROPS_TARGET_RATIO = 6;
-
-        /// <summary>Multiplier, which controls the overlap between splits.</summary>
-        /// <remarks>
-        /// Multiplier, which controls the overlap between splits. Factor of 1 means, that there will be no overlap.
-        /// <para />
-        /// This is for cases, when a split happens in the middle of a character. With some overlap, at least one of the
-        /// sub-images will contain the character in full.
-        /// </remarks>
-        private const float SPLIT_CROPS_DILATION_FACTOR = 1.4F;
 
         /// <summary>Text detector.</summary>
         /// <remarks>Text detector. For an input image it outputs a list of text boxes.</remarks>
@@ -98,7 +80,7 @@ namespace iText.Pdfocr.Onnxtr {
                     textOrientations = ToList(orientationPredictor.Predict(textImages));
                     CorrectOrientations(textImages, textOrientations);
                 }
-                IList<String> textString = RecognizeText(textImages);
+                IList<String> textString = ToList(recognitionPredictor.Predict(textImages));
                 IList<TextInfo> textInfos = new List<TextInfo>(textBoxes.Count);
                 for (int i = 0; i < textBoxes.Count; ++i) {
                     TextOrientation textOrientation = TextOrientation.HORIZONTAL;
@@ -119,113 +101,6 @@ namespace iText.Pdfocr.Onnxtr {
             return result;
         }
 //\endcond
-
-        /// <summary>Splits text images to smaller images with better aspect ratios.</summary>
-        /// <param name="images">text images to split</param>
-        /// <returns>a list with image splits together with a map to restore them back</returns>
-        private static OnnxTrProcessor.SplitResult SplitTextImages(IList<IronSoftware.Drawing.AnyBitmap> images) {
-            OnnxTrProcessor.SplitResult result = new OnnxTrProcessor.SplitResult(images.Count);
-            for (int i = 0; i < images.Count; ++i) {
-                IronSoftware.Drawing.AnyBitmap image = images[i];
-                int width = BufferedImageUtil.GetWidth(image);
-                int height = BufferedImageUtil.GetHeight(image);
-                float aspectRatio = (float)width / height;
-                if (aspectRatio < SPLIT_CROPS_MAX_RATIO) {
-                    result.splitImages.Add(image);
-                    result.restoreMap[i] = 1;
-                    continue;
-                }
-                // For some reason here is truncation in OnnxTR...
-                int splitCount = (int)Math.Ceiling(aspectRatio / SPLIT_CROPS_TARGET_RATIO);
-                float rawSplitWidth = (float)width / splitCount;
-                float targetSplitHalfWidth = (SPLIT_CROPS_DILATION_FACTOR * rawSplitWidth) / 2;
-                int nonEmptySplitCount = 0;
-                for (int j = 0; j < splitCount; ++j) {
-                    float center = (j + 0.5F) * rawSplitWidth;
-                    int minX = Math.Max(0, (int)Math.Floor(center - targetSplitHalfWidth));
-                    int maxX = Math.Min(width - 1, (int)Math.Ceiling(center + targetSplitHalfWidth));
-                    int currentSplitWidth = maxX - minX;
-                    if (currentSplitWidth == 0) {
-                        continue;
-                    }
-                    ++nonEmptySplitCount;
-                    result.splitImages.Add(image.GetSubimage(minX, 0, currentSplitWidth, height));
-                }
-                result.restoreMap[i] = nonEmptySplitCount;
-            }
-            return result;
-        }
-
-        /// <summary>Merges strings, collected from splits of text images.</summary>
-        /// <param name="collector">string builder collector, which contains the current left part of the string</param>
-        /// <param name="nextString">next string to add to the collector</param>
-        private static void MergeStrings(StringBuilder collector, String nextString) {
-            // Comments are also pretty much copies from OnnxTR...
-            int commonLength = Math.Min(collector.Length, nextString.Length);
-            double[] scores = new double[commonLength];
-            for (int i = 0; i < commonLength; ++i) {
-                scores[i] = MathUtil.CalculateLevenshteinDistance(collector.Substring(collector.Length - i - 1), nextString
-                    .JSubstring(0, i + 1)) / (i + 1.0);
-            }
-            int index = 0;
-            // Comparing floats to 0 is fine here, as it only happens, when the
-            // integer nominator (i.e. Levenshtein distance) was 0
-            if (commonLength > 1 && scores[0] == 0 && scores[1] == 0) {
-                // Edge case (split in the middle of char repetitions): if it starts with 2 or more 0
-                // Compute n_overlap (number of overlapping chars, geometrically determined)
-                int overlap = (int)MathematicUtil.Round(nextString.Length * (SPLIT_CROPS_DILATION_FACTOR - 1) / SPLIT_CROPS_DILATION_FACTOR
-                    );
-                // Find the number of consecutive zeros in the scores list
-                // Impossible to have a zero after a non-zero score in that case
-                int zeros = (int)JavaUtil.ArraysToEnumerable(scores).Where((x) => x == 0).Count();
-                index = Math.Min(zeros, overlap);
-            }
-            else {
-                // Common case: choose the min score index
-                double minScore = 1.0;
-                for (int i = 0; i < commonLength; ++i) {
-                    if (scores[i] < minScore) {
-                        minScore = scores[i];
-                        index = i + 1;
-                    }
-                }
-            }
-            if (index == 0) {
-                collector.Append(nextString);
-            }
-            else {
-                collector.Length = Math.Max(0, collector.Length - 1);
-                collector.JAppend(nextString, index - 1, nextString.Length);
-            }
-        }
-
-        /// <summary>Runs text recognition on the provided text images.</summary>
-        /// <param name="textImages">images with text to recognize</param>
-        /// <returns>list of strings, recognized in the images</returns>
-        private IList<String> RecognizeText(IList<IronSoftware.Drawing.AnyBitmap> textImages) {
-            // For better recognition results we want to split text images to have better aspect ratios
-            OnnxTrProcessor.SplitResult split = iText.Pdfocr.Onnxtr.OnnxTrProcessor.SplitTextImages(textImages);
-            IEnumerator<String> recognitionIterator = recognitionPredictor.Predict(split.splitImages);
-            // And now we merge results back
-            IList<String> textStrings = new List<String>(split.restoreMap.Length);
-            for (int j = 0; j < split.restoreMap.Length; ++j) {
-                int stringPartsLeft = split.restoreMap[j];
-                String testString;
-                if (stringPartsLeft == 1 && recognitionIterator.MoveNext()) {
-                    testString = recognitionIterator.Current;
-                }
-                else {
-                    StringBuilder sb = new StringBuilder();
-                    while (stringPartsLeft > 0 && recognitionIterator.MoveNext()) {
-                        iText.Pdfocr.Onnxtr.OnnxTrProcessor.MergeStrings(sb, recognitionIterator.Current);
-                        --stringPartsLeft;
-                    }
-                    testString = sb.ToString();
-                }
-                textStrings.Add(testString);
-            }
-            return textStrings;
-        }
 
         /// <summary>
         /// Rotates all images in the text image list, so that they are upright, based on the found text
@@ -278,30 +153,6 @@ namespace iText.Pdfocr.Onnxtr {
             IList<E> list = new List<E>();
             iterator.ForEachRemaining(list);
             return list;
-        }
-
-        /// <summary>Contains results of a text image split.</summary>
-        public class SplitResult {
-            /// <summary>List of sub-images, that the original images were split into.</summary>
-            public readonly IList<IronSoftware.Drawing.AnyBitmap> splitImages;
-
-            /// <summary>A map of splits.</summary>
-            /// <remarks>
-            /// A map of splits. Array length is equal to the original image count. Each element defines
-            /// how many sub-images were generated from each original image.
-            /// </remarks>
-            public readonly int[] restoreMap;
-
-            /// <summary>
-            /// Creates new
-            /// <see cref="SplitResult"/>
-            /// instance.
-            /// </summary>
-            /// <param name="capacity">capacity of the list of sub-images</param>
-            public SplitResult(int capacity) {
-                this.splitImages = new List<IronSoftware.Drawing.AnyBitmap>(capacity);
-                this.restoreMap = new int[capacity];
-            }
         }
     }
 //\endcond

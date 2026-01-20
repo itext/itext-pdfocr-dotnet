@@ -273,6 +273,18 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         }
 
         /// <summary><inheritDoc/></summary>
+        public override IEnumerator<String> Predict(IEnumerator<IronSoftware.Drawing.AnyBitmap> inputs) {
+            if (!properties.ShouldSplitImages()) {
+                return base.Predict(inputs);
+            }
+            // Additional pre- and post-processing, if we are splitting images
+            TextBoxSplitter textBoxSplitter = new TextBoxSplitter();
+            IEnumerator<IronSoftware.Drawing.AnyBitmap> splitInputs = textBoxSplitter.MapInputs(inputs);
+            IEnumerator<String> outputs = base.Predict(splitInputs);
+            return textBoxSplitter.MapOutputs(outputs);
+        }
+
+        /// <summary><inheritDoc/></summary>
         protected internal override FloatBufferMdArray ToInputBuffer(IList<IronSoftware.Drawing.AnyBitmap> batch) {
             // Just your regular BCHW input
             return BufferedImageUtil.ToBchwInput(batch, properties.GetInputProperties());
