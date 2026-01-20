@@ -27,7 +27,11 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
     public sealed class PdfOcrOnnxTrExceptionMessageConstant {
         public const String BATCH_SIZE_SHOULD_BE_POSITIVE = "Target batch size should be positive.";
 
+        public const String BOX_TYPE_IS_NOT_SUPPORTED = "Only `box_type: quad` is supported for DBPostProcess.";
+
         public const String CANNOT_START_ANOTHER_MAPPING_OPERATION = "Cannot start another mapping operation till the previous one is finished.";
+
+        public const String CHANNEL_FIRST_IS_NOT_SUPPORTED = "Only `channel_first: false` is supported for DecodeImage.";
 
         public const String ELEM_COUNT_DOES_NOT_MATCH_SHAPE = "Data buffer element count does not match the shape.";
 
@@ -44,6 +48,8 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
         public const String HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE = "HeightMultiple should be a positive value, found {0}.";
 
         public const String HW_ARRAY_SHOULD_BE_TWO_DIMENSIONAL = "HwMdArray should be two-dimensional";
+
+        public const String IMAGE_SHAPE_IS_NOT_SUPPORTED = "`image_shape` is not supported for DetResizeForTest";
 
         public const String INDEX_OUT_OF_BOUNDS = "Index out of bounds: {0}.";
 
@@ -77,6 +83,10 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String ONNX_RUNTIME_OPERATION_FAILED = "ONNX Runtime operation failed.";
 
+        public const String PRE_PROCESSOR_OPERATION_MISSING = "Expected pre-processor operation is missing: {0}.";
+
+        public const String SCORE_MODE_IS_NOT_SUPPORTED = "Only `score_mode: fast` is supported for DBPostProcess.";
+
         public const String SHAPE_IS_NOT_VALID = "The shape of the data buffer is not valid.";
 
         public const String SHOULD_BE_AT_LEAST_ONE_IMAGE = "There should be at least one image.";
@@ -84,6 +94,8 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
         public const String TOO_MANY_IMAGES = "Too many images ({0}) for the provided batch size ({1}).";
 
         public const String UNEXPECTED_CHANNEL_CONFIGURATION = "Unexpected channel configuration.";
+
+        public const String UNEXPECTED_CONFIG_KEY = "Unexpected config key: {0}.";
 
         public const String UNEXPECTED_DIMENSION_VALUE = "Unexpected dimension value: {0}.";
 
@@ -105,9 +117,15 @@ namespace iText.Pdfocr.Onnxtr.Exceptions {
 
         public const String UNEXPECTED_PADDING_STRATEGY = "Unexpected padding strategy: {0}.";
 
+        public const String UNEXPECTED_POST_PROCESSOR_TYPE = "Unexpected post-processor type: {0}.";
+
         public const String UNEXPECTED_SHAPE_SIZE = "Shape should be a {0}-element array (BCHW).";
 
         public const String UNEXPECTED_STD_CHANNEL_COUNT = "Std should be a {0}-element array.";
+
+        public const String UNEXPECTED_VALUE_FOR_CONFIG_KEY = "Unexpected value for config key `{0}`.";
+
+        public const String USE_DILATION_IS_NOT_SUPPORTED = "Only `use_dilation: false` is supported for DBPostProcess.";
 
         public const String VALUES_SHOULD_BE_A_NON_EMPTY_ARRAY = "Values should be a non-empty array.";
 

@@ -1,12 +1,32 @@
 /*
-Copyright (C) 2021-2024, Mindee | Felix Dittrich.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2026 Apryse Group NV
+Authors: Apryse Software.
 
-This program is licensed under the Apache License 2.0.
-See <https://opensource.org/licenses/Apache-2.0> for full license details.
+This program is offered under a commercial and under the AGPL license.
+For commercial licensing, contact us at https://itextpdf.com/sales.  For AGPL licensing, see below.
+
+AGPL licensing:
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.IO;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnxtr;
+using iText.Pdfocr.Onnxtr.Conf.Paddle.Model;
+using iText.Pdfocr.Onnxtr.Conf.Paddle.Parser;
+using iText.Pdfocr.Onnxtr.Exceptions;
 using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr.Onnxtr.Detection {
@@ -30,6 +50,14 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         */
         private static readonly IDetectionPostProcessor DB_NET_POST_PROCESSOR = new OnnxDetectionPostProcessor(0.3F
             , 0.1F);
+
+        private const int PADDLE_LIMIT_SIDE_LEN = 64;
+
+        private const int PADDLE_MAX_SIDE_LIMIT = 4000;
+
+        private const int PADDLE_SIDE_MULTIPLE = 32;
+
+        private const int PADDLE_BATCH_SIZE = 1;
 
         /// <summary>Path to the ONNX model to load.</summary>
         private readonly String modelPath;
@@ -189,6 +217,120 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                 , DEFAULT_POST_PROCESSOR);
         }
 
+        /// <summary>
+        /// Creates a new text detection properties object for existing pre-trained
+        /// PaddleOCR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection properties object for existing pre-trained
+        /// PaddleOCR models, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method expects the directory to contain two files:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <c>inference.onnx</c>
+        /// - the inference model in the ONNX format
+        /// </description></item>
+        /// <item><description>
+        /// <c>inference.yml</c>
+        /// - the configuration file for the model in YAML
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// PP-OCRv5_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// PP-OCRv5_mobile_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// PP-OCRv4_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// PP-OCRv4_mobile_det
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelDirPath">
+        /// path to the directory with the model and its
+        /// configuration file
+        /// </param>
+        /// <returns>a new text detection properties object for a PaddleOCR model</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties PaddleOcr(String modelDirPath
+            ) {
+            return PaddleOcr(modelDirPath + "/inference.onnx", modelDirPath + "/inference.yml");
+        }
+
+        /// <summary>
+        /// Creates a new text detection properties object for existing pre-trained
+        /// PaddleOCR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection properties object for existing pre-trained
+        /// PaddleOCR models, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// PP-OCRv5_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// PP-OCRv5_mobile_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// PP-OCRv4_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// PP-OCRv4_mobile_det
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="configPath">path to the configuration file for the model</param>
+        /// <returns>a new text detection properties object for a PaddleOCR model</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties PaddleOcr(String modelPath, String
+             configPath) {
+            InferenceConfig config;
+            using (Stream @is = iText.Commons.Utils.FileUtil.GetInputStreamForFile(System.IO.Path.Combine(configPath))
+                ) {
+                config = InferenceConfigParser.Parse(@is);
+            }
+            OnnxInputProperties inputProperties = CreatePaddleInputProperties(config);
+            PaddleOcrDetectionPostProcessor postProcessor = CreatePaddlePostProcessor(config);
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties(modelPath, inputProperties, postProcessor
+                );
+        }
+
         /// <summary>Returns the path to the ONNX model.</summary>
         /// <returns>the path to the ONNX model</returns>
         public virtual String GetModelPath() {
@@ -230,6 +372,89 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         public override String ToString() {
             return "OnnxDetectionPredictorProperties{" + "modelPath='" + modelPath + '\'' + ", inputProperties=" + inputProperties
                  + ", postProcessor=" + postProcessor + '}';
+        }
+
+        private static OnnxInputProperties CreatePaddleInputProperties(InferenceConfig config) {
+            TransformOp[] ops = config.GetPreProcess().GetTransformOps();
+            DecodeImage decode = GetPaddleOp<DecodeImage>(ops, DecodeImage.WRAPPING_KEY);
+            if (decode.GetChannelFirst()) {
+                throw PaddleOcrInitException.ChannelFirstIsNotSupported();
+            }
+            ImageChannelConfiguration channelConfig = MapImgMode(decode.GetImgMode());
+            NormalizeImage normalize = GetPaddleOp<NormalizeImage>(ops, NormalizeImage.WRAPPING_KEY);
+            float[] mean = normalize.GetMean();
+            if (mean.Length != channelConfig.GetChannelCount()) {
+                throw PaddleOcrInitException.UnexpectedMeanChannelCount(mean.Length);
+            }
+            float[] std = normalize.GetStd();
+            if (std.Length != channelConfig.GetChannelCount()) {
+                throw PaddleOcrInitException.UnexpectedStdChannelCount(std.Length);
+            }
+            DetResizeForTest resize = GetPaddleOp<DetResizeForTest>(ops, DetResizeForTest.WRAPPING_KEY);
+            if (resize.GetImageShape() != null) {
+                throw PaddleOcrInitException.ImageShapeIsNotSupported();
+            }
+            /*
+            * From looking at the logic within PaddleOCR, it seems like there are
+            * very few ways for the configuration file to, actually, affect the
+            * resizing operation. The majority of the parameters come from a
+            * global OCR config file, which is static. So the only things you are
+            * getting from the model config file here is the channel
+            * configuration. It can also be affected, if an `image_shape` key is
+            * present, but we didn't add support for that anyway.
+            */
+            ImageResizeOptions resizeOpts = new ImageResizeOptions(channelConfig, PADDLE_LIMIT_SIDE_LEN, PADDLE_LIMIT_SIDE_LEN
+                , PADDLE_MAX_SIDE_LIMIT, PADDLE_MAX_SIDE_LIMIT, PADDLE_SIDE_MULTIPLE, PADDLE_SIDE_MULTIPLE, PaddingStrategy
+                .BOTTOM_RIGHT_BLACK);
+            return new OnnxInputProperties(resizeOpts, mean, std, PADDLE_BATCH_SIZE);
+        }
+
+        private static T GetPaddleOp<T>(TransformOp[] ops, String name) {
+            System.Type cls = typeof(T);
+            for (int i = 0; i < ops.Length; ++i) {
+                TransformOp op = ops[i];
+                if (cls.IsInstanceOfType(op)) {
+                    return (T)op;
+                }
+            }
+            throw PaddleOcrInitException.PreProcessorOperationMissing(name);
+        }
+
+        private static ImageChannelConfiguration MapImgMode(ImgMode im) {
+            switch (im) {
+                case ImgMode.GRAY: {
+                    return ImageChannelConfiguration.GRAYSCALE;
+                }
+
+                case ImgMode.RGB: {
+                    return ImageChannelConfiguration.RGB;
+                }
+
+                case ImgMode.BGR: {
+                    return ImageChannelConfiguration.BGR;
+                }
+            }
+            // Should not get here
+            throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+        }
+
+        private static PaddleOcrDetectionPostProcessor CreatePaddlePostProcessor(InferenceConfig config) {
+            PostProcess postProcess = config.GetPostProcess();
+            if (!(postProcess is DbPostProcess)) {
+                throw PaddleOcrInitException.UnexpectedPostProcessorType(postProcess.GetName());
+            }
+            DbPostProcess db = (DbPostProcess)postProcess;
+            if (db.GetUseDilation()) {
+                throw PaddleOcrInitException.UseDilationIsNotSupported();
+            }
+            if (db.GetScoreMode() != ScoreMode.FAST) {
+                throw PaddleOcrInitException.ScoreModeIsNotSupported();
+            }
+            if (db.GetBoxType() != BoxType.QUAD) {
+                throw PaddleOcrInitException.BoxTypeIsNotSupported();
+            }
+            return new PaddleOcrDetectionPostProcessor(db.GetThresh(), db.GetBoxThresh(), db.GetUnclipRatio(), db.GetMaxCandidates
+                ());
         }
     }
 }

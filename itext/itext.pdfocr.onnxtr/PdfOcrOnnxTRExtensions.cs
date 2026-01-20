@@ -86,6 +86,11 @@ internal static class PdfOcrOnnxTRExtensions
     {
         return System.Text.Encoding.UTF8.GetBytes(str);
     }
+    
+    public static byte[] GetBytes(this String str, Encoding encoding)
+    {
+        return encoding.GetBytes(str);
+    }
 
     public static Assembly GetAssembly(this Type type)
     {

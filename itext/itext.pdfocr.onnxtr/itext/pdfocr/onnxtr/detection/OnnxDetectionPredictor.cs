@@ -190,6 +190,113 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                 ));
         }
 
+        /// <summary>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method expects the directory to contain two files:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <c>inference.onnx</c>
+        /// - the inference model in the ONNX format
+        /// </description></item>
+        /// <item><description>
+        /// <c>inference.yml</c>
+        /// - the configuration file for the model in YAML
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// PP-OCRv5_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// PP-OCRv5_mobile_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// PP-OCRv4_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// PP-OCRv4_mobile_det
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelDirPath">
+        /// path to the directory with the model and its
+        /// configuration file
+        /// </param>
+        /// <returns>a new predictor with the PaddleOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor PaddleOcr(String modelDirPath) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.PaddleOcr
+                (modelDirPath));
+        }
+
+        /// <summary>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// PP-OCRv5_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// PP-OCRv5_mobile_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// PP-OCRv4_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// PP-OCRv4_mobile_det
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="configPath">path to the configuration file for the model</param>
+        /// <returns>a new predictor with the PaddleOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor PaddleOcr(String modelPath, String configPath
+            ) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.PaddleOcr
+                (modelPath, configPath));
+        }
+
         /// <summary>Returns the text detection predictor properties.</summary>
         /// <returns>the text detection predictor properties</returns>
         public virtual OnnxDetectionPredictorProperties GetProperties() {

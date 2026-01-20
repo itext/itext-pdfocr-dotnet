@@ -266,6 +266,383 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                 (modelPath));
         }
 
+        /// <summary>
+        /// Creates a new text recognition predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method expects the directory to contain two files:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <c>inference.onnx</c>
+        /// - the inference model in the ONNX format
+        /// </description></item>
+        /// <item><description>
+        /// <c>inference.yml</c>
+        /// - the configuration file for the model in YAML
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_rec_infer.tar">
+        /// PP-OCRv5_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_rec_infer.tar">
+        /// PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_doc_infer.tar">
+        /// PP-OCRv4_server_rec_doc
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_rec_infer.tar">
+        /// PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_infer.tar">
+        /// PP-OCRv4_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv3_mobile_rec_infer.tar">
+        /// PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_svtrv2_rec_infer.tar">
+        /// ch_SVTRv2_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_repsvtr_rec_infer.tar">
+        /// ch_RepSVTR_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv5_mobile_rec_infer.tar">
+        /// en_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv4_mobile_rec_infer.tar">
+        /// en_PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv3_mobile_rec_infer.tar">
+        /// en_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv5_mobile_rec_infer.tar">
+        /// korean_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv5_mobile_rec_infer.tar">
+        /// latin_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/eslav_pp-ocrv5_mobile_rec_infer.tar">
+        /// eslav_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/th_pp-ocrv5_mobile_rec_infer.tar">
+        /// th_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/el_pp-ocrv5_mobile_rec_infer.tar">
+        /// el_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv5_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv5_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv5_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv5_mobile_rec_infer.tar">
+        /// te_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv5_mobile_rec_infer.tar">
+        /// ta_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv3_mobile_rec_infer.tar">
+        /// korean_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/japan_pp-ocrv3_mobile_rec_infer.tar">
+        /// japan_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/chinese_cht_pp-ocrv3_mobile_rec_infer.tar">
+        /// chinese_cht_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv3_mobile_rec_infer.tar">
+        /// te_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ka_pp-ocrv3_mobile_rec_infer.tar">
+        /// ka_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv3_mobile_rec_infer.tar">
+        /// ta_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv3_mobile_rec_infer.tar">
+        /// latin_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv3_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv3_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv3_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelDirPath">
+        /// path to the directory with the model and its
+        /// configuration file
+        /// </param>
+        /// <returns>a new predictor object with the PaddleOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor PaddleOcr(String modelDirPath) {
+            return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.PaddleOcr
+                (modelDirPath));
+        }
+
+        /// <summary>
+        /// Creates a new text recognition predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_rec_infer.tar">
+        /// PP-OCRv5_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_rec_infer.tar">
+        /// PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_doc_infer.tar">
+        /// PP-OCRv4_server_rec_doc
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_rec_infer.tar">
+        /// PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_infer.tar">
+        /// PP-OCRv4_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv3_mobile_rec_infer.tar">
+        /// PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_svtrv2_rec_infer.tar">
+        /// ch_SVTRv2_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_repsvtr_rec_infer.tar">
+        /// ch_RepSVTR_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv5_mobile_rec_infer.tar">
+        /// en_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv4_mobile_rec_infer.tar">
+        /// en_PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv3_mobile_rec_infer.tar">
+        /// en_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv5_mobile_rec_infer.tar">
+        /// korean_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv5_mobile_rec_infer.tar">
+        /// latin_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/eslav_pp-ocrv5_mobile_rec_infer.tar">
+        /// eslav_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/th_pp-ocrv5_mobile_rec_infer.tar">
+        /// th_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/el_pp-ocrv5_mobile_rec_infer.tar">
+        /// el_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv5_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv5_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv5_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv5_mobile_rec_infer.tar">
+        /// te_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv5_mobile_rec_infer.tar">
+        /// ta_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv3_mobile_rec_infer.tar">
+        /// korean_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/japan_pp-ocrv3_mobile_rec_infer.tar">
+        /// japan_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/chinese_cht_pp-ocrv3_mobile_rec_infer.tar">
+        /// chinese_cht_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv3_mobile_rec_infer.tar">
+        /// te_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ka_pp-ocrv3_mobile_rec_infer.tar">
+        /// ka_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv3_mobile_rec_infer.tar">
+        /// ta_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv3_mobile_rec_infer.tar">
+        /// latin_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv3_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv3_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv3_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="configPath">path to the configuration file for the model</param>
+        /// <returns>a new predictor object with the PaddleOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor PaddleOcr(String modelPath, String 
+            configPath) {
+            return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.PaddleOcr
+                (modelPath, configPath));
+        }
+
         /// <summary>Returns the text recognition predictor properties.</summary>
         /// <returns>the text recognition predictor properties</returns>
         public virtual OnnxRecognitionPredictorProperties GetProperties() {

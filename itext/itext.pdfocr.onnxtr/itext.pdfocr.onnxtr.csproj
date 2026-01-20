@@ -28,6 +28,7 @@
     <PackageReference Include="OpenCvSharp4.runtime.linux-arm" Version="4.11.0.20250506" />
     <PackageReference Include="SkiaSharp" Version="3.119.0" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\itext.pdfocr.api\itext.pdfocr.api.csproj" />
