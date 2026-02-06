@@ -20,7 +20,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
     public class OnnxOrientationPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
             (ImageChannelConfiguration.RGB, 256, 256, PaddingStrategy.SYMMETRIC_BLACK), new float[] { 0.694F, 0.695F
-            , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 512);
+            , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 64);
 
         private static readonly DefaultOrientationMapper DEFAULT_OUTPUT_MAPPER = new DefaultOrientationMapper();
 

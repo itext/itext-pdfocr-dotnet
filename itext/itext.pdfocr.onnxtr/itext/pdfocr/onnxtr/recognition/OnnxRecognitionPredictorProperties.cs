@@ -39,7 +39,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     public class OnnxRecognitionPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
             (ImageChannelConfiguration.RGB, 128, 32, PaddingStrategy.BOTTOM_RIGHT_BLACK), new float[] { 0.694F, 0.695F
-            , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 512);
+            , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 64);
 
         private const int PADDLE_MAX_WIDTH = 3200;
 
