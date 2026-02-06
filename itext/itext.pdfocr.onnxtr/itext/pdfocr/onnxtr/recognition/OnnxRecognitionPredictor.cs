@@ -668,6 +668,120 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                 (modelPath, configPath));
         }
 
+        /// <summary>
+        /// Creates a new text recognition predictor using an existing pre-trained
+        /// EasyOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition predictor using an existing pre-trained
+        /// EasyOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// EasyOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself.
+        /// <para />
+        /// TODO: Host models ourselves? Conversion is not exactly straight-forward...
+        /// <para />
+        /// This method can be used to load the following EasyOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href=https://github.com/jaidedai/easyocr/releases/download/v1.3/english_g2.zip">
+        /// english_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/latin_g2.zip">
+        /// latin_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/zh_sim_g2.zip">
+        /// zh_sim_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/japanese_g2.zip">
+        /// japanese_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/korean_g2.zip">
+        /// korean_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.2/telugu.zip">
+        /// telugu_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.2/kannada.zip">
+        /// kannada_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/latin.zip">
+        /// latin_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/chinese_sim.zip">
+        /// zh_sim_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/chinese.zip">
+        /// zh_tra_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/japanese.zip">
+        /// japanese_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/korean.zip">
+        /// korean_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/thai.zip">
+        /// thai_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/devanagari.zip">
+        /// devanagari_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/cyrillic.zip">
+        /// cyrillic_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/arabic.zip">
+        /// arabic_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.1.8/bengali.zip">
+        /// bengali_g1
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="labelMapper">label mapper to use for the model</param>
+        /// <returns>a new predictor object with the EasyOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor EasyOcr(String modelPath, EasyOcrMapper
+             labelMapper) {
+            return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictor(OnnxRecognitionPredictorProperties.EasyOcr
+                (modelPath, labelMapper));
+        }
+
         /// <summary>Returns the text recognition predictor properties.</summary>
         /// <returns>the text recognition predictor properties</returns>
         public virtual OnnxRecognitionPredictorProperties GetProperties() {

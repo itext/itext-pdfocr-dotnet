@@ -49,6 +49,15 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
 
         private const int PADDLE_BATCH_SIZE = 6;
 
+        private static readonly OnnxInputProperties EASY_OCR_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
+            (ImageChannelConfiguration.GRAYSCALE, 1, 64, 
+                // There is, actually, no width limit here for EasyOCR, so just setting
+                
+                // something big, but reasonable here...
+                4096, 64, PaddingStrategy.BOTTOM_RIGHT_EDGE), new float[] { 0.5F }, new float[] { 0.5F }, 
+                // In the CPU case just having 1 should be faster
+                1);
+
         /// <summary>Path to the ONNX model to load.</summary>
         private readonly String modelPath;
 
@@ -747,6 +756,120 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             // algorithm is not handling whitespaces properly
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, inputProperties, 
                 postProcessor, false);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained EasyOCR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained EasyOCR models, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// EasyOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself.
+        /// <para />
+        /// TODO: Host models ourselves? Conversion is not exactly straight-forward...
+        /// <para />
+        /// This method can be used to load the following EasyOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href=https://github.com/jaidedai/easyocr/releases/download/v1.3/english_g2.zip">
+        /// english_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/latin_g2.zip">
+        /// latin_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/zh_sim_g2.zip">
+        /// zh_sim_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/japanese_g2.zip">
+        /// japanese_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/korean_g2.zip">
+        /// korean_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.2/telugu.zip">
+        /// telugu_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.2/kannada.zip">
+        /// kannada_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/latin.zip">
+        /// latin_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/chinese_sim.zip">
+        /// zh_sim_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/chinese.zip">
+        /// zh_tra_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/japanese.zip">
+        /// japanese_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/korean.zip">
+        /// korean_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/thai.zip">
+        /// thai_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/devanagari.zip">
+        /// devanagari_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/cyrillic.zip">
+        /// cyrillic_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/arabic.zip">
+        /// arabic_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.1.8/bengali.zip">
+        /// bengali_g1
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="labelMapper">label mapper to use for the model</param>
+        /// <returns>a new text recognition properties object for a EasyOCR model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties EasyOcr(String modelPath, 
+            EasyOcrMapper labelMapper) {
+            return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, EASY_OCR_INPUT_PROPERTIES
+                , new CtcLabelPostProcessor(labelMapper), false);
         }
 
         /// <summary>Returns the path to the ONNX model.</summary>
