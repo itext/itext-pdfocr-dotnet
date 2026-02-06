@@ -59,6 +59,16 @@ namespace iText.Pdfocr.Onnxtr.Detection {
 
         private const int PADDLE_BATCH_SIZE = 1;
 
+        private static readonly OnnxInputProperties EASY_OCR_INPUT_PROPERTIES = new OnnxInputProperties(/* * This will work a bit differently to what is done in EasyOCR. 
+            * They first scale the image and then put it on top of a 32-multiple * black background. So in their case there will be padding on both bottom 
+            * and right, where the image is padded to 32 chunks. * * In our case the image is scaled to the "multiple" canvas, so there 
+            * will be padding only on one side. * * Shouldn't, really, matter that much. */ new ImageResizeOptions
+            (ImageChannelConfiguration.RGB, 32, 32, 2560, 2560, 32, 32, PaddingStrategy.BOTTOM_RIGHT_BLACK), new float
+            [] { 0.485F, 0.456F, 0.406F }, new float[] { 0.229F, 0.224F, 0.225F });
+
+        private static readonly EasyOcrDetectionPostProcessor EASY_OCR_POST_PROCESSOR = new EasyOcrDetectionPostProcessor
+            ();
+
         /// <summary>Path to the ONNX model to load.</summary>
         private readonly String modelPath;
 
@@ -341,6 +351,39 @@ namespace iText.Pdfocr.Onnxtr.Detection {
             PaddleOcrDetectionPostProcessor postProcessor = CreatePaddlePostProcessor(config);
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties(modelPath, inputProperties, postProcessor
                 );
+        }
+
+        /// <summary>
+        /// Creates a new text detection properties object for an existing
+        /// pre-trained EasyOCR CRAFT model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection properties object for an existing
+        /// pre-trained EasyOCR CRAFT model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// EasyOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself.
+        /// <para />
+        /// TODO: Host models ourselves? Conversion is not exactly straight-forward...
+        /// <para />
+        /// This can be used to load the following models from EasyOCR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/craft_mlt_25k.zip">
+        /// CRAFT
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new text detection properties object for an EasyOCR CRAFT model</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties EasyOcr(String modelPath) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictorProperties(modelPath, EASY_OCR_INPUT_PROPERTIES
+                , EASY_OCR_POST_PROCESSOR);
         }
 
         /// <summary>Returns the path to the ONNX model.</summary>

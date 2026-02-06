@@ -309,6 +309,39 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                 (modelPath, configPath));
         }
 
+        /// <summary>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// EasyOCR CRAFT model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// EasyOCR CRAFT model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// EasyOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself.
+        /// <para />
+        /// TODO: Host models ourselves? Conversion is not exactly straight-forward...
+        /// <para />
+        /// This can be used to load the following models from EasyOCR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/craft_mlt_25k.zip">
+        /// CRAFT
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <returns>a new predictor with the EasyOCR CRAFT model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor EasyOcr(String modelPath) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.EasyOcr(modelPath
+                ));
+        }
+
         /// <summary>Returns the text detection predictor properties.</summary>
         /// <returns>the text detection predictor properties</returns>
         public virtual OnnxDetectionPredictorProperties GetProperties() {
