@@ -105,6 +105,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models output boxes of words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor with the DBNet model loaded</returns>
@@ -136,6 +138,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models output boxes of words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor with the FAST model loaded</returns>
@@ -182,6 +186,8 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models output boxes of words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor with the LinkNet model loaded</returns>
@@ -239,6 +245,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
         /// </remarks>
         /// <param name="modelDirPath">
         /// path to the directory with the model and its
@@ -287,6 +296,9 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
         /// <param name="configPath">path to the configuration file for the model</param>

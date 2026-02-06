@@ -160,7 +160,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
             NUnit.Framework.Assert.AreEqual(ScoreMode.SLOW, ParserUtil.GetOrDefault(MapOf("k", "slow"), "Obj", "k", defaultValue
                 ));
             // Key does not exist
-            NUnit.Framework.Assert.AreSame(defaultValue, ParserUtil.GetOrDefault(MapOf("a", "fast"), "Obj", "b", defaultValue
+            NUnit.Framework.Assert.AreEqual(defaultValue, ParserUtil.GetOrDefault(MapOf("a", "fast"), "Obj", "b", defaultValue
                 ));
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
@@ -182,7 +182,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
             NUnit.Framework.Assert.AreEqual(BoxType.POLY, ParserUtil.GetOrDefault(MapOf("k", "poly"), "Obj", "k", defaultValue
                 ));
             // Key does not exist
-            NUnit.Framework.Assert.AreSame(defaultValue, ParserUtil.GetOrDefault(MapOf("a", "quad"), "Obj", "b", defaultValue
+            NUnit.Framework.Assert.AreEqual(defaultValue, ParserUtil.GetOrDefault(MapOf("a", "quad"), "Obj", "b", defaultValue
                 ));
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
@@ -206,7 +206,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
             NUnit.Framework.Assert.AreEqual(ImgMode.BGR, ParserUtil.GetOrDefault(MapOf("k", "BGR"), "Obj", "k", defaultValue
                 ));
             // Key does not exist
-            NUnit.Framework.Assert.AreSame(defaultValue, ParserUtil.GetOrDefault(MapOf("a", "RGB"), "Obj", "b", defaultValue
+            NUnit.Framework.Assert.AreEqual(defaultValue, ParserUtil.GetOrDefault(MapOf("a", "RGB"), "Obj", "b", defaultValue
                 ));
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf

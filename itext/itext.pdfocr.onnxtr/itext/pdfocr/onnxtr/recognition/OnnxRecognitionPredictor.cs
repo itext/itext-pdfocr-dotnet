@@ -63,6 +63,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the CRNN model loaded with a VGG-16 backbone</returns>
@@ -102,6 +105,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the CRNN model loaded with a MobileNet V3 backbone</returns>
@@ -131,6 +137,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the MASTER model loaded</returns>
@@ -160,6 +169,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the PARSeq model loaded</returns>
@@ -189,6 +201,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <param name="vocabulary">vocabulary used for the model output (without special tokens)</param>
@@ -222,6 +237,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the SAR model loaded</returns>
@@ -258,6 +276,9 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new predictor object with the ViTSTR model loaded</returns>
@@ -450,6 +471,8 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models can handle spaces.
         /// </remarks>
         /// <param name="modelDirPath">
         /// path to the directory with the model and its
@@ -633,6 +656,8 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// </a>
         /// </description></item>
         /// </list>
+        /// <para />
+        /// These models can handle spaces.
         /// </remarks>
         /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
         /// <param name="configPath">path to the configuration file for the model</param>
