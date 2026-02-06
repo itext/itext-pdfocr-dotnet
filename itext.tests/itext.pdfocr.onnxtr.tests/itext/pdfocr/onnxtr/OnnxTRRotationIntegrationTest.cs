@@ -72,6 +72,7 @@ namespace iText.Pdfocr.Onnxtr {
         [NUnit.Framework.OneTimeTearDown]
         public static void AfterClass() {
             OCR_ENGINE.Close();
+            OCR_ENGINE_GROUPING_BY_LINES.Close();
         }
 
         [NUnit.Framework.Test]

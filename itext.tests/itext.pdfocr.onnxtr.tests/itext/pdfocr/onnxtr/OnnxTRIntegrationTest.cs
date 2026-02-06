@@ -95,11 +95,13 @@ namespace iText.Pdfocr.Onnxtr {
             String cmp = TEST_DIRECTORY + "cmp_bmpTestByWords.pdf";
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor
-                , new OnnxTrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS)), CreatorProperties("Text1"
-                , DeviceCmyk.MAGENTA));
-            using (PdfWriter writer = new PdfWriter(dest)) {
-                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(src)), writer).Close();
+            using (OnnxTrOcrEngine onnxTrOcrEngine = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor,
+                       new OnnxTrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS))) {
+                OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(onnxTrOcrEngine, 
+                    CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+                using (PdfWriter writer = new PdfWriter(dest)) {
+                    ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(src)), writer).Close();
+                }
             }
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
