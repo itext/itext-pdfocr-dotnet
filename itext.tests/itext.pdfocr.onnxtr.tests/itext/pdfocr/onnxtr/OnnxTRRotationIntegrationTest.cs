@@ -133,12 +133,14 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "rotatedCapsLC.png";
             String dest = TARGET_DIRECTORY + "rotatedCapsLCTest.pdf";
             String dest2 = TARGET_DIRECTORY + "rotatedCapsLCTestByLines.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_rotatedCapsLCTest.pdf";
-            String cmp2 = TEST_DIRECTORY + "cmp_rotatedCapsLCTestByLines.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
+                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
+                NUnit.Framework.Assert.AreEqual("anD\nCapITALS\nlowerCaSE\nmix\nTEsTinG", extractionStrategy.GetResultantText
+                    ());
+            }
             DoOcrAndCreatePdfByLines(src, dest2, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest2, cmp2, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest2))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());

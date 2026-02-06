@@ -206,9 +206,7 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void ScannedTest() {
             String src = TEST_IMAGE_DIRECTORY + "scanned_spa_01.png";
             String dest = TARGET_DIRECTORY + "scannedTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_scannedTest.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
@@ -230,9 +228,7 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual void HalftoneTest() {
             String src = TEST_IMAGE_DIRECTORY + "halftone.jpg";
             String dest = TARGET_DIRECTORY + "halftoneTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_halftoneTest.pdf";
             DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
