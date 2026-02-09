@@ -501,6 +501,9 @@ namespace iText.Pdfocr.Onnxtr.Util {
                     fillPaint.FilterQuality = SkiaSharp.SKFilterQuality.Medium;
                     fillPaint.IsAntialias = true;
                     output.DrawRect(0, 0, outputWidth, outputHeight, fillPaint);
+                    // Draw white background for image in case it's transparent, see WeirdWordsDoImageOcrTest
+                    fillPaint.Color = (SkiaSharp.SKColor)IronSoftware.Drawing.Color.White;
+                    output.DrawRect(xPos, yPos, targetWidth, targetHeight, fillPaint);
                 }
             } else {
                 int sourceWidth = GetWidth(image);
