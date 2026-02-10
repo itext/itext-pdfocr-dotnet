@@ -75,7 +75,14 @@ namespace iText.Pdfocr.Onnxtr.Util {
         /// </returns>
         public static IDictionary<Object, Object> ObjToMapping(Object obj) {
             if (obj is IDictionary) {
-                return (IDictionary<Object, Object>)obj;
+                IDictionary<Object, Object> dictionary = new Dictionary<Object, Object>();
+                IDictionaryEnumerator enumerator = ((IDictionary)obj).GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    dictionary.Add(enumerator.Key, enumerator.Value);
+                }
+
+                return dictionary;
             }
             return null;
         }

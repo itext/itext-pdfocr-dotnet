@@ -108,8 +108,22 @@ namespace iText.Pdfocr.Onnxtr.Util {
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToMapping(3));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToMapping(3.14));
             IDictionary<Object, Object> map = new Dictionary<Object, Object>();
-            NUnit.Framework.Assert.AreSame(map, YamlUtil.ObjToMapping(map));
+            NUnit.Framework.Assert.AreEqual(map, YamlUtil.ObjToMapping(map));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToMapping(new List<Object>()));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void MappingElementsTest() {
+            IDictionary<int, List<String>> map = new Dictionary<int, List<String>>();
+            List<String> array = new List<String>(JavaUtil.ArraysAsList("one", "two", "three"));
+            map.Put(1, array);
+            map.Put(2, new List<String>());
+            IDictionary<Object, Object> newMap = YamlUtil.ObjToMapping(map);
+            NUnit.Framework.Assert.AreEqual(2, newMap.Count);
+            NUnit.Framework.Assert.IsTrue(map.Keys.Contains(1));
+            NUnit.Framework.Assert.AreEqual(array, newMap.Get(1));
+            NUnit.Framework.Assert.IsTrue(map.Keys.Contains(2));
+            NUnit.Framework.Assert.AreEqual(new List<String>(), newMap.Get(2));
         }
 
         [NUnit.Framework.Test]
@@ -121,13 +135,22 @@ namespace iText.Pdfocr.Onnxtr.Util {
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToSequence(3.14));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToSequence(new Dictionary<Object, Object>()));
             IList<Object> seq = new List<Object>();
-            NUnit.Framework.Assert.AreSame(seq, YamlUtil.ObjToSequence(seq));
+            NUnit.Framework.Assert.AreEqual(seq, YamlUtil.ObjToSequence(seq));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void SequenceElementsTest() {
+            IList<int> seq = new List<int>(JavaUtil.ArraysAsList(1, 2, 3));
+            ICollection<Object> newSeq = YamlUtil.ObjToSequence(seq);
+            NUnit.Framework.Assert.IsTrue(newSeq.Contains(1));
+            NUnit.Framework.Assert.IsTrue(newSeq.Contains(2));
+            NUnit.Framework.Assert.IsTrue(newSeq.Contains(3));
         }
 
         [NUnit.Framework.Test]
         public virtual void ObjToStringTest() {
             String str = "3.14";
-            NUnit.Framework.Assert.AreSame(str, YamlUtil.ObjToString(str));
+            NUnit.Framework.Assert.AreEqual(str, YamlUtil.ObjToString(str));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToString(null));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToString(true));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToString(3));
@@ -140,7 +163,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
         public virtual void ObjToBoolTest() {
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToBool("not bool"));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToBool(null));
-            NUnit.Framework.Assert.AreSame(true, YamlUtil.ObjToBool(true));
+            NUnit.Framework.Assert.AreEqual(true, YamlUtil.ObjToBool(true));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToBool(3));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToBool(3.14));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToBool(new Dictionary<Object, Object>()));
@@ -156,7 +179,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToInt(null));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToInt(true));
             int? i = 3;
-            NUnit.Framework.Assert.AreSame(i, YamlUtil.ObjToInt(i));
+            NUnit.Framework.Assert.AreEqual(i, YamlUtil.ObjToInt(i));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToInt(3.14));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToInt(new Dictionary<Object, Object>()));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToInt(new List<Object>()));
@@ -172,7 +195,7 @@ namespace iText.Pdfocr.Onnxtr.Util {
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToFloat(true));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToFloat(3));
             double? f = 3.14;
-            NUnit.Framework.Assert.AreSame(f, YamlUtil.ObjToFloat(f));
+            NUnit.Framework.Assert.AreEqual(f, YamlUtil.ObjToFloat(f));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToFloat(new Dictionary<Object, Object>()));
             NUnit.Framework.Assert.IsNull(YamlUtil.ObjToFloat(new List<Object>()));
             // Implicit case
