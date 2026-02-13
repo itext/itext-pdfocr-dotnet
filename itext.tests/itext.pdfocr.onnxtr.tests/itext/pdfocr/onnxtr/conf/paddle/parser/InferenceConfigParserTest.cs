@@ -33,7 +33,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
         private static readonly String BASE_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/";
 
-        private static readonly String TEST_YAML_CONFIG = BASE_DIRECTORY + "models/PP-OCRv5_mobile_det_infer/inference.yml";
+        private static readonly String TEST_YAML_CONFIG = BASE_DIRECTORY + "models/paddleocr/PP-OCRv5_mobile_det_infer/inference.yml";
 
         [NUnit.Framework.Test]
         public virtual void ParseValidTest() {

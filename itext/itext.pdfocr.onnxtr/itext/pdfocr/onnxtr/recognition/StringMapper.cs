@@ -48,9 +48,14 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         public StringMapper(String lookUpString) {
             Objects.RequireNonNull(lookUpString);
             List<string> characters = new List<string>();
-            TextElementEnumerator enumerator = StringInfo.GetTextElementEnumerator(lookUpString);
-            while (enumerator.MoveNext()) {
-                characters.Add(enumerator.GetTextElement());
+            for (int i = 0; i < lookUpString.Length; ++i) {
+                if (char.IsHighSurrogate(lookUpString[i]) && i + 1 < lookUpString.Length && 
+                    char.IsLowSurrogate(lookUpString[i + 1])) {
+                    characters.Add(lookUpString.Substring(i, 2));
+                    i++;
+                } else {
+                    characters.Add(lookUpString[i].ToString());
+                }
             }
             this.lookUpTable = characters.ToArray();
         }
