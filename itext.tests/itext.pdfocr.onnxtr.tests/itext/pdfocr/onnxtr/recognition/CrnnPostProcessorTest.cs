@@ -22,10 +22,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using iText.Pdfocr.Onnxtr;
+using iText.Test;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
     [NUnit.Framework.Category("UnitTest")]
-    public class CrnnPostProcessorTest {
+    public class CrnnPostProcessorTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void InitWithInvalidVocabulary() {
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new CrnnPostProcessor(null));

@@ -27,6 +27,12 @@ using iText.Pdfocr.Exceptions;
 namespace iText.Pdfocr.Onnxtr.Exceptions {
     /// <summary>Exception class for exceptions during configuration file parsing.</summary>
     public class ConfigParserException : PdfOcrException {
+        /// <summary>
+        /// Creates new
+        /// <see cref="ConfigParserException"/>
+        /// instance.
+        /// </summary>
+        /// <param name="message">exception message</param>
         protected internal ConfigParserException(String message)
             : base(message) {
         }

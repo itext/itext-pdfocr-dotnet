@@ -46,6 +46,11 @@ namespace iText.Pdfocr.Onnxtr.Merging {
         /// <summary>Multiplier for calculating the added margin.</summary>
         private const double MARGIN_MUL = 0.1;
 
+        /// <summary>Creates new <see cref="EasyOcrTextBoxMerger"/> instance.</summary>
+        public EasyOcrTextBoxMerger() {
+            // Empty constructor in order for default one to not be removed if another one is added.
+        }
+
         /// <summary><inheritDoc/></summary>
         public virtual IList<iText.Kernel.Geom.Point[]> Process(IList<iText.Kernel.Geom.Point[]> detectedTextBoxes
             ) {

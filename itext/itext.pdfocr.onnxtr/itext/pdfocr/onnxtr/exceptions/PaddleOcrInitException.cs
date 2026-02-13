@@ -27,6 +27,12 @@ using iText.Pdfocr.Exceptions;
 namespace iText.Pdfocr.Onnxtr.Exceptions {
     /// <summary>Exception class for exceptions during PaddleOCR initialization.</summary>
     public class PaddleOcrInitException : PdfOcrException {
+        /// <summary>
+        /// Creates new
+        /// <see cref="PaddleOcrInitException"/>
+        /// instance.
+        /// </summary>
+        /// <param name="message">exception message</param>
         protected internal PaddleOcrInitException(String message)
             : base(message) {
         }

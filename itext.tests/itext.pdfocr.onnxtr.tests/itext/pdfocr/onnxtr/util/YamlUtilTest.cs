@@ -120,10 +120,10 @@ namespace iText.Pdfocr.Onnxtr.Util {
             map.Put(2, new List<String>());
             IDictionary<Object, Object> newMap = YamlUtil.ObjToMapping(map);
             NUnit.Framework.Assert.AreEqual(2, newMap.Count);
-            NUnit.Framework.Assert.IsTrue(map.Keys.Contains(1));
+            NUnit.Framework.Assert.IsTrue(map.ContainsKey(1));
             NUnit.Framework.Assert.AreEqual(array, newMap.Get(1));
-            NUnit.Framework.Assert.IsTrue(map.Keys.Contains(2));
-            NUnit.Framework.Assert.AreEqual(new List<String>(), newMap.Get(2));
+            NUnit.Framework.Assert.IsTrue(map.ContainsKey(2));
+            NUnit.Framework.Assert.AreEqual(new List<Object>(), newMap.Get(2));
         }
 
         [NUnit.Framework.Test]

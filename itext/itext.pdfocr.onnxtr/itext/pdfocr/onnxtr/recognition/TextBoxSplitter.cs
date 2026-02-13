@@ -49,6 +49,11 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         ///     </remarks>
         private readonly LinkedList<int> mergeQueue = new LinkedList<int>();
 
+        /// <summary>Creates new <see cref="TextBoxSplitter"/> instance.</summary>
+        public TextBoxSplitter() {
+            // Empty constructor in order for default one to not be removed if another one is added.
+        }
+
         /// <summary>
         /// Wrap the iterator of the text recognition predictor inputs, which
         /// splits the images, if they have too skewed aspect ratio.

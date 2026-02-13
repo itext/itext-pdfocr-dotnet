@@ -32,42 +32,45 @@ namespace iText.Pdfocr.Onnxtr {
         /// <summary>Image will be put into the top-left corner.</summary>
         /// <remarks>
         /// Image will be put into the top-left corner. Remaining pixels are filled
-        /// with #000000.
+        /// with
+        /// <c>#000000</c>.
         /// </remarks>
         public static readonly PaddingStrategy BOTTOM_RIGHT_BLACK = new PaddingStrategy();
 
         /// <summary>Image will be put into the middle.</summary>
         /// <remarks>
         /// Image will be put into the middle. Remaining pixels are filled with
-        /// #000000.
+        /// <c>#000000</c>.
         /// </remarks>
         public static readonly PaddingStrategy SYMMETRIC_BLACK = new PaddingStrategy();
 
         /// <summary>Image will be put into the top-left corner.</summary>
         /// <remarks>
         /// Image will be put into the top-left corner. Remaining pixels are filled
-        /// with #808080.
+        /// with
+        /// <c>#808080</c>.
         /// </remarks>
         public static readonly PaddingStrategy BOTTOM_RIGHT_GRAY = new PaddingStrategy();
 
         /// <summary>Image will be put into the middle.</summary>
         /// <remarks>
         /// Image will be put into the middle. Remaining pixels are filled with
-        /// #808080.
+        /// <c>#808080</c>.
         /// </remarks>
         public static readonly PaddingStrategy SYMMETRIC_GRAY = new PaddingStrategy();
 
         /// <summary>Image will be put into the top-left corner.</summary>
         /// <remarks>
         /// Image will be put into the top-left corner. Remaining pixels are filled
-        /// with #FFFFFF.
+        /// with
+        /// <c>#FFFFFF</c>.
         /// </remarks>
         public static readonly PaddingStrategy BOTTOM_RIGHT_WHITE = new PaddingStrategy();
 
         /// <summary>Image will be put into the middle.</summary>
         /// <remarks>
         /// Image will be put into the middle. Remaining pixels are filled with
-        /// #FFFFFF.
+        /// <c>#FFFFFF</c>.
         /// </remarks>
         public static readonly PaddingStrategy SYMMETRIC_WHITE = new PaddingStrategy();
 
