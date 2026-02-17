@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using iText.Commons.Utils;
 
 namespace iText.Pdfocr.Onnxtr.Merging {
@@ -46,11 +44,15 @@ namespace iText.Pdfocr.Onnxtr.Merging {
         /// <summary>Multiplier for calculating the added margin.</summary>
         private const double MARGIN_MUL = 0.1;
 
-        /// <summary>Creates new <see cref="EasyOcrTextBoxMerger"/> instance.</summary>
+        /// <summary>
+        /// Creates new
+        /// <see cref="EasyOcrTextBoxMerger"/>
+        /// instance.
+        /// </summary>
         public EasyOcrTextBoxMerger() {
-            // Empty constructor in order for default one to not be removed if another one is added.
         }
 
+        // Empty constructor in order for default one to not be removed if another one is added.
         /// <summary><inheritDoc/></summary>
         public virtual IList<iText.Kernel.Geom.Point[]> Process(IList<iText.Kernel.Geom.Point[]> detectedTextBoxes
             ) {
@@ -73,7 +75,7 @@ namespace iText.Pdfocr.Onnxtr.Merging {
                 return slopedBoxes;
             }
             // Sort by middle Y before merging
-            alignedBoxes.Sort((box1, box2) => CalcYAligned(box1).CompareTo(CalcYAligned(box2)));
+            JavaCollectionsUtil.Sort(alignedBoxes, new _IComparer_90());
             List<iText.Kernel.Geom.Point[]> finalBoxes = new List<iText.Kernel.Geom.Point[]>(slopedBoxes);
             // Grouping and merging
             List<iText.Kernel.Geom.Point[]> groupBoxes = new List<iText.Kernel.Geom.Point[]>();
@@ -107,6 +109,16 @@ namespace iText.Pdfocr.Onnxtr.Merging {
             return finalBoxes;
         }
 
+        private sealed class _IComparer_90 : IComparer<iText.Kernel.Geom.Point[]> {
+            public _IComparer_90() {
+            }
+
+            public int Compare(iText.Kernel.Geom.Point[] o1, iText.Kernel.Geom.Point[] o2) {
+                return JavaUtil.DoubleCompare(iText.Pdfocr.Onnxtr.Merging.EasyOcrTextBoxMerger.CalcYAligned(o1), iText.Pdfocr.Onnxtr.Merging.EasyOcrTextBoxMerger
+                    .CalcYAligned(o2));
+            }
+        }
+
         /// <summary>Handles text box processing within a vertical group of text boxes.</summary>
         /// <param name="verticalGroup">vertical group of text boxes to process</param>
         /// <param name="out">output list to store merged text boxes in</param>
@@ -118,7 +130,7 @@ namespace iText.Pdfocr.Onnxtr.Merging {
                 @out.Add(AddMarginAligned(verticalGroup[0]));
                 return;
             }
-            verticalGroup = verticalGroup.OrderBy(points => EasyOcrTextBoxMerger.CalcXMinAligned(points)).ToList();
+            JavaCollectionsUtil.Sort(verticalGroup, new _IComparer_144());
             List<iText.Kernel.Geom.Point[]> groupBoxes = new List<iText.Kernel.Geom.Point[]>();
             groupBoxes.Add(verticalGroup[0]);
             double groupHeightSum = CalcHeightAligned(verticalGroup[0]);
@@ -146,6 +158,16 @@ namespace iText.Pdfocr.Onnxtr.Merging {
             }
             if (!groupBoxes.IsEmpty()) {
                 @out.Add(AddMarginAligned(ToBoundingBox(groupBoxes)));
+            }
+        }
+
+        private sealed class _IComparer_144 : IComparer<iText.Kernel.Geom.Point[]> {
+            public _IComparer_144() {
+            }
+
+            public int Compare(iText.Kernel.Geom.Point[] o1, iText.Kernel.Geom.Point[] o2) {
+                return JavaUtil.DoubleCompare(iText.Pdfocr.Onnxtr.Merging.EasyOcrTextBoxMerger.CalcXMinAligned(o1), iText.Pdfocr.Onnxtr.Merging.EasyOcrTextBoxMerger
+                    .CalcXMinAligned(o2));
             }
         }
 

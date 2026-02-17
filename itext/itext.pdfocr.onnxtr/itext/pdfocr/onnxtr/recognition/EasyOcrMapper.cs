@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,8 +15,6 @@ limitations under the License.
 */
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <summary>Label mapper for EasyOCR text recognition models.</summary>
@@ -52,12 +50,14 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             */
             String thaiLookUpString = "¢£¤¥!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ abcdefghijklmnopqr" + "stuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZกขคฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮฤเแ"
                  + "โใไะาุูิีืึั่้๊๋็์ำํฺฯๆ0123456789๑๒๓๔๕๖๗๘๙";
-            List<string> characters = new List<string>();
-            TextElementEnumerator enumerator = StringInfo.GetTextElementEnumerator(thaiLookUpString);
-            while (enumerator.MoveNext()) {
-                characters.Add(enumerator.GetTextElement());
+            IList<String> list = new List<String>();
+            for (int i = 0; i < thaiLookUpString.Length; ) {
+                int codePoint = thaiLookUpString.CodePointAt(i);
+                String symbol = new String(iText.IO.Util.TextUtil.ToChars(codePoint));
+                list.Add(symbol);
+                i += iText.IO.Util.TextUtil.CharCount(codePoint);
             }
-            String[] thaiLookUpTable = characters.ToArray();
+            String[] thaiLookUpTable = list.ToArray(new String[0]);
             // Clearing-up word separators
             for (int i = 0; i < 4; ++i) {
                 thaiLookUpTable[i] = "";

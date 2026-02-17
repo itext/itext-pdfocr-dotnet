@@ -132,13 +132,40 @@ internal static class PdfOcrOnnxTRExtensions
             list.Add(iterator.Current);
         }
     }
-    
+
+    public static IEnumerator<T> Iterator<T>(this ICollection<T> collection) {
+        IEnumerator<T> iterator = collection.GetEnumerator();
+        iterator.MoveNext();
+        return iterator;
+    }
+
     public static void Close<T,R>(this iText.Pdfocr.Onnxtr.IPredictor<T,R> predictor) {
         predictor.Dispose();
     }
 
     public static bool IsEmpty<T>(this ICollection<T> collection) {
         return collection.Count == 0;
+    }
+
+    public static int CodePointAt(this String str, int index) {
+        return char.ConvertToUtf32(str, index);
+    }
+
+    public static T[] ToArray<T>(this ICollection<T> col, T[] toArray) {
+        T[] r;
+        int colSize = col.Count;
+        if (colSize <= toArray.Length) {
+            col.CopyTo(toArray, 0);
+            if (colSize != toArray.Length) {
+                toArray[colSize] = default(T);
+            }
+            r = toArray;
+        } else {
+            r = new T[colSize];
+            col.CopyTo(r, 0);
+        }
+
+        return r;
     }
 }
 //\endcond

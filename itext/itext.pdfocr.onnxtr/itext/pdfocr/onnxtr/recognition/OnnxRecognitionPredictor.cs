@@ -680,8 +680,6 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// EasyOCR does not provide models in the ONNX format, you might need to
         /// do a model conversion yourself.
         /// <para />
-        /// TODO: Host models ourselves? Conversion is not exactly straight-forward...
-        /// <para />
         /// This method can be used to load the following EasyOCR models:
         /// <list type="bullet">
         /// <item><description>

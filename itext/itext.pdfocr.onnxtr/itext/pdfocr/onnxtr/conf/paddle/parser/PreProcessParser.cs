@@ -22,7 +22,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnxtr.Conf.Paddle.Model;
 using iText.Pdfocr.Onnxtr.Exceptions;
@@ -63,9 +62,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
             ICollection<Object> keys = new HashSet<Object>(root.Keys);
             keys.Remove(TRANSFORM_OPS_KEY);
             if (!keys.IsEmpty()) {
-                IEnumerator<Object> keysIterator = keys.GetEnumerator();
-                keysIterator.MoveNext();
-                String key = keysIterator.Current.ToString();
+                String key = keys.Iterator().Current.ToString();
                 throw ConfigParserException.UnexpectedKey(keyCtx + "." + key);
             }
             ICollection<Object> transformOps = YamlUtil.ObjToSequence(root.Get(TRANSFORM_OPS_KEY));
@@ -80,9 +77,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
                 if (op == null || op.Count != 1) {
                     throw ConfigParserException.UnexpectedValueForKey(entryKeyCtx);
                 }
-                IEnumerator<KeyValuePair<Object, Object>> opIterator = op.GetEnumerator();
-                opIterator.MoveNext();
-                KeyValuePair<Object, Object> opEntry = opIterator.Current;
+                KeyValuePair<Object, Object> opEntry = op.Iterator().Current;
                 String opKey = YamlUtil.ObjToString(opEntry.Key);
                 if (DecodeImage.WRAPPING_KEY.Equals(opKey)) {
                     parsedOps.Add(DecodeImageParser.Parse(opEntry.Value, entryKeyCtx + "." + DecodeImage.WRAPPING_KEY));
@@ -110,7 +105,7 @@ namespace iText.Pdfocr.Onnxtr.Conf.Paddle.Parser {
                 }
             }
             // Else it is an ignored op and we do nothing
-            return new PreProcess(parsedOps.ToArray());
+            return new PreProcess(parsedOps.ToArray(new TransformOp[0]));
         }
 //\endcond
     }
