@@ -23,5 +23,3 @@ using System.Runtime.InteropServices;
     "8ae2d93f8c5e2d820dba3c8df9ed468c8be40a6fffeb32aa481a254f0fb9f37aa7c3ec1c0acd2c" +
     "009746bbdafcb75bcdbcecb7caf1f0f4b6e7d013906ba60b66eb1c8298e4efb052caf6cece4bf1" +
     "816902cc")]
-
-[assembly: Versions.Attributes.KernelVersion("9.6.0.0")]
