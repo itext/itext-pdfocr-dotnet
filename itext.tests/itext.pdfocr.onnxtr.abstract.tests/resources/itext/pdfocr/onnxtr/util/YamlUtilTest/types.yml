@@ -1,0 +1,42 @@
+string_plain: Hello, YAML
+string_quoted: "Hello, YAML with quotes"
+string_multiline: |
+  This is a multi-line
+  literal block scalar.
+  Preserves line breaks.
+string_folded: >
+  This is a folded
+  block scalar that folds
+  newlines into spaces.
+
+null_implicit: null
+null_shortcut: ~
+
+boolean_true: true
+boolean_false: false
+boolean_explicit_true: !!bool "true"
+boolean_explicit_false: !!bool "false"
+
+int_decimal: 42
+int_octal: 0o52
+int_hexadecimal: 0x2A
+int_explicit: !!int "42"
+
+float_plain: 3.14159
+float_exponent: 1.2e+3
+float_negative_inf: -.inf
+float_positive_inf: .inf
+float_nan: .nan
+float_explicit: !!float "3"
+
+sequence_inline: [red, green, blue]
+sequence_block:
+  - apple
+  - banana
+  - cherry
+
+mapping_inline: { name: "Alice", age: 30 }
+mapping_block:
+  name: Bob
+  age: 25
+  active: true

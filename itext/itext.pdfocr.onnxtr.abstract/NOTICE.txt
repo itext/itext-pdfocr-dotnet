@@ -1,0 +1,56 @@
+This software uses the following third-party libraries under the following licenses:
+| OnnxTR    | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnxtr package is adapted from and inspired by https://github.com/felixdittrich92/OnnxTR.
+| EasyOCR   | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnxtr package is adapted from and inspired by https://github.com/JaidedAI/EasyOCR.
+| PaddleOCR | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnxtr package is adapted from and inspired by https://github.com/PaddlePaddle/PaddleOCR.
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+OnnxTR full license agreement text is below:
+
+    Copyright (C) 2021-2024, Mindee | Felix Dittrich.
+
+    This program is licensed under the Apache License 2.0.
+    See <https://opensource.org/licenses/Apache-2.0> for full license details.
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+EasyOCR full license agreement text is below:
+
+    Copyright (c) 2020 JaidedAI Authors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+PaddleOCR full license agreement text is below:
+
+    Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.

@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr", "itex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr.tests", "itext.tests\itext.pdfocr.onnxtr.tests\itext.pdfocr.onnxtr.tests.csproj", "{2B8F8A5C-A480-4BF9-9CC4-274DE8E9242E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr.abstract", "itext\itext.pdfocr.onnxtr.abstract\itext.pdfocr.onnxtr.abstract.csproj", "{09A94C8B-3123-47DA-9A41-B709098CA59A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr.abstract.tests", "itext.tests\itext.pdfocr.onnxtr.abstract.tests\itext.pdfocr.onnxtr.abstract.tests.csproj", "{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{2B8F8A5C-A480-4BF9-9CC4-274DE8E9242E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B8F8A5C-A480-4BF9-9CC4-274DE8E9242E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B8F8A5C-A480-4BF9-9CC4-274DE8E9242E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09A94C8B-3123-47DA-9A41-B709098CA59A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09A94C8B-3123-47DA-9A41-B709098CA59A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09A94C8B-3123-47DA-9A41-B709098CA59A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09A94C8B-3123-47DA-9A41-B709098CA59A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
