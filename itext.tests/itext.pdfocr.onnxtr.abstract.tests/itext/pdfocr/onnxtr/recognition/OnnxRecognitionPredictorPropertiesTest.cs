@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using iText.Pdfocr.Onnxtr;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnxtr.Recognition {
@@ -60,6 +61,26 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             OnnxRecognitionPredictorProperties second = OnnxRecognitionPredictorProperties.CrnnMobileNetV3(MOBILENETV3
                 );
             NUnit.Framework.Assert.AreNotEqual(first, second);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void EqualsWithConstructorsTest() {
+            ImageResizeOptions imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 10, 10);
+            CrnnPostProcessor postProcessor = new CrnnPostProcessor(Vocabulary.LEGACY_FRENCH);
+            OnnxRecognitionPredictorProperties first = new OnnxRecognitionPredictorProperties(CRNNVGG16, new OnnxInputProperties
+                (imageResizeOptions), postProcessor);
+            OnnxRecognitionPredictorProperties second = new OnnxRecognitionPredictorProperties(CRNNVGG16, new OnnxInputProperties
+                (imageResizeOptions), postProcessor, new DefaultOrtSessionOptionsCreator());
+            NUnit.Framework.Assert.AreNotEqual(first, second);
+            NUnit.Framework.Assert.AreNotEqual(first.GetHashCode(), second.GetHashCode());
+            OnnxRecognitionPredictorProperties third = new OnnxRecognitionPredictorProperties(CRNNVGG16, new OnnxInputProperties
+                (imageResizeOptions), new CrnnPostProcessor(Vocabulary.LEGACY_FRENCH));
+            NUnit.Framework.Assert.AreNotEqual(first, third);
+            NUnit.Framework.Assert.AreNotEqual(first.GetHashCode(), third.GetHashCode());
+            OnnxRecognitionPredictorProperties fourth = new OnnxRecognitionPredictorProperties(CRNNVGG16, new OnnxInputProperties
+                (imageResizeOptions), postProcessor);
+            NUnit.Framework.Assert.AreEqual(first, fourth);
+            NUnit.Framework.Assert.AreEqual(first.GetHashCode(), fourth.GetHashCode());
         }
     }
 }

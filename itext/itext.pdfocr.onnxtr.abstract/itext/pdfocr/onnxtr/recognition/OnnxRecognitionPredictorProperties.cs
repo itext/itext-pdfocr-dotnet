@@ -36,7 +36,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
     /// <para />
     /// It contains a path to the model, model input properties and a model output post-processor.
     /// </remarks>
-    public class OnnxRecognitionPredictorProperties {
+    public class OnnxRecognitionPredictorProperties : AbstractOnnxPredictorProperties {
         private static readonly OnnxInputProperties DEFAULT_INPUT_PROPERTIES = new OnnxInputProperties(new ImageResizeOptions
             (ImageChannelConfiguration.RGB, 128, 32, PaddingStrategy.BOTTOM_RIGHT_BLACK), new float[] { 0.694F, 0.695F
             , 0.693F }, new float[] { 0.299F, 0.296F, 0.301F }, 64);
@@ -57,16 +57,6 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
                 4096, 64, PaddingStrategy.BOTTOM_RIGHT_EDGE), new float[] { 0.5F }, new float[] { 0.5F }, 
                 // In the CPU case just having 1 should be faster
                 1);
-
-        /// <summary>Path to the ONNX model to load.</summary>
-        private readonly String modelPath;
-
-        /// <summary>Properties of the inputs of the ONNX model.</summary>
-        /// <remarks>
-        /// Properties of the inputs of the ONNX model. Used for validation (both
-        /// input and output, since output mask size is the same) and pre-processing.
-        /// </remarks>
-        private readonly OnnxInputProperties inputProperties;
 
         /// <summary>Post-processor of the outputs of the ONNX model.</summary>
         /// <remarks>
@@ -96,9 +86,22 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// into smaller ones with better aspect ratios
         /// </param>
         public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
-             postProcessor, bool splitImages) {
-            this.modelPath = Objects.RequireNonNull(modelPath);
-            this.inputProperties = Objects.RequireNonNull(inputProperties);
+             postProcessor, bool splitImages)
+            : this(modelPath, inputProperties, postProcessor, splitImages, DEFAULT_ORT_SESSION_CREATOR) {
+        }
+
+        /// <summary>Creates new text recognition predictor properties.</summary>
+        /// <param name="modelPath">path to the ONNX model to load</param>
+        /// <param name="inputProperties">ONNX model input properties</param>
+        /// <param name="postProcessor">ONNX model output post-processor</param>
+        /// <param name="splitImages">
+        /// whether input images to the ML model should be split
+        /// into smaller ones with better aspect ratios
+        /// </param>
+        /// <param name="ortSessionOptionsCreator">ONNX runtime session options creator</param>
+        public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
+             postProcessor, bool splitImages, IOrtSessionOptionsCreator ortSessionOptionsCreator)
+            : base(modelPath, inputProperties, ortSessionOptionsCreator) {
             this.postProcessor = Objects.RequireNonNull(postProcessor);
             this.splitImages = splitImages;
         }
@@ -115,6 +118,16 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
              postProcessor)
             : this(modelPath, inputProperties, postProcessor, true) {
+        }
+
+        /// <summary>Creates new text recognition predictor properties.</summary>
+        /// <param name="modelPath">path to the ONNX model to load</param>
+        /// <param name="inputProperties">ONNX model input properties</param>
+        /// <param name="postProcessor">ONNX model output post-processor</param>
+        /// <param name="ortSessionOptionsCreator">ONNX runtime session options creator</param>
+        public OnnxRecognitionPredictorProperties(String modelPath, OnnxInputProperties inputProperties, IRecognitionPostProcessor
+             postProcessor, IOrtSessionOptionsCreator ortSessionOptionsCreator)
+            : this(modelPath, inputProperties, postProcessor, true, ortSessionOptionsCreator) {
         }
 
         /// <summary>
@@ -147,8 +160,42 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <returns>a new text recognition properties object for a CRNN model with a VGG-16 backbone</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties CrnnVgg16(String modelPath
             ) {
+            return CrnnVgg16(modelPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// CRNN models with a VGG-16 backbone, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// CRNN models with a VGG-16 backbone, stored on disk. This is the default
+        /// text recognition model in OnnxTR.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/crnn_vgg16_bn-662979cc.onnx">
+        /// crnn_vgg16_bn
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/crnn_vgg16_bn_static_8_bit-bce050c7.onnx">
+        /// crnn_vgg16_bn (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a CRNN model with a VGG-16 backbone</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties CrnnVgg16(String modelPath
+            , IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
-                , new CrnnPostProcessor(Vocabulary.LEGACY_FRENCH));
+                , new CrnnPostProcessor(Vocabulary.LEGACY_FRENCH), ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -190,8 +237,51 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <returns>a new text recognition properties object for a CRNN model with a MobileNet V3 backbone</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties CrnnMobileNetV3(String modelPath
             ) {
+            return CrnnMobileNetV3(modelPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// CRNN models with a MobileNet V3 backbone, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// CRNN models with a MobileNet V3 backbone, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/crnn_mobilenet_v3_large-d42e8185.onnx">
+        /// crnn_mobilenet_v3_large
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/crnn_mobilenet_v3_large_static_8_bit-459e856d.onnx">
+        /// crnn_mobilenet_v3_large (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/crnn_mobilenet_v3_small-bded4d49.onnx">
+        /// crnn_mobilenet_v3_small
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/crnn_mobilenet_v3_small_static_8_bit-4949006f.onnx">
+        /// crnn_mobilenet_v3_small (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a CRNN model with a MobileNet V3 backbone</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties CrnnMobileNetV3(String modelPath
+            , IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
-                , new CrnnPostProcessor(Vocabulary.FRENCH));
+                , new CrnnPostProcessor(Vocabulary.FRENCH), ortSessionOptionsCreator);
         }
 
         /// <summary>Creates a new text recognition properties object for existing pre-trained MASTER models, stored on disk.
@@ -219,10 +309,40 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new text recognition properties object for a MASTER model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties Master(String modelPath) {
+            return Master(modelPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>Creates a new text recognition properties object for existing pre-trained MASTER models, stored on disk.
+        ///     </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained MASTER models, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/master-b1287fcd.onnx">
+        /// MASTER
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/master_dynamic_8_bit-d8bd8206.onnx">
+        /// MASTER (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a MASTER model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties Master(String modelPath, 
+            IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
                 , 
                         // Additional "<sos>" and "<pad>" tokens
-                        new EndOfStringPostProcessor(Vocabulary.FRENCH, 2));
+                        new EndOfStringPostProcessor(Vocabulary.FRENCH, 2), ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -253,8 +373,41 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new text recognition properties object for a PARSeq model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ParSeq(String modelPath) {
+            return ParSeq(modelPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// PARSeq models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// PARSeq models, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/parseq-00b40714.onnx">
+        /// parseq
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/parseq_dynamic_8_bit-5b04d9f7.onnx">
+        /// parseq (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a PARSeq model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ParSeq(String modelPath, 
+            IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties.ParSeq(modelPath, Vocabulary.LATIN_EXTENDED
-                , 0);
+                , 0, ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -289,8 +442,44 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <returns>a new text recognition properties object for a PARSeq model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ParSeq(String modelPath, 
             Vocabulary vocabulary, int additionalTokens) {
+            return ParSeq(modelPath, vocabulary, additionalTokens, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// PARSeq models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// PARSeq models, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/parseq-00b40714.onnx">
+        /// parseq
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/parseq_dynamic_8_bit-5b04d9f7.onnx">
+        /// parseq (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="vocabulary">vocabulary used for the model output (without special tokens)</param>
+        /// <param name="additionalTokens">amount of additional tokens in the total vocabulary after the end-of-string token
+        ///     </param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a PARSeq model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ParSeq(String modelPath, 
+            Vocabulary vocabulary, int additionalTokens, IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
-                , new EndOfStringPostProcessor(vocabulary, additionalTokens));
+                , new EndOfStringPostProcessor(vocabulary, additionalTokens), ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -321,8 +510,41 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new text recognition properties object for a SAR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties Sar(String modelPath) {
+            return Sar(modelPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// SAR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// SAR models, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/sar_resnet31-395f8005.onnx">
+        /// sar_resnet31
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/sar_resnet31_static_8_bit-c07316bc.onnx">
+        /// sar_resnet31 (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a SAR model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties Sar(String modelPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
-                , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0));
+                , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0), ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -363,8 +585,51 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <param name="modelPath">path to the pre-trained model</param>
         /// <returns>a new text recognition properties object for a ViTSTR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ViTstr(String modelPath) {
+            return ViTstr(modelPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// ViTSTR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing pre-trained
+        /// ViTSTR models, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/vitstr_base-ff62f5be.onnx">
+        /// vitstr_base
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/vitstr_base_dynamic_8_bit-976c7cd6.onnx">
+        /// vitstr_base (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/vitstr_small-3ff9c500.onnx">
+        /// vitstr_small
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/vitstr_small_dynamic_8_bit-bec6c796.onnx">
+        /// vitstr_small (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models cannot handle spaces. Make sure you choose a detection
+        /// model that outputs words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a ViTSTR model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties ViTstr(String modelPath, 
+            IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, DEFAULT_INPUT_PROPERTIES
-                , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0));
+                , new EndOfStringPostProcessor(Vocabulary.FRENCH, 0), ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -561,7 +826,206 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <returns>a new text recognition properties object for a PaddleOCR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties PaddleOcr(String modelDirPath
             ) {
-            return PaddleOcr(modelDirPath + "/inference.onnx", modelDirPath + "/inference.yml");
+            return PaddleOcr(modelDirPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained PaddleOCR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained PaddleOCR models, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method expects the directory to contain two files:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <c>inference.onnx</c>
+        /// - the inference model in the ONNX format
+        /// </description></item>
+        /// <item><description>
+        /// <c>inference.yml</c>
+        /// - the configuration file for the model in YAML
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_rec_infer.tar">
+        /// PP-OCRv5_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_rec_infer.tar">
+        /// PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_doc_infer.tar">
+        /// PP-OCRv4_server_rec_doc
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_rec_infer.tar">
+        /// PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_infer.tar">
+        /// PP-OCRv4_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv3_mobile_rec_infer.tar">
+        /// PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_svtrv2_rec_infer.tar">
+        /// ch_SVTRv2_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_repsvtr_rec_infer.tar">
+        /// ch_RepSVTR_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv5_mobile_rec_infer.tar">
+        /// en_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv4_mobile_rec_infer.tar">
+        /// en_PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv3_mobile_rec_infer.tar">
+        /// en_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv5_mobile_rec_infer.tar">
+        /// korean_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv5_mobile_rec_infer.tar">
+        /// latin_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/eslav_pp-ocrv5_mobile_rec_infer.tar">
+        /// eslav_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/th_pp-ocrv5_mobile_rec_infer.tar">
+        /// th_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/el_pp-ocrv5_mobile_rec_infer.tar">
+        /// el_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv5_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv5_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv5_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv5_mobile_rec_infer.tar">
+        /// te_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv5_mobile_rec_infer.tar">
+        /// ta_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv3_mobile_rec_infer.tar">
+        /// korean_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/japan_pp-ocrv3_mobile_rec_infer.tar">
+        /// japan_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/chinese_cht_pp-ocrv3_mobile_rec_infer.tar">
+        /// chinese_cht_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv3_mobile_rec_infer.tar">
+        /// te_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ka_pp-ocrv3_mobile_rec_infer.tar">
+        /// ka_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv3_mobile_rec_infer.tar">
+        /// ta_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv3_mobile_rec_infer.tar">
+        /// latin_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv3_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv3_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv3_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models can handle spaces.
+        /// </remarks>
+        /// <param name="modelDirPath">
+        /// path to the directory with the model and its
+        /// configuration file
+        /// </param>
+        /// <param name="ortSessionOptionsCreator">ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a PaddleOCR model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties PaddleOcr(String modelDirPath
+            , IOrtSessionOptionsCreator ortSessionOptionsCreator) {
+            return PaddleOcr(modelDirPath + "/inference.onnx", modelDirPath + "/inference.yml", ortSessionOptionsCreator
+                );
         }
 
         /// <summary>
@@ -744,6 +1208,190 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <returns>a new text recognition properties object for a PaddleOCR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties PaddleOcr(String modelPath
             , String configPath) {
+            return PaddleOcr(modelPath, configPath, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained PaddleOCR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained PaddleOCR models, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_rec_infer.tar">
+        /// PP-OCRv5_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_rec_infer.tar">
+        /// PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_doc_infer.tar">
+        /// PP-OCRv4_server_rec_doc
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_rec_infer.tar">
+        /// PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_rec_infer.tar">
+        /// PP-OCRv4_server_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv3_mobile_rec_infer.tar">
+        /// PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_svtrv2_rec_infer.tar">
+        /// ch_SVTRv2_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ch_repsvtr_rec_infer.tar">
+        /// ch_RepSVTR_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv5_mobile_rec_infer.tar">
+        /// en_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv4_mobile_rec_infer.tar">
+        /// en_PP-OCRv4_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/en_pp-ocrv3_mobile_rec_infer.tar">
+        /// en_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv5_mobile_rec_infer.tar">
+        /// korean_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv5_mobile_rec_infer.tar">
+        /// latin_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/eslav_pp-ocrv5_mobile_rec_infer.tar">
+        /// eslav_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/th_pp-ocrv5_mobile_rec_infer.tar">
+        /// th_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/el_pp-ocrv5_mobile_rec_infer.tar">
+        /// el_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv5_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv5_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv5_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv5_mobile_rec_infer.tar">
+        /// te_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv5_mobile_rec_infer.tar">
+        /// ta_PP-OCRv5_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/korean_pp-ocrv3_mobile_rec_infer.tar">
+        /// korean_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/japan_pp-ocrv3_mobile_rec_infer.tar">
+        /// japan_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/chinese_cht_pp-ocrv3_mobile_rec_infer.tar">
+        /// chinese_cht_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/te_pp-ocrv3_mobile_rec_infer.tar">
+        /// te_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ka_pp-ocrv3_mobile_rec_infer.tar">
+        /// ka_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/ta_pp-ocrv3_mobile_rec_infer.tar">
+        /// ta_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/latin_pp-ocrv3_mobile_rec_infer.tar">
+        /// latin_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/arabic_pp-ocrv3_mobile_rec_infer.tar">
+        /// arabic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/cyrillic_pp-ocrv3_mobile_rec_infer.tar">
+        /// cyrillic_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/devanagari_pp-ocrv3_mobile_rec_infer.tar">
+        /// devanagari_PP-OCRv3_mobile_rec
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="configPath">path to the configuration file for the model</param>
+        /// <param name="ortSessionOptionsCreator">ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a PaddleOCR model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties PaddleOcr(String modelPath
+            , String configPath, IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             InferenceConfig config;
             using (Stream @is = iText.Commons.Utils.FileUtil.GetInputStreamForFile(System.IO.Path.Combine(configPath))
                 ) {
@@ -755,7 +1403,7 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             // designed to handle long line, also it seems like the split/merge
             // algorithm is not handling whitespaces properly
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, inputProperties, 
-                postProcessor, false);
+                postProcessor, false, ortSessionOptionsCreator);
         }
 
         /// <summary>
@@ -866,20 +1514,120 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
         /// <returns>a new text recognition properties object for a EasyOCR model</returns>
         public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties EasyOcr(String modelPath, 
             EasyOcrMapper labelMapper) {
+            return EasyOcr(modelPath, labelMapper, DEFAULT_ORT_SESSION_CREATOR);
+        }
+
+        /// <summary>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained EasyOCR models, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text recognition properties object for existing
+        /// pre-trained EasyOCR models, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// EasyOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself.
+        /// <para />
+        /// This method can be used to load the following EasyOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href=https://github.com/jaidedai/easyocr/releases/download/v1.3/english_g2.zip">
+        /// english_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/latin_g2.zip">
+        /// latin_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/zh_sim_g2.zip">
+        /// zh_sim_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/japanese_g2.zip">
+        /// japanese_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.3/korean_g2.zip">
+        /// korean_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.2/telugu.zip">
+        /// telugu_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.2/kannada.zip">
+        /// kannada_g2
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/latin.zip">
+        /// latin_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/chinese_sim.zip">
+        /// zh_sim_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/chinese.zip">
+        /// zh_tra_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/japanese.zip">
+        /// japanese_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/korean.zip">
+        /// korean_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/thai.zip">
+        /// thai_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/devanagari.zip">
+        /// devanagari_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/cyrillic.zip">
+        /// cyrillic_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/arabic.zip">
+        /// arabic_g1
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/v1.1.8/bengali.zip">
+        /// bengali_g1
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="labelMapper">label mapper to use for the model</param>
+        /// <param name="ortSessionOptionsCreator">ONNX runtime session options creator</param>
+        /// <returns>a new text recognition properties object for a EasyOCR model</returns>
+        public static iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties EasyOcr(String modelPath, 
+            EasyOcrMapper labelMapper, IOrtSessionOptionsCreator ortSessionOptionsCreator) {
             return new iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties(modelPath, EASY_OCR_INPUT_PROPERTIES
-                , new CtcLabelPostProcessor(labelMapper), false);
-        }
-
-        /// <summary>Returns the path to the ONNX model.</summary>
-        /// <returns>the path to the ONNX model</returns>
-        public virtual String GetModelPath() {
-            return modelPath;
-        }
-
-        /// <summary>Returns the ONNX model input properties.</summary>
-        /// <returns>the ONNX model input properties</returns>
-        public virtual OnnxInputProperties GetInputProperties() {
-            return inputProperties;
+                , new CtcLabelPostProcessor(labelMapper), false, ortSessionOptionsCreator);
         }
 
         /// <summary>Returns the ONNX model output post-processor.</summary>
@@ -905,12 +1653,14 @@ namespace iText.Pdfocr.Onnxtr.Recognition {
             iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties that = (iText.Pdfocr.Onnxtr.Recognition.OnnxRecognitionPredictorProperties
                 )o;
             return splitImages == that.splitImages && Object.Equals(modelPath, that.modelPath) && Object.Equals(inputProperties
-                , that.inputProperties) && Object.Equals(postProcessor, that.postProcessor);
+                , that.inputProperties) && Object.Equals(postProcessor, that.postProcessor) && Object.Equals(ortSessionOptionsCreator
+                , that.ortSessionOptionsCreator);
         }
 
         /// <summary><inheritDoc/></summary>
         public override int GetHashCode() {
-            return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor, splitImages);
+            return JavaUtil.ArraysHashCode((Object)modelPath, inputProperties, postProcessor, splitImages, ortSessionOptionsCreator
+                );
         }
 
         /// <summary><inheritDoc/></summary>

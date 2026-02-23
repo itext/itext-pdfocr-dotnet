@@ -183,7 +183,7 @@ namespace iText.Pdfocr.Onnxtr {
             return valid && shape.Length <= 8;
         }
 
-        private static long ElementCount(long[] shape) {
+        internal static long ElementCount(long[] shape) {
             long count = 1L;
 
             foreach (long l in shape) {

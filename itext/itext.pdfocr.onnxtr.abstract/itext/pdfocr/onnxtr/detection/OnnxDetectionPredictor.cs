@@ -63,7 +63,7 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <summary>Creates a text detection predictor with the specified properties.</summary>
         /// <param name="properties">properties of the predictor</param>
         public OnnxDetectionPredictor(OnnxDetectionPredictorProperties properties)
-            : base(properties.GetModelPath(), properties.GetInputProperties(), EXPECTED_OUTPUT_SHAPE) {
+            : base(properties, EXPECTED_OUTPUT_SHAPE) {
             this.properties = properties;
         }
 
@@ -115,6 +115,56 @@ namespace iText.Pdfocr.Onnxtr.Detection {
                 ));
         }
 
+        /// <summary>Creates a new text detection predictor using an existing pre-trained DBNet model, stored on disk.
+        ///     </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained DBNet model, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/db_resnet50-69ba0015.onnx">
+        /// db_resnet50
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/db_resnet50_static_8_bit-09a6104f.onnx">
+        /// db_resnet50 (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/db_resnet34-b4873198.onnx">
+        /// db_resnet34
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/db_resnet34_static_8_bit-027e2c7f.onnx">
+        /// db_resnet34 (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.2.0/db_mobilenet_v3_large-4987e7bd.onnx">
+        /// db_mobilenet_v3_large
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.2.0/db_mobilenet_v3_large_static_8_bit-535a6f25.onnx">
+        /// db_mobilenet_v3_large (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the DBNet model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor DbNet(String modelPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.DbNet(modelPath
+                , ortSessionOptionsCreator));
+        }
+
         /// <summary>Creates a new text detection predictor using an existing pre-trained FAST model, stored on disk.</summary>
         /// <remarks>
         /// Creates a new text detection predictor using an existing pre-trained FAST model, stored on disk.
@@ -146,6 +196,41 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor Fast(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.Fast(modelPath
                 ));
+        }
+
+        /// <summary>Creates a new text detection predictor using an existing pre-trained FAST model, stored on disk.</summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained FAST model, stored on disk.
+        /// This is the default text detection model in OnnxTR.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/rep_fast_base-1b89ebf9.onnx">
+        /// fast_base
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/rep_fast_small-10428b70.onnx">
+        /// fast_small
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/rep_fast_tiny-28867779.onnx">
+        /// fast_tiny
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the FAST model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor Fast(String modelPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.Fast(modelPath
+                , ortSessionOptionsCreator));
         }
 
         /// <summary>Creates a new text detection predictor using an existing pre-trained LinkNet model, stored on disk.
@@ -194,6 +279,56 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor LinkNet(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.LinkNet(modelPath
                 ));
+        }
+
+        /// <summary>Creates a new text detection predictor using an existing pre-trained LinkNet model, stored on disk.
+        ///     </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained LinkNet model, stored on disk.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/linknet_resnet50-15d8c4ec.onnx">
+        /// linknet_resnet50
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/linknet_resnet50_static_8_bit-65d6b0b8.onnx">
+        /// linknet_resnet50 (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/linknet_resnet34-93e39a39.onnx">
+        /// linknet_resnet34
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/linknet_resnet34_static_8_bit-2824329d.onnx">
+        /// linknet_resnet34 (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/linknet_resnet18-e0e0b9dc.onnx">
+        /// linknet_resnet18
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/linknet_resnet18_static_8_bit-3b3a37dd.onnx">
+        /// linknet_resnet18 (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of words.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the LinkNet model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor LinkNet(String modelPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.LinkNet(modelPath
+                , ortSessionOptionsCreator));
         }
 
         /// <summary>
@@ -273,6 +408,71 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
         /// for information on how to do that.
         /// <para />
+        /// This method expects the directory to contain two files:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <c>inference.onnx</c>
+        /// - the inference model in the ONNX format
+        /// </description></item>
+        /// <item><description>
+        /// <c>inference.yml</c>
+        /// - the configuration file for the model in YAML
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// PP-OCRv5_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// PP-OCRv5_mobile_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// PP-OCRv4_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// PP-OCRv4_mobile_det
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
+        /// </remarks>
+        /// <param name="modelDirPath">
+        /// path to the directory with the model and its
+        /// configuration file
+        /// </param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the PaddleOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor PaddleOcr(String modelDirPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.PaddleOcr
+                (modelDirPath, ortSessionOptionsCreator));
+        }
+
+        /// <summary>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
         /// This method can be used to load the following PaddleOCR models:
         /// <list type="bullet">
         /// <item><description>
@@ -311,6 +511,57 @@ namespace iText.Pdfocr.Onnxtr.Detection {
 
         /// <summary>
         /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// PaddleOCR model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// PaddleOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself. Check out
+        /// <a href="https://www.paddleocr.ai/latest/en/version3.x/deployment/obtaining_onnx_models.html">this page</a>
+        /// for information on how to do that.
+        /// <para />
+        /// This method can be used to load the following PaddleOCR models:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// PP-OCRv5_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// PP-OCRv5_mobile_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// PP-OCRv4_server_det
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// PP-OCRv4_mobile_det
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model in the ONNX format</param>
+        /// <param name="configPath">path to the configuration file for the model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the PaddleOCR model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor PaddleOcr(String modelPath, String configPath
+            , IOrtSessionOptionsCreator ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.PaddleOcr
+                (modelPath, configPath, ortSessionOptionsCreator));
+        }
+
+        /// <summary>
+        /// Creates a new text detection predictor using an existing pre-trained
         /// EasyOCR CRAFT model, stored on disk.
         /// </summary>
         /// <remarks>
@@ -338,6 +589,39 @@ namespace iText.Pdfocr.Onnxtr.Detection {
         public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor EasyOcr(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.EasyOcr(modelPath
                 ));
+        }
+
+        /// <summary>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// EasyOCR CRAFT model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new text detection predictor using an existing pre-trained
+        /// EasyOCR CRAFT model, stored on disk.
+        /// <para />
+        /// Only models in the ONNX format are supported. Since, by default,
+        /// EasyOCR does not provide models in the ONNX format, you might need to
+        /// do a model conversion yourself.
+        /// <para />
+        /// This can be used to load the following models from EasyOCR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/craft_mlt_25k.zip">
+        /// CRAFT
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// <para />
+        /// These models output boxes of text lines. Make sure you choose a
+        /// recognition model that can handle spaces.
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the EasyOCR CRAFT model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor EasyOcr(String modelPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Detection.OnnxDetectionPredictor(OnnxDetectionPredictorProperties.EasyOcr(modelPath
+                , ortSessionOptionsCreator));
         }
 
         /// <summary>Returns the text detection predictor properties.</summary>

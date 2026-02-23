@@ -65,6 +65,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
             IEnumerator<TextOrientation> result = PREDICTOR.Predict(JavaCollectionsUtil.Singleton(inputImage));
             result.MoveNext();
             TextOrientation actualResult = result.Current;
+            NUnit.Framework.Assert.IsNotNull(((OnnxOrientationPredictor) PREDICTOR).GetProperties());
             NUnit.Framework.Assert.AreEqual(expectedResult, actualResult);
         }
     }

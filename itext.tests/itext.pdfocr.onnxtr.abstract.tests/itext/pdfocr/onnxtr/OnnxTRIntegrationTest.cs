@@ -93,8 +93,11 @@ namespace iText.Pdfocr.Onnxtr {
             String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
             String dest = TARGET_DIRECTORY + "bmpTestByWords.pdf";
             String cmp = TEST_DIRECTORY + "cmp_bmpTestByWords.pdf";
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
+            OnnxDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
+            NUnit.Framework.Assert.IsNotNull(detectionPredictor.GetProperties());
+            OnnxRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
+            NUnit.Framework.Assert.IsNotNull(recognitionPredictor.GetProperties());
+            
             using (OnnxTrOcrEngine onnxTrOcrEngine = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor,
                        new OnnxTrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS))) {
                 OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(onnxTrOcrEngine, 

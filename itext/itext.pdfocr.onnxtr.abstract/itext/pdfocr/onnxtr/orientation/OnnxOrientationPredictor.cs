@@ -45,7 +45,7 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         /// <summary>Creates a crop orientation predictor with the specified properties.</summary>
         /// <param name="properties">properties of the predictor</param>
         public OnnxOrientationPredictor(OnnxOrientationPredictorProperties properties)
-            : base(properties.GetModelPath(), properties.GetInputProperties(), GetExpectedOutputShape(properties)) {
+            : base(properties, GetExpectedOutputShape(properties)) {
             this.properties = properties;
         }
 
@@ -77,6 +77,38 @@ namespace iText.Pdfocr.Onnxtr.Orientation {
         public static iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictor MobileNetV3(String modelPath) {
             return new iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictor(OnnxOrientationPredictorProperties.MobileNetV3
                 (modelPath));
+        }
+
+        /// <summary>
+        /// Creates a new crop orientation predictor using an existing pre-trained
+        /// MobileNetV3 model, stored on disk.
+        /// </summary>
+        /// <remarks>
+        /// Creates a new crop orientation predictor using an existing pre-trained
+        /// MobileNetV3 model, stored on disk. This is the only crop orientation
+        /// model architecture available in OnnxTR.
+        /// <para />
+        /// This can be used to load the following models from OnnxTR:
+        /// <list type="bullet">
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.0.1/mobilenet_v3_small_crop_orientation-5620cf7e.onnx">
+        /// mobilenet_v3_small_crop_orientation
+        /// </a>
+        /// </description></item>
+        /// <item><description>
+        /// <a href="https://github.com/felixdittrich92/onnxtr/releases/download/v0.1.2/mobilenet_v3_small_crop_orientation_static_8_bit-4cfaa621.onnx">
+        /// mobilenet_v3_small_crop_orientation (8-bit quantized)
+        /// </a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="modelPath">path to the pre-trained model</param>
+        /// <param name="ortSessionOptionsCreator">the ONNX runtime session options creator</param>
+        /// <returns>a new predictor with the MobileNetV3 model loaded</returns>
+        public static iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictor MobileNetV3(String modelPath, IOrtSessionOptionsCreator
+             ortSessionOptionsCreator) {
+            return new iText.Pdfocr.Onnxtr.Orientation.OnnxOrientationPredictor(OnnxOrientationPredictorProperties.MobileNetV3
+                (modelPath, ortSessionOptionsCreator));
         }
 
         /// <summary>Returns the crop orientation predictor properties.</summary>

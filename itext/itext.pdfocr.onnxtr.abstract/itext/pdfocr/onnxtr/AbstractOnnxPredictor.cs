@@ -37,6 +37,8 @@ namespace iText.Pdfocr.Onnxtr {
     /// <typeparam name="T">predictor input type</typeparam>
     /// <typeparam name="R">predictor output type</typeparam>
     public abstract class AbstractOnnxPredictor<T, R> : IPredictor<T, R> {
+        private static readonly IOrtSessionOptionsCreator DEFAULT_ORT_SESSION_CREATOR = new DefaultOrtSessionOptionsCreator();
+        
         /// <summary>Model input properties.</summary>
         private readonly OnnxInputProperties inputProperties;
 
@@ -83,11 +85,33 @@ namespace iText.Pdfocr.Onnxtr {
         /// expected shape of the output. -1 entries mean that the dimension can be
         /// of any size (ex. batch size)
         /// </param>
-        protected internal AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape
-            ) {
+        [System.ObsoleteAttribute(@"in favour of AbstractOnnxPredictor(AbstractOnnxPredictorProperties, long[])")]
+        // With removing this constructor also remove AbstractOnnxPredictor(String, OnnxInputProperties, long[], IOrtSessionOptionsCreator)
+        protected internal AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape) 
+            : this(modelPath, inputProperties, outputShape, DEFAULT_ORT_SESSION_CREATOR) {
+        }
+        
+        /// <summary>Creates a new abstract predictor.</summary>
+        /// <remarks>
+        /// Creates a new abstract predictor.
+        /// <para />
+        /// If the specified model does not match input and output properties, it will throw an exception.
+        /// </remarks>
+        /// <param name="predictorProperties">the predictor properties</param>
+        /// <param name="outputShape">
+        /// expected shape of the output. -1 entries mean that the dimension can be
+        /// of any size (ex. batch size)
+        /// </param>
+        protected internal AbstractOnnxPredictor(AbstractOnnxPredictorProperties predictorProperties, long[] outputShape) 
+            : this(predictorProperties.GetModelPath(), predictorProperties.GetInputProperties(), outputShape, 
+                predictorProperties.GetOrtSessionOptionsCreator()) {
+        }
+        
+        private AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape, 
+                IOrtSessionOptionsCreator ortSessionCreator) {
             this.inputProperties = Objects.RequireNonNull(inputProperties);
             try {
-                this.sessionOptions = CreateDefaultSessionOptions();
+                this.sessionOptions = ortSessionCreator.Create();
             }
             catch (OnnxRuntimeException e) {
                 throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_INIT_SESSION_OPTIONS, e);
@@ -174,25 +198,6 @@ namespace iText.Pdfocr.Onnxtr {
         /// <param name="outputBatch">batched model output MD-array buffer</param>
         /// <returns>a list of predictor output</returns>
         protected internal abstract IList<R> FromOutputBuffer(IList<T> inputBatch, FloatBufferMdArray outputBatch);
-
-        private static SessionOptions CreateDefaultSessionOptions() {
-            SessionOptions ortOptions = new SessionOptions();
-            try {
-                ortOptions.AppendExecutionProvider_CPU();
-#if USE_CUDA
-                ortOptions.AppendExecutionProvider_CUDA(0);
-#endif
-                ortOptions.ExecutionMode = ExecutionMode.ORT_SEQUENTIAL;
-                ortOptions.GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL;
-                ortOptions.IntraOpNumThreads = -1;
-                ortOptions.InterOpNumThreads = -1;
-                return ortOptions;
-            }
-            catch (Exception e) {
-                ortOptions.Close();
-                throw;
-            }
-        }
 
         private static DenseTensor<float> CreateTensor(FloatBufferMdArray batch) {
             float[] floatData = batch.GetData();
