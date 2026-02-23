@@ -172,26 +172,26 @@ namespace iText.Pdfocr.Onnxtr {
             return data.Length;
         }
 
-        private bool ValidateShape(long[] shape) {
+        private static bool ValidateShape(long[] shape) {
             Boolean valid = true;
 
-            for (int i = 0; i < shape.Length; ++i) {
-                valid &= shape[i] > 0L;
-                valid &= (long)((int)shape[i]) == shape[i];
+            foreach (long l in shape) {
+                valid &= l > 0L;
+                valid &= (long) ((int)l) == l;
             }
 
             return valid && shape.Length <= 8;
         }
 
-        private long ElementCount(long[] shape) {
+        private static long ElementCount(long[] shape) {
             long count = 1L;
 
-            for (int i = 0; i < shape.Length; ++i) {
-                if (shape[i] < 0L) {
+            foreach (long l in shape) {
+                if (l < 0L) {
                     throw new ArgumentException(MessageFormatUtil.Format(
                         PdfOcrOnnxTrExceptionMessageConstant.NEGATIVE_VALUE_IN_SHAPE, shape));
                 }
-                count *= shape[i];
+                count *= l;
             }
 
             return count;
