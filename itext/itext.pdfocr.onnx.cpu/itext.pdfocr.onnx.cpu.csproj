@@ -4,7 +4,7 @@
     <SignAssembly>True</SignAssembly>
     <DelaySign>False</DelaySign>
     <RootNamespace />
-    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.onnxtr.xml</DocumentationFile>
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.onnx.cpu.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
@@ -12,7 +12,7 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputType>library</OutputType>
-    <AssemblyName>itext.pdfocr.onnxtr</AssemblyName>
+    <AssemblyName>itext.pdfocr.onnx.cpu</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
@@ -25,6 +25,6 @@
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\itext.pdfocr.onnxtr.abstract\itext.pdfocr.onnxtr.abstract.csproj" />
+    <ProjectReference Include="..\itext.pdfocr.onnx.abstract\itext.pdfocr.onnx.abstract.csproj" />
   </ItemGroup>
 </Project>

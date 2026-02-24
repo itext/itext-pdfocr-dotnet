@@ -4,7 +4,7 @@
     <SignAssembly>True</SignAssembly>
     <DelaySign>False</DelaySign>
     <RootNamespace />
-    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.onnxtr.abstract.xml</DocumentationFile>
+    <DocumentationFile>$(TargetDir)bin\$(Configuration)\$(TargetFramework)\itext.pdfocr.onnx.abstract.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
@@ -12,7 +12,7 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputType>library</OutputType>
-    <AssemblyName>itext.pdfocr.onnxtr.abstract</AssemblyName>
+    <AssemblyName>itext.pdfocr.onnx.abstract</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>

@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itext.pdfocr.api.tests", "i
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itext.pdfocr.tesseract4.tests", "itext.tests\itext.pdfocr.tesseract4.tests\itext.pdfocr.tesseract4.tests.csproj", "{50AC143E-76D9-4288-BFDD-9F8002716546}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr", "itext\itext.pdfocr.onnxtr\itext.pdfocr.onnxtr.csproj", "{A34A368A-5F0F-45D6-8BAB-2E6AAC815706}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnx.cpu", "itext\itext.pdfocr.onnx.cpu\itext.pdfocr.onnx.cpu.csproj", "{A34A368A-5F0F-45D6-8BAB-2E6AAC815706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr.tests", "itext.tests\itext.pdfocr.onnxtr.tests\itext.pdfocr.onnxtr.tests.csproj", "{2B8F8A5C-A480-4BF9-9CC4-274DE8E9242E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnx.cpu.tests", "itext.tests\itext.pdfocr.onnx.cpu.tests\itext.pdfocr.onnx.cpu.tests.csproj", "{2B8F8A5C-A480-4BF9-9CC4-274DE8E9242E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr.abstract", "itext\itext.pdfocr.onnxtr.abstract\itext.pdfocr.onnxtr.abstract.csproj", "{09A94C8B-3123-47DA-9A41-B709098CA59A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnx.abstract", "itext\itext.pdfocr.onnx.abstract\itext.pdfocr.onnx.abstract.csproj", "{09A94C8B-3123-47DA-9A41-B709098CA59A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnxtr.abstract.tests", "itext.tests\itext.pdfocr.onnxtr.abstract.tests\itext.pdfocr.onnxtr.abstract.tests.csproj", "{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext.pdfocr.onnx.abstract.tests", "itext.tests\itext.pdfocr.onnx.abstract.tests\itext.pdfocr.onnx.abstract.tests.csproj", "{C005CD1E-1F93-44C2-B6FB-B613F9C28B4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
