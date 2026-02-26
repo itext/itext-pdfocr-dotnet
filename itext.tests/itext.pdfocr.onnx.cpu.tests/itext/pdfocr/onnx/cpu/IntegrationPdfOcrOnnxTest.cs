@@ -29,12 +29,13 @@ using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Onnxtr;
 using iText.Pdfocr.Onnxtr.Detection;
 using iText.Pdfocr.Onnxtr.Orientation;
 using iText.Pdfocr.Onnxtr.Recognition;
 using iText.Test;
 
-namespace iText.Pdfocr.Onnxtr {
+namespace iText.Pdfocr.Onnx.Cpu {
     [NUnit.Framework.Category("IntegrationTest")]
     public class IntegrationPdfOcrOnnxTest : ExtendedITextTest {
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
@@ -70,7 +71,7 @@ namespace iText.Pdfocr.Onnxtr {
             OCR_ENGINE_MAKE_PDF_SEARCHABLE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
             OCR_ENGINE_IMAGE_OCR = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxTrEngineProperties
-                ().SetTextPositioning(TextPositioning.BY_WORDS));
+                ().SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS));
             OCR_ENGINE_CREATE_PDF = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
         }
 

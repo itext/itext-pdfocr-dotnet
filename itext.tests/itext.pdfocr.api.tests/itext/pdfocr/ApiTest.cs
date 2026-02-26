@@ -202,7 +202,7 @@ namespace iText.Pdfocr {
             String input = PdfHelper.GetImagesTestDirectory() + "numbers_01.jpg";
             IOcrEngine ocrEngine = new TestStructureDetectionOcrEngine();
             OcrPdfCreatorProperties creatorProperties = new OcrPdfCreatorProperties();
-            creatorProperties.SetTextColor(DeviceRgb.RED);
+            creatorProperties.SetTextColor(DeviceRgb.RED).SetTextBBoxColor(DeviceRgb.GREEN);
             creatorProperties.SetTagged(true);
             OcrPdfCreator pdfCreator = new OcrPdfCreator(ocrEngine, creatorProperties);
             TestProcessProperties processProperties = new TestProcessProperties(5, 6, 50, 15, 100, 200);

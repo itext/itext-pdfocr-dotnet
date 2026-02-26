@@ -99,7 +99,8 @@ namespace iText.Pdfocr.Onnxtr {
             NUnit.Framework.Assert.IsNotNull(recognitionPredictor.GetProperties());
             
             using (OnnxTrOcrEngine onnxTrOcrEngine = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor,
-                       new OnnxTrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS))) {
+                       new OnnxTrEngineProperties()
+                           .SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS))) {
                 OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(onnxTrOcrEngine, 
                     CreatorProperties("Text1", DeviceCmyk.MAGENTA));
                 using (PdfWriter writer = new PdfWriter(dest)) {

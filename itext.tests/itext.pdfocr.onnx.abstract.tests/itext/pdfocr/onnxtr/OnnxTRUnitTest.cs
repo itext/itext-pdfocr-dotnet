@@ -126,5 +126,15 @@ namespace iText.Pdfocr.Onnxtr {
                 (Vocabulary.FRENCH)), new OnnxRecognitionPredictorProperties("model", inputProperties, new CrnnPostProcessor
                 (Vocabulary.ENGLISH)));
         }
+
+        [NUnit.Framework.Test]
+        public virtual void DeprecatedTextPositioningTest() {
+            OnnxTrEngineProperties properties = new OnnxTrEngineProperties();
+            NUnit.Framework.Assert.AreEqual(TextPositioning.BY_LINES, properties.GetTextPositioning());
+            properties.SetTextPositioning(TextPositioning.BY_WORDS);
+            NUnit.Framework.Assert.AreEqual(TextPositioning.BY_WORDS, properties.GetTextPositioning());
+            properties.SetTextPositioning(TextPositioning.BY_LINES);
+            NUnit.Framework.Assert.AreEqual(TextPositioning.BY_LINES, properties.GetTextPositioning());
+        }
     }
 }

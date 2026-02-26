@@ -1075,6 +1075,10 @@ namespace iText.Pdfocr {
                 canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.GetX(), yOffset + (float)imageCoordinates
                     .GetY(), canvas.GetPdfDocument().GetPageNumber(page), TextAlignment.LEFT, VerticalAlignment.BOTTOM, GetRotationAngle
                     (item.GetOrientation()));
+                if (ocrPdfCreatorProperties.GetTextBBoxColor() != null) {
+                    pdfCanvas.SaveState().SetStrokeColor(ocrPdfCreatorProperties.GetTextBBoxColor()).Rectangle(item.GetBboxRect
+                        ()).Stroke().RestoreState();
+                }
                 if (ocrPdfCreatorProperties.IsTagged()) {
                     pdfCanvas.CloseTag();
                 }

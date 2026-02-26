@@ -134,11 +134,17 @@ namespace iText.Pdfocr.Onnxtr {
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
             IDictionary<int, IList<TextInfo>> result = DoOnnxTrOcr(input, ocrProcessContext);
-            if (TextPositioning.BY_WORDS.Equals(properties.GetTextPositioning())) {
+            if (iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS.Equals(properties.GetTextPositioningMode())) {
                 PdfOcrTextBuilder.SortTextInfosByLines(result);
             }
             else {
-                PdfOcrTextBuilder.GenerifyWordBBoxesByLine(result);
+                if (iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_LINES.Equals(properties.GetTextPositioningMode())) {
+                    PdfOcrTextBuilder.CollectWordsIntoLines(result);
+                }
+                else {
+                    // Use TextPositioning.BY_WORDS_AND_LINES by default.
+                    PdfOcrTextBuilder.GenerifyWordBBoxesByLine(result);
+                }
             }
             return result;
         }

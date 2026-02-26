@@ -243,5 +243,26 @@ namespace iText.Pdfocr.Util {
                 30, 100), TextOrientation.HORIZONTAL_ROTATED_90), new TextInfo("Two", new Rectangle(100, 110, 25, 100)
                 , TextOrientation.HORIZONTAL_ROTATED_90)));
         }
+
+        [NUnit.Framework.Test]
+        public virtual void CollectWordsIntoLinesTest() {
+            IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
+            IList<TextInfo> textInfos = new List<TextInfo>();
+            textInfos.Add(new TextInfo("Third", new Rectangle(240, 100, 100, 25)));
+            textInfos.Add(new TextInfo("Fourth", new Rectangle(350, 100, 100, 50)));
+            textInfos.Add(new TextInfo("Second", new Rectangle(110, 100, 120, 35)));
+            textInfos.Add(new TextInfo("First", new Rectangle(0, 100, 100, 30)));
+            textInfos.Add(new TextInfo("New line", new Rectangle(0, 0, 100, 30)));
+            textInfoMap.Put(1, textInfos);
+            PdfOcrTextBuilder.CollectWordsIntoLines(textInfoMap);
+            IList<TextInfo> mergedTextInfos = textInfoMap.Get(1);
+            NUnit.Framework.Assert.AreEqual(2, mergedTextInfos.Count);
+            NUnit.Framework.Assert.AreEqual("First Second Third Fourth", mergedTextInfos[0].GetText());
+            NUnit.Framework.Assert.IsTrue(new Rectangle(0, 100, 450, 50).EqualsWithEpsilon(mergedTextInfos[0].GetBboxRect
+                ()));
+            NUnit.Framework.Assert.AreEqual("New line", mergedTextInfos[1].GetText());
+            NUnit.Framework.Assert.IsTrue(new Rectangle(0, 0, 100, 30).EqualsWithEpsilon(mergedTextInfos[1].GetBboxRect
+                ()));
+        }
     }
 }

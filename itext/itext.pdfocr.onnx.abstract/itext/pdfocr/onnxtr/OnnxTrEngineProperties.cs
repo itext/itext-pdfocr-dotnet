@@ -20,6 +20,8 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
+
 namespace iText.Pdfocr.Onnxtr {
     /// <summary>
     /// Properties that are used by the
@@ -42,14 +44,29 @@ namespace iText.Pdfocr.Onnxtr {
         /// <see cref="iText.Pdfocr.IOcrEngine.CreateTxtFile(System.Collections.Generic.IList{E}, System.IO.FileInfo)"
         ///     />.
         /// </remarks>
-        private TextPositioning textPositioning;
+        private iText.Pdfocr.Onnxtr.Text.TextPositioning textPositioning = iText.Pdfocr.Onnxtr.Text.TextPositioning
+            .BY_WORDS_AND_LINES;
 
         /// <summary>
         /// Defines the way text is retrieved from ocr engine output using
         /// <see cref="TextPositioning"/>.
         /// </summary>
         /// <returns>the way text is retrieved</returns>
+        [System.ObsoleteAttribute(@"in favour of GetTextPositioningMode()")]
         public virtual TextPositioning GetTextPositioning() {
+            if (iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS.Equals(textPositioning)) {
+                return TextPositioning.BY_WORDS;
+            }
+            return TextPositioning.BY_LINES;
+        }
+
+        /// <summary>
+        /// Gets the way text is retrieved from ocr engine output
+        /// using
+        /// <see cref="iText.Pdfocr.Onnxtr.Text.TextPositioning"/>.
+        /// </summary>
+        /// <returns>the way text is retrieved</returns>
+        public virtual iText.Pdfocr.Onnxtr.Text.TextPositioning GetTextPositioningMode() {
             return textPositioning;
         }
 
@@ -64,8 +81,31 @@ namespace iText.Pdfocr.Onnxtr {
         /// <see cref="OnnxTrEngineProperties"/>
         /// instance
         /// </returns>
+        [System.ObsoleteAttribute(@"in favour of SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning)")]
         public virtual iText.Pdfocr.Onnxtr.OnnxTrEngineProperties SetTextPositioning(TextPositioning textPositioning
             ) {
+            if (TextPositioning.BY_LINES.Equals(textPositioning)) {
+                this.textPositioning = iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS_AND_LINES;
+            }
+            else {
+                this.textPositioning = iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Defines the way text is retrieved from ocr engine output
+        /// using
+        /// <see cref="iText.Pdfocr.Onnxtr.Text.TextPositioning"/>.
+        /// </summary>
+        /// <param name="textPositioning">the way text is retrieved</param>
+        /// <returns>
+        /// the
+        /// <see cref="OnnxTrEngineProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.Pdfocr.Onnxtr.OnnxTrEngineProperties SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning
+             textPositioning) {
             this.textPositioning = textPositioning;
             return this;
         }

@@ -20,25 +20,24 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System;
+using iText.Pdfocr.Onnxtr;
 
-namespace iText.Pdfocr.Onnxtr {
+namespace iText.Pdfocr.Onnxtr.Text {
     /// <summary>Enumeration of the possible types of text positioning.</summary>
     /// <remarks>
     /// Enumeration of the possible types of text positioning.
     /// It is used to combine the
     /// <see cref="OnnxTrOcrEngine"/>
-    /// image OCR result text and group it by lines or by words.
+    /// image OCR result text
+    /// and group it by lines, by words or by words and lines.
     /// </remarks>
-    [System.ObsoleteAttribute(@"in favour of iText.Pdfocr.Onnxtr.Text.TextPositioning")]
     public enum TextPositioning {
         /// <summary>Text will be grouped by lines.</summary>
-        /// <remarks>
-        /// Text will be grouped by lines.
-        /// (default value)
-        /// </remarks>
         BY_LINES,
         /// <summary>Text will be grouped by words.</summary>
-        BY_WORDS
+        BY_WORDS,
+        /// <summary>Similar to BY_WORDS mode, but top and bottom of word BBox are inherited from line (default value).
+        ///     </summary>
+        BY_WORDS_AND_LINES
     }
 }

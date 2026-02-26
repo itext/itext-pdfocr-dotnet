@@ -58,6 +58,9 @@ namespace iText.Pdfocr {
         /// </remarks>
         private Color textColor = null;
 
+        /// <summary>Color of the text bounding box in the output PDF document.</summary>
+        private Color textBBoxColor = null;
+
         /// <summary>Scale mode for input images.</summary>
         /// <remarks>
         /// Scale mode for input images.
@@ -147,6 +150,7 @@ namespace iText.Pdfocr {
             this.imageLayerName = other.imageLayerName;
             this.textLayerName = other.textLayerName;
             this.textColor = other.textColor;
+            this.textBBoxColor = other.textBBoxColor;
             this.pdfLang = other.pdfLang;
             this.title = other.title;
             this.fontProvider = other.fontProvider;
@@ -179,6 +183,30 @@ namespace iText.Pdfocr {
         /// </returns>
         public iText.Pdfocr.OcrPdfCreatorProperties SetTextColor(Color textColor) {
             this.textColor = textColor;
+            return this;
+        }
+
+        /// <summary>Gets text bounding box color in the output PDF document.</summary>
+        /// <returns>
+        /// text bbox
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </returns>
+        public Color GetTextBBoxColor() {
+            return textBBoxColor;
+        }
+
+        /// <summary>Sets text bounding box color in the output PDF document.</summary>
+        /// <param name="textBBoxColor">
+        /// required text bbox
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </param>
+        /// <returns>
+        /// the
+        /// <see cref="OcrPdfCreatorProperties"/>
+        /// instance
+        /// </returns>
+        public iText.Pdfocr.OcrPdfCreatorProperties SetTextBBoxColor(Color textBBoxColor) {
+            this.textBBoxColor = textBBoxColor;
             return this;
         }
 

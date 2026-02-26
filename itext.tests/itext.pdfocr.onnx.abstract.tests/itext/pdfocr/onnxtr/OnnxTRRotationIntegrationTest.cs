@@ -63,8 +63,8 @@ namespace iText.Pdfocr.Onnxtr {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor, new OnnxTrEngineProperties
-                ().SetTextPositioning(TextPositioning.BY_WORDS));
+            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor, 
+                new OnnxTrEngineProperties().SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS));
             OCR_ENGINE_GROUPING_BY_LINES = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
         }

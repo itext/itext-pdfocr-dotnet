@@ -48,8 +48,8 @@ namespace iText.Pdfocr.Onnxtr {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxTrEngineProperties
-                ().SetTextPositioning(TextPositioning.BY_WORDS));
+            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor, 
+                new OnnxTrEngineProperties().SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS));
         }
 
         [NUnit.Framework.OneTimeTearDown]

@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using iText.Commons.Utils;
 using iText.Commons.Utils.Collections;
+using iText.Kernel.Geom;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Util {
@@ -64,16 +65,16 @@ namespace iText.Pdfocr.Util {
             iText.Pdfocr.Util.PdfOcrTextBuilder.SortTextInfosByLines(textInfos);
             foreach (int page in textInfos.Keys.OrderBy(i => i).ToList()) {
                 StringBuilder sb = new StringBuilder();
-                TextInfo lastChunk = null;
+                TextInfo prevChunk = null;
                 foreach (TextInfo chunk in textInfos.Get(page)) {
-                    if (lastChunk == null) {
+                    if (prevChunk == null) {
                         sb.Append(chunk.GetText());
                     }
                     else {
-                        if (IsInTheSameLine(chunk, lastChunk)) {
+                        if (IsInTheSameLine(chunk, prevChunk)) {
                             // We only insert a blank space if the trailing character of the previous string wasn't a space,
                             // and the leading character of the current string isn't a space.
-                            if (IsChunkAtWordBoundary(chunk, lastChunk) && !chunk.GetText().StartsWith(" ") && !lastChunk.GetText().EndsWith
+                            if (IsChunkAtWordBoundary(chunk, prevChunk) && !chunk.GetText().StartsWith(" ") && !prevChunk.GetText().EndsWith
                                 (" ")) {
                                 sb.Append(' ');
                             }
@@ -83,7 +84,7 @@ namespace iText.Pdfocr.Util {
                             sb.Append('\n').Append(chunk.GetText());
                         }
                     }
-                    lastChunk = chunk;
+                    prevChunk = chunk;
                 }
                 outputText.Append(sb).Append('\n');
             }
@@ -113,13 +114,13 @@ namespace iText.Pdfocr.Util {
             iText.Pdfocr.Util.PdfOcrTextBuilder.SortTextInfosByLines(textInfos);
             foreach (int page in textInfos.Keys.OrderBy(i => i).ToList()) {
                 IList<TextInfo> line = new List<TextInfo>();
-                TextInfo lastChunk = null;
+                TextInfo prevChunk = null;
                 foreach (TextInfo chunk in textInfos.Get(page)) {
-                    if (lastChunk == null) {
+                    if (prevChunk == null) {
                         line.Add(chunk);
                     }
                     else {
-                        if (IsInTheSameLine(chunk, lastChunk)) {
+                        if (IsInTheSameLine(chunk, prevChunk)) {
                             line.Add(chunk);
                         }
                         else {
@@ -128,10 +129,68 @@ namespace iText.Pdfocr.Util {
                             line.Add(chunk);
                         }
                     }
-                    lastChunk = chunk;
+                    prevChunk = chunk;
                 }
                 UpdateBBoxes(line);
                 line.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Merges the provided
+        /// <see cref="iText.Pdfocr.IOcrEngine.DoImageOcr(System.IO.FileInfo)"/>
+        /// result into lines and
+        /// updates line bounding boxes to match the largest words.
+        /// </summary>
+        /// <param name="textInfos">
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page
+        /// and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4 coordinates (bbox)
+        /// </param>
+        public static void CollectWordsIntoLines(IDictionary<int, IList<TextInfo>> textInfos) {
+            iText.Pdfocr.Util.PdfOcrTextBuilder.SortTextInfosByLines(textInfos);
+            IList<int> pages = textInfos.Keys.OrderBy(i => i).ToList();
+            foreach (int page in pages) {
+                IList<TextInfo> pageLines = new List<TextInfo>();
+                IList<TextInfo> line = new List<TextInfo>();
+                TextInfo prevChunk = null;
+                foreach (TextInfo chunk in textInfos.Get(page)) {
+                    if (prevChunk == null) {
+                        line.Add(chunk);
+                    }
+                    else {
+                        if (IsInTheSameLine(chunk, prevChunk)) {
+                            line.Add(chunk);
+                        }
+                        else {
+                            // Merge into one text chunk.
+                            TextInfo newLine = MergeTextChunks(line);
+                            if (newLine != null) {
+                                pageLines.Add(newLine);
+                            }
+                            line.Clear();
+                            line.Add(chunk);
+                        }
+                    }
+                    prevChunk = chunk;
+                }
+                // Merge into one text chunk.
+                TextInfo newLine_1 = MergeTextChunks(line);
+                if (newLine_1 != null) {
+                    pageLines.Add(newLine_1);
+                }
+                line.Clear();
+                // Replace text chunks by lines.
+                textInfos.Put(page, pageLines);
             }
         }
 
@@ -156,12 +215,12 @@ namespace iText.Pdfocr.Util {
         /// </param>
         public static void SortTextInfosByLines(IDictionary<int, IList<TextInfo>> textInfos) {
             foreach (KeyValuePair<int, IList<TextInfo>> entry in textInfos) {
-                JavaCollectionsUtil.Sort(entry.Value, new _IComparer_125());
+                JavaCollectionsUtil.Sort(entry.Value, new _IComparer_170());
             }
         }
 
-        private sealed class _IComparer_125 : IComparer<TextInfo> {
-            public _IComparer_125() {
+        private sealed class _IComparer_170 : IComparer<TextInfo> {
+            public _IComparer_170() {
             }
 
             public int Compare(TextInfo first, TextInfo second) {
@@ -275,9 +334,9 @@ namespace iText.Pdfocr.Util {
         }
 
         private static bool IsChunkAtWordBoundary(TextInfo currentTextInfo, TextInfo previousTextInfo) {
-            float dist = GetDistParallelStart(currentTextInfo) - GetDistParallelEnd(previousTextInfo);
+            float dist = GetDistance(currentTextInfo, previousTextInfo);
             if (dist < 0) {
-                dist = GetDistParallelStart(previousTextInfo) - GetDistParallelEnd(currentTextInfo);
+                dist = GetDistance(previousTextInfo, currentTextInfo);
                 // The situation when the chunks intersect. We don't need to add space in this case.
                 if (dist < 0) {
                     return false;
@@ -287,6 +346,46 @@ namespace iText.Pdfocr.Util {
             // more than 10% of the minimal of the two average widths per char.
             return dist > DEFAULT_GAP_THRESHOLD * Math.Min(GetWidth(currentTextInfo) / currentTextInfo.GetText().Length
                 , GetWidth(previousTextInfo) / previousTextInfo.GetText().Length);
+        }
+
+        private static TextInfo MergeTextChunks(IList<TextInfo> line) {
+            if (line.IsEmpty()) {
+                return null;
+            }
+            StringBuilder text = new StringBuilder();
+            TextInfo prevChunk = null;
+            foreach (TextInfo chunk in line) {
+                if (prevChunk == null) {
+                    text.Append(chunk.GetText());
+                }
+                else {
+                    float dist = GetDistance(chunk, prevChunk);
+                    float space = (GetWidth(chunk) / chunk.GetText().Length + GetWidth(prevChunk) / prevChunk.GetText().Length
+                        ) / 2;
+                    if (dist > space) {
+                        for (int i = 0; i < (int)(dist / space); ++i) {
+                            text.Append(' ');
+                        }
+                    }
+                    else {
+                        if (dist > 0 && !chunk.GetText().StartsWith(" ") && !prevChunk.GetText().EndsWith(" ")) {
+                            // We only insert a blank space if the trailing character of the previous string wasn't a space,
+                            // and the leading character of the current string isn't a space.
+                            text.Append(' ');
+                        }
+                    }
+                    text.Append(chunk.GetText());
+                }
+                prevChunk = chunk;
+            }
+            UpdateBBoxes(line);
+            float lineX = line[0].GetBboxRect().GetLeft();
+            float lineY = line[0].GetBboxRect().GetBottom();
+            float lineWidth = line[line.Count - 1].GetBboxRect().GetRight() - lineX;
+            float lineHeight = line[line.Count - 1].GetBboxRect().GetTop() - lineY;
+            Rectangle lineBBox = new Rectangle(lineX, lineY, lineWidth, lineHeight);
+            TextOrientation lineOrientation = line[0].GetOrientation();
+            return new TextInfo(text.ToString(), lineBBox, lineOrientation);
         }
 
         private static int GetOrientation(TextOrientation orientation) {
@@ -308,6 +407,10 @@ namespace iText.Pdfocr.Util {
                     return 0;
                 }
             }
+        }
+
+        private static float GetDistance(TextInfo currentTextInfo, TextInfo previousTextInfo) {
+            return GetDistParallelStart(currentTextInfo) - GetDistParallelEnd(previousTextInfo);
         }
 
         /// <summary>
