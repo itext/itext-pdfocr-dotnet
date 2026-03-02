@@ -139,7 +139,7 @@ internal static class PdfOcrOnnxTRExtensions
         return iterator;
     }
 
-    public static void Close<T,R>(this iText.Pdfocr.Onnxtr.IPredictor<T,R> predictor) {
+    public static void Close<T,R>(this iText.Pdfocr.Onnx.IPredictor<T,R> predictor) {
         predictor.Dispose();
     }
 

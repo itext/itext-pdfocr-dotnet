@@ -1,7 +1,7 @@
 This software uses the following third-party libraries under the following licenses:
-| OnnxTR    | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnxtr package is adapted from and inspired by https://github.com/felixdittrich92/OnnxTR.
-| EasyOCR   | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnxtr package is adapted from and inspired by https://github.com/JaidedAI/EasyOCR.
-| PaddleOCR | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnxtr package is adapted from and inspired by https://github.com/PaddlePaddle/PaddleOCR.
+| OnnxTR    | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnx package is adapted from and inspired by https://github.com/felixdittrich92/OnnxTR.
+| EasyOCR   | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnx package is adapted from and inspired by https://github.com/JaidedAI/EasyOCR.
+| PaddleOCR | Apache-2.0 | Some code in com.itextpdf.pdfocr.onnx package is adapted from and inspired by https://github.com/PaddlePaddle/PaddleOCR.
 
 
 

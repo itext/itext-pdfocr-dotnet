@@ -29,10 +29,10 @@ using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
-using iText.Pdfocr.Onnxtr;
-using iText.Pdfocr.Onnxtr.Detection;
-using iText.Pdfocr.Onnxtr.Orientation;
-using iText.Pdfocr.Onnxtr.Recognition;
+using iText.Pdfocr.Onnx;
+using iText.Pdfocr.Onnx.Detection;
+using iText.Pdfocr.Onnx.Orientation;
+using iText.Pdfocr.Onnx.Recognition;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx.Cpu {
@@ -71,7 +71,7 @@ namespace iText.Pdfocr.Onnx.Cpu {
             OCR_ENGINE_MAKE_PDF_SEARCHABLE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
             OCR_ENGINE_IMAGE_OCR = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxTrEngineProperties
-                ().SetTextPositioning(iText.Pdfocr.Onnxtr.Text.TextPositioning.BY_WORDS));
+                ().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
             OCR_ENGINE_CREATE_PDF = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
