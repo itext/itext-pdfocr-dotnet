@@ -36,15 +36,15 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
-    public class OnnxTRCmykIntegrationTest : ExtendedITextTest {
+    public class OnnxCmykIntegrationTest : ExtendedITextTest {
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxTRCmykIntegrationTest/";
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxCmykIntegrationTest/";
 
         private static readonly String TEST_IMAGE_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/images/";
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
-             + "/test/resources/itext/pdfocr/OnnxTRCmykIntegrationTest/";
+             + "/test/resources/itext/pdfocr/OnnxCmykIntegrationTest/";
 
         private static readonly String FAST = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
@@ -55,7 +55,7 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String MOBILENETV3 = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
 
-        private static OnnxTrOcrEngine OCR_ENGINE;
+        private static OnnxOcrEngine OCR_ENGINE;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
@@ -63,7 +63,7 @@ namespace iText.Pdfocr.Onnx {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
         }
 
         [NUnit.Framework.OneTimeTearDown]
@@ -89,7 +89,7 @@ namespace iText.Pdfocr.Onnx {
                 // fixed for jdk8 from 351 onwards, for jdk11 from 16 onwards and for jdk17 starting from 4.
                 // Amazon corretto jdk started support CMYK for JPEG from 11 version.
                 // Temurin 8 does not support CMYK for JPEG either.
-                NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+                NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
             }
         }
 
@@ -113,7 +113,7 @@ namespace iText.Pdfocr.Onnx {
                 // fixed for jdk8 from 351 onwards, for jdk11 from 16 onwards and for jdk17 starting from 4.
                 // Amazon corretto jdk started support CMYK for JPEG from 11 version.
                 // Temurin 8 does not support CMYK for JPEG either.
-                NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+                NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
             }
         }
 
@@ -135,7 +135,7 @@ namespace iText.Pdfocr.Onnx {
                 // fixed for jdk8 from 351 onwards, for jdk11 from 16 onwards and for jdk17 starting from 4.
                 // Amazon corretto jdk started support CMYK for JPEG from 11 version.
                 // Temurin 8 does not support CMYK for JPEG either.
-                NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+                NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
             }
         }
 

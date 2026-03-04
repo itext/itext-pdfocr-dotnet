@@ -51,7 +51,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
         public virtual void ParseInvalidRootTest() {
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PostProcessParser.Parse("invalid_type"
                 , "PostProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PostProcess"), ex.Message);
         }
 
@@ -61,7 +61,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("name", "something unsupported");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PostProcessParser.Parse(mapping
                 , "PostProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PostProcess.name"), ex.Message);
         }
     }

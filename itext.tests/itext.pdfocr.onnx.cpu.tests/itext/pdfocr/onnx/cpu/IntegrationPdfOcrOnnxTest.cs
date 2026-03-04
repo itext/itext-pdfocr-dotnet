@@ -56,11 +56,11 @@ namespace iText.Pdfocr.Onnx.Cpu {
 
         private static readonly String MOBILENETV3 = TEST_DIRECTORY + "models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
 
-        private static OnnxTrOcrEngine OCR_ENGINE_MAKE_PDF_SEARCHABLE;
+        private static OnnxOcrEngine OCR_ENGINE_MAKE_PDF_SEARCHABLE;
 
-        private static OnnxTrOcrEngine OCR_ENGINE_IMAGE_OCR;
+        private static OnnxOcrEngine OCR_ENGINE_IMAGE_OCR;
 
-        private static OnnxTrOcrEngine OCR_ENGINE_CREATE_PDF;
+        private static OnnxOcrEngine OCR_ENGINE_CREATE_PDF;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
@@ -68,11 +68,11 @@ namespace iText.Pdfocr.Onnx.Cpu {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE_MAKE_PDF_SEARCHABLE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
+            OCR_ENGINE_MAKE_PDF_SEARCHABLE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
-            OCR_ENGINE_IMAGE_OCR = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxTrEngineProperties
+            OCR_ENGINE_IMAGE_OCR = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxEngineProperties
                 ().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
-            OCR_ENGINE_CREATE_PDF = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OCR_ENGINE_CREATE_PDF = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
         [NUnit.Framework.OneTimeTearDown]

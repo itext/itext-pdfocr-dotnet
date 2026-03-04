@@ -36,20 +36,20 @@ namespace iText.Pdfocr.Onnx.Util {
         public static readonly iText.Pdfocr.Onnx.Util.OcrEngineType DOCTR = new iText.Pdfocr.Onnx.Util.OcrEngineType
             ("DocTR", () => CreateDocTrEngine());
 
-        public volatile OnnxTrOcrEngine instance;
+        public volatile OnnxOcrEngine instance;
 
         private readonly String displayName;
 
-        private readonly Func<OnnxTrOcrEngine> supplier;
+        private readonly Func<OnnxOcrEngine> supplier;
 
 //\cond DO_NOT_DOCUMENT
-        internal OcrEngineType(String displayName, Func<OnnxTrOcrEngine> supplier) {
+        internal OcrEngineType(String displayName, Func<OnnxOcrEngine> supplier) {
             this.displayName = displayName;
             this.supplier = supplier;
         }
 //\endcond
 
-        public OnnxTrOcrEngine Get() {
+        public OnnxOcrEngine Get() {
             if (this.instance == null) {
                 lock (this) {
                     if (this.instance == null) {
@@ -69,13 +69,13 @@ namespace iText.Pdfocr.Onnx.Util {
                 .EASY, iText.Pdfocr.Onnx.Util.OcrEngineType.DOCTR };
         }
 
-        private static OnnxTrOcrEngine CreatePaddleOcrEngine() {
+        private static OnnxOcrEngine CreatePaddleOcrEngine() {
             try {
                 IDetectionPredictor paddleDetectionPredictor = OnnxDetectionPredictor.PaddleOcr(ModelPaths.GetPaddleOcrDetectionModel
                     ());
                 IRecognitionPredictor paddleRecognitionPredictor = OnnxRecognitionPredictor.PaddleOcr(ModelPaths.GetPaddleOcrRecognitionModel
                     ());
-                return new OnnxTrOcrEngine(paddleDetectionPredictor, paddleRecognitionPredictor);
+                return new OnnxOcrEngine(paddleDetectionPredictor, paddleRecognitionPredictor);
             }
             catch (System.IO.IOException e) {
                 // Shouldn't reach there.
@@ -83,20 +83,20 @@ namespace iText.Pdfocr.Onnx.Util {
             }
         }
 
-        private static OnnxTrOcrEngine CreateEasyOcrEngine() {
+        private static OnnxOcrEngine CreateEasyOcrEngine() {
             IDetectionPredictor easyDetectionPredictor = OnnxDetectionPredictor.EasyOcr(ModelPaths.GetEasyOcrDetectionModel
                 ());
             IRecognitionPredictor easyRecognitionPredictor = OnnxRecognitionPredictor.EasyOcr(ModelPaths.GetEasyOcrRecognitionModel
                 (), EasyOcrMapper.LATIN_G2);
-            return new OnnxTrOcrEngine(easyDetectionPredictor, easyRecognitionPredictor);
+            return new OnnxOcrEngine(easyDetectionPredictor, easyRecognitionPredictor);
         }
 
-        private static OnnxTrOcrEngine CreateDocTrEngine() {
+        private static OnnxOcrEngine CreateDocTrEngine() {
             IDetectionPredictor docTrDetectionPredictor = OnnxDetectionPredictor.Fast(ModelPaths.GetDocTrDetectionModel
                 ());
             IRecognitionPredictor docTrRecognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(ModelPaths.GetDocTrRecognitionModel
                 ());
-            return new OnnxTrOcrEngine(docTrDetectionPredictor, docTrRecognitionPredictor);
+            return new OnnxOcrEngine(docTrDetectionPredictor, docTrRecognitionPredictor);
         }
     }
 }

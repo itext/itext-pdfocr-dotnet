@@ -49,7 +49,7 @@ namespace iText.Pdfocr.Onnx {
 
         private static readonly String MOBILENETV3 = BASE_DIRECTORY + "models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
 
-        private static OnnxTrOcrEngine OCR_ENGINE;
+        private static OnnxOcrEngine OCR_ENGINE;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
@@ -57,7 +57,7 @@ namespace iText.Pdfocr.Onnx {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
         }
 
         [NUnit.Framework.OneTimeTearDown]

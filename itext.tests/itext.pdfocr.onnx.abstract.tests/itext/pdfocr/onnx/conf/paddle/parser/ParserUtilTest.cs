@@ -38,12 +38,12 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // null instead of collection
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.CastToStringArray
                 (null, "Obj"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj"), ex.Message);
             // null inside collection
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.CastToStringArray(JavaUtil.ArraysAsList
                 ((Object)"a", null, "c"), "Obj"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.1"), ex.Message);
         }
 
@@ -57,11 +57,11 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", "x.xx"), "Obj", "k", 1.0F));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", 1.0F));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -77,15 +77,15 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", JavaUtil.ArraysAsList("3.14", "x.xx")), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k.1"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 "[]"), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -99,11 +99,11 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", "xx"), "Obj", "k", -1));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", -1));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -119,15 +119,15 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", JavaUtil.ArraysAsList("42", "xxx")), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k.1"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 "[]"), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -143,11 +143,11 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", "xxxxx"), "Obj", "k", false));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", false));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -165,11 +165,11 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", "xxxx"), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -187,11 +187,11 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", "xxx"), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 
@@ -211,11 +211,11 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             // Key exists and invalid
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf
                 ("k", "XXX"), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
             ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => ParserUtil.GetOrDefault(MapOf("k", 
                 null), "Obj", "k", defaultValue));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Obj.k"), ex.Message);
         }
 

@@ -47,10 +47,10 @@ namespace iText.Pdfocr.Onnx {
     /// implementation, based on OnnxTR/DocTR machine learning OCR projects.
     /// <para />
     /// NOTE:
-    /// <see cref="OnnxTrOcrEngine"/>
+    /// <see cref="OnnxOcrEngine"/>
     /// instance shall be closed after all usages to avoid native allocations leak.
     /// </remarks>
-    public class OnnxTrOcrEngine : IOcrEngine, IDisposable, IProductAware {
+    public class OnnxOcrEngine : IOcrEngine, IDisposable, IProductAware {
         /// <summary>Text detector.</summary>
         /// <remarks>Text detector. For an input image it outputs a list of text boxes.</remarks>
         private readonly IDetectionPredictor detectionPredictor;
@@ -68,7 +68,7 @@ namespace iText.Pdfocr.Onnx {
         private readonly IRecognitionPredictor recognitionPredictor;
 
         /// <summary>Set of properties.</summary>
-        private readonly OnnxTrEngineProperties properties;
+        private readonly OnnxEngineProperties properties;
 
         /// <summary>Create a new OCR engine with the provided predictors.</summary>
         /// <param name="detectionPredictor">text detector. For an input image it outputs a list of text boxes</param>
@@ -81,9 +81,9 @@ namespace iText.Pdfocr.Onnx {
         /// text recognizer. For an input image, which is a tight crop of text, it outputs the
         /// displayed string
         /// </param>
-        public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
-            IRecognitionPredictor recognitionPredictor)
-            : this(detectionPredictor, orientationPredictor, recognitionPredictor, new OnnxTrEngineProperties()) {
+        public OnnxOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, IRecognitionPredictor
+             recognitionPredictor)
+            : this(detectionPredictor, orientationPredictor, recognitionPredictor, new OnnxEngineProperties()) {
         }
 
         /// <summary>Create a new OCR engine with the provided predictors.</summary>
@@ -98,8 +98,8 @@ namespace iText.Pdfocr.Onnx {
         /// displayed string
         /// </param>
         /// <param name="properties">set of properties</param>
-        public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
-            IRecognitionPredictor recognitionPredictor, OnnxTrEngineProperties properties) {
+        public OnnxOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, IRecognitionPredictor
+             recognitionPredictor, OnnxEngineProperties properties) {
             this.detectionPredictor = Objects.RequireNonNull(detectionPredictor);
             this.orientationPredictor = orientationPredictor;
             this.recognitionPredictor = Objects.RequireNonNull(recognitionPredictor);
@@ -112,7 +112,7 @@ namespace iText.Pdfocr.Onnx {
         /// text recognizer. For an input image, which is a tight crop of text,
         /// it outputs the displayed string
         /// </param>
-        public OnnxTrOcrEngine(IDetectionPredictor detectionPredictor, IRecognitionPredictor recognitionPredictor)
+        public OnnxOcrEngine(IDetectionPredictor detectionPredictor, IRecognitionPredictor recognitionPredictor)
             : this(detectionPredictor, null, recognitionPredictor) {
         }
 
@@ -127,13 +127,13 @@ namespace iText.Pdfocr.Onnx {
 
         /// <summary><inheritDoc/></summary>
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
-            return DoImageOcr(input, new OcrProcessContext(new OnnxTrEventHelper()));
+            return DoImageOcr(input, new OcrProcessContext(new OnnxEventHelper()));
         }
 
         /// <summary><inheritDoc/></summary>
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
-            IDictionary<int, IList<TextInfo>> result = DoOnnxTrOcr(input, ocrProcessContext);
+            IDictionary<int, IList<TextInfo>> result = DoOnnxOcr(input, ocrProcessContext);
             if (iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS.Equals(properties.GetTextPositioningMode())) {
                 PdfOcrTextBuilder.SortTextInfosByLines(result);
             }
@@ -151,7 +151,7 @@ namespace iText.Pdfocr.Onnx {
 
         /// <summary><inheritDoc/></summary>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
-            CreateTxtFile(inputImages, txtFile, new OcrProcessContext(new OnnxTrEventHelper()));
+            CreateTxtFile(inputImages, txtFile, new OcrProcessContext(new OnnxEventHelper()));
         }
 
         /// <summary><inheritDoc/></summary>
@@ -161,18 +161,18 @@ namespace iText.Pdfocr.Onnx {
                 , inputImages.Count));
             AbstractPdfOcrEventHelper storedEventHelper;
             if (ocrProcessContext.GetOcrEventHelper() == null) {
-                storedEventHelper = new OnnxTrEventHelper();
+                storedEventHelper = new OnnxEventHelper();
             }
             else {
                 storedEventHelper = ocrProcessContext.GetOcrEventHelper();
             }
             try {
                 // save confirm events from doImageOcr, to send them only after successful writing to the file
-                OnnxTrFileResultEventHelper fileResultEventHelper = new OnnxTrFileResultEventHelper(storedEventHelper);
+                OnnxFileResultEventHelper fileResultEventHelper = new OnnxFileResultEventHelper(storedEventHelper);
                 ocrProcessContext.SetOcrEventHelper(fileResultEventHelper);
                 StringBuilder content = new StringBuilder();
                 foreach (FileInfo inputImage in inputImages) {
-                    IDictionary<int, IList<TextInfo>> outputMap = DoOnnxTrOcr(inputImage, ocrProcessContext);
+                    IDictionary<int, IList<TextInfo>> outputMap = DoOnnxOcr(inputImage, ocrProcessContext);
                     content.Append(PdfOcrTextBuilder.BuildText(outputMap));
                 }
                 PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content.ToString());
@@ -190,7 +190,7 @@ namespace iText.Pdfocr.Onnx {
 
         /// <summary><inheritDoc/></summary>
         public virtual PdfOcrMetaInfoContainer GetMetaInfoContainer() {
-            return new PdfOcrMetaInfoContainer(new OnnxTrMetaInfo());
+            return new PdfOcrMetaInfoContainer(new OnnxMetaInfo());
         }
 
         /// <summary><inheritDoc/></summary>
@@ -204,20 +204,20 @@ namespace iText.Pdfocr.Onnx {
                 if (TiffImageUtil.IsTiffImage(input)) {
                     IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(input);
                     if (images.IsEmpty()) {
-                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
+                        throw new PdfOcrInputException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE);
                     }
                     return images;
                 }
                 else {
                     IronSoftware.Drawing.AnyBitmap image = IronSoftware.Drawing.AnyBitmap.FromFile(input.FullName);
                     if (image == null) {
-                        throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE);
+                        throw new PdfOcrInputException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE);
                     }
                     return JavaCollectionsUtil.SingletonList(image);
                 }
             }
             catch (Exception e) {
-                throw new PdfOcrInputException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
+                throw new PdfOcrInputException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e);
             }
         }
 //\endcond
@@ -245,11 +245,11 @@ namespace iText.Pdfocr.Onnx {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        private IDictionary<int, IList<TextInfo>> DoOnnxTrOcr(FileInfo input, OcrProcessContext ocrProcessContext) {
+        private IDictionary<int, IList<TextInfo>> DoOnnxOcr(FileInfo input, OcrProcessContext ocrProcessContext) {
             IList<IronSoftware.Drawing.AnyBitmap> images = GetImages(input);
-            OnnxTrProcessor onnxTrProcessor = new OnnxTrProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
+            OnnxProcessor onnxProcessor = new OnnxProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
-            return onnxTrProcessor.DoOcr(images, ocrProcessContext);
+            return onnxProcessor.DoOcr(images, ocrProcessContext);
         }
 
         void System.IDisposable.Dispose() {

@@ -27,7 +27,7 @@ namespace iText.Pdfocr.Onnx.Text {
     /// <remarks>
     /// Enumeration of the possible types of text positioning.
     /// It is used to combine the
-    /// <see cref="OnnxTrOcrEngine"/>
+    /// <see cref="OnnxOcrEngine"/>
     /// image OCR result text
     /// and group it by lines, by words or by words and lines.
     /// </remarks>

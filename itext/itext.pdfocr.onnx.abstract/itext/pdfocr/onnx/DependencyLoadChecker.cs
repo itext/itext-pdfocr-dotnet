@@ -56,7 +56,7 @@ namespace iText.Pdfocr.Onnx {
         }
 
         private static String GetOnnxRuntimeError() {
-            String message = PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_LOAD_ONNXRUNTIME +
+            String message = PdfOcrOnnxExceptionMessageConstant.FAILED_TO_LOAD_ONNXRUNTIME +
                              "\nDouble check that correct RuntimeIdentifier is specified.";
             if (IsWindows()) {
                 message += " Also a possible cause on Windows is that the latest version of the VC++ redistributable " +

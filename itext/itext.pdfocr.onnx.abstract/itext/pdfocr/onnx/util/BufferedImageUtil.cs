@@ -52,10 +52,10 @@ namespace iText.Pdfocr.Onnx.Util {
         public static FloatBufferMdArray ToBchwInput(ICollection<IronSoftware.Drawing.AnyBitmap> images, OnnxInputProperties
              properties) {
             if (images.Count == 0) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE);
             }
             if (images.Count > properties.GetBatchSize()) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.TOO_MANY_IMAGES, 
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES, 
                     images.Count, properties.GetBatchSize()));
             }
             ImageResizeOptions resizeOptions = properties.GetImageResizeOptions();
@@ -350,7 +350,7 @@ namespace iText.Pdfocr.Onnx.Util {
                 case SkiaSharp.SKColorType.Gray8:
                     return ImageChannelConfiguration.GRAYSCALE;
                 default:
-                    throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+                    throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
             }
         }
 
@@ -370,7 +370,7 @@ namespace iText.Pdfocr.Onnx.Util {
                 return PutBgrImageWithNormalization(outputBuffer, image, props, currentIndex);
             }
 
-            throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
         private static int PutGrayscaleImageWithNormalization(float[] outputBuffer, SkiaSharp.SKBitmap image, 
@@ -457,7 +457,7 @@ namespace iText.Pdfocr.Onnx.Util {
         /// <returns>buffered image based on Mat</returns>
         private static IronSoftware.Drawing.AnyBitmap FromRgbMat(Mat rgb) {
             if (rgb.Type() != MatType.CV_8UC4) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MAT_TYPE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MAT_TYPE
                     , rgb.Type()));
             }
             SkiaSharp.SKBitmap image = new SkiaSharp.SKBitmap(rgb.Cols, rgb.Rows, 
@@ -488,7 +488,7 @@ namespace iText.Pdfocr.Onnx.Util {
                 yPos += (outputHeight - targetHeight) / 2;
             } else if (!paddingStrategy.UsesBottomRightPadding()) {
                 throw new ArgumentException(MessageFormatUtil.Format(
-                        PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_PADDING_STRATEGY, paddingStrategy
+                        PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_PADDING_STRATEGY, paddingStrategy
                 ));
             }
             // Drawing all the paddings first
@@ -603,7 +603,7 @@ namespace iText.Pdfocr.Onnx.Util {
                 return SkiaSharp.SKColorType.Bgra8888;
             }
 
-            throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
         /// <summary>Returns the byte capacity required for a float32 buffer of the specified shape.</summary>

@@ -33,7 +33,7 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
-    public class OnnxTRIntegrationTest : ExtendedITextTest {
+    public class OnnxIntegrationTest : ExtendedITextTest {
         private static readonly String FAST = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
 
@@ -41,22 +41,22 @@ namespace iText.Pdfocr.Onnx {
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/crnn_vgg16_bn-662979cc.onnx";
 
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxTRIntegrationTest/";
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxIntegrationTest/";
 
         private static readonly String TEST_IMAGE_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/images/";
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
-             + "/test/resources/itext/pdfocr/OnnxTRIntegrationTest/";
+             + "/test/resources/itext/pdfocr/OnnxIntegrationTest/";
 
-        private static OnnxTrOcrEngine OCR_ENGINE;
+        private static OnnxOcrEngine OCR_ENGINE;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
         [NUnit.Framework.OneTimeTearDown]
@@ -98,8 +98,8 @@ namespace iText.Pdfocr.Onnx {
             OnnxRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             NUnit.Framework.Assert.IsNotNull(recognitionPredictor.GetProperties());
             
-            using (OnnxTrOcrEngine onnxTrOcrEngine = new OnnxTrOcrEngine(detectionPredictor, null, recognitionPredictor,
-                       new OnnxTrEngineProperties()
+            using (OnnxOcrEngine onnxTrOcrEngine = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor,
+                       new OnnxEngineProperties()
                            .SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS))) {
                 OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(onnxTrOcrEngine, 
                     CreatorProperties("Text1", DeviceCmyk.MAGENTA));

@@ -63,7 +63,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         public virtual IEnumerator<IronSoftware.Drawing.AnyBitmap> MapInputs(IEnumerator<IronSoftware.Drawing.AnyBitmap
             > inputs) {
             if (!mergeQueue.IsEmpty()) {
-                throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.CANNOT_START_ANOTHER_MAPPING_OPERATION
+                throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.CANNOT_START_ANOTHER_MAPPING_OPERATION
                     );
             }
             return new _IEnumerator_67(this, inputs);

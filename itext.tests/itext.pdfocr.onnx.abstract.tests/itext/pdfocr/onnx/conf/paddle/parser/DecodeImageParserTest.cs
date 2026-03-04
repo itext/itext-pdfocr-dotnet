@@ -52,7 +52,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
         public virtual void ParseInvalidRootTest() {
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => DecodeImageParser.Parse("invalid_value"
                 , "Op"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Op"), ex.Message);
         }
 
@@ -67,7 +67,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put(field, "invalid_value");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => DecodeImageParser.Parse(mapping
                 , "Op"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Op." + field), ex.Message);
         }
     }

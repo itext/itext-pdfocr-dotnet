@@ -34,7 +34,7 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("UnitTest")]
-    public class OnnxTRUnitTest : ExtendedITextTest {
+    public class OnnxUnitTest : ExtendedITextTest {
         private static readonly String BASE_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/";
 
@@ -49,7 +49,7 @@ namespace iText.Pdfocr.Onnx {
             long[] shape = new long[] { 2, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => BufferedImageUtil.ToBchwInput(
                 new List<IronSoftware.Drawing.AnyBitmap>(), new OnnxInputProperties(mean, std, shape, true)));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE, e.Message
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE, e.Message
                 );
         }
 
@@ -59,8 +59,8 @@ namespace iText.Pdfocr.Onnx {
             float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
             long[] shape = new long[] { 1, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => BufferedImageUtil.ToBchwInput(
-                OnnxTrOcrEngine.GetImages(new FileInfo(TIFF)), new OnnxInputProperties(mean, std, shape, true)));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.TOO_MANY_IMAGES
+                OnnxOcrEngine.GetImages(new FileInfo(TIFF)), new OnnxInputProperties(mean, std, shape, true)));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES
                 , 2, 1), e.Message);
         }
 
@@ -68,7 +68,7 @@ namespace iText.Pdfocr.Onnx {
         public virtual void InvalidOrientationTest() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(IndexOutOfRangeException), () => new DefaultOrientationMapper
                 ().Map(4));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
                 , 4), e.Message);
         }
 
@@ -76,15 +76,15 @@ namespace iText.Pdfocr.Onnx {
         public virtual void InvalidModelPathTest() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => OnnxDetectionPredictor.Fast("invalid"
                 ));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_INIT_ONNX_RUNTIME_SESSION, 
-                e.Message);
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_INIT_ONNX_RUNTIME_SESSION, e.
+                Message);
         }
 
         [NUnit.Framework.Test]
         public virtual void InvalidModelTest() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => OnnxRecognitionPredictor.CrnnVgg16
                 (FAST));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION, e.Message
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION, e.Message
                 );
         }
 
@@ -129,7 +129,7 @@ namespace iText.Pdfocr.Onnx {
 
         [NUnit.Framework.Test]
         public virtual void DeprecatedTextPositioningTest() {
-            OnnxTrEngineProperties properties = new OnnxTrEngineProperties();
+            OnnxEngineProperties properties = new OnnxEngineProperties();
             NUnit.Framework.Assert.AreEqual(TextPositioning.BY_LINES, properties.GetTextPositioning());
             properties.SetTextPositioning(TextPositioning.BY_WORDS);
             NUnit.Framework.Assert.AreEqual(TextPositioning.BY_WORDS, properties.GetTextPositioning());

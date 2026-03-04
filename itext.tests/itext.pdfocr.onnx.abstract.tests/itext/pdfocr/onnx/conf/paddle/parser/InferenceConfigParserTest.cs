@@ -54,7 +54,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             MemoryStream stream = CreateTestStream("\"string\"");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => InferenceConfigParser.Parse
                 (stream));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "<root>"), ex.Message);
         }
 
@@ -64,7 +64,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
                 );
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => InferenceConfigParser.Parse
                 (stream));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CONFIG_KEY
                 , "PreProcess.unexpected"), ex.Message);
         }
 
@@ -74,7 +74,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
                  + "PostProcess:\n" + "  name: Unsupported\n");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => InferenceConfigParser.Parse
                 (stream));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PostProcess.name"), ex.Message);
         }
 

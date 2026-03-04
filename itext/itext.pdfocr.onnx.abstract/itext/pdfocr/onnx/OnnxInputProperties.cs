@@ -86,25 +86,25 @@ namespace iText.Pdfocr.Onnx {
         public OnnxInputProperties(float[] mean, float[] std, long[] shape, bool symmetricPad) {
             Objects.RequireNonNull(mean);
             if (mean.Length != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
                     , EXPECTED_CHANNEL_COUNT));
             }
             Objects.RequireNonNull(std);
             if (std.Length != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
                     , EXPECTED_CHANNEL_COUNT));
             }
             Objects.RequireNonNull(shape);
             if (shape.Length != EXPECTED_SHAPE_SIZE) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
                     , EXPECTED_SHAPE_SIZE));
             }
             if (shape[1] != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB);
             }
             foreach (long dim in shape) {
                 if (dim <= 0 || ((int)dim) != dim) {
-                    throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
+                    throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
                         , dim));
                 }
             }
@@ -142,20 +142,20 @@ namespace iText.Pdfocr.Onnx {
             int channelCount = imageResizeOptions.GetChannelConfiguration().GetChannelCount();
             Objects.RequireNonNull(mean);
             if (mean.Length != channelCount) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
                     , channelCount));
             }
             this.mean = new float[mean.Length];
             Array.Copy(mean, 0, this.mean, 0, mean.Length);
             Objects.RequireNonNull(std);
             if (std.Length != channelCount) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
                     , channelCount));
             }
             this.std = new float[std.Length];
             Array.Copy(std, 0, this.std, 0, std.Length);
             if (batchSize < 1) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE);
             }
             this.batchSize = batchSize;
         }
@@ -333,7 +333,7 @@ namespace iText.Pdfocr.Onnx {
                 }
             }
             // Fallthrough
-            throw new IndexOutOfRangeException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
+            throw new IndexOutOfRangeException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
                 , index));
         }
 

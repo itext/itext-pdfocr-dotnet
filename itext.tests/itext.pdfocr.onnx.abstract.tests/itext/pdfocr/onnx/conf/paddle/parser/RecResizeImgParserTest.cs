@@ -51,7 +51,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
         public virtual void ParseInvalidRootTest() {
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => RecResizeImgParser.Parse(
                 "invalid_value", "Op"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Op"), ex.Message);
         }
 
@@ -61,7 +61,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("image_shape", "invalid_value");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => RecResizeImgParser.Parse(
                 mapping, "Op"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Op.image_shape"), ex.Message);
         }
 
@@ -71,7 +71,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("image_shape", JavaUtil.ArraysAsList("3", "48"));
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => RecResizeImgParser.Parse(
                 mapping, "Op"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "Op.image_shape"), ex.Message);
         }
     }

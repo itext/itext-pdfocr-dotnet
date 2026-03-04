@@ -54,7 +54,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
         public virtual void ParseInvalidRootTest() {
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse("invalid_type"
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PreProcess"), ex.Message);
         }
 
@@ -65,7 +65,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("unexpected", "key");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse(mapping
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CONFIG_KEY
                 , "PreProcess.unexpected"), ex.Message);
         }
 
@@ -75,7 +75,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("transform_ops", new Dictionary<Object, Object>());
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse(mapping
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PreProcess.transform_ops"), ex.Message);
         }
 
@@ -87,7 +87,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("transform_ops", ops);
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse(mapping
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PreProcess.transform_ops.0"), ex.Message);
         }
 
@@ -101,7 +101,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("transform_ops", ops);
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse(mapping
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PreProcess.transform_ops.0"), ex.Message);
         }
 
@@ -116,7 +116,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("transform_ops", ops);
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse(mapping
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PreProcess.transform_ops.0"), ex.Message);
         }
 
@@ -130,7 +130,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("transform_ops", ops);
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => PreProcessParser.Parse(mapping
                 , "PreProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PreProcess.transform_ops.0"), ex.Message);
         }
 

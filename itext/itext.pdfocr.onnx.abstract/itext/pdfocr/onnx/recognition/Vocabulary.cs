@@ -1370,7 +1370,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         public Vocabulary(String lookUpString) {
             Objects.RequireNonNull(lookUpString);
             if (lookUpString.CodePointCount(0, lookUpString.Length) != lookUpString.Length) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.LOOK_UP_STRING_CONTAINS_2_CODE_UNITS_POINTS
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.LOOK_UP_STRING_CONTAINS_2_CODE_UNITS_POINTS
                     );
             }
             this.lookUpString = lookUpString;

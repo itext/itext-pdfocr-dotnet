@@ -32,15 +32,15 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("UnitTest")]
-    public class OnnxTrFileResultEventHelperTest : ExtendedITextTest {
+    public class OnnxFileResultEventHelperTest : ExtendedITextTest {
         [NUnit.Framework.Test]
-        public virtual void ProcessImageOnnxTrEventTest() {
-            OnnxTrFileResultEventHelperTest.StoreEventsHandler eventsHandler = new OnnxTrFileResultEventHelperTest.StoreEventsHandler
+        public virtual void ProcessImageOnnxEventTest() {
+            OnnxFileResultEventHelperTest.StoreEventsHandler eventsHandler = new OnnxFileResultEventHelperTest.StoreEventsHandler
                 ();
             EventManager.GetInstance().Register(eventsHandler);
-            OnnxTrFileResultEventHelper helper = new OnnxTrFileResultEventHelper(eventsHandler);
-            PdfOcrOnnxTrProductEvent @event = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(new SequenceId(), 
-                null, EventConfirmationType.ON_CLOSE);
+            OnnxFileResultEventHelper helper = new OnnxFileResultEventHelper(eventsHandler);
+            PdfOcrOnnxProductEvent @event = PdfOcrOnnxProductEvent.CreateProcessImageOnnxEvent(new SequenceId(), null, 
+                EventConfirmationType.ON_CLOSE);
             helper.OnEvent(@event);
             NUnit.Framework.Assert.AreEqual(1, eventsHandler.GetEvents().Count);
             NUnit.Framework.Assert.AreEqual(@event, eventsHandler.GetEvents()[0]);
@@ -51,13 +51,13 @@ namespace iText.Pdfocr.Onnx {
         }
 
         [NUnit.Framework.Test]
-        public virtual void ConfirmProcessImageOnnxTrEventTest() {
-            OnnxTrFileResultEventHelperTest.StoreEventsHandler eventsHandler = new OnnxTrFileResultEventHelperTest.StoreEventsHandler
+        public virtual void ConfirmProcessImageOnnxEventTest() {
+            OnnxFileResultEventHelperTest.StoreEventsHandler eventsHandler = new OnnxFileResultEventHelperTest.StoreEventsHandler
                 ();
             EventManager.GetInstance().Register(eventsHandler);
-            OnnxTrFileResultEventHelper helper = new OnnxTrFileResultEventHelper(eventsHandler);
-            ConfirmEvent @event = new ConfirmEvent(PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(new SequenceId
-                (), null, EventConfirmationType.ON_CLOSE));
+            OnnxFileResultEventHelper helper = new OnnxFileResultEventHelper(eventsHandler);
+            ConfirmEvent @event = new ConfirmEvent(PdfOcrOnnxProductEvent.CreateProcessImageOnnxEvent(new SequenceId()
+                , null, EventConfirmationType.ON_CLOSE));
             helper.OnEvent(@event);
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
             helper.RegisterAllSavedEvents();
@@ -68,11 +68,11 @@ namespace iText.Pdfocr.Onnx {
 
         [NUnit.Framework.Test]
         public virtual void DefaultStatisticsEventTest() {
-            OnnxTrFileResultEventHelperTest.StoreEventsHandler eventsHandler = new OnnxTrFileResultEventHelperTest.StoreEventsHandler
+            OnnxFileResultEventHelperTest.StoreEventsHandler eventsHandler = new OnnxFileResultEventHelperTest.StoreEventsHandler
                 ();
             EventManager.GetInstance().Register(eventsHandler);
-            OnnxTrFileResultEventHelper helper = new OnnxTrFileResultEventHelper(eventsHandler);
-            PdfOcrOutputTypeStatisticsEvent @event = new PdfOcrOutputTypeStatisticsEvent(PdfOcrOutputType.PDF, PdfOcrOnnxTrProductData
+            OnnxFileResultEventHelper helper = new OnnxFileResultEventHelper(eventsHandler);
+            PdfOcrOutputTypeStatisticsEvent @event = new PdfOcrOutputTypeStatisticsEvent(PdfOcrOutputType.PDF, PdfOcrOnnxProductData
                 .GetInstance());
             helper.OnEvent(@event);
             NUnit.Framework.Assert.AreEqual(1, eventsHandler.GetEvents().Count);
@@ -91,14 +91,14 @@ namespace iText.Pdfocr.Onnx {
             }
 
             public virtual void OnEvent(IEvent @event) {
-                if (@event is PdfOcrOnnxTrProductEvent || @event is PdfOcrOutputTypeStatisticsEvent || @event is ConfirmEvent
+                if (@event is PdfOcrOnnxProductEvent || @event is PdfOcrOutputTypeStatisticsEvent || @event is ConfirmEvent
                     ) {
                     events.Add(@event);
                 }
             }
 
             public override void OnEvent(AbstractProductITextEvent @event) {
-                if (@event is PdfOcrOnnxTrProductEvent || @event is PdfOcrOutputTypeStatisticsEvent || @event is ConfirmEvent
+                if (@event is PdfOcrOnnxProductEvent || @event is PdfOcrOutputTypeStatisticsEvent || @event is ConfirmEvent
                     ) {
                     events.Add(@event);
                 }

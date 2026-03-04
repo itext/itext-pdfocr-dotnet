@@ -114,27 +114,27 @@ namespace iText.Pdfocr.Onnx {
                 this.sessionOptions = ortSessionCreator.Create();
             }
             catch (OnnxRuntimeException e) {
-                throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_INIT_SESSION_OPTIONS, e);
+                throw new PdfOcrException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_INIT_SESSION_OPTIONS, e);
             }
             try {
                 this.session = new InferenceSession(File.ReadAllBytes(modelPath), sessionOptions);
             }
             catch (Exception e) {
                 this.sessionOptions.Close();
-                throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_INIT_ONNX_RUNTIME_SESSION, e);
+                throw new PdfOcrException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_INIT_ONNX_RUNTIME_SESSION, e);
             }
             try {
                 this.inputName = ValidateModel(this.session, inputProperties, outputShape);
             }
             catch (Exception e) {
                 PdfOcrException userException = new PdfOcrException(
-                    PdfOcrOnnxTrExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION, e);
+                    PdfOcrOnnxExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION, e);
                 try {
                     this.session.Dispose();
                 }
                 catch (OnnxRuntimeException closeException) {
                     userException = new PdfOcrException(
-                        PdfOcrOnnxTrExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION + " " + e.Message, 
+                        PdfOcrOnnxExceptionMessageConstant.MODEL_DID_NOT_PASS_VALIDATION + " " + e.Message, 
                         closeException);
                 }
                 this.sessionOptions.Close();
@@ -168,7 +168,7 @@ namespace iText.Pdfocr.Onnx {
                     }
                 }
                 catch (OnnxRuntimeException e) {
-                    throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.ONNX_RUNTIME_OPERATION_FAILED, e);
+                    throw new PdfOcrException(PdfOcrOnnxExceptionMessageConstant.ONNX_RUNTIME_OPERATION_FAILED, e);
                 }
             }
         }
@@ -183,7 +183,7 @@ namespace iText.Pdfocr.Onnx {
                 sessionOptions.Close();
             }
             catch (OnnxRuntimeException e) {
-                throw new PdfOcrException(PdfOcrOnnxTrExceptionMessageConstant.FAILED_TO_CLOSE_ONNX_RUNTIME_SESSION, e);
+                throw new PdfOcrException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_CLOSE_ONNX_RUNTIME_SESSION, e);
             }
             closed = true;
         }
@@ -235,13 +235,13 @@ namespace iText.Pdfocr.Onnx {
         private static String ValidateModelInput(InferenceSession session, OnnxInputProperties properties) {
             IEnumerable<NodeMetadata> inputInfo = session.InputMetadata.Values;
             if (inputInfo.Count() != 1) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_INPUT_SIZE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_INPUT_SIZE
                     , inputInfo.Count()));
             }
             NodeMetadata inputNodeInfo = inputInfo.First();
             long[] inputShape = Array.ConvertAll(inputNodeInfo.Dimensions, item => (long)item);
             if (IsShapeIncompatible(properties.GetShape(), inputShape)) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_INPUT_SHAPE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_INPUT_SHAPE
                     , JavaUtil.ArraysToString(properties.GetShape()), JavaUtil.ArraysToString(inputShape)));
             }
             return session.InputNames.First();
@@ -250,14 +250,14 @@ namespace iText.Pdfocr.Onnx {
         private static void ValidateModelOutput(InferenceSession session, long[] expectedOutputShape) {
             IEnumerable<NodeMetadata> outputInfo = session.OutputMetadata.Values;
             if (outputInfo.Count() != 1) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_OUTPUT_SIZE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_OUTPUT_SIZE
                     , outputInfo.Count()));
             }
             NodeMetadata outputNodeInfo = outputInfo.First();
             
             int[] actualOutputShape = outputNodeInfo.Dimensions;
             if (IsShapeIncompatible(expectedOutputShape, Array.ConvertAll(actualOutputShape, item => (long)item))) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_OUTPUT_SHAPE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_OUTPUT_SHAPE
                     , JavaUtil.ArraysToString(expectedOutputShape), JavaUtil.ArraysToString(actualOutputShape)));
             }
         }

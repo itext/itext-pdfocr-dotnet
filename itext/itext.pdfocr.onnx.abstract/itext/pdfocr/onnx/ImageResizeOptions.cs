@@ -179,40 +179,40 @@ namespace iText.Pdfocr.Onnx {
             Objects.RequireNonNull(channelConfiguration);
             this.channelConfiguration = channelConfiguration;
             if (minWidth < 1) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MIN_WIDTH_SHOULD_BE_POSITIVE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MIN_WIDTH_SHOULD_BE_POSITIVE
                     , minWidth));
             }
             this.minWidth = minWidth;
             if (minHeight < 1) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MIN_HEIGHT_SHOULD_BE_POSITIVE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MIN_HEIGHT_SHOULD_BE_POSITIVE
                     , minHeight));
             }
             this.minHeight = minHeight;
             if (widthMultiple < 1) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.WIDTH_MULTIPLE_SHOULD_BE_POSITIVE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.WIDTH_MULTIPLE_SHOULD_BE_POSITIVE
                     , widthMultiple));
             }
             this.widthMultiple = widthMultiple;
             if (heightMultiple < 1) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE
                     , heightMultiple));
             }
             this.heightMultiple = heightMultiple;
             if (maxWidth < minWidth) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_WIDTH_SHOULD_NOT_BE_LESS_THAN_MIN
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_WIDTH_SHOULD_NOT_BE_LESS_THAN_MIN
                     , maxWidth));
             }
             if (maxWidth % widthMultiple != 0) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_WIDTH_SHOULD_BE_A_MULTIPLE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_WIDTH_SHOULD_BE_A_MULTIPLE
                     , widthMultiple, maxWidth));
             }
             this.maxWidth = maxWidth;
             if (maxHeight < minHeight) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_HEIGHT_SHOULD_NOT_BE_LESS_THAN_MIN
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_HEIGHT_SHOULD_NOT_BE_LESS_THAN_MIN
                     , maxHeight));
             }
             if (maxHeight % heightMultiple != 0) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_HEIGHT_SHOULD_BE_A_MULTIPLE
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_HEIGHT_SHOULD_BE_A_MULTIPLE
                     , heightMultiple, maxHeight));
             }
             this.maxHeight = maxHeight;

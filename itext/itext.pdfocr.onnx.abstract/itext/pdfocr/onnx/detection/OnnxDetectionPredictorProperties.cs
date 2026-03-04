@@ -762,7 +762,7 @@ namespace iText.Pdfocr.Onnx.Detection {
                 }
             }
             // Should not get here
-            throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
         private static PaddleOcrDetectionPostProcessor CreatePaddlePostProcessor(InferenceConfig config) {

@@ -65,7 +65,7 @@ namespace iText.Pdfocr.Onnx.Util {
                 IList<T> batch = batchIterator.Current;
                 batchResult = batchProcessor.ProcessBatch(batch);
                 if (batchResult == null || batchResult.Count != batch.Count) {
-                    throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.INVALID_NUMBER_OF_OUTPUTS);
+                    throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.INVALID_NUMBER_OF_OUTPUTS);
                 }
                 batchResultIndex = 0;
             }

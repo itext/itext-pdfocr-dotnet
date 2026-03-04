@@ -37,9 +37,9 @@ using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Onnx.Actions {
     [NUnit.Framework.Category("IntegrationTest")]
-    public class OnnxTrEventHandlingTest : IntegrationEventHandlingTestHelper {
+    public class OnnxEventHandlingTest : IntegrationEventHandlingTestHelper {
         private static readonly String DESTINATION_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory
-             + "/test/itext/pdfocr/onnx/actions/OnnxTrEventHandlingTest";
+             + "/test/itext/pdfocr/onnx/actions/OnnxEventHandlingTest";
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeTests() {
@@ -224,7 +224,7 @@ namespace iText.Pdfocr.Onnx.Actions {
             ValidatePdfProducerLine(outPdfFile.FullName, expectedProdLine);
         }
 
-        // Section with OnnxTrOcrEngine#doImageOcr related tests
+        // Section with OnnxOcrEngine#doImageOcr related tests
         [NUnit.Framework.Test]
         public virtual void DoImageOcrTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
@@ -260,7 +260,7 @@ namespace iText.Pdfocr.Onnx.Actions {
             ValidateConfirmEvent(eventsHandler.GetEvents()[3], usageEvent);
         }
 
-        // Section with OnnxTrOcrEngine#createTxtFile related tests
+        // Section with OnnxOcrEngine#createTxtFile related tests
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileTwoImagesTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
@@ -359,12 +359,12 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
-        public virtual void SetEventCountingOnnxTrMetaInfoTest() {
+        public virtual void SetEventCountingOnnxMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + " setEventCountingOnnxTrMetaInfo.pdf");
-            CreatePdfAndSetEventCountingMetaInfo(OCR_ENGINE, outPdfFile, imgFile, new OnnxTrEventHandlingTest.TestOnnxTrMetaInfo
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + " setEventCountingOnnxMetaInfo.pdf");
+            CreatePdfAndSetEventCountingMetaInfo(OCR_ENGINE, outPdfFile, imgFile, new OnnxEventHandlingTest.TestOnnxMetaInfo
                 ());
-            // TestOnnxTrMetaInfo from com.itextpdf.pdfocr.onnxtr package which
+            // TestOnnxMetaInfo from com.itextpdf.pdfocr.onnx package which
             // is registered in ContextManager, it's why core events are discarded
             NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
             IEvent ocrUsageEvent = eventsHandler.GetEvents()[0];
@@ -395,12 +395,12 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
-        public virtual void CreatePdfFileTestOnnxTrMetaInfoTest() {
+        public virtual void CreatePdfFileTestOnnxMetaInfoTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "createPdfFileTestOnnxTrMetaInfo.pdf");
-            CreatePdfFileAndSetMetaInfoToProps(OCR_ENGINE, outPdfFile, imgFile, new OnnxTrEventHandlingTest.TestOnnxTrMetaInfo
+            FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "createPdfFileTestOnnxMetaInfo.pdf");
+            CreatePdfFileAndSetMetaInfoToProps(OCR_ENGINE, outPdfFile, imgFile, new OnnxEventHandlingTest.TestOnnxMetaInfo
                 ());
-            // TestOnnxTrMetaInfo from com.itextpdf.pdfocr.onnxtr package which
+            // TestOnnxMetaInfo from com.itextpdf.pdfocr.onnx package which
             // is registered in ContextManager, it's why core events are discarded
             NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
             IEvent ocrUsageEvent = eventsHandler.GetEvents()[0];
@@ -416,7 +416,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         [NUnit.Framework.Test]
         public virtual void DoImageOcrCustomEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
-            OCR_ENGINE.DoImageOcr(imgFile, new OcrProcessContext(new OnnxTrEventHandlingTest.CustomEventHelper()));
+            OCR_ENGINE.DoImageOcr(imgFile, new OcrProcessContext(new OnnxEventHandlingTest.CustomEventHelper()));
             NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
@@ -428,7 +428,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         public virtual void CreateTxtFileCustomEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
             OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(DESTINATION_FOLDER + "createTxtFileCustomEventHelper.txt"
-                ), new OcrProcessContext(new OnnxTrEventHandlingTest.CustomEventHelper()));
+                ), new OcrProcessContext(new OnnxEventHandlingTest.CustomEventHelper()));
             NUnit.Framework.Assert.AreEqual(4, eventsHandler.GetEvents().Count);
             IEvent usageEvent1 = eventsHandler.GetEvents()[0];
             ValidateUsageEvent(usageEvent1, EventConfirmationType.ON_DEMAND);
@@ -531,7 +531,7 @@ namespace iText.Pdfocr.Onnx.Actions {
             }
         }
 
-        private class TestOnnxTrMetaInfo : IMetaInfo {
+        private class TestOnnxMetaInfo : IMetaInfo {
         }
     }
 }

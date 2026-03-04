@@ -43,7 +43,7 @@ namespace iText.Pdfocr.Onnx {
         public virtual void InitWithInvalidMinWidth() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 0, 10, 100, 100));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MIN_WIDTH_SHOULD_BE_POSITIVE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MIN_WIDTH_SHOULD_BE_POSITIVE
                 , 0), e.Message);
         }
 
@@ -51,7 +51,7 @@ namespace iText.Pdfocr.Onnx {
         public virtual void InitWithInvalidMinHeight() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 0, 100, 100));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MIN_HEIGHT_SHOULD_BE_POSITIVE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MIN_HEIGHT_SHOULD_BE_POSITIVE
                 , 0), e.Message);
         }
 
@@ -60,12 +60,12 @@ namespace iText.Pdfocr.Onnx {
             // max < min
             Exception e1 = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 10, 9, 100));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_WIDTH_SHOULD_NOT_BE_LESS_THAN_MIN
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_WIDTH_SHOULD_NOT_BE_LESS_THAN_MIN
                 , 9), e1.Message);
             // max not multiple
             Exception e2 = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 10, 99, 100, 10, 1, PaddingStrategy.BOTTOM_RIGHT_BLACK));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_WIDTH_SHOULD_BE_A_MULTIPLE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_WIDTH_SHOULD_BE_A_MULTIPLE
                 , 10, 99), e2.Message);
         }
 
@@ -74,12 +74,12 @@ namespace iText.Pdfocr.Onnx {
             // max < min
             Exception e1 = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 10, 100, 9));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_HEIGHT_SHOULD_NOT_BE_LESS_THAN_MIN
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_HEIGHT_SHOULD_NOT_BE_LESS_THAN_MIN
                 , 9), e1.Message);
             // max not multiple
             Exception e2 = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 10, 100, 99, 1, 10, PaddingStrategy.BOTTOM_RIGHT_BLACK));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.MAX_HEIGHT_SHOULD_BE_A_MULTIPLE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.MAX_HEIGHT_SHOULD_BE_A_MULTIPLE
                 , 10, 99), e2.Message);
         }
 
@@ -87,7 +87,7 @@ namespace iText.Pdfocr.Onnx {
         public virtual void InitWithInvalidWidthMultiple() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 10, 100, 100, 0, 10, PaddingStrategy.BOTTOM_RIGHT_BLACK));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.WIDTH_MULTIPLE_SHOULD_BE_POSITIVE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.WIDTH_MULTIPLE_SHOULD_BE_POSITIVE
                 , 0), e.Message);
         }
 
@@ -95,7 +95,7 @@ namespace iText.Pdfocr.Onnx {
         public virtual void InitWithInvalidHeightMultiple() {
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new ImageResizeOptions(ImageChannelConfiguration
                 .BGR, 10, 10, 100, 100, 10, 0, PaddingStrategy.BOTTOM_RIGHT_BLACK));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.HEIGHT_MULTIPLE_SHOULD_BE_POSITIVE
                 , 0), e.Message);
         }
 

@@ -25,20 +25,20 @@ using System;
 namespace iText.Pdfocr.Onnx {
     /// <summary>
     /// Properties that are used by the
-    /// <see cref="OnnxTrOcrEngine"/>.
+    /// <see cref="OnnxOcrEngine"/>.
     /// </summary>
-    public class OnnxTrEngineProperties {
+    public class OnnxEngineProperties {
         /// <summary>
         /// Creates a new
-        /// <see cref="OnnxTrEngineProperties"/>
+        /// <see cref="OnnxEngineProperties"/>
         /// instance.
         /// </summary>
-        public OnnxTrEngineProperties() {
+        public OnnxEngineProperties() {
         }
 
-        /// <summary>Defines the way text is retrieved and grouped from onnxtr engine output.</summary>
+        /// <summary>Defines the way text is retrieved and grouped from onnx engine output.</summary>
         /// <remarks>
-        /// Defines the way text is retrieved and grouped from onnxtr engine output.
+        /// Defines the way text is retrieved and grouped from onnx engine output.
         /// It changes the way text is selected in the result pdf document.
         /// Does not affect the result of
         /// <see cref="iText.Pdfocr.IOcrEngine.CreateTxtFile(System.Collections.Generic.IList{E}, System.IO.FileInfo)"
@@ -77,12 +77,11 @@ namespace iText.Pdfocr.Onnx {
         /// <param name="textPositioning">the way text is retrieved</param>
         /// <returns>
         /// the
-        /// <see cref="OnnxTrEngineProperties"/>
+        /// <see cref="OnnxEngineProperties"/>
         /// instance
         /// </returns>
         [System.ObsoleteAttribute(@"in favour of SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning)")]
-        public virtual iText.Pdfocr.Onnx.OnnxTrEngineProperties SetTextPositioning(TextPositioning textPositioning
-            ) {
+        public virtual iText.Pdfocr.Onnx.OnnxEngineProperties SetTextPositioning(TextPositioning textPositioning) {
             if (TextPositioning.BY_LINES.Equals(textPositioning)) {
                 this.textPositioning = iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS_AND_LINES;
             }
@@ -100,10 +99,10 @@ namespace iText.Pdfocr.Onnx {
         /// <param name="textPositioning">the way text is retrieved</param>
         /// <returns>
         /// the
-        /// <see cref="OnnxTrEngineProperties"/>
+        /// <see cref="OnnxEngineProperties"/>
         /// instance
         /// </returns>
-        public virtual iText.Pdfocr.Onnx.OnnxTrEngineProperties SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning
+        public virtual iText.Pdfocr.Onnx.OnnxEngineProperties SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning
              textPositioning) {
             this.textPositioning = textPositioning;
             return this;

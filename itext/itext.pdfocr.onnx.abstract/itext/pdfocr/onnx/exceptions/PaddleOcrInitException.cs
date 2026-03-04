@@ -43,7 +43,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// </summary>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException BoxTypeIsNotSupported() {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxTrExceptionMessageConstant.BOX_TYPE_IS_NOT_SUPPORTED
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxExceptionMessageConstant.BOX_TYPE_IS_NOT_SUPPORTED
                 );
         }
 
@@ -55,7 +55,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// </summary>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException ChannelFirstIsNotSupported() {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxTrExceptionMessageConstant.CHANNEL_FIRST_IS_NOT_SUPPORTED
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxExceptionMessageConstant.CHANNEL_FIRST_IS_NOT_SUPPORTED
                 );
         }
 
@@ -65,7 +65,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// </summary>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException ImageShapeIsNotSupported() {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxTrExceptionMessageConstant.IMAGE_SHAPE_IS_NOT_SUPPORTED
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxExceptionMessageConstant.IMAGE_SHAPE_IS_NOT_SUPPORTED
                 );
         }
 
@@ -77,7 +77,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException PreProcessorOperationMissing(String name
             ) {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant
                 .PRE_PROCESSOR_OPERATION_MISSING, name));
         }
 
@@ -87,7 +87,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// </summary>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException ScoreModeIsNotSupported() {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxTrExceptionMessageConstant.SCORE_MODE_IS_NOT_SUPPORTED
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxExceptionMessageConstant.SCORE_MODE_IS_NOT_SUPPORTED
                 );
         }
 
@@ -99,7 +99,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException UnexpectedMeanChannelCount(int expectedCount
             ) {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant
                 .UNEXPECTED_MEAN_CHANNEL_COUNT, expectedCount));
         }
 
@@ -110,7 +110,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// <param name="name">name of the post-processor that was found</param>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException UnexpectedPostProcessorType(String name) {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant
                 .UNEXPECTED_POST_PROCESSOR_TYPE, name));
         }
 
@@ -122,7 +122,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException UnexpectedStdChannelCount(int expectedCount
             ) {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant
                 .UNEXPECTED_STD_CHANNEL_COUNT, expectedCount));
         }
 
@@ -132,7 +132,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// </summary>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException UseDilationIsNotSupported() {
-            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxTrExceptionMessageConstant.USE_DILATION_IS_NOT_SUPPORTED
+            return new iText.Pdfocr.Onnx.Exceptions.PaddleOcrInitException(PdfOcrOnnxExceptionMessageConstant.USE_DILATION_IS_NOT_SUPPORTED
                 );
         }
     }

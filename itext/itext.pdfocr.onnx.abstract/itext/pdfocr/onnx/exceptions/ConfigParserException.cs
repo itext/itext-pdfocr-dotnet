@@ -44,7 +44,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// <param name="key">key under which the value is located</param>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.ConfigParserException UnexpectedValueForKey(String key) {
-            return new iText.Pdfocr.Onnx.Exceptions.ConfigParserException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant
+            return new iText.Pdfocr.Onnx.Exceptions.ConfigParserException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant
                 .UNEXPECTED_VALUE_FOR_CONFIG_KEY, key));
         }
 
@@ -55,7 +55,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
         /// <param name="key">key which was found</param>
         /// <returns>the created exception</returns>
         public static iText.Pdfocr.Onnx.Exceptions.ConfigParserException UnexpectedKey(String key) {
-            return new iText.Pdfocr.Onnx.Exceptions.ConfigParserException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant
+            return new iText.Pdfocr.Onnx.Exceptions.ConfigParserException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant
                 .UNEXPECTED_CONFIG_KEY, key));
         }
     }

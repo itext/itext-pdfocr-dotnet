@@ -24,7 +24,7 @@ using System;
 
 namespace iText.Pdfocr.Onnx.Exceptions {
     /// <summary>Class that bundles all the error message templates as constants.</summary>
-    public sealed class PdfOcrOnnxTrExceptionMessageConstant {
+    public sealed class PdfOcrOnnxExceptionMessageConstant {
         public const String BATCH_SIZE_SHOULD_BE_POSITIVE = "Target batch size should be positive.";
 
         public const String BOX_TYPE_IS_NOT_SUPPORTED = "Only `box_type: quad` is supported for DBPostProcess.";
@@ -133,7 +133,7 @@ namespace iText.Pdfocr.Onnx.Exceptions {
 
         public const String X_SHOULD_BE_IN_0_1_RANGE = "X should be in [0; 1] range.";
 
-        private PdfOcrOnnxTrExceptionMessageConstant() {
+        private PdfOcrOnnxExceptionMessageConstant() {
         }
         // Private constructor will prevent the instantiation of this class directly.
     }

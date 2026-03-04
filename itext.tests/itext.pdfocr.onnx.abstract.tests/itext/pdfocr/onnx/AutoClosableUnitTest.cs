@@ -44,7 +44,7 @@ namespace iText.Pdfocr.Onnx {
                 using (IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST)) {
                     using (IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16)) {
                         using (IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3)) {
-                            using (OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
+                            using (OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                                 )) {
                                 ocrEngine.IsTaggingSupported();
                             }
@@ -60,7 +60,7 @@ namespace iText.Pdfocr.Onnx {
             using (IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST)) {
                 using (IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16)) {
                     using (IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3)) {
-                        using (OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
+                        using (OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                             )) {
                             NUnit.Framework.Assert.DoesNotThrow(() => ocrEngine.Close());
                             NUnit.Framework.Assert.DoesNotThrow(() => ocrEngine.Close());

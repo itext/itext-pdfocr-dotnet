@@ -28,10 +28,10 @@ using iText.Commons.Actions.Sequence;
 using iText.Pdfocr.Onnx.Actions.Data;
 
 namespace iText.Pdfocr.Onnx.Actions.Events {
-    /// <summary>Class represents events registered in iText pdfOcr OnnxTr module.</summary>
-    public sealed class PdfOcrOnnxTrProductEvent : AbstractProductProcessITextEvent {
+    /// <summary>Class represents events registered in iText pdfOcr Onnx module.</summary>
+    public sealed class PdfOcrOnnxProductEvent : AbstractProductProcessITextEvent {
         /// <summary>Process image event type.</summary>
-        public const String PROCESS_IMAGE_ONNXTR = "process-image-onnxtr";
+        public const String PROCESS_IMAGE_ONNX = "process-image-onnxtr";
 
         private readonly String eventType;
 
@@ -40,20 +40,20 @@ namespace iText.Pdfocr.Onnx.Actions.Events {
         /// <param name="metaInfo">is an additional meta info</param>
         /// <param name="eventType">is a string description of the event</param>
         /// <param name="eventConfirmationType">is an event confirmation type</param>
-        private PdfOcrOnnxTrProductEvent(SequenceId sequenceId, IMetaInfo metaInfo, String eventType, EventConfirmationType
+        private PdfOcrOnnxProductEvent(SequenceId sequenceId, IMetaInfo metaInfo, String eventType, EventConfirmationType
              eventConfirmationType)
-            : base(sequenceId, PdfOcrOnnxTrProductData.GetInstance(), metaInfo, eventConfirmationType) {
+            : base(sequenceId, PdfOcrOnnxProductData.GetInstance(), metaInfo, eventConfirmationType) {
             this.eventType = eventType;
         }
 
-        /// <summary>Creates process-image-onnxtr event.</summary>
+        /// <summary>Creates process-image-onnx event.</summary>
         /// <param name="sequenceId">is an identifier associated with the event</param>
         /// <param name="metaInfo">is an additional meta info</param>
         /// <param name="eventConfirmationType">is an event confirmation type</param>
-        /// <returns>process-image-onnxtr event</returns>
-        public static iText.Pdfocr.Onnx.Actions.Events.PdfOcrOnnxTrProductEvent CreateProcessImageOnnxTrEvent(SequenceId
+        /// <returns>process-image-onnx event</returns>
+        public static iText.Pdfocr.Onnx.Actions.Events.PdfOcrOnnxProductEvent CreateProcessImageOnnxEvent(SequenceId
              sequenceId, IMetaInfo metaInfo, EventConfirmationType eventConfirmationType) {
-            return new iText.Pdfocr.Onnx.Actions.Events.PdfOcrOnnxTrProductEvent(sequenceId, metaInfo, PROCESS_IMAGE_ONNXTR
+            return new iText.Pdfocr.Onnx.Actions.Events.PdfOcrOnnxProductEvent(sequenceId, metaInfo, PROCESS_IMAGE_ONNX
                 , eventConfirmationType);
         }
 

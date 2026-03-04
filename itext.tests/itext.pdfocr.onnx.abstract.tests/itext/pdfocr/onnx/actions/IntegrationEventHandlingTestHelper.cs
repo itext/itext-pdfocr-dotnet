@@ -55,7 +55,7 @@ namespace iText.Pdfocr.Onnx.Actions {
 
         private static readonly String CRNNVGG16 = TEST_DIRECTORY + "models/crnn_vgg16_bn-662979cc.onnx";
 
-        protected internal static OnnxTrOcrEngine OCR_ENGINE;
+        protected internal static OnnxOcrEngine OCR_ENGINE;
 
         protected internal IntegrationEventHandlingTestHelper.StoreEventsHandler eventsHandler;
 
@@ -64,7 +64,7 @@ namespace iText.Pdfocr.Onnx.Actions {
             // init ocr engine
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
         [NUnit.Framework.OneTimeTearDown]
@@ -87,12 +87,12 @@ namespace iText.Pdfocr.Onnx.Actions {
 
         protected internal static void ValidateUsageEvent(IEvent @event, EventConfirmationType expectedConfirmationType
             ) {
-            NUnit.Framework.Assert.IsTrue(@event is PdfOcrOnnxTrProductEvent);
-            NUnit.Framework.Assert.AreEqual("process-image-onnxtr", ((PdfOcrOnnxTrProductEvent)@event).GetEventType());
-            NUnit.Framework.Assert.AreEqual(expectedConfirmationType, ((PdfOcrOnnxTrProductEvent)@event).GetConfirmationType
+            NUnit.Framework.Assert.IsTrue(@event is PdfOcrOnnxProductEvent);
+            NUnit.Framework.Assert.AreEqual("process-image-onnxtr", ((PdfOcrOnnxProductEvent)@event).GetEventType());
+            NUnit.Framework.Assert.AreEqual(expectedConfirmationType, ((PdfOcrOnnxProductEvent)@event).GetConfirmationType
                 ());
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrProductData.GetInstance(), ((PdfOcrOnnxTrProductEvent)@event).
-                GetProductData());
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxProductData.GetInstance(), ((PdfOcrOnnxProductEvent)@event).GetProductData
+                ());
         }
 
         protected internal static void ValidateConfirmEvent(IEvent @event, IEvent expectedConfirmedEvent) {
@@ -121,8 +121,8 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         protected internal static ConfirmedEventWrapper GetPdfOcrEvent() {
-            PdfOcrOnnxTrProductEvent @event = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(new SequenceId(), 
-                null, EventConfirmationType.ON_CLOSE);
+            PdfOcrOnnxProductEvent @event = PdfOcrOnnxProductEvent.CreateProcessImageOnnxEvent(new SequenceId(), null, 
+                EventConfirmationType.ON_CLOSE);
             DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_OCR_ONNXTR
                 );
             return new ConfirmedEventWrapper(@event, processor.GetUsageType(), processor.GetProducer());
@@ -193,7 +193,7 @@ namespace iText.Pdfocr.Onnx.Actions {
             }
 
             public virtual void OnEvent(IEvent @event) {
-                if (@event is PdfOcrOnnxTrProductEvent || @event is PdfOcrOutputTypeStatisticsEvent || @event is ConfirmEvent
+                if (@event is PdfOcrOnnxProductEvent || @event is PdfOcrOutputTypeStatisticsEvent || @event is ConfirmEvent
                     ) {
                     events.Add(@event);
                 }

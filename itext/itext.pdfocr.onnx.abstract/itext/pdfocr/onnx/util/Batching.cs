@@ -39,7 +39,7 @@ namespace iText.Pdfocr.Onnx.Util {
         public static IEnumerator<IList<E>> Wrap<E>(IEnumerator<E> iterator, int batchSize) {
             Objects.RequireNonNull(iterator);
             if (batchSize <= 0) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE);
             }
 
             while (true) {

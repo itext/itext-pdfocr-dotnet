@@ -35,7 +35,7 @@ namespace iText.Pdfocr.Onnx {
             long[] shape = new long[] { 2, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
                 std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
                 , 3), e.Message);
         }
 
@@ -46,7 +46,7 @@ namespace iText.Pdfocr.Onnx {
             long[] shape = new long[] { 2, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
                 std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
                 , 3), e.Message);
         }
 
@@ -57,7 +57,7 @@ namespace iText.Pdfocr.Onnx {
             long[] shape = new long[] { 2, 3, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
                 std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
                 , 4), e.Message);
         }
 
@@ -68,7 +68,7 @@ namespace iText.Pdfocr.Onnx {
             long[] shape = new long[] { 2, 4, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
                 std, shape, true));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB, e.Message);
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB, e.Message);
         }
 
         [NUnit.Framework.Test]
@@ -78,7 +78,7 @@ namespace iText.Pdfocr.Onnx {
             long[] shape = new long[] { -2, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
                 std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
                 , -2), e.Message);
         }
 
@@ -96,7 +96,7 @@ namespace iText.Pdfocr.Onnx {
             // invalid size
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(resizeOptions
                 , new float[] { 0.3F, 0.4F, 0.5F, 0.6F }, new float[] { 1F, 2F, 3F }));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
                 , resizeOptions.GetChannelConfiguration().GetChannelCount()), e.Message);
         }
 
@@ -109,7 +109,7 @@ namespace iText.Pdfocr.Onnx {
             // invalid size
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(resizeOptions
                 , new float[] { 0.3F, 0.4F, 0.5F }, new float[] { 1F, 2F }));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
                 , resizeOptions.GetChannelConfiguration().GetChannelCount()), e.Message);
         }
 
@@ -118,7 +118,7 @@ namespace iText.Pdfocr.Onnx {
             ImageResizeOptions resizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 800, 600);
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(resizeOptions
                 , 0));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE, e.Message
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.BATCH_SIZE_SHOULD_BE_POSITIVE, e.Message
                 );
         }
 

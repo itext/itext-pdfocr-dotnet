@@ -27,12 +27,12 @@ namespace iText.Pdfocr.Onnx.Actions.Data {
     /// <summary>
     /// Stores an instance of
     /// <see cref="iText.Commons.Actions.Data.ProductData"/>
-    /// related to iText pdfOcr OnnxTr module.
+    /// related to iText pdfOcr Onnx module.
     /// </summary>
-    public sealed class PdfOcrOnnxTrProductData {
-        private const String PDF_OCR_ONNXTR_PRODUCT_NAME = "pdfOcr-onnxtr";
+    public sealed class PdfOcrOnnxProductData {
+        private const String PDF_OCR_ONNX_PRODUCT_NAME = "pdfOcr-onnxtr";
 
-        private const String PDF_OCR_ONNXTR_PUBLIC_PRODUCT_NAME = "pdfOCR-OnnxTR";
+        private const String PDF_OCR_ONNX_PUBLIC_PRODUCT_NAME = "pdfOCR-OnnxTR";
 
         private const String PDF_OCR_VERSION = "5.0.0-SNAPSHOT";
 
@@ -40,21 +40,21 @@ namespace iText.Pdfocr.Onnx.Actions.Data {
 
         private const int PDF_OCR_COPYRIGHT_TO = 2026;
 
-        private static readonly ProductData PDF_OCR_ONNXTR_PRODUCT_DATA = new ProductData(PDF_OCR_ONNXTR_PUBLIC_PRODUCT_NAME
-            , PDF_OCR_ONNXTR_PRODUCT_NAME, PDF_OCR_VERSION, PDF_OCR_COPYRIGHT_SINCE, PDF_OCR_COPYRIGHT_TO);
+        private static readonly ProductData PDF_OCR_ONNX_PRODUCT_DATA = new ProductData(PDF_OCR_ONNX_PUBLIC_PRODUCT_NAME
+            , PDF_OCR_ONNX_PRODUCT_NAME, PDF_OCR_VERSION, PDF_OCR_COPYRIGHT_SINCE, PDF_OCR_COPYRIGHT_TO);
 
-        private PdfOcrOnnxTrProductData() {
+        private PdfOcrOnnxProductData() {
         }
 
         // do nothing
         /// <summary>
         /// Getter for an instance of
         /// <see cref="iText.Commons.Actions.Data.ProductData"/>
-        /// related to iText pdfOcr OnnxTr module.
+        /// related to iText pdfOcr Onnx module.
         /// </summary>
-        /// <returns>iText pdfOcr OnnxTr product description</returns>
+        /// <returns>iText pdfOcr Onnx product description</returns>
         public static ProductData GetInstance() {
-            return PDF_OCR_ONNXTR_PRODUCT_DATA;
+            return PDF_OCR_ONNX_PRODUCT_DATA;
         }
     }
 }

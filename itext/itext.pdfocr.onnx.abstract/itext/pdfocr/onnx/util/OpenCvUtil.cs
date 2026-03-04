@@ -40,7 +40,7 @@ namespace iText.Pdfocr.Onnx.Util {
         /// <returns>binarized version of the MD-array as an OpenCV Mat</returns>
         public static Mat BinarizeMdArray(FloatBufferMdArray hwMdArray, float threshold) {
             if (hwMdArray.GetDimensionCount() != 2) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.HW_ARRAY_SHOULD_BE_TWO_DIMENSIONAL);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.HW_ARRAY_SHOULD_BE_TWO_DIMENSIONAL);
             }
             int height = hwMdArray.GetDimension(0);
             int width = hwMdArray.GetDimension(1);

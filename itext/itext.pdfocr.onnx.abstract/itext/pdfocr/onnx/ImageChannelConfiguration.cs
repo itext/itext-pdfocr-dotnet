@@ -54,7 +54,7 @@ namespace iText.Pdfocr.Onnx {
                 }
             }
             // Should not get here
-            throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
         /// <summary>Returns the index of the red channel in the resulting ML input buffer.</summary>
@@ -69,7 +69,7 @@ namespace iText.Pdfocr.Onnx {
                 }
             }
             // Should not get here
-            throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
         /// <summary>Returns the index of the green channel in the resulting ML input buffer.</summary>
@@ -84,7 +84,7 @@ namespace iText.Pdfocr.Onnx {
                 }
             }
             // Should not get here
-            throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
         /// <summary>Returns the index of the blue channel in the resulting ML input buffer.</summary>
@@ -99,7 +99,7 @@ namespace iText.Pdfocr.Onnx {
                 }
             }
             // Should not get here
-            throw new InvalidOperationException(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
+            throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
     }
 }

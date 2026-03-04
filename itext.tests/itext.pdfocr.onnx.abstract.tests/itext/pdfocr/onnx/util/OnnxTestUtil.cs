@@ -20,24 +20,24 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Commons.Actions.Confirmations;
-using iText.Commons.Actions.Sequence;
-using iText.Pdfocr.Onnx.Actions.Data;
-using iText.Test;
+using OpenCvSharp;
 
-namespace iText.Pdfocr.Onnx.Actions.Events {
-    [NUnit.Framework.Category("UnitTest")]
-    public class PdfOcrOnnxTrProductEventTest : ExtendedITextTest {
-        [NUnit.Framework.Test]
-        public virtual void EventTypeTest() {
-            PdfOcrOnnxTrProductEvent e = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(new SequenceId(), null
-                , EventConfirmationType.ON_DEMAND);
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxTrProductEvent.PROCESS_IMAGE_ONNXTR, e.GetEventType());
+namespace iText.Pdfocr.Onnx.Util {
+//\cond DO_NOT_DOCUMENT
+    internal class OnnxTestUtil {
+//\cond DO_NOT_DOCUMENT
+        internal static void TestNormalizeRotatedRect(float originalAngle, float newWidth, float newHeight, float 
+            newAngle) { 
+            Point2f center = new Point2f(0, 0);
+            Size2f size = new Size2f(5, 10);
+            RotatedRect rect = new RotatedRect(center, size, originalAngle);
+            RotatedRect newRect = OpenCvUtil.NormalizeRotatedRect(rect);
+            Size2f newSize = newRect.Size;
+            NUnit.Framework.Assert.AreEqual(newWidth, newSize.Width, 1e-6);
+            NUnit.Framework.Assert.AreEqual(newHeight, newSize.Height, 1e-6);
+            NUnit.Framework.Assert.AreEqual(newAngle, newRect.Angle, 1e-6);
         }
-
-        [NUnit.Framework.Test]
-        public virtual void ProductDataNameTest() {
-            NUnit.Framework.Assert.AreEqual("pdfOcr-onnxtr", PdfOcrOnnxTrProductData.GetInstance().GetProductName());
-        }
+//\endcond
     }
+//\endcond
 }

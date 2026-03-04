@@ -85,7 +85,7 @@ namespace iText.Pdfocr.Onnx.Orientation {
                 }
 
                 default: {
-                    throw new IndexOutOfRangeException(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
+                    throw new IndexOutOfRangeException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.INDEX_OUT_OF_BOUNDS
                         , index));
                 }
             }

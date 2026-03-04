@@ -30,21 +30,21 @@ using iText.Pdfocr.Onnx.Actions.Events;
 namespace iText.Pdfocr.Onnx {
 //\cond DO_NOT_DOCUMENT
     /// <summary>Helper class for working with events.</summary>
-    internal sealed class OnnxTrFileResultEventHelper : AbstractPdfOcrEventHelper {
+    internal sealed class OnnxFileResultEventHelper : AbstractPdfOcrEventHelper {
         private readonly AbstractPdfOcrEventHelper wrappedEventHelper;
 
         private readonly IList<ConfirmEvent> events;
 
 //\cond DO_NOT_DOCUMENT
-        internal OnnxTrFileResultEventHelper(AbstractPdfOcrEventHelper wrappedEventHelper) {
-            this.wrappedEventHelper = wrappedEventHelper == null ? new OnnxTrEventHelper() : wrappedEventHelper;
+        internal OnnxFileResultEventHelper(AbstractPdfOcrEventHelper wrappedEventHelper) {
+            this.wrappedEventHelper = wrappedEventHelper == null ? new OnnxEventHelper() : wrappedEventHelper;
             this.events = new List<ConfirmEvent>();
         }
 //\endcond
 
         /// <summary><inheritDoc/></summary>
         public override void OnEvent(AbstractProductITextEvent @event) {
-            if (IsConfirmForProcessImageOnnxTrEvent(@event)) {
+            if (IsConfirmForProcessImageOnnxEvent(@event)) {
                 events.Add((ConfirmEvent)@event);
             }
             else {
@@ -72,10 +72,9 @@ namespace iText.Pdfocr.Onnx {
             }
         }
 
-        private static bool IsConfirmForProcessImageOnnxTrEvent(AbstractProductITextEvent @event) {
-            return @event is ConfirmEvent && ((ConfirmEvent)@event).GetConfirmedEvent() is PdfOcrOnnxTrProductEvent &&
-                 PdfOcrOnnxTrProductEvent.PROCESS_IMAGE_ONNXTR.Equals(((ConfirmEvent)@event).GetConfirmedEvent().GetEventType
-                ());
+        private static bool IsConfirmForProcessImageOnnxEvent(AbstractProductITextEvent @event) {
+            return @event is ConfirmEvent && ((ConfirmEvent)@event).GetConfirmedEvent() is PdfOcrOnnxProductEvent && PdfOcrOnnxProductEvent
+                .PROCESS_IMAGE_ONNX.Equals(((ConfirmEvent)@event).GetConfirmedEvent().GetEventType());
         }
     }
 //\endcond

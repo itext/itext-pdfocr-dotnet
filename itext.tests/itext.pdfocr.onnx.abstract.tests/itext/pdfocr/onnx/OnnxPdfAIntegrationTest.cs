@@ -33,15 +33,15 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
-    public class OnnxTRPdfAIntegrationTest : ExtendedITextTest {
+    public class OnnxPdfAIntegrationTest : ExtendedITextTest {
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxTRPdfAIntegrationTest/";
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxPdfAIntegrationTest/";
 
         private static readonly String TEST_IMAGE_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/images/";
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
-             + "/test/resources/itext/pdfocr/OnnxTRPdfAIntegrationTest/";
+             + "/test/resources/itext/pdfocr/OnnxPdfAIntegrationTest/";
 
         private static readonly String COLOR_PROFILE_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/profiles/";
@@ -52,14 +52,14 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String CRNNVGG16 = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/crnn_vgg16_bn-662979cc.onnx";
 
-        private static OnnxTrOcrEngine OCR_ENGINE;
+        private static OnnxOcrEngine OCR_ENGINE;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
         }
 
         [NUnit.Framework.OneTimeTearDown]

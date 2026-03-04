@@ -58,7 +58,7 @@ namespace iText.Pdfocr.Onnx {
             // Let's use multilang here though it doesn't support cyrillic
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG, Vocabulary.LATIN_EXTENDED
                 , 0);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("Heẞpocerw\nV\nWX\n8.1m9me\nha\nXM3HL\n4eJTObeka\n", textFromImage);
             ocrEngine.Close();
@@ -70,7 +70,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("13\n-\nA\n6\nSta:as)\n9\n4at\n-\nlive,\nlaugh,\nlove\n", textFromImage);
             ocrEngine.Close();
@@ -82,7 +82,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("Ayssell\nRalll\n", textFromImage);
             ocrEngine.Close();
@@ -94,7 +94,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("3(51T\nT(3T\n", textFromImage);
             ocrEngine.Close();
@@ -106,7 +106,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("I\nK/i\n4\n-\n-\nnI\nhao\n", textFromImage);
             ocrEngine.Close();
@@ -118,7 +118,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("This\n1S\na\ntest\nmessage\n-./:\nfor\nOCR\nScanner\nTest\nBMPTest\n", textFromImage
                 );
@@ -131,7 +131,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("RESTEZ\nCALME\nET\nPARLEZ\nEN\nFRANÇAIS\n", textFromImage);
             ocrEngine.Close();
@@ -143,7 +143,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("03960000\nL\n", textFromImage);
             ocrEngine.Close();
@@ -155,7 +155,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("Das\nGeheimnis\ndes\nKònnens\nliegt\nim\nWollen.\n", textFromImage);
             ocrEngine.Close();
@@ -167,7 +167,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("-\n0)\nP\nV\n-\nE\nO\nN\n-\nM\nC\nA\nC)\nI\nI\nA\n2\n$\n7156W5\n$\nxabouxns\n2\n/\n74\nCTOS02u275\n2\n/\nEXX2MG10\n$\ndycGuxns.\n2\n"
                 , textFromImage);
@@ -180,7 +180,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("o\n-\nG\ntTT\nBeas\n", textFromImage);
             ocrEngine.Close();
@@ -192,7 +192,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("dloich\nSloiai\nHindi\n", textFromImage);
             ocrEngine.Close();
@@ -204,7 +204,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("QUANTITY\nDESCRIPTION\nUNIT\nPRICE\nTOTAL\n10\nLasers\n$3000\n$30000\n2\nBand-Aids\n$1\n$2\n5\ndunnasi?\n$99999\n$499995\n"
                 , textFromImage);
@@ -217,7 +217,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("B\n-\n*\naa\n-\na\nK\n*\n-\n", textFromImage);
             ocrEngine.Close();
@@ -229,7 +229,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("The\n(quick)\n[brown]\n{fox}\njumps!\nOver\nthe\n$43,456.78\n<lazy>\n" + 
                 "#90\ndog\n&\nduck/goose,\nas\n12.5%\nof\nE-mai\nfrom\naspammer\n@website.com\nis\nspam.\nDer\n" + "schnelle\n\"J\nbraune\nFuchs\nspringt\nüber\nden\nfaulen\nHund.\nLe\nrenard\nbrun\n<rapide>\nsaute\n"
@@ -245,7 +245,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("Aquí\nhablamos\nespañol\n", textFromImage);
             ocrEngine.Close();
@@ -257,7 +257,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.AreEqual("3581981\n1\n19n8\nA\nA\nI\na\n&\n1\n1900879191497907597\n15790707047005\n19n8\n"
                 , textFromImage, textFromImage);
@@ -270,7 +270,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.IsTrue(textFromImage.Contains("unriounfonsooniduslumusulusn\n"));
             ocrEngine.Close();
@@ -282,7 +282,7 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OnnxTrOcrEngine ocrEngine = new OnnxTrOcrEngine(detectionPredictor, recognitionPredictor);
+            OnnxOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, ocrEngine);
             NUnit.Framework.Assert.IsTrue(textFromImage.Contains("snlritan\n" +
             "WwunnlASMElJNOunalnuar\n" +

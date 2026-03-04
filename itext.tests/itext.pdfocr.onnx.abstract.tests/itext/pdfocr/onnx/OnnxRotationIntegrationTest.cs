@@ -34,15 +34,15 @@ using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
-    public class OnnxTRRotationIntegrationTest : ExtendedITextTest {
+    public class OnnxRotationIntegrationTest : ExtendedITextTest {
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxTRRotationIntegrationTest/";
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxRotationIntegrationTest/";
 
         private static readonly String TEST_IMAGE_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/images/";
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
-             + "/test/resources/itext/pdfocr/OnnxTRRotationIntegrationTest/";
+             + "/test/resources/itext/pdfocr/OnnxRotationIntegrationTest/";
 
         private static readonly String FAST = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
@@ -53,9 +53,9 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String MOBILENETV3 = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
 
-        private static OnnxTrOcrEngine OCR_ENGINE;
+        private static OnnxOcrEngine OCR_ENGINE;
 
-        private static OnnxTrOcrEngine OCR_ENGINE_GROUPING_BY_LINES;
+        private static OnnxOcrEngine OCR_ENGINE_GROUPING_BY_LINES;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
@@ -63,9 +63,9 @@ namespace iText.Pdfocr.Onnx {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            OCR_ENGINE = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor, 
-                new OnnxTrEngineProperties().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
-            OCR_ENGINE_GROUPING_BY_LINES = new OnnxTrOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor, 
+                new OnnxEngineProperties().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
+            OCR_ENGINE_GROUPING_BY_LINES = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
         }
 

@@ -19,7 +19,7 @@ namespace iText.Pdfocr.Onnx {
 //\cond DO_NOT_DOCUMENT
     /// <summary>Class containing OCRing methods adapted from <a href="https://github.com/felixdittrich92/onnxtr">OnnxTR</a>.
     ///     </summary>
-    internal class OnnxTrProcessor {
+    internal class OnnxProcessor {
         /// <summary>Image pixel to PDF point ratio.</summary>
         private const float PX_TO_PT = 0.75F;
 
@@ -40,8 +40,8 @@ namespace iText.Pdfocr.Onnx {
         private readonly IRecognitionPredictor recognitionPredictor;
 
 //\cond DO_NOT_DOCUMENT
-        internal OnnxTrProcessor(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor
-            , IRecognitionPredictor recognitionPredictor) {
+        internal OnnxProcessor(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor, 
+            IRecognitionPredictor recognitionPredictor) {
             this.detectionPredictor = detectionPredictor;
             this.orientationPredictor = orientationPredictor;
             this.recognitionPredictor = recognitionPredictor;
@@ -55,10 +55,10 @@ namespace iText.Pdfocr.Onnx {
             int imageIndex = 0;
             IEnumerator<IList<iText.Kernel.Geom.Point[]>> textBoxGenerator = detectionPredictor.Predict(images);
             while (textBoxGenerator.MoveNext()) {
-                AbstractPdfOcrEventHelper eventHelper = ocrProcessContext.GetOcrEventHelper() == null ? new OnnxTrEventHelper
+                AbstractPdfOcrEventHelper eventHelper = ocrProcessContext.GetOcrEventHelper() == null ? new OnnxEventHelper
                     () : ocrProcessContext.GetOcrEventHelper();
                 // Usage event.
-                PdfOcrOnnxTrProductEvent @event = PdfOcrOnnxTrProductEvent.CreateProcessImageOnnxTrEvent(eventHelper.GetSequenceId
+                PdfOcrOnnxProductEvent @event = PdfOcrOnnxProductEvent.CreateProcessImageOnnxEvent(eventHelper.GetSequenceId
                     (), null, eventHelper.GetConfirmationType());
                 eventHelper.OnEvent(@event);
                 /*

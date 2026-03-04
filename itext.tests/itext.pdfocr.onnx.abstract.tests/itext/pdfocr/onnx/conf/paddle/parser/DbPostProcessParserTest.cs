@@ -66,7 +66,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put(field, "invalid_value");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => DbPostProcessParser.Parse
                 (mapping, "PostProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PostProcess." + field), ex.Message);
         }
     }

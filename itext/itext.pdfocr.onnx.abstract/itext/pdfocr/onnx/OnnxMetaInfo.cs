@@ -20,24 +20,11 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using OpenCvSharp;
+using iText.Commons.Actions.Contexts;
 
-namespace iText.Pdfocr.Onnx.Util {
+namespace iText.Pdfocr.Onnx {
 //\cond DO_NOT_DOCUMENT
-    internal class OnnxTRTestUtil {
-//\cond DO_NOT_DOCUMENT
-        internal static void TestNormalizeRotatedRect(float originalAngle, float newWidth, float newHeight, float 
-            newAngle) { 
-            Point2f center = new Point2f(0, 0);
-            Size2f size = new Size2f(5, 10);
-            RotatedRect rect = new RotatedRect(center, size, originalAngle);
-            RotatedRect newRect = OpenCvUtil.NormalizeRotatedRect(rect);
-            Size2f newSize = newRect.Size;
-            NUnit.Framework.Assert.AreEqual(newWidth, newSize.Width, 1e-6);
-            NUnit.Framework.Assert.AreEqual(newHeight, newSize.Height, 1e-6);
-            NUnit.Framework.Assert.AreEqual(newAngle, newRect.Angle, 1e-6);
-        }
-//\endcond
+    internal sealed class OnnxMetaInfo : IMetaInfo {
     }
 //\endcond
 }

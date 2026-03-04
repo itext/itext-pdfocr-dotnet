@@ -36,7 +36,7 @@ namespace iText.Pdfocr.Onnx.Util {
         public static int Argmax(float[] values) {
             Objects.RequireNonNull(values);
             if (values.Length == 0) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.VALUES_SHOULD_BE_A_NON_EMPTY_ARRAY);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.VALUES_SHOULD_BE_A_NON_EMPTY_ARRAY);
             }
             float resultValue = float.NegativeInfinity;
             int resultIndex = 0;
@@ -103,7 +103,7 @@ namespace iText.Pdfocr.Onnx.Util {
             if (x == 1F) {
                 return float.PositiveInfinity;
             }
-            throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.X_SHOULD_BE_IN_0_1_RANGE);
+            throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.X_SHOULD_BE_IN_0_1_RANGE);
         }
 
         /// <summary>Computes the logit function, which is the inverse of expit, for the given input.</summary>
@@ -146,7 +146,7 @@ namespace iText.Pdfocr.Onnx.Util {
         /// </returns>
         public static double Clamp(double value, double min, double max) {
             if (max < min) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.MAX_SHOULD_NOT_BE_LESS_THAN_MIN);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.MAX_SHOULD_NOT_BE_LESS_THAN_MIN);
             }
             return Math.Min(max, Math.Max(value, min));
         }

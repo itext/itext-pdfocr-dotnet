@@ -46,7 +46,7 @@ namespace iText.Pdfocr.Onnx.Conf.Paddle.Parser {
             mapping.Put("character_dict", "random string");
             Exception ex = NUnit.Framework.Assert.Catch(typeof(ConfigParserException), () => CtcLabelDecodeParser.Parse
                 (mapping, "PostProcess"));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxTrExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_VALUE_FOR_CONFIG_KEY
                 , "PostProcess.character_dict"), ex.Message);
         }
     }

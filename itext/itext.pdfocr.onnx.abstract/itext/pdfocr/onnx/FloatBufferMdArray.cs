@@ -51,10 +51,10 @@ namespace iText.Pdfocr.Onnx {
             Objects.RequireNonNull(data);
             Objects.RequireNonNull(shape);
             if (!ValidateShape(shape)) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.SHAPE_IS_NOT_VALID);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.SHAPE_IS_NOT_VALID);
             }
             if (data.Length != ElementCount(shape)) {
-                throw new ArgumentException(PdfOcrOnnxTrExceptionMessageConstant.ELEM_COUNT_DOES_NOT_MATCH_SHAPE);
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.ELEM_COUNT_DOES_NOT_MATCH_SHAPE);
             }
             this.data = data;
             this.shape = (long[])shape.Clone();
@@ -189,7 +189,7 @@ namespace iText.Pdfocr.Onnx {
             foreach (long l in shape) {
                 if (l < 0L) {
                     throw new ArgumentException(MessageFormatUtil.Format(
-                        PdfOcrOnnxTrExceptionMessageConstant.NEGATIVE_VALUE_IN_SHAPE, shape));
+                        PdfOcrOnnxExceptionMessageConstant.NEGATIVE_VALUE_IN_SHAPE, shape));
                 }
                 count *= l;
             }

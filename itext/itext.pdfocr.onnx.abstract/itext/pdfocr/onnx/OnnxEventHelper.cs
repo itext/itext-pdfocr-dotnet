@@ -28,9 +28,9 @@ using iText.Pdfocr;
 namespace iText.Pdfocr.Onnx {
 //\cond DO_NOT_DOCUMENT
     /// <summary>Helper class for working with events.</summary>
-    internal sealed class OnnxTrEventHelper : AbstractPdfOcrEventHelper {
+    internal sealed class OnnxEventHelper : AbstractPdfOcrEventHelper {
 //\cond DO_NOT_DOCUMENT
-        internal OnnxTrEventHelper() {
+        internal OnnxEventHelper() {
         }
 //\endcond
 

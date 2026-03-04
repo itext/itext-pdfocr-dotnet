@@ -20,11 +20,24 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Commons.Actions.Contexts;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Actions.Sequence;
+using iText.Pdfocr.Onnx.Actions.Data;
+using iText.Test;
 
-namespace iText.Pdfocr.Onnx {
-//\cond DO_NOT_DOCUMENT
-    internal sealed class OnnxTrMetaInfo : IMetaInfo {
+namespace iText.Pdfocr.Onnx.Actions.Events {
+    [NUnit.Framework.Category("UnitTest")]
+    public class PdfOcrOnnxProductEventTest : ExtendedITextTest {
+        [NUnit.Framework.Test]
+        public virtual void EventTypeTest() {
+            PdfOcrOnnxProductEvent e = PdfOcrOnnxProductEvent.CreateProcessImageOnnxEvent(new SequenceId(), null, EventConfirmationType
+                .ON_DEMAND);
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxProductEvent.PROCESS_IMAGE_ONNX, e.GetEventType());
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void ProductDataNameTest() {
+            NUnit.Framework.Assert.AreEqual("pdfOcr-onnxtr", PdfOcrOnnxProductData.GetInstance().GetProductName());
+        }
     }
-//\endcond
 }

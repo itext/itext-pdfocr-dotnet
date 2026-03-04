@@ -64,20 +64,20 @@ namespace iText.Pdfocr.Onnx.Text {
             iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning("DocTR_BY_WORDS_AND_LINES", () => CreateDocTrEngine
             (iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS_AND_LINES));
 
-        public volatile OnnxTrOcrEngine instance;
+        public volatile OnnxOcrEngine instance;
 
         private readonly String displayName;
 
-        private readonly Func<OnnxTrOcrEngine> supplier;
+        private readonly Func<OnnxOcrEngine> supplier;
 
 //\cond DO_NOT_DOCUMENT
-        internal OcrEngineTypeWithTextPositioning(String displayName, Func<OnnxTrOcrEngine> supplier) {
+        internal OcrEngineTypeWithTextPositioning(String displayName, Func<OnnxOcrEngine> supplier) {
             this.displayName = displayName;
             this.supplier = supplier;
         }
 //\endcond
 
-        public OnnxTrOcrEngine Get() {
+        public OnnxOcrEngine Get() {
             if (this.instance == null) {
                 lock (this) {
                     if (this.instance == null) {
@@ -113,8 +113,7 @@ namespace iText.Pdfocr.Onnx.Text {
 
         private static IRecognitionPredictor docTrRecognitionPredictor;
 
-        private static OnnxTrOcrEngine CreatePaddleOcrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning
-            ) {
+        private static OnnxOcrEngine CreatePaddleOcrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning) {
             try {
                 if (iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.paddleDetectionPredictor == null) {
                     iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.paddleDetectionPredictor = OnnxDetectionPredictor.
@@ -128,12 +127,12 @@ namespace iText.Pdfocr.Onnx.Text {
             catch (System.IO.IOException e) {
                 throw new Exception(e.Message, e);
             }
-            return new OnnxTrOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.paddleDetectionPredictor
-                , null, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.paddleRecognitionPredictor, new OnnxTrEngineProperties
+            return new OnnxOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.paddleDetectionPredictor, 
+                null, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.paddleRecognitionPredictor, new OnnxEngineProperties
                 ().SetTextPositioning(textPositioning));
         }
 
-        private static OnnxTrOcrEngine CreateEasyOcrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning) {
+        private static OnnxOcrEngine CreateEasyOcrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning) {
             if (iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor == null) {
                 iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor = OnnxDetectionPredictor.EasyOcr
                     (ModelPaths.GetEasyOcrDetectionModel());
@@ -142,12 +141,12 @@ namespace iText.Pdfocr.Onnx.Text {
                 iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyRecognitionPredictor = OnnxRecognitionPredictor
                     .EasyOcr(ModelPaths.GetEasyOcrRecognitionModel(), EasyOcrMapper.LATIN_G2);
             }
-            return new OnnxTrOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor, 
-                null, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyRecognitionPredictor, new OnnxTrEngineProperties
+            return new OnnxOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor, null
+                , iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyRecognitionPredictor, new OnnxEngineProperties
                 ().SetTextPositioning(textPositioning));
         }
 
-        private static OnnxTrOcrEngine CreateDocTrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning) {
+        private static OnnxOcrEngine CreateDocTrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning) {
             if (iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrDetectionPredictor == null) {
                 iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrDetectionPredictor = OnnxDetectionPredictor.Fast
                     (ModelPaths.GetDocTrDetectionModel());
@@ -156,8 +155,8 @@ namespace iText.Pdfocr.Onnx.Text {
                 iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrRecognitionPredictor = OnnxRecognitionPredictor
                     .CrnnVgg16(ModelPaths.GetDocTrRecognitionModel());
             }
-            return new OnnxTrOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrDetectionPredictor
-                , null, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrRecognitionPredictor, new OnnxTrEngineProperties
+            return new OnnxOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrDetectionPredictor, 
+                null, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrRecognitionPredictor, new OnnxEngineProperties
                 ().SetTextPositioning(textPositioning));
         }
     }
