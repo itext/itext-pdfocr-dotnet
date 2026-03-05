@@ -50,7 +50,7 @@ namespace iText.Pdfocr.Onnx {
         /// <see cref="iText.Pdfocr.Onnx.Text.TextPositioning"/>.
         /// </summary>
         /// <returns>the way text is retrieved</returns>
-        public virtual iText.Pdfocr.Onnx.Text.TextPositioning GetTextPositioningMode() {
+        public virtual iText.Pdfocr.Onnx.Text.TextPositioning GetTextPositioning() {
             return textPositioning;
         }
 
