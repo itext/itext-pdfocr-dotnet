@@ -78,9 +78,6 @@ namespace iText.Pdfocr.Onnx.Exceptions {
 
         public const String NEGATIVE_VALUE_IN_SHAPE = "Received negative value in shape {0}.";
 
-        [Obsolete]
-        public const String ONLY_SUPPORT_RGB_IMAGES = "Method toBchwInput only support RGB images.";
-
         public const String ONNX_RUNTIME_OPERATION_FAILED = "ONNX Runtime operation failed.";
 
         public const String PRE_PROCESSOR_OPERATION_MISSING = "Expected pre-processor operation is missing: {0}.";

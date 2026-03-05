@@ -30,6 +30,7 @@ using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Orientation;
 using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Text;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -64,7 +65,7 @@ namespace iText.Pdfocr.Onnx {
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
             OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor, 
-                new OnnxEngineProperties().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
+                new OnnxEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS));
             OCR_ENGINE_GROUPING_BY_LINES = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
         }

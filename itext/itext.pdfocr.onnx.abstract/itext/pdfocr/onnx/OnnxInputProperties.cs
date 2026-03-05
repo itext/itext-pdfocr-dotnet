@@ -34,12 +34,6 @@ namespace iText.Pdfocr.Onnx {
     /// deviation values for normalization, what type of padding should be used.
     /// </remarks>
     public class OnnxInputProperties {
-        /// <summary>Expected channel count.</summary>
-        /// <remarks>Expected channel count. We expect RGB format.</remarks>
-        [System.ObsoleteAttribute(@"Grayscale and BGR are now supported as well. Check the documentation for more information."
-            )]
-        public const int EXPECTED_CHANNEL_COUNT = 3;
-
         /// <summary>Expected shape size.</summary>
         /// <remarks>Expected shape size. We expect the standard BCHW format (batch, channel, height, width).</remarks>
         public const int EXPECTED_SHAPE_SIZE = 4;
@@ -74,48 +68,6 @@ namespace iText.Pdfocr.Onnx {
         /// to bump this value as high as your VRAM allows you to.
         /// </remarks>
         private readonly int batchSize;
-
-        /// <summary>Creates model input properties.</summary>
-        /// <param name="mean">per-channel mean, used for normalization. Should be EXPECTED_CHANNEL_COUNT length</param>
-        /// <param name="std">per-channel standard deviation, used for normalization. Should be EXPECTED_CHANNEL_COUNT length
-        ///     </param>
-        /// <param name="shape">target input shape. Should be EXPECTED_SHAPE_SIZE length</param>
-        /// <param name="symmetricPad">whether padding should be symmetrical during input resizing</param>
-        [System.ObsoleteAttribute(@"This is the original constructor, which only supported RGB inputs with a static width/height and black pixel values padding. Use constructors with an ImageResizeOptions parameter instead."
-            )]
-        public OnnxInputProperties(float[] mean, float[] std, long[] shape, bool symmetricPad) {
-            Objects.RequireNonNull(mean);
-            if (mean.Length != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
-                    , EXPECTED_CHANNEL_COUNT));
-            }
-            Objects.RequireNonNull(std);
-            if (std.Length != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
-                    , EXPECTED_CHANNEL_COUNT));
-            }
-            Objects.RequireNonNull(shape);
-            if (shape.Length != EXPECTED_SHAPE_SIZE) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
-                    , EXPECTED_SHAPE_SIZE));
-            }
-            if (shape[1] != EXPECTED_CHANNEL_COUNT) {
-                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB);
-            }
-            foreach (long dim in shape) {
-                if (dim <= 0 || ((int)dim) != dim) {
-                    throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
-                        , dim));
-                }
-            }
-            this.mean = new float[mean.Length];
-            Array.Copy(mean, 0, this.mean, 0, mean.Length);
-            this.std = new float[std.Length];
-            Array.Copy(std, 0, this.std, 0, std.Length);
-            this.imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, (int)shape[3], (int)shape[
-                2], (symmetricPad ? PaddingStrategy.SYMMETRIC_BLACK : PaddingStrategy.BOTTOM_RIGHT_BLACK));
-            this.batchSize = (int)shape[0];
-        }
 
         /// <summary>Creates model input properties.</summary>
         /// <param name="imageResizeOptions">

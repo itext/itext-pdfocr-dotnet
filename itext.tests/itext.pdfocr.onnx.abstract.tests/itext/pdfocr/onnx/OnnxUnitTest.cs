@@ -44,22 +44,24 @@ namespace iText.Pdfocr.Onnx {
 
         [NUnit.Framework.Test]
         public virtual void EmptyImageInputTest() {
+            ImageResizeOptions imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 1024, 1024, 
+                PaddingStrategy.SYMMETRIC_BLACK);
             float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
             float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
-            long[] shape = new long[] { 2, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => BufferedImageUtil.ToBchwInput(
-                new List<IronSoftware.Drawing.AnyBitmap>(), new OnnxInputProperties(mean, std, shape, true)));
+                new List<IronSoftware.Drawing.AnyBitmap>(), new OnnxInputProperties(imageResizeOptions, mean, std)));
             NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE, e.Message
                 );
         }
 
         [NUnit.Framework.Test]
         public virtual void TooManyImagesTest() {
+            ImageResizeOptions imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 1024, 1024, 
+                PaddingStrategy.SYMMETRIC_BLACK);
             float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
             float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
-            long[] shape = new long[] { 1, 3, 1024, 1024 };
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => BufferedImageUtil.ToBchwInput(
-                OnnxOcrEngine.GetImages(new FileInfo(TIFF)), new OnnxInputProperties(mean, std, shape, true)));
+                OnnxOcrEngine.GetImages(new FileInfo(TIFF)), new OnnxInputProperties(imageResizeOptions, mean, std)));
             NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES
                 , 2, 1), e.Message);
         }
@@ -99,8 +101,9 @@ namespace iText.Pdfocr.Onnx {
             NUnit.Framework.Assert.AreEqual(properties, properties);
             NUnit.Framework.Assert.AreNotEqual(properties, null);
             NUnit.Framework.Assert.AreNotEqual(properties, OnnxDetectionPredictorProperties.DbNet("model2"));
-            OnnxInputProperties inputProperties = new OnnxInputProperties(new float[] { 1F, 1F, 1F }, new float[] { 1F
-                , 1F, 1F }, new long[] { 512, 3, 32, 128 }, false);
+            ImageResizeOptions imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 32, 128);
+            OnnxInputProperties inputProperties = new OnnxInputProperties(imageResizeOptions, new float[] { 1F, 1F, 1F
+                 }, new float[] { 1F, 1F, 1F });
             NUnit.Framework.Assert.AreNotEqual(properties, new OnnxDetectionPredictorProperties(model, inputProperties
                 , new OnnxDetectionPostProcessor()));
             NUnit.Framework.Assert.AreNotEqual(new OnnxDetectionPredictorProperties(model, inputProperties, new OnnxDetectionPostProcessor
@@ -118,23 +121,14 @@ namespace iText.Pdfocr.Onnx {
                 );
             NUnit.Framework.Assert.AreEqual(properties, properties);
             NUnit.Framework.Assert.AreNotEqual(properties, null);
-            OnnxInputProperties inputProperties = new OnnxInputProperties(new float[] { 1F, 1F, 1F }, new float[] { 1F
-                , 1F, 1F }, new long[] { 512, 3, 32, 128 }, false);
+            ImageResizeOptions imageResizeOptions = new ImageResizeOptions(ImageChannelConfiguration.RGB, 32, 128);
+            OnnxInputProperties inputProperties = new OnnxInputProperties(imageResizeOptions, new float[] { 1F, 1F, 1F
+                 }, new float[] { 1F, 1F, 1F });
             NUnit.Framework.Assert.AreNotEqual(properties, new OnnxRecognitionPredictorProperties("model", inputProperties
                 , new CrnnPostProcessor(Vocabulary.LEGACY_FRENCH)));
             NUnit.Framework.Assert.AreNotEqual(new OnnxRecognitionPredictorProperties("model", inputProperties, new CrnnPostProcessor
                 (Vocabulary.FRENCH)), new OnnxRecognitionPredictorProperties("model", inputProperties, new CrnnPostProcessor
                 (Vocabulary.ENGLISH)));
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void DeprecatedTextPositioningTest() {
-            OnnxEngineProperties properties = new OnnxEngineProperties();
-            NUnit.Framework.Assert.AreEqual(TextPositioning.BY_LINES, properties.GetTextPositioning());
-            properties.SetTextPositioning(TextPositioning.BY_WORDS);
-            NUnit.Framework.Assert.AreEqual(TextPositioning.BY_WORDS, properties.GetTextPositioning());
-            properties.SetTextPositioning(TextPositioning.BY_LINES);
-            NUnit.Framework.Assert.AreEqual(TextPositioning.BY_LINES, properties.GetTextPositioning());
         }
     }
 }

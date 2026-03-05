@@ -72,24 +72,6 @@ namespace iText.Pdfocr.Onnx {
                 throw;
             }
         }
-
-        /// <summary>Creates a new abstract predictor.</summary>
-        /// <remarks>
-        /// Creates a new abstract predictor.
-        /// <para />
-        /// If the specified model does not match input and output properties, it will throw an exception.
-        /// </remarks>
-        /// <param name="modelPath">path to the ONNX runtime model to load</param>
-        /// <param name="inputProperties">expected input properties of a model</param>
-        /// <param name="outputShape">
-        /// expected shape of the output. -1 entries mean that the dimension can be
-        /// of any size (ex. batch size)
-        /// </param>
-        [System.ObsoleteAttribute(@"in favour of AbstractOnnxPredictor(AbstractOnnxPredictorProperties, long[])")]
-        // With removing this constructor also remove AbstractOnnxPredictor(String, OnnxInputProperties, long[], IOrtSessionOptionsCreator)
-        protected internal AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape) 
-            : this(modelPath, inputProperties, outputShape, DEFAULT_ORT_SESSION_CREATOR) {
-        }
         
         /// <summary>Creates a new abstract predictor.</summary>
         /// <remarks>
@@ -102,29 +84,25 @@ namespace iText.Pdfocr.Onnx {
         /// expected shape of the output. -1 entries mean that the dimension can be
         /// of any size (ex. batch size)
         /// </param>
-        protected internal AbstractOnnxPredictor(AbstractOnnxPredictorProperties predictorProperties, long[] outputShape) 
-            : this(predictorProperties.GetModelPath(), predictorProperties.GetInputProperties(), outputShape, 
-                predictorProperties.GetOrtSessionOptionsCreator()) {
-        }
-        
-        private AbstractOnnxPredictor(String modelPath, OnnxInputProperties inputProperties, long[] outputShape, 
-                IOrtSessionOptionsCreator ortSessionCreator) {
-            this.inputProperties = Objects.RequireNonNull(inputProperties);
+        protected internal AbstractOnnxPredictor(AbstractOnnxPredictorProperties predictorProperties, long[] outputShape) {
+            
+            this.inputProperties = Objects.RequireNonNull(predictorProperties.GetInputProperties());
             try {
-                this.sessionOptions = ortSessionCreator.Create();
+                this.sessionOptions = predictorProperties.GetOrtSessionOptionsCreator().Create();
             }
             catch (OnnxRuntimeException e) {
                 throw new PdfOcrException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_INIT_SESSION_OPTIONS, e);
             }
             try {
-                this.session = new InferenceSession(File.ReadAllBytes(modelPath), sessionOptions);
+                this.session = new InferenceSession(File.ReadAllBytes(predictorProperties.GetModelPath()), 
+                    sessionOptions);
             }
             catch (Exception e) {
                 this.sessionOptions.Close();
                 throw new PdfOcrException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_INIT_ONNX_RUNTIME_SESSION, e);
             }
             try {
-                this.inputName = ValidateModel(this.session, inputProperties, outputShape);
+                this.inputName = ValidateModel(this.session, this.inputProperties, outputShape);
             }
             catch (Exception e) {
                 PdfOcrException userException = new PdfOcrException(

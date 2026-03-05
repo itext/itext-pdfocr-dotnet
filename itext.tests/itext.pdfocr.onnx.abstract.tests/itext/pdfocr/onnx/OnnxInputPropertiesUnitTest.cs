@@ -29,60 +29,6 @@ namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("UnitTest")]
     public class OnnxInputPropertiesUnitTest : ExtendedITextTest {
         [NUnit.Framework.Test]
-        public virtual void UnexpectedMeanChannelCountTest() {
-            float[] mean = new float[] { 0.798F, 0.785F, 0.772F, 0.772F };
-            float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
-            long[] shape = new long[] { 2, 3, 1024, 1024 };
-            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
-                std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MEAN_CHANNEL_COUNT
-                , 3), e.Message);
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void UnexpectedStdChannelCountTest() {
-            float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
-            float[] std = new float[] { 0.264F, 0.2749F, 0.287F, 0.772F };
-            long[] shape = new long[] { 2, 3, 1024, 1024 };
-            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
-                std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_STD_CHANNEL_COUNT
-                , 3), e.Message);
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void UnexpectedShapeSizeTest() {
-            float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
-            float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
-            long[] shape = new long[] { 2, 3, 1024 };
-            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
-                std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_SHAPE_SIZE
-                , 4), e.Message);
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void UnexpectedShapeChannelCountTest() {
-            float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
-            float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
-            long[] shape = new long[] { 2, 4, 1024, 1024 };
-            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
-                std, shape, true));
-            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.MODEL_ONLY_SUPPORTS_RGB, e.Message);
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void UnexpectedDimensionValueTest() {
-            float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
-            float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
-            long[] shape = new long[] { -2, 3, 1024, 1024 };
-            Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => new OnnxInputProperties(mean, 
-                std, shape, true));
-            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_DIMENSION_VALUE
-                , -2), e.Message);
-        }
-
-        [NUnit.Framework.Test]
         public virtual void InitWithInvalidImageResizeOptions() {
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => new OnnxInputProperties(null));
         }

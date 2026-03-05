@@ -24,6 +24,7 @@ using System;
 using System.IO;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Text;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -49,7 +50,7 @@ namespace iText.Pdfocr.Onnx {
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
             OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor, 
-                new OnnxEngineProperties().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
+                new OnnxEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS));
         }
 
         [NUnit.Framework.OneTimeTearDown]

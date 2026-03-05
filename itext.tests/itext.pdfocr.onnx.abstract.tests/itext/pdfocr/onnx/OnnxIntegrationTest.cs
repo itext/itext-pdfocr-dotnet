@@ -29,6 +29,7 @@ using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Text;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -100,7 +101,7 @@ namespace iText.Pdfocr.Onnx {
             
             using (OnnxOcrEngine onnxTrOcrEngine = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor,
                        new OnnxEngineProperties()
-                           .SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS))) {
+                           .SetTextPositioning(TextPositioning.BY_WORDS))) {
                 OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(onnxTrOcrEngine, 
                     CreatorProperties("Text1", DeviceCmyk.MAGENTA));
                 using (PdfWriter writer = new PdfWriter(dest)) {
