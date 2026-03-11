@@ -90,9 +90,17 @@ namespace iText.Pdfocr.Onnx.Text {
             String name = engineType.GetDisplayName();
             String src = TEST_IMAGE_DIRECTORY + "linesWithSpaces.png";
             String dest = TARGET_DIRECTORY + name + "_linesWithSpaces.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_" + name + "_linesWithSpaces.pdf";
+            String cmp1 = TEST_DIRECTORY + "cmp_" + name + "_linesWithSpaces.pdf";
+            String cmp2 = TEST_DIRECTORY + "cmp_" + name + "_linesWithSpaces_2.pdf";
             DoOcrAndCreatePdf(src, dest, ocrEngine);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            String diff = new CompareTool().CompareByContent(dest, cmp1, TARGET_DIRECTORY, "diff_");
+            if (diff != null && FileUtil.FileExists(cmp2)) {
+                // Second cmp is required for DocTR BY_WORDS on .NET because of different results on .NET CoreApp and .NET Framework
+                NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp2, TARGET_DIRECTORY, "diff_"));
+            }
+            else {
+                NUnit.Framework.Assert.IsNull(diff);
+            }
         }
 
         private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, IOcrEngine ocrEngine) {
