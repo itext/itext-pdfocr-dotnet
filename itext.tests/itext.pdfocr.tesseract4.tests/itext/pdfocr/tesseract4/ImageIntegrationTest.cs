@@ -80,14 +80,10 @@ namespace iText.Pdfocr.Tesseract4 {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-9261 Investigate test failures on Windows Server 2025 and Windows 11")]
         public virtual void CompareRotatedImage() {
             String testName = "compareRotatedImage";
             String filename = "90_degrees_rotated";
-            //Tesseract for Java and Tesseract for .NET give different output
-            //So we cannot use one reference pdf file for them
-            String expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_java.pdf";
-            String expectedPdfPathDotNet = TEST_DOCUMENTS_DIRECTORY + filename + "_dotnet.pdf";
+            String expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + filename + ".pdf";
             String resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
             Tesseract4OcrEngineProperties properties = tesseractReader.GetTesseract4OcrEngineProperties();
             properties.SetTextPositioning(TextPositioning.BY_WORDS);
@@ -95,36 +91,24 @@ namespace iText.Pdfocr.Tesseract4 {
             tesseractReader.SetTesseract4OcrEngineProperties(properties);
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("eng"), JavaUtil.ArraysAsList(NOTO_SANS_FONT_PATH), null, true);
-            // Because of difference of tesseract 5 and tesseract 4 there are some differences in text recognition.
             // So the goal of this test is to make text invisible and check if image is rotated.
             // Proper text recognition is compared in testHocrRotatedImage test by checking HOCR file.
-            bool javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory()
-                , "diff_") == null;
-            bool dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory
-                (), "diff_") == null;
-            NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), 16.5));
             filename = "180_degrees_rotated";
-            expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_java.pdf";
-            expectedPdfPathDotNet = TEST_DOCUMENTS_DIRECTORY + filename + "_dotnet.pdf";
+            expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + filename + ".pdf";
             resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("eng"), JavaUtil.ArraysAsList(NOTO_SANS_FONT_PATH), null, true);
-            javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory(), "diff_"
-                ) == null;
-            dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory(), 
-                "diff_") == null;
-            NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), 18.5));
             filename = "270_degrees_rotated";
-            expectedPdfPathJava = TEST_DOCUMENTS_DIRECTORY + filename + "_java.pdf";
-            expectedPdfPathDotNet = TEST_DOCUMENTS_DIRECTORY + filename + "_dotnet.pdf";
+            expectedPdfPath = TEST_DOCUMENTS_DIRECTORY + filename + ".pdf";
             resultPdfPath = GetTargetDirectory() + filename + "_" + testName + ".pdf";
             DoOcrAndSavePdfToPath(tesseractReader, TEST_IMAGES_DIRECTORY + filename + ".jpg", resultPdfPath, JavaUtil.ArraysAsList
                 ("eng"), JavaUtil.ArraysAsList(NOTO_SANS_FONT_PATH), null, true);
-            javaTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathJava, GetTargetDirectory(), "diff_"
-                ) == null;
-            dotNetTest = new CompareTool().CompareVisually(resultPdfPath, expectedPdfPathDotNet, GetTargetDirectory(), 
-                "diff_") == null;
-            NUnit.Framework.Assert.IsTrue(javaTest || dotNetTest);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), 18.5));
         }
     }
 }
