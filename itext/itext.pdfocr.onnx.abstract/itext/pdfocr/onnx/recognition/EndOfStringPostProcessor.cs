@@ -56,7 +56,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
             int labelStride = output.GetDimension(1);
             StringBuilder wordBuilder = new StringBuilder(maxWordLength);
             float[] values = new float[Math.Min(LabelDimension(), labelStride)];
-            float[] outputBuffer = output.GetData();
+            float[] outputBuffer = output.GetData().Array();
             int arrayOffset = output.GetArrayOffset();
             for (int i = arrayOffset; i < arrayOffset + output.GetArraySize(); i += labelStride) {
                 Array.Copy(outputBuffer, i, values, 0, values.Length);

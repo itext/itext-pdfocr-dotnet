@@ -32,7 +32,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
             int labelStride = output.GetDimension(1);
             StringBuilder stringBuilder = new StringBuilder(maxStringLength);
             float[] values = new float[Math.Min(LabelDimension(), labelStride)];
-            float[] outputBuffer = output.GetData();
+            float[] outputBuffer = output.GetData().Array();
             int prevLabelIndex = -1;
             int arrayOffset = output.GetArrayOffset();
             for (int i = arrayOffset; i < arrayOffset + output.GetArraySize(); i += labelStride) {

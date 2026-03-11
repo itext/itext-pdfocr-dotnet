@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using iText.Pdfocr.Onnx;
 using iText.Test;
+using iText.pdfOcr.Onnx;
 
 namespace iText.Pdfocr.Onnx.Recognition {
     [NUnit.Framework.Category("UnitTest")]
@@ -36,7 +37,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         public virtual void Process() {
             StringMapper mapper = new StringMapper(new String[] { "AB", "CD", "EF", "GH", " " });
             CtcLabelPostProcessor processor = new CtcLabelPostProcessor(mapper);
-            float[] probs = new float[] { 0.97F, 0.11F, 0.15F, 0.13F, 0.12F, 0.11F, 
+            FloatBufferWrapper probs = FloatBufferWrapper.Wrap(new float[] { 0.97F, 0.11F, 0.15F, 0.13F, 0.12F, 0.11F, 
                         // [blank]
                         0.01F, 0.75F, 0.22F, 0.14F, 0.56F, 0.67F, 
                         // "AB"
@@ -52,7 +53,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
                         // [blank]
                         0.05F, 0.05F, 0.27F, 0.34F, 0.77F, 0.24F, 
                         // "GH"
-                        0.89F, 0.14F, 0.27F, 0.12F, 0.36F, 0.56F };
+                        0.89F, 0.14F, 0.27F, 0.12F, 0.36F, 0.56F });
             // [blank]
             FloatBufferMdArray buffer = new FloatBufferMdArray(probs, new long[] { 9, mapper.Size() + 1 });
             NUnit.Framework.Assert.AreEqual("ABAB GH", processor.Process(buffer));

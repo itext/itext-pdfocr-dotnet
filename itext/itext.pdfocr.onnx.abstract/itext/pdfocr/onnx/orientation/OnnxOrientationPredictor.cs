@@ -151,7 +151,7 @@ namespace iText.Pdfocr.Onnx.Orientation {
             // Just extracting the highest scoring "orientation class" for each image via argmax
             IList<TextOrientation> orientations = new List<TextOrientation>(outputBatch.GetDimension(0));
             float[] values = new float[outputBatch.GetDimension(1)];
-            float[] outputBuffer = outputBatch.GetData();
+            float[] outputBuffer = outputBatch.GetData().Array();
             int offset = outputBatch.GetArrayOffset();
             for (int i = offset; i < offset + outputBatch.GetArraySize(); i += values.Length) {
                 Array.Copy(outputBuffer, i, values, 0, values.Length);

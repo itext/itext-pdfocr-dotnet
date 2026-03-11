@@ -20,12 +20,13 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using iText.pdfOcr.Onnx;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnx.Exceptions;
 using OpenCvSharp;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace iText.Pdfocr.Onnx.Util {
     /// <summary>
@@ -55,29 +56,30 @@ namespace iText.Pdfocr.Onnx.Util {
                 throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE);
             }
             if (images.Count > properties.GetBatchSize()) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES, 
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES,
                     images.Count, properties.GetBatchSize()));
             }
             ImageResizeOptions resizeOptions = properties.GetImageResizeOptions();
             Dimensions2D batchDimensions = CalcOutputDimensions(images, resizeOptions);
-            long[] inputShape = new long[] { 
-                images.Count, 
+            long[] inputShape = new long[] {
+                images.Count,
                 resizeOptions.GetChannelConfiguration().GetChannelCount(),
                 batchDimensions.GetHeight(),
                 batchDimensions.GetWidth()
             };
             int bufferSize = CalculateBufferCapacity(inputShape);
-            float[] inputData = new float[bufferSize / sizeof(float)];
+            FloatBufferWrapper inputData = new FloatBufferWrapper(new float[bufferSize / sizeof(float)]);
 
-            int currentIndex = 0;
             foreach (IronSoftware.Drawing.AnyBitmap image in images) {
                 using (SkiaSharp.SKBitmap resizedImage = Resize(image, 
                            batchDimensions.GetWidth(),
                            batchDimensions.GetHeight(),
                            resizeOptions)) {
-                    currentIndex = PutImageWithNormalization(inputData, resizedImage, properties, currentIndex);
+                    PutImageWithNormalization(inputData, resizedImage, properties);
                 }
             }
+
+            inputData.Rewind();
             return new FloatBufferMdArray(inputData, inputShape);
         }
 
@@ -354,58 +356,53 @@ namespace iText.Pdfocr.Onnx.Util {
             }
         }
 
-        private static int PutImageWithNormalization(float[] outputBuffer, SkiaSharp.SKBitmap image,
-            OnnxInputProperties props, int currentIndex) {
+        private static void PutImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image,
+            OnnxInputProperties props) {
             ImageChannelConfiguration channelConfiguration = props.GetImageResizeOptions().GetChannelConfiguration();
 
             if (ImageChannelConfiguration.GRAYSCALE == channelConfiguration) {
-                return PutGrayscaleImageWithNormalization(outputBuffer, image, props, currentIndex);
+                PutGrayscaleImageWithNormalization(outputBuffer, image, props);
             }
-
-            if (ImageChannelConfiguration.RGB == channelConfiguration) {
-                return PutRgbImageWithNormalization(outputBuffer, image, props, currentIndex);
+            else if (ImageChannelConfiguration.RGB == channelConfiguration) {
+                PutRgbImageWithNormalization(outputBuffer, image, props);
             }
-
-            if (ImageChannelConfiguration.BGR == channelConfiguration) {
-                return PutBgrImageWithNormalization(outputBuffer, image, props, currentIndex);
+            else if (ImageChannelConfiguration.BGR == channelConfiguration) {
+                PutBgrImageWithNormalization(outputBuffer, image, props);
+            } else {
+                throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
             }
-
-            throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
         }
 
-        private static int PutGrayscaleImageWithNormalization(float[] outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties props, int index) {
+        private static void PutGrayscaleImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
+            OnnxInputProperties props) {
             if (!ImageChannelConfiguration.GRAYSCALE.Equals(GetImageType(image))) {
                 throw new ArgumentException("Invalid image type!");
             }
-            index = PutImageBandWithNormalization(outputBuffer, image, props, BAND_GRAY, props.GetGrayMean(), props.GetGrayStd(), index); 
-            return index;
+            PutImageBandWithNormalization(outputBuffer, image, props, BAND_GRAY, props.GetGrayMean(), props.GetGrayStd()); 
         } 
 
-        private static int PutRgbImageWithNormalization(float[] outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties props, int index) {
+        private static void PutRgbImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
+            OnnxInputProperties props) {
             if (!ImageChannelConfiguration.RGB.Equals(GetImageType(image))) {
                 throw new ArgumentException("Invalid image type!");
             }
-            index = PutImageBandWithNormalization(outputBuffer, image, props, 0, props.GetRedMean(), props.GetRedStd(), index);
-            index = PutImageBandWithNormalization(outputBuffer, image, props, 1, props.GetGreenMean(), props.GetGreenStd(), index);
-            index = PutImageBandWithNormalization(outputBuffer, image, props, 2, props.GetBlueMean(), props.GetBlueStd(), index);
-            return index;
+            PutImageBandWithNormalization(outputBuffer, image, props, 0, props.GetRedMean(), props.GetRedStd());
+            PutImageBandWithNormalization(outputBuffer, image, props, 1, props.GetGreenMean(), props.GetGreenStd());
+            PutImageBandWithNormalization(outputBuffer, image, props, 2, props.GetBlueMean(), props.GetBlueStd());
         }
 
-        private static int PutBgrImageWithNormalization(float[] outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties props, int index) {
+        private static void PutBgrImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
+            OnnxInputProperties props) {
             if (!ImageChannelConfiguration.BGR.Equals(GetImageType(image))) {
                 throw new ArgumentException("Invalid image type!");
             }
-            index = PutImageBandWithNormalization(outputBuffer, image, props, 0, props.GetBlueMean(), props.GetBlueStd(), index);
-            index = PutImageBandWithNormalization(outputBuffer, image, props, 1, props.GetGreenMean(), props.GetGreenStd(), index);
-            index = PutImageBandWithNormalization(outputBuffer, image, props, 2, props.GetRedMean(), props.GetRedStd(), index);
-            return index;
+            PutImageBandWithNormalization(outputBuffer, image, props, 0, props.GetBlueMean(), props.GetBlueStd());
+            PutImageBandWithNormalization(outputBuffer, image, props, 1, props.GetGreenMean(), props.GetGreenStd());
+            PutImageBandWithNormalization(outputBuffer, image, props, 2, props.GetRedMean(), props.GetRedStd());
         }
 
-        private static int PutImageBandWithNormalization(float[] outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties properties, int band, double mean, double std, int currentIndex) {
+        private static void PutImageBandWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
+            OnnxInputProperties properties, int band, double mean, double std) {
             using (SkiaSharp.SKPixmap raster = image.PeekPixels()) {
                 byte[] pixelBytes = new byte[raster.BytesSize];
                 Marshal.Copy(raster.GetPixels(), pixelBytes, 0, pixelBytes.Length);
@@ -418,11 +415,10 @@ namespace iText.Pdfocr.Onnx.Util {
                     for (int x = 0; x < raster.Width; x++) {
                         int index = rowStart + x * bytesPerPixel;
                         float v = pixelBytes[index + band] / 255f;
-                        outputBuffer[currentIndex++] = (float)((v - mean) / std);
+                        outputBuffer.Put((float)((v - mean) / std));
                     }
                 }
             }
-            return currentIndex;
         }
 
         /// <summary>Converts an image to an RGBA Mat for use in OpenCV.</summary>

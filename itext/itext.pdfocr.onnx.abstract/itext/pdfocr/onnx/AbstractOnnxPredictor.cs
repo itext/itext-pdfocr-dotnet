@@ -31,6 +31,7 @@ using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnx.Exceptions;
 using iText.Pdfocr.Onnx.Util;
 using iText.Pdfocr.Util;
+using iText.pdfOcr.Onnx;
 
 namespace iText.Pdfocr.Onnx {
     /// <summary>Abstract predictor, based on models running over ONNX runtime.</summary>
@@ -178,7 +179,7 @@ namespace iText.Pdfocr.Onnx {
         protected internal abstract IList<R> FromOutputBuffer(IList<T> inputBatch, FloatBufferMdArray outputBatch);
 
         private static DenseTensor<float> CreateTensor(FloatBufferMdArray batch) {
-            float[] floatData = batch.GetData();
+            float[] floatData = batch.GetData().Array();
             long[] shape = batch.GetShape();
             int[] intShape = shape.Select(s => (int)s).ToArray();
 
@@ -247,7 +248,7 @@ namespace iText.Pdfocr.Onnx {
             DisposableNamedOnnxValue output = result[0];
             Tensor<float> outputInfo = output.AsTensor<float>();
             ReadOnlySpan<int> outputShape = outputInfo.Dimensions;
-            float[] outputBuffer = outputInfo.ToArray();
+            FloatBufferWrapper outputBuffer = new FloatBufferWrapper(outputInfo.ToArray());
             return new FloatBufferMdArray(outputBuffer, Array.ConvertAll(outputShape.ToArray(), item => (long)item));
         }
 

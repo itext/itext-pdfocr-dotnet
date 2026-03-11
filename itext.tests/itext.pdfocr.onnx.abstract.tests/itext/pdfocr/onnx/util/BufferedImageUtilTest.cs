@@ -158,7 +158,7 @@ namespace iText.Pdfocr.Onnx.Util {
             > images, OnnxInputProperties props) {
             FloatBufferMdArray result = BufferedImageUtil.ToBchwInput(images, props);
             NUnit.Framework.Assert.AreEqual(expectedShape, result.GetShape());
-            float[] actualData = result.GetData();
+            float[] actualData = result.GetData().Array();
             iText.Test.TestUtil.AreEqual(expectedData, actualData, 1E-6F);
         }
 
