@@ -47,6 +47,8 @@ namespace iText.Pdfocr.Onnx.Util {
 
         private static String docTrRecognitionModel;
 
+        private static String orientationModel;
+
         public static String GetPaddleOcrDetectionModel() {
             if (paddleDetectionModel == null) {
                 paddleDetectionModel = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext.CurrentContext
@@ -58,7 +60,7 @@ namespace iText.Pdfocr.Onnx.Util {
         public static String GetPaddleOcrRecognitionModel() {
             if (paddleRecognitionModel == null) {
                 paddleRecognitionModel = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext.CurrentContext
-                    .TestDirectory) + "/resources/itext/pdfocr/models/paddleocr/PP-OCRv5_mobile_rec_infer/";
+                    .TestDirectory) + "/resources/itext/pdfocr/models/paddleocr/recognition/PP-OCRv5_mobile_rec_infer/";
             }
             return paddleRecognitionModel;
         }
@@ -74,7 +76,7 @@ namespace iText.Pdfocr.Onnx.Util {
         public static String GetEasyOcrRecognitionModel() {
             if (easyRecognitionModel == null) {
                 easyRecognitionModel = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext.CurrentContext
-                    .TestDirectory) + "/resources/itext/pdfocr/models/easyocr/latin_g2.onnx";
+                    .TestDirectory) + "/resources/itext/pdfocr/models/easyocr/recognition/latin_g2.onnx";
             }
             return easyRecognitionModel;
         }
@@ -93,6 +95,14 @@ namespace iText.Pdfocr.Onnx.Util {
                     .TestDirectory) + "/resources/itext/pdfocr/models/crnn_vgg16_bn-662979cc.onnx";
             }
             return docTrRecognitionModel;
+        }
+
+        public static String GetOrientationModel() {
+            if (orientationModel == null) {
+                orientationModel = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext.CurrentContext
+                    .TestDirectory) + "/resources/itext/pdfocr/models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
+            }
+            return orientationModel;
         }
     }
 }

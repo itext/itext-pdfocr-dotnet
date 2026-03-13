@@ -22,11 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using iText.Commons.Utils;
-using iText.Kernel.Colors;
-using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Util;
@@ -61,39 +58,39 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + name + "_bmp.pdf";
             String cmp = TEST_DIRECTORY + "cmp_" + name + "_bmp.pdf";
             String cmpTxt = TEST_DIRECTORY + "bmp.txt";
-            DoOcrAndCreatePdf(src, dest, ocrEngine);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             ExtractTextAndCompare(dest, cmpTxt);
         }
 
-        private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, IOcrEngine ocrEngine) {
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(ocrEngine, new OcrPdfCreatorProperties().SetTextLayerName(
-                "Text1").SetTextColor(DeviceCmyk.MAGENTA));
-            using (PdfWriter writer = new PdfWriter(destPdfPath)) {
-                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
-            }
+        [NUnit.Framework.TestCaseSource("OcrEngines")]
+        public virtual void InvoiceThaiTest(OcrEngineType engineType) {
+            IOcrEngine ocrEngine = engineType.Get();
+            String name = engineType.GetDisplayName();
+            String cmp = TEST_DIRECTORY + "cmp_" + name + "_invoice_front_thai.pdf";
+            String src = TEST_IMAGE_DIRECTORY + "invoice_front_thai.jpg";
+            String dest = TARGET_DIRECTORY + name + "_invoice_front_thai.pdf";
+            String cmpTxt = TEST_DIRECTORY + "invoice_front_thai.txt";
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.31);
+        }
+
+        [NUnit.Framework.TestCaseSource("OcrEngines")]
+        public virtual void WeirdWordsGifTest(OcrEngineType engineType) {
+            IOcrEngine ocrEngine = engineType.Get();
+            String name = engineType.GetDisplayName();
+            String src = TEST_IMAGE_DIRECTORY + "weirdwords.gif";
+            String dest = TARGET_DIRECTORY + name + "_weirdwords.pdf";
+            String cmp = TEST_DIRECTORY + "cmp_" + name + "_weirdwords.pdf";
+            String cmpTxt = TEST_DIRECTORY + "weirdwords.txt";
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.7);
         }
 
         private void ExtractTextAndCompare(String dest, String cmpTxt) {
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                String outText = extractionStrategy.GetResultantText();
-                String cmpText = GetCmpText(cmpTxt);
-                double relativeDistance = (double)MathUtil.CalculateLevenshteinDistance(cmpText, outText) / cmpText.Length;
-                NUnit.Framework.Assert.IsTrue(relativeDistance < 0.16, "Expected: \"" + cmpText + "\", but was: \"" + outText
-                     + "\"");
-            }
-        }
-
-        private String GetCmpText(String txtPath) {
-            int bytesCount = (int)new FileInfo(txtPath).Length;
-            char[] array = new char[bytesCount];
-            using (StreamReader stream = new StreamReader(iText.Commons.Utils.FileUtil.GetInputStreamForFile(System.IO.Path.Combine
-                (txtPath)), System.Text.Encoding.UTF8)) {
-                stream.Read(array, 0, bytesCount);
-                return new String(array);
-            }
+            OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.16);
         }
     }
 }

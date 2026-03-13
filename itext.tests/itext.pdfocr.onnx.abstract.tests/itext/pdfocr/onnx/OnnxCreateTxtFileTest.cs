@@ -25,9 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using iText.IO.Util;
 using iText.Pdfocr;
-using iText.Pdfocr.Onnx.Detection;
-using iText.Pdfocr.Onnx.Orientation;
-using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -43,26 +41,9 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OnnxCreateTxtFileTest/";
 
-        private static readonly String FAST = BASE_DIRECTORY + "models/rep_fast_tiny-28867779.onnx";
-
-        private static readonly String CRNNVGG16 = BASE_DIRECTORY + "models/crnn_vgg16_bn-662979cc.onnx";
-
-        private static readonly String MOBILENETV3 = BASE_DIRECTORY + "models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
-
-        private static OnnxOcrEngine OCR_ENGINE;
-
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
         }
 
         [NUnit.Framework.Test]
@@ -76,7 +57,8 @@ namespace iText.Pdfocr.Onnx {
             foreach (String sourceImage in sourceImages) {
                 images.Add(new FileInfo(sourceImage));
             }
-            OCR_ENGINE.CreateTxtFile(images, new FileInfo(outputPath), new OcrProcessContext(null));
+            OcrEngineTypeWithOrientation.DOCTR.Get().CreateTxtFile(images, new FileInfo(outputPath), new OcrProcessContext
+                (null));
             NUnit.Framework.Assert.IsNull(CompareTxt(cmpPath, outputPath));
         }
 

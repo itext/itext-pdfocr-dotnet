@@ -36,8 +36,7 @@ using iText.Pdfocr;
 using iText.Pdfocr.Onnx;
 using iText.Pdfocr.Onnx.Actions.Data;
 using iText.Pdfocr.Onnx.Actions.Events;
-using iText.Pdfocr.Onnx.Detection;
-using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Util;
 using iText.Pdfocr.Statistics;
 using iText.Test;
 
@@ -51,10 +50,6 @@ namespace iText.Pdfocr.Onnx.Actions {
 
         protected internal static readonly String TEST_PDFS_DIRECTORY = TEST_DIRECTORY + "pdfs/";
 
-        private static readonly String FAST = TEST_DIRECTORY + "models/rep_fast_tiny-28867779.onnx";
-
-        private static readonly String CRNNVGG16 = TEST_DIRECTORY + "models/crnn_vgg16_bn-662979cc.onnx";
-
         protected internal static OnnxOcrEngine OCR_ENGINE;
 
         protected internal IntegrationEventHandlingTestHelper.StoreEventsHandler eventsHandler;
@@ -62,14 +57,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             // init ocr engine
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
+            OCR_ENGINE = OcrEngineType.DOCTR.Get();
         }
 
         [NUnit.Framework.SetUp]

@@ -29,6 +29,7 @@ using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -46,25 +47,9 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String COLOR_PROFILE_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/profiles/";
 
-        private static readonly String FAST = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
-
-        private static readonly String CRNNVGG16 = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/crnn_vgg16_bn-662979cc.onnx";
-
-        private static OnnxOcrEngine OCR_ENGINE;
-
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
         }
 
         [NUnit.Framework.Test]
@@ -113,8 +98,8 @@ namespace iText.Pdfocr.Onnx {
 
         private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, OcrPdfCreatorProperties ocrPdfCreatorProperties
             , PdfOutputIntent pdfOutputIntent) {
-            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties
-                ) : new OcrPdfCreator(OCR_ENGINE);
+            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OcrEngineType.DOCTR.Get(), ocrPdfCreatorProperties
+                ) : new OcrPdfCreator(OcrEngineType.DOCTR.Get());
             using (PdfWriter writer = new PdfWriter(destPdfPath)) {
                 ocrPdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer, pdfOutputIntent
                     ).Close();

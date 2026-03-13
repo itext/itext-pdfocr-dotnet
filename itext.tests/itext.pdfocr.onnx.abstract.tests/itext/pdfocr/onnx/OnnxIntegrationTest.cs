@@ -30,6 +30,7 @@ using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
 using iText.Pdfocr.Onnx.Text;
+using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -49,20 +50,10 @@ namespace iText.Pdfocr.Onnx {
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OnnxIntegrationTest/";
-
-        private static OnnxOcrEngine OCR_ENGINE;
-
+        
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
         }
 
         [NUnit.Framework.Test]
@@ -72,21 +63,6 @@ namespace iText.Pdfocr.Onnx {
             String cmp = TEST_DIRECTORY + "cmp_basicTest.pdf";
             DoOcrAndCreatePdf(src, dest);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void BmpTest() {
-            String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
-            String dest = TARGET_DIRECTORY + "bmpTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_bmpTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("This a test\n1S\nmessage for\n-\nOCR Scanner\nTest\nBMPTest", extractionStrategy
-                    .GetResultantText());
-            }
         }
 
         [NUnit.Framework.Test]
@@ -171,41 +147,6 @@ namespace iText.Pdfocr.Onnx {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
                 NUnit.Framework.Assert.AreEqual("619121", extractionStrategy.GetResultantText());
-            }
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void GifTest() {
-            String src = TEST_IMAGE_DIRECTORY + "weirdwords.gif";
-            String dest = TARGET_DIRECTORY + "gifTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_gifTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("qwetyrtyqpwe-rty\nhe23llo", extractionStrategy.GetResultantText());
-            }
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void MultipageTiffTest() {
-            String src = TEST_IMAGE_DIRECTORY + "multipage.tiff";
-            String dest = TARGET_DIRECTORY + "multipageTiffTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_multipageTiffTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage\n1", extractionStrategy.GetResultantText()
-                    );
-                extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 7, "Text1");
-                // Model glitch
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage\n/", extractionStrategy.GetResultantText()
-                    );
-                extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 9, "Text1");
-                NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage 9", extractionStrategy.GetResultantText());
             }
         }
 
@@ -309,15 +250,6 @@ namespace iText.Pdfocr.Onnx {
         }
 
         [NUnit.Framework.Test]
-        public virtual void GreekDocTest() {
-            String src = TEST_IMAGE_DIRECTORY + "greek_01.jpg";
-            String dest = TARGET_DIRECTORY + "greekTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_greekTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-        }
-
-        [NUnit.Framework.Test]
         public virtual void HindiDocTest() {
             String src = TEST_IMAGE_DIRECTORY + "hindi_01.jpg";
             String dest = TARGET_DIRECTORY + "hindiTest.pdf";
@@ -344,15 +276,6 @@ namespace iText.Pdfocr.Onnx {
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
-        [NUnit.Framework.Test]
-        public virtual void ThaiDocTest() {
-            String src = TEST_IMAGE_DIRECTORY + "thai_01.jpg";
-            String dest = TARGET_DIRECTORY + "thaiTest.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_thaiTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-        }
-
         private OcrPdfCreatorProperties CreatorProperties(String layerName, Color color) {
             OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
             ocrPdfCreatorProperties.SetTextLayerName(layerName);
@@ -362,8 +285,8 @@ namespace iText.Pdfocr.Onnx {
 
         private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, OcrPdfCreatorProperties ocrPdfCreatorProperties
             ) {
-            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties
-                ) : new OcrPdfCreator(OCR_ENGINE);
+            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OcrEngineType.DOCTR.Get(), ocrPdfCreatorProperties
+                ) : new OcrPdfCreator(OcrEngineType.DOCTR.Get());
             using (PdfWriter writer = new PdfWriter(destPdfPath)) {
                 ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
             }

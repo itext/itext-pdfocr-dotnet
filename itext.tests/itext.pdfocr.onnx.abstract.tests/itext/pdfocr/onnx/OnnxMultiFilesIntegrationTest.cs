@@ -27,14 +27,17 @@ using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
+using iText.Layout.Font;
 using iText.Pdfocr;
-using iText.Pdfocr.Onnx.Detection;
-using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
     public class OnnxMultiFilesIntegrationTest : ExtendedITextTest {
+        private static readonly String FONT_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/fonts/";
+
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxMultiFilesIntegrationTest/";
 
@@ -44,25 +47,9 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OnnxMultiFilesIntegrationTest/";
 
-        private static readonly String FAST = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
-
-        private static readonly String CRNNVGG16 = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/crnn_vgg16_bn-662979cc.onnx";
-
-        private static OnnxOcrEngine OCR_ENGINE;
-
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
         }
 
         [NUnit.Framework.Test]
@@ -73,7 +60,7 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "multiFiles.pdf";
             String cmp = TEST_DIRECTORY + "cmp_multiFiles.pdf";
             OcrPdfCreatorProperties properties = CreatorProperties("Text1", "Image1", DeviceCmyk.CYAN);
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OCR_ENGINE, properties);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OcrEngineType.PADDLE.Get(), properties);
             using (PdfWriter writer = new PdfWriter(dest)) {
                 ocrPdfCreator.CreatePdf(files, writer).Close();
             }
@@ -86,6 +73,9 @@ namespace iText.Pdfocr.Onnx {
             ocrPdfCreatorProperties.SetTextLayerName(textLayerName);
             ocrPdfCreatorProperties.SetTextColor(color);
             ocrPdfCreatorProperties.SetImageLayerName(imageLayerName);
+            FontProvider fontProvider = new FontProvider();
+            fontProvider.AddDirectory(FONT_DIRECTORY);
+            ocrPdfCreatorProperties.SetFontProvider(fontProvider);
             return ocrPdfCreatorProperties;
         }
     }

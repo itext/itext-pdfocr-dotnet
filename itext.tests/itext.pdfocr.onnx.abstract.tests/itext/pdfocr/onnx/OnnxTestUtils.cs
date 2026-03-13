@@ -24,9 +24,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iText.Commons.Utils;
+using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Pdfocr;
+using iText.Pdfocr.Onnx.Util;
 
 namespace iText.Pdfocr.Onnx {
     public class OnnxTestUtils {
@@ -41,6 +44,39 @@ namespace iText.Pdfocr.Onnx {
         protected internal static String GetTextFromImage(FileInfo imageFile, IOcrEngine ocrEngine) {
             IDictionary<int, IList<TextInfo>> integerListMap = ocrEngine.DoImageOcr(imageFile);
             return GetStringFromListMap(integerListMap);
+        }
+
+        protected internal static void DoOcrAndCreatePdf(String imagePath, String destPdfPath, IOcrEngine ocrEngine
+            ) {
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties().SetTextLayerName("Text1").
+                SetTextColor(DeviceCmyk.MAGENTA);
+            DoOcrAndCreatePdf(imagePath, destPdfPath, ocrEngine, ocrPdfCreatorProperties);
+        }
+
+        protected internal static void DoOcrAndCreatePdf(String imagePath, String destPdfPath, IOcrEngine ocrEngine
+            , OcrPdfCreatorProperties ocrPdfCreatorProperties) {
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(ocrEngine, ocrPdfCreatorProperties);
+            using (PdfWriter writer = new PdfWriter(destPdfPath)) {
+                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
+            }
+        }
+
+        protected internal static void ExtractTextAndCompare(String dest, String cmpTxt, String layerName, double 
+            expRelDistance) {
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, layerName);
+                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
+                String outText = extractionStrategy.GetResultantText();
+                String cmpText = GetCmpText(cmpTxt);
+                double relativeDistance = (double)MathUtil.CalculateLevenshteinDistance(cmpText, outText) / cmpText.Length;
+                NUnit.Framework.Assert.IsTrue(relativeDistance < expRelDistance, "Expected: \"" + cmpText + "\", but was: \""
+                     + outText + "\"");
+            }
+        }
+
+        private static String GetCmpText(String txtPath) {
+            byte[] bytes = File.ReadAllBytes(System.IO.Path.Combine(txtPath));
+            return iText.Commons.Utils.JavaUtil.GetStringForBytes(bytes, System.Text.Encoding.UTF8);
         }
 
         private static String GetStringFromListMap(IDictionary<int, IList<TextInfo>> listMap) {

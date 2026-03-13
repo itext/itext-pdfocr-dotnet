@@ -23,9 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using iText.Pdfocr.Exceptions;
-using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Exceptions;
-using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -39,23 +38,12 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OnnxDoImageOcrTest";
 
-        private static readonly String FAST = TEST_DIRECTORY + "models/rep_fast_tiny-28867779.onnx";
-
-        private static readonly String CRNNVGG16 = TEST_DIRECTORY + "models/crnn_vgg16_bn-662979cc.onnx";
-
         private static OnnxOcrEngine OCR_ENGINE;
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
+            OCR_ENGINE = OcrEngineType.DOCTR.Get();
         }
 
         [NUnit.Framework.Test]

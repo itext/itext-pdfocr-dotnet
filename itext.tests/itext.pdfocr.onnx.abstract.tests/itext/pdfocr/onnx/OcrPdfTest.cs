@@ -25,9 +25,7 @@ using System.IO;
 using iText.Kernel.Colors;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
-using iText.Pdfocr.Onnx.Detection;
-using iText.Pdfocr.Onnx.Orientation;
-using iText.Pdfocr.Onnx.Recognition;
+using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -41,26 +39,9 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OcrPdfTest/";
 
-        private static readonly String FAST = TEST_DIRECTORY + "../models/rep_fast_tiny-28867779.onnx";
-
-        private static readonly String CRNNVGG16 = TEST_DIRECTORY + "../models/crnn_vgg16_bn-662979cc.onnx";
-
-        private static readonly String MOBILENETV3 = TEST_DIRECTORY + "../models/mobilenet_v3_small_crop_orientation-5620cf7e.onnx";
-
-        private static OnnxOcrEngine OCR_ENGINE;
-
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
-            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IOrientationPredictor orientationPredictor = OnnxOrientationPredictor.MobileNetV3(MOBILENETV3);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, orientationPredictor, recognitionPredictor);
-        }
-
-        [NUnit.Framework.OneTimeTearDown]
-        public static void AfterClass() {
-            OCR_ENGINE.Close();
         }
 
         [NUnit.Framework.Test]
@@ -150,7 +131,8 @@ namespace iText.Pdfocr.Onnx {
             if (ocrPdfCreatorProperties == null) {
                 ocrPdfCreatorProperties = new OcrPdfCreatorProperties().SetTextColor(DeviceCmyk.MAGENTA);
             }
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OcrEngineTypeWithOrientation.DOCTR.Get(), ocrPdfCreatorProperties
+                );
             ocrPdfCreator.MakePdfSearchable(new FileInfo(srcPath), new FileInfo(outPath));
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(outPath, cmpPath, TARGET_DIRECTORY, "diff_"
                 ));
