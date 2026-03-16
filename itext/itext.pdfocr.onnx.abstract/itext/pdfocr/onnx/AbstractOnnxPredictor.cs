@@ -38,8 +38,6 @@ namespace iText.Pdfocr.Onnx {
     /// <typeparam name="T">predictor input type</typeparam>
     /// <typeparam name="R">predictor output type</typeparam>
     public abstract class AbstractOnnxPredictor<T, R> : IPredictor<T, R> {
-        private static readonly IOrtSessionOptionsCreator DEFAULT_ORT_SESSION_CREATOR = new DefaultOrtSessionOptionsCreator();
-        
         /// <summary>Model input properties.</summary>
         private readonly OnnxInputProperties inputProperties;
 

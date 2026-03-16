@@ -30,9 +30,9 @@ namespace iText.Pdfocr.Onnx.Actions.Data {
     /// related to iText pdfOcr Onnx module.
     /// </summary>
     public sealed class PdfOcrOnnxProductData {
-        private const String PDF_OCR_ONNX_PRODUCT_NAME = "pdfOcr-onnxtr";
+        private const String PDF_OCR_ONNX_PRODUCT_NAME = "pdfOcr-onnx";
 
-        private const String PDF_OCR_ONNX_PUBLIC_PRODUCT_NAME = "pdfOCR-OnnxTR";
+        private const String PDF_OCR_ONNX_PUBLIC_PRODUCT_NAME = "pdfOCR-Onnx";
 
         private const String PDF_OCR_VERSION = "5.0.0-SNAPSHOT";
 

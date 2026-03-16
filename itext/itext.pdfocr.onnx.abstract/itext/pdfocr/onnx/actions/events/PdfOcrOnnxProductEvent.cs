@@ -31,7 +31,7 @@ namespace iText.Pdfocr.Onnx.Actions.Events {
     /// <summary>Class represents events registered in iText pdfOcr Onnx module.</summary>
     public sealed class PdfOcrOnnxProductEvent : AbstractProductProcessITextEvent {
         /// <summary>Process image event type.</summary>
-        public const String PROCESS_IMAGE_ONNX = "process-image-onnxtr";
+        public const String PROCESS_IMAGE_ONNX = "process-image-onnx";
 
         private readonly String eventType;
 

@@ -76,7 +76,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         protected internal static void ValidateUsageEvent(IEvent @event, EventConfirmationType expectedConfirmationType
             ) {
             NUnit.Framework.Assert.IsTrue(@event is PdfOcrOnnxProductEvent);
-            NUnit.Framework.Assert.AreEqual("process-image-onnxtr", ((PdfOcrOnnxProductEvent)@event).GetEventType());
+            NUnit.Framework.Assert.AreEqual("process-image-onnx", ((PdfOcrOnnxProductEvent)@event).GetEventType());
             NUnit.Framework.Assert.AreEqual(expectedConfirmationType, ((PdfOcrOnnxProductEvent)@event).GetConfirmationType
                 ());
             NUnit.Framework.Assert.AreEqual(PdfOcrOnnxProductData.GetInstance(), ((PdfOcrOnnxProductEvent)@event).GetProductData
@@ -111,7 +111,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         protected internal static ConfirmedEventWrapper GetPdfOcrEvent() {
             PdfOcrOnnxProductEvent @event = PdfOcrOnnxProductEvent.CreateProcessImageOnnxEvent(new SequenceId(), null, 
                 EventConfirmationType.ON_CLOSE);
-            DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_OCR_ONNXTR
+            DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.PDF_OCR_ONNX
                 );
             return new ConfirmedEventWrapper(@event, processor.GetUsageType(), processor.GetProducer());
         }

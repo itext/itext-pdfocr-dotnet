@@ -37,7 +37,7 @@ namespace iText.Pdfocr.Onnx.Actions.Events {
 
         [NUnit.Framework.Test]
         public virtual void ProductDataNameTest() {
-            NUnit.Framework.Assert.AreEqual("pdfOcr-onnxtr", PdfOcrOnnxProductData.GetInstance().GetProductName());
+            NUnit.Framework.Assert.AreEqual("pdfOcr-onnx", PdfOcrOnnxProductData.GetInstance().GetProductName());
         }
     }
 }
