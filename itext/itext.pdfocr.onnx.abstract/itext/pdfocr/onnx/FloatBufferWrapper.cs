@@ -24,7 +24,7 @@ using System;
 
 namespace iText.pdfOcr.Onnx {
     /// <summary>
-    /// Wrapper class around float array, note that functionality is a bit different from Java, see <see cref="Slice()">Slice()</see>.
+    /// Wrapper class around float array implementing functionality of the FloatBuffer from Java.
     /// </summary>
     public class FloatBufferWrapper {
 
@@ -98,7 +98,9 @@ namespace iText.pdfOcr.Onnx {
                 throw new InvalidOperationException($"Position {position} exceeds limit {limit}.");
             }
 
-            return this.floatBuffer[offset + position++]; 
+            float value = this.floatBuffer[offset + position];
+            position++;
+            return value; 
         }
 
         /// <summary>Absolute get method.</summary>
@@ -159,7 +161,8 @@ namespace iText.pdfOcr.Onnx {
             if (position >= limit) {
                 throw new InvalidOperationException($"Position {position} exceeds limit {limit}.");
             }
-            floatBuffer[offset + position++] = value;
+            floatBuffer[offset + position] = value;
+            position++;
             return this;
         }
 
@@ -226,8 +229,7 @@ namespace iText.pdfOcr.Onnx {
         }
 
         /// <summary>
-        /// Creates a new float buffer whose content is a subsequence of this buffer's content. 
-        /// Unlike java new buffer is independent and changes in a new buffer will not show in this one and vice versa.
+        /// Creates a new float buffer whose content is a subsequence of this buffer's content.
         /// </summary>
         /// <remarks>
         /// Creates a new float buffer out of subsequence of this buffer.

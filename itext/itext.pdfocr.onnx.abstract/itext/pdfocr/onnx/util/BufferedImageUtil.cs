@@ -358,94 +358,105 @@ namespace iText.Pdfocr.Onnx.Util {
 
         private static void PutImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image,
             OnnxInputProperties props) {
-            ImageChannelConfiguration channelConfiguration = props.GetImageResizeOptions().GetChannelConfiguration();
+            int channels;
+            int[] channelOrder;
+            float[] scales;
+            float[] offsets;
 
+            ImageChannelConfiguration channelConfiguration = props.GetImageResizeOptions().GetChannelConfiguration();
             if (ImageChannelConfiguration.GRAYSCALE == channelConfiguration) {
-                PutGrayscaleImageWithNormalization(outputBuffer, image, props);
-            }
-            else if (ImageChannelConfiguration.RGB == channelConfiguration) {
-                PutRgbImageWithNormalization(outputBuffer, image, props);
+                if (image.ColorType != SkiaSharp.SKColorType.Gray8) {
+                    throw new ArgumentException("Image is not grayscale!");
+                }
+                channels = 1;
+                channelOrder = new[] { 0 };
+                scales = new float[1];
+                offsets = new float[1];
+                ComputeScaleOffset(props.GetGrayMean(), props.GetGrayStd(), out scales[0], out offsets[0]);
+            } else if (ImageChannelConfiguration.RGB == channelConfiguration) {
+                channels = 3;
+                channelOrder = new[] { 0, 1, 2 };
+                scales = new float[3];
+                offsets = new float[3];
+                ComputeScaleOffset(props.GetRedMean(), props.GetRedStd(), out scales[0], out offsets[0]);
+                ComputeScaleOffset(props.GetGreenMean(), props.GetGreenStd(), out scales[1], out offsets[1]);
+                ComputeScaleOffset(props.GetBlueMean(), props.GetBlueStd(), out scales[2], out offsets[2]);
             }
             else if (ImageChannelConfiguration.BGR == channelConfiguration) {
-                PutBgrImageWithNormalization(outputBuffer, image, props);
+                channels = 3;
+                channelOrder = new[] { 0, 1, 2 };
+                scales = new float[3];
+                offsets = new float[3];
+                ComputeScaleOffset(props.GetBlueMean(), props.GetBlueStd(), out scales[0], out offsets[0]);
+                ComputeScaleOffset(props.GetGreenMean(), props.GetGreenStd(), out scales[1], out offsets[1]);
+                ComputeScaleOffset(props.GetRedMean(), props.GetRedStd(), out scales[2], out offsets[2]);
             } else {
                 throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
             }
-        }
 
-        private static void PutGrayscaleImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties props) {
-            if (!ImageChannelConfiguration.GRAYSCALE.Equals(GetImageType(image))) {
-                throw new ArgumentException("Invalid image type!");
-            }
-            PutImageBandWithNormalization(outputBuffer, image, props, BAND_GRAY, props.GetGrayMean(), props.GetGrayStd()); 
-        } 
+            using (SkiaSharp.SKPixmap pixmap = image.PeekPixels()) {
+                int width = pixmap.Width;
+                int height = pixmap.Height;
+                int stride = pixmap.RowBytes;
+                int bytesPerPixel = pixmap.Info.BytesPerPixel;
 
-        private static void PutRgbImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties props) {
-            if (!ImageChannelConfiguration.RGB.Equals(GetImageType(image))) {
-                throw new ArgumentException("Invalid image type!");
-            }
-            PutImageBandWithNormalization(outputBuffer, image, props, 0, props.GetRedMean(), props.GetRedStd());
-            PutImageBandWithNormalization(outputBuffer, image, props, 1, props.GetGreenMean(), props.GetGreenStd());
-            PutImageBandWithNormalization(outputBuffer, image, props, 2, props.GetBlueMean(), props.GetBlueStd());
-        }
+                if (bytesPerPixel < channels) {
+                    throw new ArgumentException("Image pixel format does not contain required channels!");
+                }
 
-        private static void PutBgrImageWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties props) {
-            if (!ImageChannelConfiguration.BGR.Equals(GetImageType(image))) {
-                throw new ArgumentException("Invalid image type!");
-            }
-            PutImageBandWithNormalization(outputBuffer, image, props, 0, props.GetBlueMean(), props.GetBlueStd());
-            PutImageBandWithNormalization(outputBuffer, image, props, 1, props.GetGreenMean(), props.GetGreenStd());
-            PutImageBandWithNormalization(outputBuffer, image, props, 2, props.GetRedMean(), props.GetRedStd());
-        }
+                byte[] pixelBytes = new byte[pixmap.BytesSize];
+                Marshal.Copy(pixmap.GetPixels(), pixelBytes, 0, pixelBytes.Length);
 
-        private static void PutImageBandWithNormalization(FloatBufferWrapper outputBuffer, SkiaSharp.SKBitmap image, 
-            OnnxInputProperties properties, int band, double mean, double std) {
-            using (SkiaSharp.SKPixmap raster = image.PeekPixels()) {
-                byte[] pixelBytes = new byte[raster.BytesSize];
-                Marshal.Copy(raster.GetPixels(), pixelBytes, 0, pixelBytes.Length);
+                for (int c = 0; c < channels; ++c) {
+                    int bandIdx = channelOrder[c];
+                    float scale = scales[c];
+                    float offset = offsets[c];
 
-                int stride = raster.RowBytes;
-                int bytesPerPixel = raster.Info.BytesPerPixel;
-
-                for (int y = 0; y < raster.Height; y++) {
-                    int rowStart = y * stride;
-                    for (int x = 0; x < raster.Width; x++) {
-                        int index = rowStart + x * bytesPerPixel;
-                        float v = pixelBytes[index + band] / 255f;
-                        outputBuffer.Put((float)((v - mean) / std));
+                    for (int y = 0; y < height; ++y) {
+                        int rowStart = y * stride;
+                        for (int x = 0; x < width; ++x) {
+                            int pixelIndex = rowStart + x * bytesPerPixel + bandIdx;
+                            byte b = pixelBytes[pixelIndex];
+                            float normalized = b * scale + offset;
+                            outputBuffer.Put(normalized);
+                        }
                     }
+                    
                 }
             }
+        }
+
+        private static void ComputeScaleOffset(double mean, double std, out float scale, out float offset) {
+            if (Math.Abs(std) < 1e-6) {
+                std = 1e-6;
+            }
+
+            scale = 1f / (255F * (float)std);
+            offset = -(float)mean / (float)std;
         }
 
         /// <summary>Converts an image to an RGBA Mat for use in OpenCV.</summary>
         /// <param name="image">image to convert</param>
         /// <returns>RGBA 8UC4 OpenCV Mat with the image</returns>
         private static Mat ToRgbMat(IronSoftware.Drawing.AnyBitmap image) {
-            int width = BufferedImageUtil.GetWidth(image);
-            int height = BufferedImageUtil.GetHeight(image);
-            Mat resultMat = new Mat(height, width, MatType.CV_8UC4);
+            using (SkiaSharp.SKBitmap bgraImage = GetBgraBitmap(image)) {
+                int width = bgraImage.Width;
+                int height = bgraImage.Height;
+                Mat resultMat = new Mat(height, width, MatType.CV_8UC4);
 
-            SkiaSharp.SKBitmap bgraImage = GetBgraBitmap(image);
-            using (SkiaSharp.SKPixmap bitmapData = ((SkiaSharp.SKBitmap)bgraImage).PeekPixels()) {
+                int stride = bgraImage.RowBytes;
+                int rowBytes = width * 4;
 
-                int stride = bitmapData.RowBytes;
-                int effectiveWidth = width * bitmapData.Info.BytesPerPixel;
-
+                byte[] lineData = new byte[rowBytes];
                 for (int y = 0; y < height; y++) {
-                    IntPtr srcLine = bitmapData.GetPixels() + y * stride;
+                    IntPtr srcLine = bgraImage.GetPixels() + y * stride;
                     IntPtr targetLine = resultMat.Ptr(y);
-    
-                    byte[] lineData = new byte[effectiveWidth];
-                    Marshal.Copy(srcLine, lineData, 0, effectiveWidth);
-                    Marshal.Copy(lineData, 0, targetLine, effectiveWidth);
+                    Marshal.Copy(srcLine, lineData, 0, rowBytes);
+                    Marshal.Copy(lineData, 0, targetLine, rowBytes);
                 }
-            }
 
-            return resultMat;
+                return resultMat;
+            }
         }
 
         /// <summary>Converts an RGBA 8UC4 OpenCV Mat to a buffered image.</summary>
@@ -478,8 +489,8 @@ namespace iText.Pdfocr.Onnx.Util {
                 }
             }
 
-            // RGBA -> BGRA
             for (int i = 0; i < pixelData.Length; i += 4) {
+                // Switch R and B components to convert RGBA to BGRA.
                 (pixelData[i + 2], pixelData[i]) = (pixelData[i], pixelData[i + 2]);
             }
 
