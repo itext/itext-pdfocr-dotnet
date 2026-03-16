@@ -456,24 +456,38 @@ namespace iText.Pdfocr.Onnx.Util {
                 throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MAT_TYPE
                     , rgb.Type()));
             }
-            SkiaSharp.SKBitmap image = new SkiaSharp.SKBitmap(rgb.Cols, rgb.Rows, 
-                SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Unpremul);
 
-            Mat.Indexer<Vec4b> indexer = rgb.GetGenericIndexer<Vec4b>();
-            for (int y = 0; y < rgb.Height; y++) {
-                for (int x = 0; x < rgb.Width; x++) {
-                    Vec4b color = indexer[y, x];
-                    image.SetPixel(x, y, new SkiaSharp.SKColor(
-                        color.Item0, // R
-                        color.Item1, // G
-                        color.Item2,  // B
-                        color.Item3 // A
-                    ));
+            int width = rgb.Cols;
+            int height = rgb.Rows;
+
+            SkiaSharp.SKBitmap image = new SkiaSharp.SKBitmap(width, height, 
+                SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Unpremul);
+            IntPtr dstPtr = image.GetPixels();
+
+            int bytesPerPixel = 4;
+            int totalBytes = width * height * bytesPerPixel;
+            byte[] pixelData = new byte[totalBytes];
+            if (rgb.IsContinuous()) {
+                Marshal.Copy(rgb.Data, pixelData, 0, totalBytes);
+            } else {
+                byte[] rowBuffer = new byte[width * bytesPerPixel];
+                for (int y = 0; y < height; y++) {
+                    IntPtr rowPtr = rgb.Ptr(y);
+                    Marshal.Copy(rowPtr, rowBuffer, 0, rowBuffer.Length);
+                    Array.Copy(rowBuffer, 0, pixelData, y * width * bytesPerPixel, rowBuffer.Length);
                 }
             }
+
+            // RGBA -> BGRA
+            for (int i = 0; i < pixelData.Length; i += 4) {
+                (pixelData[i + 2], pixelData[i]) = (pixelData[i], pixelData[i + 2]);
+            }
+
+            Marshal.Copy(pixelData, 0, dstPtr, pixelData.Length);
+
             return image;
         }
-            
+
         private static void DrawResizedImage(SkiaSharp.SKCanvas output, int outputWidth, int outputHeight, 
             IronSoftware.Drawing.AnyBitmap image, int targetWidth, int targetHeight, PaddingStrategy paddingStrategy) {
             // Figuring where to put the image
