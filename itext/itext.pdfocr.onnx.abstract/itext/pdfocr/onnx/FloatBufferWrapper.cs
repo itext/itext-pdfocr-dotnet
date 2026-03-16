@@ -20,11 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.Pdfocr.Onnx.Exceptions;
-using iText.Pdfocr.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace iText.pdfOcr.Onnx {
     /// <summary>
@@ -32,10 +28,10 @@ namespace iText.pdfOcr.Onnx {
     /// </summary>
     public class FloatBufferWrapper {
 
-        private float[] floatBuffer;
+        private readonly float[] floatBuffer;
+        private readonly int offset;
         private int position;
         private int limit;
-        private int offset;
 
         /// <summary>
         /// Constructs
@@ -43,11 +39,7 @@ namespace iText.pdfOcr.Onnx {
         /// on top of float array
         /// </summary>
         /// <param name="floatBuffer">buffer on top of which <see cref="FloatBufferWrapper"/> will be built</param>
-        public FloatBufferWrapper(float[] data) {
-            this.floatBuffer = data;
-            limit = data.Length;
-            position = 0;
-            offset = 0;
+        public FloatBufferWrapper(float[] data) : this(data, 0, data.Length, 0) {
         }
 
         /// <summary>
@@ -56,12 +48,12 @@ namespace iText.pdfOcr.Onnx {
         /// on top of float array
         /// </summary>
         /// <param name="floatBuffer">buffer on top of which <see cref="FloatBufferWrapper"/> will be built</param>
-        /// <param name="index">index from which buffer will start</param>
+        /// <param name="position">position from which buffer will start</param>
         /// <param name="limit">number of elements buffer can access</param>
         /// <param name="offset">offset from which buffer will start</param>
-        internal FloatBufferWrapper(float[] data, int index, int limit, int offset) {
+        internal FloatBufferWrapper(float[] data, int position, int limit, int offset) {
             this.floatBuffer = data;
-            this.position = index;
+            this.position = position;
             this.limit = limit;
             this.offset = offset;
         }
@@ -77,9 +69,7 @@ namespace iText.pdfOcr.Onnx {
         /// array's content to be modified, and vice versa.
         /// </remarks>
         /// <returns>The array that backs this buffer</returns>
-        public float[] Array() {
-            return this.floatBuffer; 
-        }
+        public float[] Array() => this.floatBuffer;
 
         /// <summary>
         /// Returns the offset within this buffer's backing array of the first
@@ -95,20 +85,20 @@ namespace iText.pdfOcr.Onnx {
         /// The offset within this buffer's array
         /// of the first element of the buffer
         /// </returns>
-        public int ArrayOffset() {
-            return this.offset; 
-        }
+        public int ArrayOffset() => this.offset;
 
         /// <summary>Relative get method.</summary>
         /// <remarks>
-        /// Relative get method.  Reads the float at this buffer's
+        /// Relative get method. Reads the float at this buffer
         /// current position, and then increments the position.
         /// </remarks>
         /// <returns>The float at the buffer's current position</returns>
         public float Get() {
-            float value = this.floatBuffer[offset + position];
-            position++;
-            return value; 
+            if (position >= limit) {
+                throw new InvalidOperationException($"Position {position} exceeds limit {limit}.");
+            }
+
+            return this.floatBuffer[offset + position++]; 
         }
 
         /// <summary>Absolute get method.</summary>
@@ -118,6 +108,9 @@ namespace iText.pdfOcr.Onnx {
         /// <param name="index">The index from which the float will be read</param>
         /// <returns>The float at the given index</returns>
         public float Get(int index) {
+            if (index < 0 || index >= limit) {
+                throw new IndexOutOfRangeException($"Index {index} is out of bounds for limit [0, {limit})!");
+            }
             return this.floatBuffer[offset + index]; 
         }
 
@@ -129,10 +122,18 @@ namespace iText.pdfOcr.Onnx {
         /// <param name="dst">The destination array</param>
         /// <returns>This buffer</returns>
         public FloatBufferWrapper Get(float[] dst) {
-            floatBuffer.CopyTo(dst, offset);
-            return this; 
+            int remaining = Remaining();
+            if (dst.Length < remaining) {
+                throw new ArgumentException($"Destination array is too small!\n" +
+                                            $"Destination array size is {dst.Length}, " +
+                                            $"remaining is {remaining}.");
+            }
+
+            System.Array.Copy(floatBuffer, offset + position, dst, 0, remaining);
+            position += remaining;
+            return this;
         }
-        
+
         /// <summary>Rewinds this buffer.</summary>
         /// <remarks>
         /// Rewinds this buffer.  The position is set to zero.
@@ -155,17 +156,16 @@ namespace iText.pdfOcr.Onnx {
         /// <param name="value">The float to be written</param>
         /// <returns>This buffer</returns>
         public FloatBufferWrapper Put(float value) {
-            floatBuffer.SetValue(value, offset + position);
-            position++;
+            if (position >= limit) {
+                throw new InvalidOperationException($"Position {position} exceeds limit {limit}.");
+            }
+            floatBuffer[offset + position++] = value;
             return this;
         }
 
         /// <summary>Returns this buffer's limit.</summary>
         /// <returns>The limit of this buffer</returns>
-        public int Limit()
-        {
-            return limit;
-        }
+        public int Limit() => limit;
 
         /// <summary>Sets this buffer's limit.</summary>
         /// <remarks>
@@ -174,15 +174,15 @@ namespace iText.pdfOcr.Onnx {
         /// </remarks>
         /// <param name="newLimit">The new limit value; must be non-negative and no larger than this buffer's capacity </param>
         /// <returns>This buffer</returns>
-        public FloatBufferWrapper Limit(int newLimit)
-        {
-            if (newLimit > position)
-            {
-                this.limit = newLimit;
+        public FloatBufferWrapper Limit(int newLimit) {
+            int capacity = floatBuffer.Length - offset;
+            if (newLimit < 0 || newLimit > capacity) {
+                throw new ArgumentOutOfRangeException($"Limit {newLimit} is out of range for indexes [0, {capacity}]!");
             }
-            else
-            {
-                this.limit = position;
+
+            limit = newLimit;
+            if (position > newLimit) {
+                position = newLimit;
             }
 
             return this;
@@ -199,7 +199,7 @@ namespace iText.pdfOcr.Onnx {
         /// </remarks>
         /// <returns>The new float buffer</returns>
         public FloatBufferWrapper Duplicate() {
-            return new FloatBufferWrapper((float[])floatBuffer.Clone(), position, limit, offset);
+            return new FloatBufferWrapper(floatBuffer, position, limit, offset);
         }
 
         /// <summary>
@@ -207,8 +207,7 @@ namespace iText.pdfOcr.Onnx {
         /// limit.
         /// </summary>
         /// <returns>The number of elements remaining in this buffer</returns>
-        public int Remaining()
-        {
+        public int Remaining() {
             int rem = limit - position;
             return rem > 0 ? rem : 0;
         }
@@ -218,11 +217,11 @@ namespace iText.pdfOcr.Onnx {
         ///     </param>
         /// <returns>This buffer</returns>
         public FloatBufferWrapper Position(int newPosition) {
-            if (newPosition < limit)
-            {
-                position = newPosition;
+            if (newPosition < 0 || newPosition > limit) {
+                throw new ArgumentOutOfRangeException($"Position {newPosition} is out of range " +
+                                                      $"for indexes [0, {limit}]!");
             }
-
+            position = newPosition;
             return this;
         }
 
@@ -239,10 +238,8 @@ namespace iText.pdfOcr.Onnx {
         /// will be identical to that of this buffer.
         /// </remarks>
         /// <returns>The new float buffer</returns>
-        public FloatBufferWrapper Slice()
-        {
-            float[] newFloatBuffer = (float[])this.Array().Clone();
-            return new FloatBufferWrapper(newFloatBuffer, 0, newFloatBuffer.Length - position, position);
+        public FloatBufferWrapper Slice() {
+            return new FloatBufferWrapper(floatBuffer, 0, limit - position, offset + position);
         }
 
         /// <summary>Wraps a float array into a buffer.</summary>
@@ -273,8 +270,7 @@ namespace iText.pdfOcr.Onnx {
         /// </remarks>
         /// <param name="capacity">The new buffer's capacity, in floats</param>
         /// <returns>The new float buffer</returns>
-        public static FloatBufferWrapper Allocate(int capacity)
-        {
+        public static FloatBufferWrapper Allocate(int capacity) {
             return new FloatBufferWrapper(new float[capacity]);
         }
     }
