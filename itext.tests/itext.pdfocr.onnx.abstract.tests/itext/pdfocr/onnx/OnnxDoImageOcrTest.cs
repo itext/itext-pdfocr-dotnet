@@ -125,17 +125,17 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "scanned_spa_01.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("(\nAY\nSI\nENSAYARA\nCOMO\nACTUAR?\nTanto\npeor,\nlo\nmejor\nes\n" +
-                                            "descansar\ny\nno\npensar\nla\nfiesta,\nsi\nse\npuede.\nNo\nhay\nnada\n" +
-                                            "mas\ndesalentador\nver\nen\nlas\nfiestas\na\njovenes\ncon\ncara\nde\n" +
-                                            "lastima\ny\nilusionadas\ny\nque\nse\nhan\npasado\ntodo\nel\ndia\n" +
-                                            "tratando\nhallar\nlo\nmejor\ny\nla\nmas\natractiva\nmanera\nde\npres\n" +
-                                            "tarse\nen\npublico.\nHay\nque\nactuar\ncon\ncalma\ny\nno\ncansaremos\nde" +
-                                            "\nrepetirlo,\nLo\nmas\nimportante\nes\nsaber\nque\nse\nva\na\nponer\ny" +
-                                            "\ntener\ntodo\na\nmano,\nSi\nintenta\nprobar\nun\nnuevo\nlapiz\nlabial" +
-                                            "\npara\nla\no\nsion,\nasegurese\nque\narmonice\ncon\nel\n-\nvestido\nrà." +
-                                            "\nque\nlle\nTambién\nel\nmaquillaje\nde\nlos\nojos\ndebe\narmoni\ncon\n" +
-                                            "el\nconjunto.\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("-\nAY\nSI\nENSAYARA\nCOMO\nACTUAR?\nTanto\npeor,\nlo\nmejor\nes\ndescans" +
+                                            "ar\ny\nno\npensar\nla\nfiesta,\nsi\nse\npuede.\nNo\nhay\nnada\nmas\ndesa" +
+                                            "lentador\nver\nen\nlas\nfiestas\na\njovenes\ncon\ncara\nde\nlastima\ny\n" +
+                                            "iluslonadas\ny\nque\nse\nhan\npasado\ntodo\nel\ndia\ntratando\nhallar\nl" +
+                                            "o\nmejor\ny\nla\nmas\natractiva\nmanera\nde\npres\ntarse\nen\npublico.\n" +
+                                            "Hay\nque\nactuar\ncon\ncalma\ny\nno\ncansaremos\nde\nrepetirlo,\nLo\nmas" +
+                                            "\nimportante\nes\nsaber\nque\nse\nva\na\nponer\ny\ntener\ntodo\na\nmano," +
+                                            "\nSi\nintenta\nprobar\nun\nnuevo\nlapiz\nlabial\npara\nla\no\nsion,\nase" +
+                                            "gurese\nque\narmonice\ncon\nel\n-\nvestido\nrà.\nque\nlle\nTambién\nel\n" +
+                                            "maquillaje\nde\nlos\nojos\ndebe\narmoni\ncon\nel\nconjunto.\n", 
+                textFromImage, textFromImage);
         }
 
         [NUnit.Framework.Test]

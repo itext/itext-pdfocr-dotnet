@@ -39,7 +39,7 @@ namespace iText.Pdfocr.Onnx.Actions {
     [NUnit.Framework.Category("IntegrationTest")]
     public class OnnxEventHandlingTest : IntegrationEventHandlingTestHelper {
         private static readonly String DESTINATION_FOLDER = NUnit.Framework.TestContext.CurrentContext.TestDirectory
-             + "/test/itext/pdfocr/onnx/actions/OnnxEventHandlingTest";
+             + "/test/itext/pdfocr/onnx/actions/OnnxEventHandlingTest/";
 
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeTests() {

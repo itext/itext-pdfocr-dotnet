@@ -6,6 +6,7 @@ See <https://opensource.org/licenses/Apache-2.0> for full license details.
 */
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using OpenCvSharp;
 using OpenCvSharp.Internal.Vectors;
 using iText.Commons.Utils;
@@ -248,17 +249,35 @@ namespace iText.Pdfocr.Onnx.Detection {
             int contourX = contourBox.X;
             int contourY = contourBox.Y;
             using (Mat mask = BuildTextContourPredictionMask(contour, contourBox)) {
-                Mat.Indexer<byte> maskIndexer = mask.GetGenericIndexer<byte>();
+                int maskRows = mask.Rows;
+                int maskCols = mask.Cols;
                 // Making sure we use correct boundaries for preds
-                int yEnd = Math.Min(mask.Rows, preds.GetDimension(0) - contourY);
-                int xEnd = Math.Min(mask.Cols, preds.GetDimension(1) - contourX);
+                int yEnd = Math.Min(maskRows, preds.GetDimension(0) - contourY);
+                int xEnd = Math.Min(maskCols, preds.GetDimension(1) - contourX);
+
+                byte[] maskData = new byte[maskRows * maskCols];
+                if (mask.IsContinuous() && mask.Data != IntPtr.Zero) {
+                    Marshal.Copy(mask.Data, maskData, 0, maskData.Length);
+                } else {
+                    byte[] rowBuffer = new byte[maskCols];
+                    for (int y = 0; y < maskRows; ++y) {
+                        IntPtr rowPtr = mask.Ptr(y);
+                        Marshal.Copy(rowPtr, rowBuffer, 0, maskCols);
+                        Buffer.BlockCopy(rowBuffer, 0, maskData, y * maskCols, maskCols);
+                    }
+                }
+
+                FloatBufferWrapper predsData = preds.GetData();
+                int predsWidth = preds.GetDimension(1);
+                int predsOffsetBase = contourY * predsWidth + contourX;
                 for (int y = 0; y < yEnd; ++y) {
-                    FloatBufferMdArray predictionsRow = preds.GetSubArray(y + contourY);
+                    int maskRowStart = y * maskCols;
+                    int predRowStart = predsOffsetBase + y * predsWidth;
                     for (int x = 0; x < xEnd; ++x) {
-                        if (maskIndexer[y, x] == 0) {
+                        if (maskData[maskRowStart + x] == 0) {
                             continue;
                         }
-                        float sample = MapPredToSample(predictionsRow.GetScalar(x + contourX));
+                        float sample = MapPredToSample(predsData.Get(predRowStart + x));
                         scoreCalculator.Observe(sample);
                     }
                 }

@@ -20,7 +20,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-using iText.pdfOcr.Onnx;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnx.Exceptions;
 using OpenCvSharp;
@@ -33,7 +32,7 @@ namespace iText.Pdfocr.Onnx.Util {
     /// Additional algorithms for working with
     /// <see cref="SkiaSharp.SKBitmap"/>.
     /// </summary>
-    public sealed class BufferedImageUtil { 
+    public sealed class BufferedImageUtil {
         /// <summary>
         /// Band index to retrieve a gray channel sample from a Raster.
         /// </summary>
@@ -42,22 +41,25 @@ namespace iText.Pdfocr.Onnx.Util {
         private BufferedImageUtil() {
         }
 
-        /// <summary>Converts a collection of images to a batched ML model input in a BCHW format with 1 or 3 channels.</summary>
+        /// <summary>
+        /// Converts a collection of images to a batched ML model input in a BCHW format with 1 or 3
+        /// channels.
+        /// </summary>
         /// <remarks>
-        /// Converts a collection of images to a batched ML model input in a BCHW format with 1 or 3 channels.
-        /// This does aspect-preserving image resizing to fit the input shape.
+        /// Converts a collection of images to a batched ML model input in a BCHW format with 1 or 3
+        /// channels. This does aspect-preserving image resizing to fit the input shape.
         /// </remarks>
         /// <param name="images">collection of images to convert to model input</param>
         /// <param name="properties">model input properties</param>
         /// <returns>batched BCHW model input MD-array</returns>
         public static FloatBufferMdArray ToBchwInput(ICollection<IronSoftware.Drawing.AnyBitmap> images, OnnxInputProperties
              properties) {
-            if (images.Count == 0) {
+            if (images.IsEmpty()) {
                 throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.SHOULD_BE_AT_LEAST_ONE_IMAGE);
             }
             if (images.Count > properties.GetBatchSize()) {
-                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES,
-                    images.Count, properties.GetBatchSize()));
+                throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES, images
+                    .Count, properties.GetBatchSize()));
             }
             ImageResizeOptions resizeOptions = properties.GetImageResizeOptions();
             Dimensions2D batchDimensions = CalcOutputDimensions(images, resizeOptions);
@@ -78,7 +80,6 @@ namespace iText.Pdfocr.Onnx.Util {
                     PutImageWithNormalization(inputData, resizedImage, properties);
                 }
             }
-
             inputData.Rewind();
             return new FloatBufferMdArray(inputData, inputShape);
         }
@@ -88,7 +89,8 @@ namespace iText.Pdfocr.Onnx.Util {
         /// <param name="image">image to rotate</param>
         /// <param name="orientation">text orientation used to rotate the image</param>
         /// <returns>new rotated image, or same image, if no rotation is required</returns>
-        public static IronSoftware.Drawing.AnyBitmap Rotate(IronSoftware.Drawing.AnyBitmap image, TextOrientation orientation) {
+        public static IronSoftware.Drawing.AnyBitmap Rotate(IronSoftware.Drawing.AnyBitmap image, TextOrientation 
+            orientation) {
             if (orientation == TextOrientation.HORIZONTAL) {
                 return image;
             }
@@ -134,11 +136,10 @@ namespace iText.Pdfocr.Onnx.Util {
         /// <param name="image">original image to be used for extraction</param>
         /// <param name="boxes">list of 4-point boxes. Points should be in the following order: BL, TL, TR, BR</param>
         /// <returns>list of extracted image boxes</returns>
-        public static IList<IronSoftware.Drawing.AnyBitmap> ExtractBoxes(IronSoftware.Drawing.AnyBitmap image, 
-            ICollection<iText.Kernel.Geom.Point[]> boxes) {
+        public static IList<IronSoftware.Drawing.AnyBitmap> ExtractBoxes(IronSoftware.Drawing.AnyBitmap image, ICollection
+            <iText.Kernel.Geom.Point[]> boxes) {
             IList<IronSoftware.Drawing.AnyBitmap> boxesImages = new List<IronSoftware.Drawing.AnyBitmap>(boxes.Count);
-
-            using (Mat imageMat = iText.Pdfocr.Onnx.Util.BufferedImageUtil.ToRgbMat(image)) {
+            using (Mat imageMat = iText.Pdfocr.Onnx.Util.BufferedImageUtil.ToBgrMat(image)) {
                 foreach (iText.Kernel.Geom.Point[] box in boxes) {
                     float boxWidth = (float)box[1].Distance(box[2]);
                     float boxHeight = (float)box[1].Distance(box[0]);
@@ -146,7 +147,7 @@ namespace iText.Pdfocr.Onnx.Util {
                         using (Mat boxImageMat = new Mat((int)boxHeight, (int)boxWidth, MatType.CV_8UC4)) {
                             OpenCvSharp.Size size = new OpenCvSharp.Size((int)boxWidth, (int)boxHeight);
                             Cv2.WarpAffine(imageMat, boxImageMat, transformationMat, size);
-                            boxesImages.Add(iText.Pdfocr.Onnx.Util.BufferedImageUtil.FromRgbMat(boxImageMat));
+                            boxesImages.Add(iText.Pdfocr.Onnx.Util.BufferedImageUtil.FromBgrMat(boxImageMat));
                         }
                     }
                 }
@@ -178,20 +179,25 @@ namespace iText.Pdfocr.Onnx.Util {
             return ((SkiaSharp.SKBitmap)image).Height;
         }
 
-        /// <summary>Based on the provided ImageResizeOptions, calculates the dimensions to
-        /// which a batch of images should be scaled and padded.</summary>
+        /// <summary>
+        /// Based on the provided ImageResizeOptions, calculates the dimensions to
+        /// which a batch of images should be scaled and padded.
+        /// </summary>
         /// <param name="images">batch of images to scale/pad</param>
-        /// <param name="resizeOptions">resize options to take into consideration for scaling/padding</param>
+        /// <param name="resizeOptions">
+        /// resize options to take into consideration for
+        /// scaling/padding
+        /// </param>
         /// <returns>the calculated dimensions</returns>
-        public static Dimensions2D CalcOutputDimensions(ICollection<IronSoftware.Drawing.AnyBitmap> images,
-            ImageResizeOptions resizeOptions) {
+        public static Dimensions2D CalcOutputDimensions(ICollection<IronSoftware.Drawing.AnyBitmap> images, ImageResizeOptions
+             resizeOptions) {
             /*
-             * Calculating target dimensions for each image, We need to know them
-             * all before creating a batch buffers, as width and height should be the same
-             * for each image in the batch. So we need to know the maximum sizes
-             * before we create the buffers. And we don't really want to bloat
-             * peak memory usage by creating an array of resized images...
-             */
+            * Calculating target dimensions for each image, We need to know them
+            * all before creating a batch buffers, as width and height should be the same
+            * for each image in the batch. So we need to know the maximum sizes
+            * before we create the buffers. And we don't really want to bloat
+            * peak memory usage by creating an array of resized images...
+            */
             ICollection<Dimensions2D> targetDimensions = new List<Dimensions2D>(images.Count);
             int maxWidth = 0;
             int maxHeight = 0;
@@ -204,67 +210,74 @@ namespace iText.Pdfocr.Onnx.Util {
             return new Dimensions2D(maxWidth, maxHeight);
         }
 
-        /// <summary>Based on the provided ImageResizeOptions, calculates the dimensions of
-        /// the output image, to where there original image should be scaled and placed with padding.
-        /// The returned dimensions will always satisfy the minimum constraints.
-        /// Maximum constraints will also be satisfied, if the dimension multiple is 1, but if it is greater,
-        /// it may round up to be higher than maximum.</summary>
+        /// <summary>
+        /// Based on the provided ImageResizeOptions, calculates the dimensions of
+        /// the output image, to where there original image should be scaled and
+        /// placed with padding.
+        /// </summary>
+        /// <remarks>
+        /// Based on the provided ImageResizeOptions, calculates the dimensions of
+        /// the output image, to where there original image should be scaled and
+        /// placed with padding. The returned dimensions will always satisfy the
+        /// minimum constraints. Maximum constraints will also be satisfied, if the
+        /// dimension multiple is 1, but if it is greater, it may round up to be
+        /// higher than maximum.
+        /// </remarks>
         /// <param name="image">image, that will be scaled/padded</param>
-        /// <param name="resizeOptions">resize options to take into consideration for scaling/padding</param>
+        /// <param name="resizeOptions">
+        /// resize options to take into consideration for
+        /// scaling/padding
+        /// </param>
         /// <returns>the calculated dimensions</returns>
-        public static Dimensions2D CalcOutputDimensions(IronSoftware.Drawing.AnyBitmap image,
-            ImageResizeOptions resizeOptions) {
+        public static Dimensions2D CalcOutputDimensions(IronSoftware.Drawing.AnyBitmap image, ImageResizeOptions resizeOptions
+            ) {
             int targetWidth = BufferedImageUtil.GetWidth(image);
             int targetHeight = BufferedImageUtil.GetHeight(image);
-
             /*
-             * If the image is smaller in one of the dimensions, we will try to
-             * resize it in a way that both dimensions at least match "min". In the
-             * case, when one of the dimensions gets too big and goes over "max",
-             * then we will shrink it to fit max again in the next block
-             */
+            * If the image is smaller in one of the dimensions, we will try to
+            * resize it in a way that both dimensions at least match "min". In the
+            * case, when one of the dimensions gets too big and goes over "max",
+            * then we will shrink it to fit max again in the next block
+            */
             double widthToMinMul = (double)resizeOptions.GetMinWidth() / targetWidth;
             double heightToMinMul = (double)resizeOptions.GetMinHeight() / targetHeight;
             if (widthToMinMul > 1.0 || heightToMinMul > 1.0) {
                 if (widthToMinMul >= heightToMinMul) {
                     targetWidth = resizeOptions.GetMinWidth();
-                    targetHeight = Math.Max(resizeOptions.GetMinHeight(),
-                        (int)Math.Round(widthToMinMul * targetHeight));
-                } else {
-                    targetWidth = Math.Max(resizeOptions.GetMinWidth(), (int)Math.Round(heightToMinMul * targetWidth));
+                    targetHeight = Math.Max(resizeOptions.GetMinHeight(), (int)MathematicUtil.Round(widthToMinMul * targetHeight
+                        ));
+                }
+                else {
+                    targetWidth = Math.Max(resizeOptions.GetMinWidth(), (int)MathematicUtil.Round(heightToMinMul * targetWidth
+                        ));
                     targetHeight = resizeOptions.GetMinHeight();
                 }
             }
-
             /*
-             * If the image is bigger in one of the dimensions, we will shrink it
-             * in a way to satisfy the "max" constraints. In case one of the
-             * dimensions will fall below its "min" constraint afterward, we will
-             * pad it back.
-             */
+            * If the image is bigger in one of the dimensions, we will shrink it
+            * in a way to satisfy the "max" constraints. In case one of the
+            * dimensions will fall below its "min" constraint afterward, we will
+            * pad it back.
+            */
             double widthToMaxMul = (double)resizeOptions.GetMaxWidth() / targetWidth;
             double heightToMaxMul = (double)resizeOptions.GetMaxHeight() / targetHeight;
             if (widthToMaxMul < 1.0 || heightToMaxMul < 1.0) {
                 if (widthToMaxMul <= heightToMaxMul) {
                     targetWidth = resizeOptions.GetMaxWidth();
-                    targetHeight = (int)MathUtil.Clamp(
-                        widthToMaxMul * targetHeight, resizeOptions.GetMinHeight(), resizeOptions.GetMaxHeight()
-                    );
-                } else {
-                    targetWidth = (int)MathUtil.Clamp(
-                        heightToMaxMul * targetWidth, resizeOptions.GetMinWidth(), resizeOptions.GetMaxWidth()
-                    );
+                    targetHeight = (int)MathUtil.Clamp(widthToMaxMul * targetHeight, resizeOptions.GetMinHeight(), resizeOptions
+                        .GetMaxHeight());
+                }
+                else {
+                    targetWidth = (int)MathUtil.Clamp(heightToMaxMul * targetWidth, resizeOptions.GetMinWidth(), resizeOptions
+                        .GetMaxWidth());
                     targetHeight = resizeOptions.GetMaxHeight();
                 }
             }
-
             // Rounding-up to multiple here
             int widthMultiple = resizeOptions.GetWidthMultiple();
             int heightMultiple = resizeOptions.GetHeightMultiple();
-            return new Dimensions2D(
-                (targetWidth + (widthMultiple - 1)) / widthMultiple * widthMultiple,
-                (targetHeight + (heightMultiple - 1)) / heightMultiple * heightMultiple
-            );
+            return new Dimensions2D((targetWidth + (widthMultiple - 1)) / widthMultiple * widthMultiple, (targetHeight
+                 + (heightMultiple - 1)) / heightMultiple * heightMultiple);
         }
 
         /// <summary>
@@ -284,8 +297,8 @@ namespace iText.Pdfocr.Onnx.Util {
         /// <param name="image">input image to truncate</param>
         /// <param name="ratioLimit">target ratio limit</param>
         /// <returns>the truncated image</returns>
-        public static IronSoftware.Drawing.AnyBitmap TruncateToRatio(IronSoftware.Drawing.AnyBitmap image, 
-            double ratioLimit) {
+        public static IronSoftware.Drawing.AnyBitmap TruncateToRatio(IronSoftware.Drawing.AnyBitmap image, double 
+            ratioLimit) {
             int width = BufferedImageUtil.GetWidth(image);
             int height = BufferedImageUtil.GetHeight(image);
             // If w/h ratio is too big, truncating by width
@@ -372,24 +385,24 @@ namespace iText.Pdfocr.Onnx.Util {
                 channelOrder = new[] { 0 };
                 scales = new float[1];
                 offsets = new float[1];
-                ComputeScaleOffset(props.GetGrayMean(), props.GetGrayStd(), out scales[0], out offsets[0]);
+                ComputeScaleOffset(props.GetGrayMean(), props.GetGrayStd(), scales, offsets, 0);
             } else if (ImageChannelConfiguration.RGB == channelConfiguration) {
                 channels = 3;
                 channelOrder = new[] { 0, 1, 2 };
                 scales = new float[3];
                 offsets = new float[3];
-                ComputeScaleOffset(props.GetRedMean(), props.GetRedStd(), out scales[0], out offsets[0]);
-                ComputeScaleOffset(props.GetGreenMean(), props.GetGreenStd(), out scales[1], out offsets[1]);
-                ComputeScaleOffset(props.GetBlueMean(), props.GetBlueStd(), out scales[2], out offsets[2]);
+                ComputeScaleOffset(props.GetRedMean(), props.GetRedStd(), scales, offsets, 0);
+                ComputeScaleOffset(props.GetGreenMean(), props.GetGreenStd(), scales, offsets, 1);
+                ComputeScaleOffset(props.GetBlueMean(), props.GetBlueStd(), scales, offsets, 2);
             }
             else if (ImageChannelConfiguration.BGR == channelConfiguration) {
                 channels = 3;
                 channelOrder = new[] { 0, 1, 2 };
                 scales = new float[3];
                 offsets = new float[3];
-                ComputeScaleOffset(props.GetBlueMean(), props.GetBlueStd(), out scales[0], out offsets[0]);
-                ComputeScaleOffset(props.GetGreenMean(), props.GetGreenStd(), out scales[1], out offsets[1]);
-                ComputeScaleOffset(props.GetRedMean(), props.GetRedStd(), out scales[2], out offsets[2]);
+                ComputeScaleOffset(props.GetBlueMean(), props.GetBlueStd(), scales, offsets, 0);
+                ComputeScaleOffset(props.GetGreenMean(), props.GetGreenStd(), scales, offsets, 1);
+                ComputeScaleOffset(props.GetRedMean(), props.GetRedStd(), scales, offsets, 2);
             } else {
                 throw new ArgumentException(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_CHANNEL_CONFIGURATION);
             }
@@ -411,34 +424,36 @@ namespace iText.Pdfocr.Onnx.Util {
                     int bandIdx = channelOrder[c];
                     float scale = scales[c];
                     float offset = offsets[c];
-
+                    float[] channelData = new float[height * width];
+                    int i = 0;
                     for (int y = 0; y < height; ++y) {
                         int rowStart = y * stride;
                         for (int x = 0; x < width; ++x) {
                             int pixelIndex = rowStart + x * bytesPerPixel + bandIdx;
                             byte b = pixelBytes[pixelIndex];
                             float normalized = b * scale + offset;
-                            outputBuffer.Put(normalized);
+                            channelData[i] = normalized;
+                            i++;
                         }
                     }
-                    
+                    outputBuffer.Put(channelData, 0, channelData.Length);
                 }
             }
         }
 
-        private static void ComputeScaleOffset(double mean, double std, out float scale, out float offset) {
+        private static void ComputeScaleOffset(double mean, double std, float[] scales, float[] offsets, int index
+            ) {
             if (Math.Abs(std) < 1e-6) {
                 std = 1e-6;
             }
-
-            scale = 1f / (255F * (float)std);
-            offset = -(float)mean / (float)std;
+            scales[index] = 1f / (255F * (float)std);
+            offsets[index] = -(float)mean / (float)std;
         }
 
-        /// <summary>Converts an image to an RGBA Mat for use in OpenCV.</summary>
+        /// <summary>Converts an image to an BGRA Mat for use in OpenCV.</summary>
         /// <param name="image">image to convert</param>
-        /// <returns>RGBA 8UC4 OpenCV Mat with the image</returns>
-        private static Mat ToRgbMat(IronSoftware.Drawing.AnyBitmap image) {
+        /// <returns>BGRA 8UC4 OpenCV Mat with the image</returns>
+        private static Mat ToBgrMat(IronSoftware.Drawing.AnyBitmap image) {
             using (SkiaSharp.SKBitmap bgraImage = GetBgraBitmap(image)) {
                 int width = bgraImage.Width;
                 int height = bgraImage.Height;
@@ -446,23 +461,30 @@ namespace iText.Pdfocr.Onnx.Util {
 
                 int stride = bgraImage.RowBytes;
                 int rowBytes = width * 4;
+                int totalBytes = height * rowBytes;
 
-                byte[] lineData = new byte[rowBytes];
-                for (int y = 0; y < height; y++) {
-                    IntPtr srcLine = bgraImage.GetPixels() + y * stride;
-                    IntPtr targetLine = resultMat.Ptr(y);
-                    Marshal.Copy(srcLine, lineData, 0, rowBytes);
-                    Marshal.Copy(lineData, 0, targetLine, rowBytes);
+                if (stride == rowBytes && resultMat.IsContinuous()) {
+                    byte[] allPixels = new byte[totalBytes];
+                    Marshal.Copy(bgraImage.GetPixels(), allPixels, 0, totalBytes);
+                    Marshal.Copy(allPixels, 0, resultMat.Data, totalBytes);
+                } else {
+                    byte[] lineData = new byte[rowBytes];
+                    for (int y = 0; y < height; ++y) {
+                        IntPtr srcLine = bgraImage.GetPixels() + y * stride;
+                        IntPtr targetLine = resultMat.Ptr(y);
+                        Marshal.Copy(srcLine, lineData, 0, rowBytes);
+                        Marshal.Copy(lineData, 0, targetLine, rowBytes);
+                    }
                 }
 
                 return resultMat;
             }
         }
 
-        /// <summary>Converts an RGBA 8UC4 OpenCV Mat to a buffered image.</summary>
-        /// <param name="rgb">RGBA 8UC4 OpenCV Mat to convert</param>
+        /// <summary>Converts an BGRA 8UC4 OpenCV Mat to a buffered image.</summary>
+        /// <param name="rgb">BGRA 8UC4 OpenCV Mat to convert</param>
         /// <returns>buffered image based on Mat</returns>
-        private static IronSoftware.Drawing.AnyBitmap FromRgbMat(Mat rgb) {
+        private static IronSoftware.Drawing.AnyBitmap FromBgrMat(Mat rgb) {
             if (rgb.Type() != MatType.CV_8UC4) {
                 throw new ArgumentException(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.UNEXPECTED_MAT_TYPE
                     , rgb.Type()));
@@ -477,24 +499,19 @@ namespace iText.Pdfocr.Onnx.Util {
 
             int bytesPerPixel = 4;
             int totalBytes = width * height * bytesPerPixel;
-            byte[] pixelData = new byte[totalBytes];
+            byte[] imgData = new byte[totalBytes];
             if (rgb.IsContinuous()) {
-                Marshal.Copy(rgb.Data, pixelData, 0, totalBytes);
+                Marshal.Copy(rgb.Data, imgData, 0, totalBytes);
             } else {
                 byte[] rowBuffer = new byte[width * bytesPerPixel];
-                for (int y = 0; y < height; y++) {
+                for (int y = 0; y < height; ++y) {
                     IntPtr rowPtr = rgb.Ptr(y);
                     Marshal.Copy(rowPtr, rowBuffer, 0, rowBuffer.Length);
-                    Array.Copy(rowBuffer, 0, pixelData, y * width * bytesPerPixel, rowBuffer.Length);
+                    Array.Copy(rowBuffer, 0, imgData, y * width * bytesPerPixel, rowBuffer.Length);
                 }
             }
 
-            for (int i = 0; i < pixelData.Length; i += 4) {
-                // Switch R and B components to convert RGBA to BGRA.
-                (pixelData[i + 2], pixelData[i]) = (pixelData[i], pixelData[i + 2]);
-            }
-
-            Marshal.Copy(pixelData, 0, dstPtr, pixelData.Length);
+            Marshal.Copy(imgData, 0, dstPtr, imgData.Length);
 
             return image;
         }

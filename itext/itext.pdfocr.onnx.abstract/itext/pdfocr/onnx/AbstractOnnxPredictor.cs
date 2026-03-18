@@ -31,7 +31,6 @@ using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnx.Exceptions;
 using iText.Pdfocr.Onnx.Util;
 using iText.Pdfocr.Util;
-using iText.pdfOcr.Onnx;
 
 namespace iText.Pdfocr.Onnx {
     /// <summary>Abstract predictor, based on models running over ONNX runtime.</summary>
@@ -71,12 +70,12 @@ namespace iText.Pdfocr.Onnx {
                 throw;
             }
         }
-        
+
         /// <summary>Creates a new abstract predictor.</summary>
         /// <remarks>
         /// Creates a new abstract predictor.
         /// <para />
-        /// If the specified model does not match input and output properties, it will throw an exception.
+        /// If the specified in properties model does not match input and output properties, it will throw an exception.
         /// </remarks>
         /// <param name="predictorProperties">the predictor properties</param>
         /// <param name="outputShape">

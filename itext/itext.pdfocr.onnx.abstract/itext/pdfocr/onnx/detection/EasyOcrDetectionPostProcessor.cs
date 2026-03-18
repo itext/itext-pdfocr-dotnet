@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using iText.Pdfocr.Onnx;
 using iText.Pdfocr.Onnx.Detection.Score;
 using iText.Pdfocr.Onnx.Merging;
-using iText.pdfOcr.Onnx;
 
 namespace iText.Pdfocr.Onnx.Detection {
     /// <summary>
@@ -79,17 +78,21 @@ namespace iText.Pdfocr.Onnx.Detection {
             * link data. So we are creating a new buffer, where they are
             * combined.
             */
-            FloatBufferWrapper textScoreBuffer = output.GetSubArray(0).GetData();
-            FloatBufferWrapper linkScoreBuffer = output.GetSubArray(1).GetData();
             int height = output.GetDimension(1);
             int width = output.GetDimension(2);
             int size = height * width;
+            float[] textScoreBuffer = new float[size];
+            output.GetSubArray(0).GetData().Get(textScoreBuffer);
+            float[] linkScoreBuffer = new float[size];
+            output.GetSubArray(1).GetData().Get(linkScoreBuffer);
             FloatBufferWrapper maskSourceBuffer = FloatBufferWrapper.Allocate(height * width);
+            float[] mask = new float[size];
             for (int i = 0; i < size; ++i) {
-                float text = textScoreBuffer.Get() >= TEXT_BINARIZATION_THRESHOLD ? 1.0F : 0.0F;
-                float link = linkScoreBuffer.Get() >= LINK_BINARIZATION_THRESHOLD ? 1.0F : 0.0F;
-                maskSourceBuffer.Put(text + link);
+                float text = textScoreBuffer[i] >= TEXT_BINARIZATION_THRESHOLD ? 1.0F : 0.0F;
+                float link = linkScoreBuffer[i] >= LINK_BINARIZATION_THRESHOLD ? 1.0F : 0.0F;
+                mask[i] = text + link;
             }
+            maskSourceBuffer.Put(mask, 0, mask.Length);
             maskSourceBuffer.Rewind();
             return new FloatBufferMdArray(maskSourceBuffer, new long[] { height, width });
         }

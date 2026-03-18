@@ -24,7 +24,6 @@ using System;
 using iText.Commons.Utils;
 using iText.Pdfocr.Onnx.Exceptions;
 using iText.Pdfocr.Util;
-using iText.pdfOcr.Onnx;
 
 namespace iText.Pdfocr.Onnx {
     /// <summary>

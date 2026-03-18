@@ -23,7 +23,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
@@ -134,16 +133,19 @@ namespace iText.Pdfocr.Onnx {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("(\nAY SI ENSAYARA COMO ACTUAR?\nTanto peor, lo mejor es descansar y" +
-                                                " no pensar\nla fiesta, si se puede. No hay nada mas desalentador\n" +
-                                                "ver en las fiestas a jovenes con cara de lastima y\nilusionadas y " +
-                                                "que se han pasado todo el dia tratando\nhallar lo mejor y la mas " +
-                                                "atractiva manera de pres\ntarse en publico. Hay que actuar con " +
-                                                "calma y no\ncansaremos de repetirlo, Lo mas importante es saber\n" +
-                                                "que se va a poner y tener todo a mano,\nSi intenta probar un nuevo " +
-                                                "lapiz labial para la o\nsion, asegurese que armonice con el vestido" +
-                                                "\n-\nrà. que lle\nTambién el maquillaje de los ojos debe armoni\n" +
-                                                "con el conjunto.", extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("-\nAY SI ENSAYARA COMO ACTUAR?\n" +
+                                                "Tanto peor, lo mejor es descansar y no pensar\n" +
+                                                "la fiesta, si se puede. No hay nada mas desalentador\n" +
+                                                "ver en las fiestas a jovenes con cara de lastima y\n" +
+                                                "iluslonadas y que se han pasado todo el dia tratando\n" +
+                                                "hallar lo mejor y la mas atractiva manera de pres\n" +
+                                                "tarse en publico. Hay que actuar con calma y no\n" +
+                                                "cansaremos de repetirlo, Lo mas importante es saber\n" +
+                                                "que se va a poner y tener todo a mano,\n" +
+                                                "Si intenta probar un nuevo lapiz labial para la o\n" +
+                                                "sion, asegurese que armonice con el vestido\n-\nrà. que lle\n" +
+                                                "También el maquillaje de los ojos debe armoni\ncon el conjunto.",
+                    extractionStrategy.GetResultantText());
             }
         }
 

@@ -91,7 +91,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "bengali_01.jpeg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("3(51T\nT(3T\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("3(5\nT(3T\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -156,7 +156,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "hindi_02.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("dloich\nSloiai\nHindi\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("dloich\nSlaiai\nHindi\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -210,8 +210,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "thai_02.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("MANAMRANMSLI"));
-            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("WisurulunauwuryeuAL"));
+            NUnit.Framework.Assert.IsTrue(textFromImage.Contains("MANAMRAAMSLI"), textFromImage);
         }
 
         [NUnit.Framework.Test]

@@ -21,8 +21,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Runtime.InteropServices;
 using OpenCvSharp;
-using OpenCvSharp.Internal.Vectors;
 using iText.Pdfocr.Onnx.Exceptions;
 
 namespace iText.Pdfocr.Onnx.Util {
@@ -44,13 +44,19 @@ namespace iText.Pdfocr.Onnx.Util {
             }
             int height = hwMdArray.GetDimension(0);
             int width = hwMdArray.GetDimension(1);
+            byte[] binaryData = new byte[height * width];
+            float[] binaryArray = new float[height * width];
+            hwMdArray.GetData().Get(binaryArray);
+            for (int i = 0; i < height * width; i++) {
+                binaryData[i] = binaryArray[i] >= threshold ? (byte)0xFF : (byte)0;
+            }
             Mat binaryImage = new Mat(height, width, MatType.CV_8U);
-            Mat.Indexer<byte> binaryImageIndexer = binaryImage.GetGenericIndexer<byte>();
-            for (int y = 0; y < height; y++) {
-                FloatBufferMdArray valuesRow = hwMdArray.GetSubArray(y);
-                for (int x = 0; x < width; ++x) {
-                    float value = valuesRow.GetScalar(x);
-                    binaryImageIndexer[y, x] = value >= threshold ? (byte)0xFF : (byte)0;
+            if (binaryImage.IsContinuous()) {
+                Marshal.Copy(binaryData, 0, binaryImage.Data, binaryData.Length);
+            } else {
+                for (int y = 0; y < height; ++y) {
+                    IntPtr rowPtr = binaryImage.Ptr(y);
+                    Marshal.Copy(binaryData, y * width, rowPtr, width);
                 }
             }
             return binaryImage;
