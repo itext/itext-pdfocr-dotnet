@@ -28,6 +28,7 @@ using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Util;
 
@@ -39,6 +40,20 @@ namespace iText.Pdfocr.Onnx {
             PdfCanvasProcessor processor = new PdfCanvasProcessor(strategy);
             processor.ProcessPageContent(pdfDocument.GetPage(pageNr));
             return strategy;
+        }
+
+        public static void ComparePdfs(String dest, String cmp, String targetDirectory) {
+            String diff = new CompareTool().CompareByContent(dest, cmp, targetDirectory, "diff_");
+            if (diff != null) {
+                String[] splitted = iText.Commons.Utils.StringUtil.Split(cmp, "\\.");
+                String filename = splitted[splitted.Length - 2];
+                String cmp2 = cmp.Replace(filename, filename + "_2");
+                if (FileUtil.FileExists(cmp2)) {
+                    // Second cmp is required on .NET because of different results on .NET CoreApp and .NET Framework.
+                    diff = new CompareTool().CompareByContent(dest, cmp2, targetDirectory, "diff_");
+                }
+            }
+            NUnit.Framework.Assert.IsNull(diff);
         }
 
         protected internal static String GetTextFromImage(FileInfo imageFile, IOcrEngine ocrEngine) {

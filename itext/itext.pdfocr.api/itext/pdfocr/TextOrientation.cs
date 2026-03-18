@@ -22,6 +22,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 namespace iText.Pdfocr {
     /// <summary>Enumeration of supported text orientations.</summary>
+    /// <remarks>
+    /// Enumeration of supported text orientations.
+    /// <para />
+    /// <see cref="TextOrientation"/>
+    /// is used to determine text bounding box rectangle orientation.
+    /// Text rotation could be more precisely determined by the bounding points, see
+    /// <see cref="TextInfo.GetRotationAngle()"/>.
+    /// </remarks>
     public enum TextOrientation {
         /// <summary>Horizontal text, non-rotated.</summary>
         HORIZONTAL,

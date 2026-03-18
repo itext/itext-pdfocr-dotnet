@@ -27,8 +27,6 @@ using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
-using iText.Pdfocr.Onnx.Detection;
-using iText.Pdfocr.Onnx.Recognition;
 using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
@@ -47,9 +45,12 @@ namespace iText.Pdfocr.Onnx {
         private static readonly String COLOR_PROFILE_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/profiles/";
 
+        private static OnnxOcrEngine OCR_ENGINE;
+
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
+            OCR_ENGINE = OcrEngineType.DOCTR.Get();
         }
 
         [NUnit.Framework.Test]
@@ -65,11 +66,11 @@ namespace iText.Pdfocr.Onnx {
             Stream @is = FileUtil.GetInputStreamForFile(COLOR_PROFILE_PATH + "sRGB_CS_profile.icm");
             PdfOutputIntent outputIntent = new PdfOutputIntent("", "", "", "sRGB IEC61966-2.1", @is);
             DoOcrAndCreatePdf(src, dest, ocrPdfCreatorProperties, outputIntent);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            OnnxTestUtils.ComparePdfs(dest, cmp, TARGET_DIRECTORY);
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceRgb.BLUE, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("This a test\n1S\nmessage for\n-\nOCR Scanner\nTest\nBMPTest", extractionStrategy
+                NUnit.Framework.Assert.AreEqual("Test\nThis a test\n1S\nmessage for\n-\nOCR Scanner\nBMPTest", extractionStrategy
                     .GetResultantText());
             }
         }
@@ -98,8 +99,8 @@ namespace iText.Pdfocr.Onnx {
 
         private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, OcrPdfCreatorProperties ocrPdfCreatorProperties
             , PdfOutputIntent pdfOutputIntent) {
-            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OcrEngineType.DOCTR.Get(), ocrPdfCreatorProperties
-                ) : new OcrPdfCreator(OcrEngineType.DOCTR.Get());
+            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties
+                ) : new OcrPdfCreator(OCR_ENGINE);
             using (PdfWriter writer = new PdfWriter(destPdfPath)) {
                 ocrPdfCreator.CreatePdfA(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer, pdfOutputIntent
                     ).Close();

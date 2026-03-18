@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
 using iText.Pdfocr.Onnx;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
@@ -29,8 +30,12 @@ using iText.Pdfocr.Onnx.Util;
 namespace iText.Pdfocr.Onnx.Text {
     /// <summary>
     /// This enum is created for
-    /// <see cref="TextPositioningModeTest"/>
-    /// and should be used in it only
+    /// <see cref="TextPositioningModeDocTrTest"/>
+    /// ,
+    /// <see cref="TextPositioningModeEasyOcrTest"/>
+    /// and
+    /// <see cref="TextPositioningModePaddleOcrTest"/>
+    /// tests and should be used in these test classes only
     /// since all engines (and so predictors) will be closed after these tests, and it won't be possible to reuse them.
     /// </summary>
     public sealed class OcrEngineTypeWithTextPositioning {
@@ -92,15 +97,6 @@ namespace iText.Pdfocr.Onnx.Text {
             return this.displayName;
         }
 
-        public static iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning[] All() {
-            return new iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning[] { iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning
-                .PADDLE_LINES, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.EASY_LINES, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning
-                .DOCTR_LINES, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.PADDLE_WORDS, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning
-                .EASY_WORDS, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.DOCTR_WORDS, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning
-                .PADDLE_WORDS_AND_LINES, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.EASY_WORDS_AND_LINES, 
-                iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.DOCTR_WORDS_AND_LINES };
-        }
-
         private static IDetectionPredictor paddleDetectionPredictor;
 
         private static IRecognitionPredictor paddleRecognitionPredictor;
@@ -134,8 +130,13 @@ namespace iText.Pdfocr.Onnx.Text {
 
         private static OnnxOcrEngine CreateEasyOcrEngine(iText.Pdfocr.Onnx.Text.TextPositioning textPositioning) {
             if (iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor == null) {
-                iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor = OnnxDetectionPredictor.EasyOcr
-                    (ModelPaths.GetEasyOcrDetectionModel());
+                OnnxDetectionPredictorProperties tempProperties = OnnxDetectionPredictorProperties.EasyOcr(ModelPaths.GetEasyOcrDetectionModel
+                    ());
+                OnnxDetectionPredictorProperties properties = new OnnxDetectionPredictorProperties(tempProperties.GetModelPath
+                    (), tempProperties.GetInputProperties(), new OcrEngineTypeWithTextPositioning.TextBoxMergeAgnosticEasyOcrDetectionPostProcessor
+                    (), tempProperties.GetOrtSessionOptionsCreator());
+                iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyDetectionPredictor = new OnnxDetectionPredictor
+                    (properties);
             }
             if (iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyRecognitionPredictor == null) {
                 iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.easyRecognitionPredictor = OnnxRecognitionPredictor
@@ -158,6 +159,15 @@ namespace iText.Pdfocr.Onnx.Text {
             return new OnnxOcrEngine(iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrDetectionPredictor, 
                 null, iText.Pdfocr.Onnx.Text.OcrEngineTypeWithTextPositioning.docTrRecognitionPredictor, new OnnxEngineProperties
                 ().SetTextPositioning(textPositioning));
+        }
+
+        private class TextBoxMergeAgnosticEasyOcrDetectionPostProcessor : EasyOcrDetectionPostProcessor {
+            protected internal override IList<iText.Kernel.Geom.Point[]> ApplyTextBoxMerger(IList<iText.Kernel.Geom.Point
+                []> detectedTextBoxes) {
+                // Results with rotation are messy with EasyOcrTextBoxMerger,
+                // that's why we disable it for the text positioning tests.
+                return detectedTextBoxes;
+            }
         }
     }
 }

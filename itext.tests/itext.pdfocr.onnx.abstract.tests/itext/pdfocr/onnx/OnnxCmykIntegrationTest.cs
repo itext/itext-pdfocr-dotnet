@@ -21,11 +21,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using System.IO;
-using iText.Commons.Utils;
-using iText.Kernel.Colors;
-using iText.Kernel.Pdf;
-using iText.Pdfocr;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Onnx.Exceptions;
 using iText.Pdfocr.Onnx.Util;
@@ -57,12 +52,8 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "rainbowInvertedCmykTest.pdf";
             String cmpTxt = TEST_DIRECTORY + "cmp_rainbowInvertedCmykTest.txt";
             try {
-                DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-                using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                    ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                    NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                    NUnit.Framework.Assert.AreEqual(GetCmpText(cmpTxt), extractionStrategy.GetResultantText());
-                }
+                OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
+                OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.05);
             }
             catch (PdfOcrInputException e) {
                 // CMYK bug https://bugs.openjdk.org/browse/JDK-8274735 in openJDK:
@@ -79,14 +70,8 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "rainbowAdobeCmykTest.pdf";
             String cmpTxt = TEST_DIRECTORY + "cmp_rainbowAdobeCmykTest.txt";
             try {
-                DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-                using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                    ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                    NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                    double relativeDistance = (double)MathUtil.CalculateLevenshteinDistance(GetCmpText(cmpTxt), extractionStrategy
-                        .GetResultantText()) / GetCmpText(cmpTxt).Length;
-                    NUnit.Framework.Assert.IsTrue(relativeDistance < 0.05);
-                }
+                OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
+                OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.05);
             }
             catch (PdfOcrInputException e) {
                 // CMYK bug https://bugs.openjdk.org/browse/JDK-8274735 in openJDK:
@@ -103,12 +88,8 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "rainbowCmykNoProfileTest.pdf";
             String cmpTxt = TEST_DIRECTORY + "cmp_rainbowCmykNoProfileTest.txt";
             try {
-                DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-                using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                    ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                    NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                    NUnit.Framework.Assert.AreEqual(GetCmpText(cmpTxt), extractionStrategy.GetResultantText());
-                }
+                OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
+                OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.05);
             }
             catch (PdfOcrInputException e) {
                 // CMYK bug https://bugs.openjdk.org/browse/JDK-8274735 in openJDK:
@@ -116,32 +97,6 @@ namespace iText.Pdfocr.Onnx {
                 // Amazon corretto jdk started support CMYK for JPEG from 11 version.
                 // Temurin 8 does not support CMYK for JPEG either.
                 NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
-            }
-        }
-
-        private OcrPdfCreatorProperties CreatorProperties(String layerName, Color color) {
-            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
-            ocrPdfCreatorProperties.SetTextLayerName(layerName);
-            ocrPdfCreatorProperties.SetTextColor(color);
-            return ocrPdfCreatorProperties;
-        }
-
-        private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, OcrPdfCreatorProperties ocrPdfCreatorProperties
-            ) {
-            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OCR_ENGINE, ocrPdfCreatorProperties
-                ) : new OcrPdfCreator(OCR_ENGINE);
-            using (PdfWriter writer = new PdfWriter(destPdfPath)) {
-                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
-            }
-        }
-
-        private String GetCmpText(String txtPath) {
-            int bytesCount = (int)new FileInfo(txtPath).Length;
-            char[] array = new char[bytesCount];
-            using (StreamReader stream = new StreamReader(iText.Commons.Utils.FileUtil.GetInputStreamForFile(System.IO.Path.Combine
-                (txtPath)))) {
-                stream.Read(array, 0, bytesCount);
-                return new String(array);
             }
         }
     }

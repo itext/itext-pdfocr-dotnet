@@ -144,7 +144,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual(1, result.Count);
             TextInfo textInfo = new TextInfo();
             textInfo.SetText("text");
-            textInfo.SetBboxRect(new Rectangle(204.0f, 158.0f, 538.0f, 136.0f));
+            textInfo.SetTextPoints(new Rectangle(204.0f, 158.0f, 538.0f, 136.0f).ToPointsArray());
             int page = 2;
             result.Put(page, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));
             NUnit.Framework.Assert.AreEqual(2, result.Count);

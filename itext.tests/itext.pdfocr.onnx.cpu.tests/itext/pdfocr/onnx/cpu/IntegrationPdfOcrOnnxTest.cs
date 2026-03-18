@@ -97,7 +97,7 @@ namespace iText.Pdfocr.Onnx.Cpu {
             String src = TEST_IMAGE_DIRECTORY + "example_01.BMP";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = GetTextFromImage(imageFile, OCR_ENGINE_IMAGE_OCR);
-            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\n-\nfor\nOCR\nScanner\nTest\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\nfor\n-\nOCR\nScanner\nTest\n", textFromImage);
         }
 
         [NUnit.Framework.Test]

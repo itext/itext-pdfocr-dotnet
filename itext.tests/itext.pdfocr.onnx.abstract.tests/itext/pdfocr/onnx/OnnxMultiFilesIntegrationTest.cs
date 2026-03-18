@@ -27,17 +27,15 @@ using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
-using iText.Layout.Font;
 using iText.Pdfocr;
+using iText.Pdfocr.Logs;
 using iText.Pdfocr.Onnx.Util;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
     public class OnnxMultiFilesIntegrationTest : ExtendedITextTest {
-        private static readonly String FONT_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/fonts/";
-
         private static readonly String TEST_DIRECTORY = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/OnnxMultiFilesIntegrationTest/";
 
@@ -53,29 +51,26 @@ namespace iText.Pdfocr.Onnx {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Ignore = true
+            )]
         public virtual void MultiFilesTest() {
             IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(TEST_IMAGE_DIRECTORY + "german_01.jpg"), new FileInfo
                 (TEST_IMAGE_DIRECTORY + "noisy_01.png"), new FileInfo(TEST_IMAGE_DIRECTORY + "nümbérs.jpg"), new FileInfo
                 (TEST_IMAGE_DIRECTORY + "example_04.png"));
             String dest = TARGET_DIRECTORY + "multiFiles.pdf";
             String cmp = TEST_DIRECTORY + "cmp_multiFiles.pdf";
-            OcrPdfCreatorProperties properties = CreatorProperties("Text1", "Image1", DeviceCmyk.CYAN);
-            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OcrEngineType.PADDLE.Get(), properties);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OcrEngineType.PADDLE.Get(), CreatorProperties());
             using (PdfWriter writer = new PdfWriter(dest)) {
                 ocrPdfCreator.CreatePdf(files, writer).Close();
             }
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
-        private OcrPdfCreatorProperties CreatorProperties(String textLayerName, String imageLayerName, Color color
-            ) {
+        private OcrPdfCreatorProperties CreatorProperties() {
             OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
-            ocrPdfCreatorProperties.SetTextLayerName(textLayerName);
-            ocrPdfCreatorProperties.SetTextColor(color);
-            ocrPdfCreatorProperties.SetImageLayerName(imageLayerName);
-            FontProvider fontProvider = new FontProvider();
-            fontProvider.AddDirectory(FONT_DIRECTORY);
-            ocrPdfCreatorProperties.SetFontProvider(fontProvider);
+            ocrPdfCreatorProperties.SetTextLayerName("Text1");
+            ocrPdfCreatorProperties.SetTextColor(DeviceCmyk.CYAN);
+            ocrPdfCreatorProperties.SetImageLayerName("Image1");
             return ocrPdfCreatorProperties;
         }
     }

@@ -344,7 +344,7 @@ namespace iText.Pdfocr.General {
             if (pageText == null || pageText.Count == 0) {
                 pageText = new List<TextInfo>();
                 TextInfo textInfo = new TextInfo();
-                textInfo.SetBboxRect(new Rectangle(0, 0, 0, 0));
+                textInfo.SetTextPoints(new Rectangle(0, 0, 0, 0).ToPointsArray());
                 textInfo.SetText("");
                 pageText.Add(textInfo);
             }

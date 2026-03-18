@@ -21,16 +21,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
-using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Detection;
+using iText.Pdfocr.Onnx.Orientation;
 using iText.Pdfocr.Onnx.Recognition;
-using iText.Pdfocr.Onnx.Text;
 using iText.Pdfocr.Onnx.Util;
+using iText.Pdfocr.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -50,10 +51,13 @@ namespace iText.Pdfocr.Onnx {
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OnnxIntegrationTest/";
-        
+
+        private static OnnxOcrEngine OCR_ENGINE;
+
         [NUnit.Framework.OneTimeSetUp]
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
+            OCR_ENGINE = OcrEngineType.DOCTR.Get();
         }
 
         [NUnit.Framework.Test]
@@ -61,36 +65,8 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "example_04.png";
             String dest = TARGET_DIRECTORY + "basicTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_basicTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-        }
-
-        [NUnit.Framework.Test]
-        public virtual void BmpByWordsTest() {
-            String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
-            String dest = TARGET_DIRECTORY + "bmpTestByWords.pdf";
-            String cmp = TEST_DIRECTORY + "cmp_bmpTestByWords.pdf";
-            OnnxDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            NUnit.Framework.Assert.IsNotNull(detectionPredictor.GetProperties());
-            OnnxRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            NUnit.Framework.Assert.IsNotNull(recognitionPredictor.GetProperties());
-            
-            using (OnnxOcrEngine onnxTrOcrEngine = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor,
-                       new OnnxEngineProperties()
-                           .SetTextPositioning(TextPositioning.BY_WORDS))) {
-                OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(onnxTrOcrEngine, 
-                    CreatorProperties("Text1", DeviceCmyk.MAGENTA));
-                using (PdfWriter writer = new PdfWriter(dest)) {
-                    ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(src)), writer).Close();
-                }
-            }
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
-                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
-                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("This\n1S test\na\nfor\nmessage\n-\nOCR\nScanner\nTest\nBMPTest", extractionStrategy
-                    .GetResultantText());
-            }
         }
 
         [NUnit.Framework.Test]
@@ -98,12 +74,12 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "example_02.JFIF";
             String dest = TARGET_DIRECTORY + "jfifTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_jfifTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Ihis a test\n1S\nmessage for\n-\nOCR Scanner\nTest", extractionStrategy.GetResultantText
+                NUnit.Framework.Assert.AreEqual("Test\nmessage for\nOCR Scanner\nIhis a test\n1S\n-", extractionStrategy.GetResultantText
                     ());
             }
         }
@@ -113,7 +89,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "example_03_10MB.tiff";
             String dest = TARGET_DIRECTORY + "tiff10MBTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_tiff10MBTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
@@ -127,7 +103,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "numbers_01.jpe";
             String dest = TARGET_DIRECTORY + "jpeTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_jpeTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
@@ -141,7 +117,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "numbers_01.nnn";
             String dest = TARGET_DIRECTORY + "nnnTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_nnnTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
@@ -154,21 +130,20 @@ namespace iText.Pdfocr.Onnx {
         public virtual void ScannedTest() {
             String src = TEST_IMAGE_DIRECTORY + "scanned_spa_01.png";
             String dest = TARGET_DIRECTORY + "scannedTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("(\nAY SI ENSAYARA COMO ACTUAR?\nTanto peor, lo mejor es" +
-                                                " descansar y no pensar\nla fiesta, si se puede. No hay nada mas " +
-                                                "desalentador\nver en las fiestas a jovenes con cara de lastima y\n" +
-                                                "ilusionadas y que se han pasado todo el dia tratando\nhallar lo" +
-                                                " mejor y la mas atractiva manera de pres\ntarse en publico. Hay que" +
-                                                " actuar con calma y no\ncansaremos de repetirlo, Lo mas importante" +
-                                                " es saber\nque se va a poner y tener todo a mano,\nSi intenta probar" +
-                                                " un nuevo lapiz labial para la o\nsion, asegurese que armonice con " +
-                                                "el vestido que lle\n-\nrà. También el maquillaje de los ojos debe " +
-                                                "armoni\ncon el conjunto.", 
-                    extractionStrategy.GetResultantText());
+                NUnit.Framework.Assert.AreEqual("(\nAY SI ENSAYARA COMO ACTUAR?\nTanto peor, lo mejor es descansar y" +
+                                                " no pensar\nla fiesta, si se puede. No hay nada mas desalentador\n" +
+                                                "ver en las fiestas a jovenes con cara de lastima y\nilusionadas y " +
+                                                "que se han pasado todo el dia tratando\nhallar lo mejor y la mas " +
+                                                "atractiva manera de pres\ntarse en publico. Hay que actuar con " +
+                                                "calma y no\ncansaremos de repetirlo, Lo mas importante es saber\n" +
+                                                "que se va a poner y tener todo a mano,\nSi intenta probar un nuevo " +
+                                                "lapiz labial para la o\nsion, asegurese que armonice con el vestido" +
+                                                "\n-\nrà. que lle\nTambién el maquillaje de los ojos debe armoni\n" +
+                                                "con el conjunto.", extractionStrategy.GetResultantText());
             }
         }
 
@@ -176,22 +151,21 @@ namespace iText.Pdfocr.Onnx {
         public virtual void HalftoneTest() {
             String src = TEST_IMAGE_DIRECTORY + "halftone.jpg";
             String dest = TARGET_DIRECTORY + "halftoneTest.pdf";
-            DoOcrAndCreatePdf(src, dest, CreatorProperties("Text1", DeviceCmyk.MAGENTA));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
                 NUnit.Framework.Assert.AreEqual("Silliness Enablers INVOICE\nYou dream it we enable it\n" +
                                                 "Middle of Nowhere\nPhone +329 292 22 22 INVOICE #100\n" +
-                                                "Fax +32 9 270 00 00 DATE: 6/30/2020\nTO: SHIP TO\n" +
-                                                "André Lemos André Lemos\nTycoon Corp. Tycoon Corp\n" +
-                                                "Wonderful Street Wonderful Street\nLala Land Lala Land\n" +
-                                                "+351 911 111111 +351 911 111 111\nCOMMENT OR SPFCIAI INSTRUCTIONS\n" +
-                                                "ITEMS MUST BF DELIVER - FUL - ASSEMBLED\n" +
-                                                "RSON P.O NUMBER REQUISITIONER SHIPPED VIA F.O.B POINT TERMS\n" +
-                                                "3Vi #7394009320 Website form AIR Delivery Due or receipt\n" +
+                                                "Fax +32 9 270 00 00 DATE: 6/30/2020\nTO: SHIP TO\nAndré Lemos " +
+                                                "André Lemos\nTycoon Corp. Tycoon Corp\nWonderful Street Wonderful" +
+                                                " Street\nLala Land Lala Land\n+351 911 111111 +351 911 111 111\n" +
+                                                "COMMENT OR SPFCIAI INSTRUCTIONS\nITEMS MUST BF DELIVER - FUL - " +
+                                                "ASSEMBLED\nRSON P.O NUMBER REQUISITIONER SHIPPED VIA F.O.B POINT " +
+                                                "TERMS\n3Vi #7394009320 Website form AIR Delivery Due or receipt\n" +
                                                 "QUANTITY DESCRIPTION UNIT TOTAL\nPR RICE\n10 Lasers $3000 $30000\n" +
-                                                "2 Band-Aids $1 $2\n5 Sharks $99999 $499995", 
-                    extractionStrategy.GetResultantText());
+                                                "2 Band-Aids $1 $2\n5 Sharks $99999 $499995"
+                    , extractionStrategy.GetResultantText());
             }
         }
 
@@ -200,7 +174,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "arabic_01.jpg";
             String dest = TARGET_DIRECTORY + "arabicTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_arabicTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -209,8 +183,8 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "bengali_01.jpeg";
             String dest = TARGET_DIRECTORY + "bengaliTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_bengaliTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
+            OnnxTestUtils.ComparePdfs(dest, cmp, TARGET_DIRECTORY);
         }
 
         [NUnit.Framework.Test]
@@ -218,7 +192,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "chinese_01.jpg";
             String dest = TARGET_DIRECTORY + "chineseTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_chineseTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -227,7 +201,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "french_01.png";
             String dest = TARGET_DIRECTORY + "frenchTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_frenchTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -236,7 +210,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "georgian_01.jpg";
             String dest = TARGET_DIRECTORY + "georgianTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_georgianTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -245,7 +219,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "german_01.jpg";
             String dest = TARGET_DIRECTORY + "germanTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_germanTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -254,7 +228,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "hindi_01.jpg";
             String dest = TARGET_DIRECTORY + "hindiTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_hindiTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -263,7 +237,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "japanese_01.png";
             String dest = TARGET_DIRECTORY + "japaneseTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_japaneseTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
@@ -272,28 +246,73 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "spanish_01.jpg";
             String dest = TARGET_DIRECTORY + "spanishTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_spanishTest.pdf";
-            DoOcrAndCreatePdf(src, dest);
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
+            OnnxTestUtils.ComparePdfs(dest, cmp, TARGET_DIRECTORY);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void BmpByWordsTest() {
+            String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
+            String dest = TARGET_DIRECTORY + "bmpTestByWords.pdf";
+            String cmp = TEST_DIRECTORY + "cmp_bmpTestByWords.pdf";
+            OnnxDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
+            OnnxRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
+            using (OnnxOcrEngine onnxOcrEngine = new OnnxIntegrationTest.RotationAgnosticOnnxOcrEngine(detectionPredictor
+                , null, recognitionPredictor, new OnnxEngineProperties().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning
+                .BY_WORDS))) {
+                OnnxTestUtils.DoOcrAndCreatePdf(src, dest, onnxOcrEngine);
+            }
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-        }
-
-        private OcrPdfCreatorProperties CreatorProperties(String layerName, Color color) {
-            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
-            ocrPdfCreatorProperties.SetTextLayerName(layerName);
-            ocrPdfCreatorProperties.SetTextColor(color);
-            return ocrPdfCreatorProperties;
-        }
-
-        private void DoOcrAndCreatePdf(String imagePath, String destPdfPath, OcrPdfCreatorProperties ocrPdfCreatorProperties
-            ) {
-            OcrPdfCreator ocrPdfCreator = ocrPdfCreatorProperties != null ? new OcrPdfCreator(OcrEngineType.DOCTR.Get(), ocrPdfCreatorProperties
-                ) : new OcrPdfCreator(OcrEngineType.DOCTR.Get());
-            using (PdfWriter writer = new PdfWriter(destPdfPath)) {
-                ocrPdfCreator.CreatePdf(JavaCollectionsUtil.SingletonList(new FileInfo(imagePath)), writer).Close();
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
+                ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
+                NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
+                NUnit.Framework.Assert.AreEqual("This\n1S test\na\nfor\nmessage\n-\nOCR\nScanner\nTest\nBMPTest", extractionStrategy
+                    .GetResultantText());
             }
         }
 
-        private void DoOcrAndCreatePdf(String imagePath, String destPdfPath) {
-            DoOcrAndCreatePdf(imagePath, destPdfPath, null);
+        [NUnit.Framework.Test]
+        public virtual void ObliqueLinesTest() {
+            String src = TEST_IMAGE_DIRECTORY + "obliqueLines.png";
+            String dest = TARGET_DIRECTORY + "obliqueLines.pdf";
+            String cmp = TEST_DIRECTORY + "cmp_obliqueLines.pdf";
+            OnnxDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
+            OnnxRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
+            using (OnnxOcrEngine onnxOcrEngine = new OnnxIntegrationTest.RotationAgnosticOnnxOcrEngine(detectionPredictor
+                , null, recognitionPredictor, new OnnxEngineProperties().SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning
+                .BY_LINES))) {
+                OnnxTestUtils.DoOcrAndCreatePdf(src, dest, onnxOcrEngine);
+            }
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+        }
+
+        /// <summary>
+        /// Implementation of the
+        /// <see cref="OnnxOcrEngine"/>
+        /// supporting only 0, 90, 180 and 270 degrees text rotation.
+        /// </summary>
+        public class RotationAgnosticOnnxOcrEngine : OnnxOcrEngine {
+            /// <summary>Create a new OCR engine with the provided predictors.</summary>
+            /// <param name="detectionPredictor">text detector. For an input image it outputs a list of text boxes</param>
+            /// <param name="orientationPredictor">
+            /// text orientation predictor. For an input image, which is a tight  crop of text,
+            /// it outputs its orientation in 90 degrees steps. Can be null, in that case all text
+            /// is assumed to be upright
+            /// </param>
+            /// <param name="recognitionPredictor">
+            /// text recognizer. For an input image, which is a tight crop of text, it outputs the
+            /// displayed string
+            /// </param>
+            /// <param name="properties">set of properties</param>
+            public RotationAgnosticOnnxOcrEngine(IDetectionPredictor detectionPredictor, IOrientationPredictor orientationPredictor
+                , IRecognitionPredictor recognitionPredictor, OnnxEngineProperties properties)
+                : base(detectionPredictor, orientationPredictor, recognitionPredictor, properties) {
+            }
+
+            public override IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
+                ) {
+                return PdfOcrTextBuilder.CorrectRotationAngle(base.DoImageOcr(input, ocrProcessContext));
+            }
         }
     }
 }

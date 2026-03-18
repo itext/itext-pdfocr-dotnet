@@ -1,4 +1,0 @@
-CapITALS anD
-lowerCaSE
-mix
-TEsTinG

@@ -49,12 +49,27 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// <summary><inheritDoc/></summary>
         public override IList<iText.Kernel.Geom.Point[]> Process(IronSoftware.Drawing.AnyBitmap input, FloatBufferMdArray
              output) {
-            /*
-            * The text detection model from EasyOCR, for the most part, returns
-            * words or small groups of words. Since the EasyOCR text recognition
-            * models expect lines as input, we need to merge the boxes.
-            */
-            return new EasyOcrTextBoxMerger().Process(base.Process(input, output));
+            IList<iText.Kernel.Geom.Point[]> result = base.Process(input, output);
+            return ApplyTextBoxMerger(result);
+        }
+
+        /// <summary>
+        /// The text detection model from EasyOCR, for the most part, returns
+        /// words or small groups of words.
+        /// </summary>
+        /// <remarks>
+        /// The text detection model from EasyOCR, for the most part, returns
+        /// words or small groups of words. Since the EasyOCR text recognition
+        /// models expect lines as input, we need to merge the boxes.
+        /// </remarks>
+        /// <param name="detectedTextBoxes">
+        /// list of rotated text boxes, provided by the
+        /// text detection routine
+        /// </param>
+        /// <returns>a new list with merged text boxes</returns>
+        protected internal virtual IList<iText.Kernel.Geom.Point[]> ApplyTextBoxMerger(IList<iText.Kernel.Geom.Point
+            []> detectedTextBoxes) {
+            return new EasyOcrTextBoxMerger().Process(detectedTextBoxes);
         }
 
         /// <summary><inheritDoc/></summary>

@@ -70,7 +70,7 @@ namespace iText.Pdfocr.Onnx {
                 return false;
             }
             return curLoc.DistParallelEnd() - prevLoc.DistParallelStart() > (curLoc.GetCharSpaceWidth() + prevLoc.GetCharSpaceWidth
-                ()) / 2.0f;
+                ()) / 2.0F;
         }
 
         private String GetTagName(IEventData data, EventType type) {

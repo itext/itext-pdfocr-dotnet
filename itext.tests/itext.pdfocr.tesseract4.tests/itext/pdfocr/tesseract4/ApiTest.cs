@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
+using iText.Kernel.Geom;
 using iText.Pdfocr;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Tesseract4.Exceptions;
@@ -116,10 +117,11 @@ namespace iText.Pdfocr.Tesseract4 {
                 (hocrFile), null, new Tesseract4OcrEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS_AND_LINES
                 ));
             TextInfo textInfo = parsedHocr.Get(1)[1];
-            NUnit.Framework.Assert.AreEqual(287.25, (float)textInfo.GetBboxRect().GetLeft(), 0.1);
-            NUnit.Framework.Assert.AreEqual(136.5f, (float)textInfo.GetBboxRect().GetBottom(), 0.1);
-            NUnit.Framework.Assert.AreEqual(385.5, (float)textInfo.GetBboxRect().GetRight(), 0.1);
-            NUnit.Framework.Assert.AreEqual(162.75, (float)textInfo.GetBboxRect().GetTop(), 0.1);
+            Point[] textPoints = textInfo.GetTextPoints();
+            NUnit.Framework.Assert.AreEqual(287.25, (float)textPoints[0].GetX(), 0.1);
+            NUnit.Framework.Assert.AreEqual(136.5f, (float)textPoints[0].GetY(), 0.1);
+            NUnit.Framework.Assert.AreEqual(385.5f, (float)textPoints[3].GetX(), 0.1);
+            NUnit.Framework.Assert.AreEqual(162.75, (float)textPoints[1].GetY(), 0.1);
         }
 
         [NUnit.Framework.Test]

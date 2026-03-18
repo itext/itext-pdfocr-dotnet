@@ -23,17 +23,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Extensions.Logging;
-using iText.Commons;
 using iText.Commons.Utils;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 
 namespace iText.Pdfocr.Tesseract4 {
     public abstract class ImageIntegrationTest : IntegrationTestHelper {
-        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Tesseract4.ImageIntegrationTest
-            ));
-
 //\cond DO_NOT_DOCUMENT
         internal AbstractTesseract4OcrEngine tesseractReader;
 //\endcond
@@ -75,8 +70,8 @@ namespace iText.Pdfocr.Tesseract4 {
             NUnit.Framework.Assert.AreEqual("degrees", pageData.Get(1)[1].GetText());
             NUnit.Framework.Assert.AreEqual("rotated", pageData.Get(1)[2].GetText());
             NUnit.Framework.Assert.AreEqual("image", pageData.Get(1)[3].GetText());
-            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBboxRect().GetWidth() > 100);
-            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBboxRect().GetHeight() < 100);
+            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBBoxRect().GetWidth() > 100);
+            NUnit.Framework.Assert.IsTrue(pageData.Get(1)[1].GetBBoxRect().GetHeight() < 100);
         }
 
         [NUnit.Framework.Test]

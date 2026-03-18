@@ -67,12 +67,6 @@ namespace iText.Pdfocr.Onnx.Util {
             return this.displayName;
         }
 
-        public static iText.Pdfocr.Onnx.Util.OcrEngineTypeWithOrientation[] All() {
-            return new iText.Pdfocr.Onnx.Util.OcrEngineTypeWithOrientation[] { iText.Pdfocr.Onnx.Util.OcrEngineTypeWithOrientation
-                .PADDLE, iText.Pdfocr.Onnx.Util.OcrEngineTypeWithOrientation.EASY, iText.Pdfocr.Onnx.Util.OcrEngineTypeWithOrientation
-                .DOCTR };
-        }
-
         private static OnnxOcrEngine CreatePaddleOcrEngine() {
             try {
                 IDetectionPredictor paddleDetectionPredictor = OnnxDetectionPredictor.PaddleOcr(ModelPaths.GetPaddleOcrDetectionModel

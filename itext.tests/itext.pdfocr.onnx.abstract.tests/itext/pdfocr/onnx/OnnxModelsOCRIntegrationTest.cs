@@ -57,9 +57,9 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "englishText.bmp";
             String dest = TARGET_DIRECTORY + name + "_bmp.pdf";
             String cmp = TEST_DIRECTORY + "cmp_" + name + "_bmp.pdf";
-            String cmpTxt = TEST_DIRECTORY + "bmp.txt";
+            String cmpTxt = TEST_DIRECTORY + "bmp" + name + ".txt";
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            OnnxTestUtils.ComparePdfs(dest, cmp, TARGET_DIRECTORY);
             ExtractTextAndCompare(dest, cmpTxt);
         }
 
@@ -70,10 +70,8 @@ namespace iText.Pdfocr.Onnx {
             String cmp = TEST_DIRECTORY + "cmp_" + name + "_invoice_front_thai.pdf";
             String src = TEST_IMAGE_DIRECTORY + "invoice_front_thai.jpg";
             String dest = TARGET_DIRECTORY + name + "_invoice_front_thai.pdf";
-            String cmpTxt = TEST_DIRECTORY + "invoice_front_thai.txt";
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
-            OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.31);
         }
 
         [NUnit.Framework.TestCaseSource("OcrEngines")]

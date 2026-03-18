@@ -1,0 +1,7 @@
+Also multiline check
+First check long line
+Fifth check long line
+Hello, world!
+Third check
+Fourth check
+Second check

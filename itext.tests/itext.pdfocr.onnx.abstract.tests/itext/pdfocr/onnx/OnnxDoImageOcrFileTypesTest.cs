@@ -24,7 +24,6 @@ using System;
 using System.IO;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
-using iText.Pdfocr.Onnx.Text;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -49,8 +48,8 @@ namespace iText.Pdfocr.Onnx {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
             IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.CrnnVgg16(CRNNVGG16);
-            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor, 
-                new OnnxEngineProperties().SetTextPositioning(TextPositioning.BY_WORDS));
+            OCR_ENGINE = new OnnxOcrEngine(detectionPredictor, null, recognitionPredictor, new OnnxEngineProperties().
+                SetTextPositioning(iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS));
         }
 
         [NUnit.Framework.OneTimeTearDown]
@@ -71,7 +70,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "example_01.BMP";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\n-\nfor\nOCR\nScanner\nTest\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\nfor\n-\nOCR\nScanner\nTest\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -79,7 +78,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "example_02.JFIF";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\n-\nfor\nOCR\nScanner\nTest\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Ihis\n1S\na\ntest\nmessage\nfor\n-\nOCR\nScanner\nTest\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -95,12 +94,11 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "multipage.tiff";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "1\n" 
-                 + "Multipage\nTIFF\nExample\nPage\n:\n2\nMultipage\nTIFF\nExample\n" + "Page\n"
-                 + "3\n" + "Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "4\n" + "Multipage\n" + "TIFF\n" + "Example\n"
-                 + "Page5\n" + "Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "6\n" + "Multipage\n" + "TIFF\n" + 
-                "Example\n" + "Page\n" + "/\n" + "Multipage\n" + "TIFF\n" + "Example\n" + "Page\n" + "8\n" + "Multipage\n"
-                 + "TIFF\n" + "Example\n" + "Page\n" + "9\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("Multipage\nTIFF\nExample\nPage\n1\nMultipage\nTIFF\nExample\nPage\n:\n2" +
+                                            "\nMultipage\nTIFF\nExample\nPage\n3\nMultipage\nTIFF\nExample\nPage\n4\n" +
+                                            "Multipage\nTIFF\nExample\nPage5\nMultipage\nTIFF\nExample\nPage\n6\n" +
+                                            "Multipage\nTIFF\nExample\nPage\n/\nMultipage\nTIFF\nExample\nPage\n8\n" +
+                                            "Multipage\nTIFF\nExample\nPage\n9\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
