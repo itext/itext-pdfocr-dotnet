@@ -360,22 +360,22 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// This method can be used to load the following PaddleOCR models:
         /// <list type="bullet">
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_server_det_infer">
         /// PP-OCRv5_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_mobile_det_infer">
         /// PP-OCRv5_mobile_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_server_det_infer">
         /// PP-OCRv4_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_mobile_det_infer">
         /// PP-OCRv4_mobile_det
         /// </a>
         /// </description></item>
@@ -423,22 +423,22 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// This method can be used to load the following PaddleOCR models:
         /// <list type="bullet">
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_server_det_infer">
         /// PP-OCRv5_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_mobile_det_infer">
         /// PP-OCRv5_mobile_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_server_det_infer">
         /// PP-OCRv4_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_mobile_det_infer">
         /// PP-OCRv4_mobile_det
         /// </a>
         /// </description></item>
@@ -476,22 +476,22 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// This method can be used to load the following PaddleOCR models:
         /// <list type="bullet">
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_server_det_infer">
         /// PP-OCRv5_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_mobile_det_infer">
         /// PP-OCRv5_mobile_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_server_det_infer">
         /// PP-OCRv4_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_mobile_det_infer">
         /// PP-OCRv4_mobile_det
         /// </a>
         /// </description></item>
@@ -526,22 +526,22 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// This method can be used to load the following PaddleOCR models:
         /// <list type="bullet">
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_server_det_infer">
         /// PP-OCRv5_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv5_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv5_mobile_det_infer">
         /// PP-OCRv5_mobile_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_server_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_server_det_infer">
         /// PP-OCRv4_server_det
         /// </a>
         /// </description></item>
         /// <item><description>
-        /// <a href="https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/pp-ocrv4_mobile_det_infer.tar">
+        /// <a href="https://huggingface.co/itextresearch/itext-pp-ocrv4_mobile_det_infer">
         /// PP-OCRv4_mobile_det
         /// </a>
         /// </description></item>
@@ -575,7 +575,7 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// This can be used to load the following models from EasyOCR:
         /// <list type="bullet">
         /// <item><description>
-        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/craft_mlt_25k.zip">
+        /// <a href="https://huggingface.co/itextresearch/itext-easyocr-craft_mlt_25k">
         /// CRAFT
         /// </a>
         /// </description></item>
@@ -606,7 +606,7 @@ namespace iText.Pdfocr.Onnx.Detection {
         /// This can be used to load the following models from EasyOCR:
         /// <list type="bullet">
         /// <item><description>
-        /// <a href="https://github.com/jaidedai/easyocr/releases/download/pre-v1.1.6/craft_mlt_25k.zip">
+        /// <a href="https://huggingface.co/itextresearch/itext-easyocr-craft_mlt_25k">
         /// CRAFT
         /// </a>
         /// </description></item>
