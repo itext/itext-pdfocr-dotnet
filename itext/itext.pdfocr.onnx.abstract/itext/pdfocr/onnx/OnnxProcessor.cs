@@ -74,14 +74,14 @@ namespace iText.Pdfocr.Onnx {
                 }
                 IList<String> textString = ToList(recognitionPredictor.Predict(textImages));
                 IList<TextInfo> textInfos = new List<TextInfo>(textBoxes.Count);
+                int imageHeight = BufferedImageUtil.GetHeight(image);
                 for (int i = 0; i < textBoxes.Count; ++i) {
                     TextOrientation textOrientation = TextOrientation.HORIZONTAL;
                     if (textOrientations != null) {
                         textOrientation = textOrientations[i];
                     }
                     iText.Kernel.Geom.Point[] textPoints = GetTextPoints(textBoxes[i], textOrientation);
-                    textInfos.Add(new TextInfo().SetText(textString[i]).SetPixelTextPoints(textPoints, BufferedImageUtil.GetHeight
-                        (image)));
+                    textInfos.Add(new TextInfo().SetText(textString[i]).SetPixelTextPoints(textPoints, imageHeight));
                 }
                 result.Put(imageIndex + 1, textInfos);
                 ++imageIndex;

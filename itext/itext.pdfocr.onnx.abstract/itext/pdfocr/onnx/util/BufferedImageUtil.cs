@@ -118,8 +118,8 @@ namespace iText.Pdfocr.Onnx.Util {
                 new SkiaSharp.SKBitmap(newW, newH, SkiaSharp.SKColorType.Bgra8888, SkiaSharp.SKAlphaType.Unpremul);
             using (SkiaSharp.SKCanvas graphics = new SkiaSharp.SKCanvas(rotated)) {
                 graphics.Translate((float)((newW - oldW) / 2.0), (float)((newH - oldH) / 2.0));
-                float centerX = BufferedImageUtil.GetWidth(image) / 2.0f;
-                float centerY = BufferedImageUtil.GetHeight(image) / 2.0f;
+                float centerX = oldW / 2.0f;
+                float centerY = oldH / 2.0f;
                 graphics.Translate(centerX, centerY);
                 graphics.RotateDegrees((float)angle);
                 graphics.Translate(-centerX, -centerY);
