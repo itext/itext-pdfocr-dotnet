@@ -315,6 +315,11 @@ namespace iText.Pdfocr.Onnx {
                 ) {
                 return PdfOcrTextBuilder.CorrectRotationAngle(base.DoImageOcr(input, ocrProcessContext));
             }
+            
+            public override IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+                return PdfOcrTextBuilder.CorrectRotationAngle(base.DoImageOcr(inputs, ocrProcessContext));
+            }
         }
     }
 }

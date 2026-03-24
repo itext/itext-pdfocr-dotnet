@@ -46,6 +46,7 @@ using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
 using iText.Pdfocr.Statistics;
 using iText.Pdfocr.Structuretree;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -224,8 +225,29 @@ namespace iText.Pdfocr {
             // map pageNumber -> retrieved text data(text and its coordinates)
             IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
                 <int, IList<TextInfo>>>(inputImages.Count * 2);
-            foreach (FileInfo inputImage in inputImages) {
-                imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage, ocrProcessContext));
+            IDictionary<int, IList<TextInfo>> imagesTextDataInfos = ocrEngine.DoImageOcr(inputImages, ocrProcessContext
+                );
+            if (!imagesTextDataInfos.IsEmpty()) {
+                int i = 0;
+                foreach (FileInfo inputImage in inputImages) {
+                    try {
+                        int pageCount = TiffImageUtil.IsTiffImage(inputImage) ? PdfCreatorUtil.GetNumberOfPageTiff(inputImage) : 1;
+                        IDictionary<int, IList<TextInfo>> currentImagesTextDataInfos = new Dictionary<int, IList<TextInfo>>();
+                        for (int j = 0; j <= pageCount; j++) {
+                            currentImagesTextDataInfos.Put(j, imagesTextDataInfos.Get(i + j));
+                        }
+                        i += pageCount;
+                        imagesTextData.Put(inputImage, currentImagesTextDataInfos);
+                    }
+                    catch (System.IO.IOException e) {
+                        LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                        throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
+                    }
+                    catch (iText.IO.Exceptions.IOException e) {
+                        LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                        throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
+                    }
+                }
             }
             // create PdfDocument
             return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData, pdfSequenceId, documentProperties);

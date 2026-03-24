@@ -43,6 +43,17 @@ namespace iText.Pdfocr.Helpers {
             return DoImageOcr(input);
         }
 
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+            return JavaCollectionsUtil.EmptyMap<int, IList<TextInfo>>();
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            return DoImageOcr(inputs);
+        }
+
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
         }
 

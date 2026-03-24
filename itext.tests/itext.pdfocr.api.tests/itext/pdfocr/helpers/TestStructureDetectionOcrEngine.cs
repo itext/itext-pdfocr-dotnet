@@ -79,6 +79,25 @@ namespace iText.Pdfocr.Helpers {
             return result;
         }
 
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+            return null;
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>();
+            foreach (FileInfo file in inputs) {
+                IDictionary<int, IList<TextInfo>> imageOcr = DoImageOcr(file, ocrProcessContext);
+                int pageShift = result.Count;
+                foreach (KeyValuePair<int, IList<TextInfo>> entry in imageOcr) {
+                    result.Put(entry.Key + pageShift, entry.Value);
+                }
+            }
+            return result;
+        }
+
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
         }
 

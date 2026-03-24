@@ -89,6 +89,57 @@ namespace iText.Pdfocr {
         IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext);
 
         /// <summary>
+        /// Reads data from the provided list of input image files and returns retrieved data
+        /// in the format described below.
+        /// </summary>
+        /// <param name="inputs">
+        /// list of
+        /// <see cref="System.IO.FileInfo"/>
+        /// input images
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="TextInfo"/>
+        /// elements where each
+        /// <see cref="TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs);
+
+        /// <summary>
+        /// Reads data from the provided list of input image files and returns retrieved data
+        /// in the format described below.
+        /// </summary>
+        /// <param name="inputs">
+        /// list of
+        /// <see cref="System.IO.FileInfo"/>
+        /// input images
+        /// </param>
+        /// <param name="ocrProcessContext">ocr processing context</param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="TextInfo"/>
+        /// elements where each
+        /// <see cref="TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext);
+
+        /// <summary>
         /// Performs OCR using provided
         /// <see cref="IOcrEngine"/>
         /// for the given list of

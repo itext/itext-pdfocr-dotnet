@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.IO;
+using iText.Commons.Utils;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
 using iText.Pdfocr.Logs;
@@ -46,7 +47,8 @@ namespace iText.Pdfocr {
             FileInfo file = new FileInfo(PdfHelper.GetImagesTestDirectory() + "corrupted");
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfHelper.GetTextFromPdf(file
                 , "testCorruptedImageWithoutExtension"));
-            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message);
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS
+                , file.FullName), e.Message);
         }
 
         [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE)]
@@ -55,7 +57,8 @@ namespace iText.Pdfocr {
             FileInfo file = new FileInfo("test.Name");
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => PdfHelper.GetTextFromPdf(file
                 , "testInvalidPathWithDot"));
-            NUnit.Framework.Assert.AreEqual(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message);
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS
+                , file.FullName), e.Message);
         }
     }
 }

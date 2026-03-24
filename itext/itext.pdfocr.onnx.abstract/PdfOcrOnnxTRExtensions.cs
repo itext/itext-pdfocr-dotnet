@@ -167,5 +167,11 @@ internal static class PdfOcrOnnxTRExtensions
 
         return r;
     }
+
+    public static void AddAll<T>(this ICollection<T> c, IEnumerable<T> collectionToAdd) {
+        foreach (T o in collectionToAdd) {
+            c.Add(o);
+        }
+    }
 }
 //\endcond

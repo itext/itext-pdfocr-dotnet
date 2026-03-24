@@ -23,7 +23,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using iText.Commons;
 using iText.Commons.Actions.Data;
@@ -133,7 +132,18 @@ namespace iText.Pdfocr.Onnx {
         /// <summary><inheritDoc/></summary>
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
-            IDictionary<int, IList<TextInfo>> result = DoOnnxOcr(input, ocrProcessContext);
+            return DoImageOcr(JavaCollectionsUtil.SingletonList(input), ocrProcessContext);
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+            return DoImageOcr(inputs, new OcrProcessContext(new OnnxEventHelper()));
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            IDictionary<int, IList<TextInfo>> result = DoOnnxOcr(inputs, ocrProcessContext);
             if (iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS.Equals(properties.GetTextPositioning())) {
                 PdfOcrTextBuilder.SortTextInfosByLines(result);
             }
@@ -170,12 +180,9 @@ namespace iText.Pdfocr.Onnx {
                 // save confirm events from doImageOcr, to send them only after successful writing to the file
                 OnnxFileResultEventHelper fileResultEventHelper = new OnnxFileResultEventHelper(storedEventHelper);
                 ocrProcessContext.SetOcrEventHelper(fileResultEventHelper);
-                StringBuilder content = new StringBuilder();
-                foreach (FileInfo inputImage in inputImages) {
-                    IDictionary<int, IList<TextInfo>> outputMap = DoOnnxOcr(inputImage, ocrProcessContext);
-                    content.Append(PdfOcrTextBuilder.BuildText(outputMap));
-                }
-                PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content.ToString());
+                IDictionary<int, IList<TextInfo>> outputMap = DoOnnxOcr(inputImages, ocrProcessContext);
+                String content = PdfOcrTextBuilder.BuildText(outputMap);
+                PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content);
                 fileResultEventHelper.RegisterAllSavedEvents();
             }
             finally {
@@ -223,12 +230,13 @@ namespace iText.Pdfocr.Onnx {
 //\endcond
 
         /// <summary>
-        /// Reads raw data from the provided input image file and returns retrieved data
+        /// Reads raw data from the provided input image files and returns retrieved data
         /// in the format described below.
         /// </summary>
         /// <param name="input">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
+        /// 
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of input image files
         /// </param>
         /// <param name="ocrProcessContext">ocr processing context</param>
         /// <returns>
@@ -245,8 +253,12 @@ namespace iText.Pdfocr.Onnx {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        private IDictionary<int, IList<TextInfo>> DoOnnxOcr(FileInfo input, OcrProcessContext ocrProcessContext) {
-            IList<IronSoftware.Drawing.AnyBitmap> images = GetImages(input);
+        private IDictionary<int, IList<TextInfo>> DoOnnxOcr(IList<FileInfo> input, OcrProcessContext ocrProcessContext
+            ) {
+            IList<IronSoftware.Drawing.AnyBitmap> images = new List<IronSoftware.Drawing.AnyBitmap>();
+            foreach (FileInfo file in input) {
+                images.AddAll(GetImages(file));
+            }
             OnnxProcessor onnxProcessor = new OnnxProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
                 );
             return onnxProcessor.DoOcr(images, ocrProcessContext);

@@ -276,19 +276,21 @@ namespace iText.Pdfocr {
         }
 //\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Counts number of pages in the provided tiff image.</summary>
         /// <param name="inputImage">
         /// input image
         /// <see cref="System.IO.FileInfo"/>
         /// </param>
         /// <returns>number of pages in the provided TIFF image</returns>
-        private static int GetNumberOfPageTiff(FileInfo inputImage) {
+        internal static int GetNumberOfPageTiff(FileInfo inputImage) {
             RandomAccessFileOrArray raf = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateBestSource
                 (inputImage.FullName));
             int numOfPages = TiffImageData.GetNumberOfPages(raf);
             raf.Close();
             return numOfPages;
         }
+//\endcond
     }
 //\endcond
 }
