@@ -34,7 +34,7 @@ namespace iText.Pdfocr.Onnx.Actions.Data {
 
         private const String PDF_OCR_ONNX_PUBLIC_PRODUCT_NAME = "pdfOCR-Onnx";
 
-        private const String PDF_OCR_VERSION = "5.0.0-SNAPSHOT";
+        private const String PDF_OCR_VERSION = "5.0.1-SNAPSHOT";
 
         private const int PDF_OCR_COPYRIGHT_SINCE = 2000;
 
