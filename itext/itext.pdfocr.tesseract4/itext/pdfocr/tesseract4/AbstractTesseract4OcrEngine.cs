@@ -568,8 +568,7 @@ namespace iText.Pdfocr.Tesseract4 {
             AbstractTesseract4OcrEngine.ITesseractOcrResult result = null;
             try {
                 // image needs to be paginated only if it's tiff or preprocessing isn't required
-                int realNumOfPages = TiffImageUtil.IsTiffImage(input) ? ImagePreprocessingUtil.GetNumberOfPageTiff(input) : 
-                    1;
+                int realNumOfPages = TiffImageUtil.IsTiffImage(input) ? TiffImageUtil.GetNumberOfPageTiff(input) : 1;
                 int numOfPages = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? realNumOfPages : 1;
                 int numOfFiles = GetTesseract4OcrEngineProperties().IsPreprocessingImages() ? 1 : realNumOfPages;
                 for (int page = 1; page <= numOfPages; page++) {

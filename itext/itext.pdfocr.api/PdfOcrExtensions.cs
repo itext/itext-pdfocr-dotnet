@@ -57,5 +57,14 @@ internal static class PdfOcrExtensions
     public static bool IsEmpty<T>(this ICollection<T> collection) {
         return collection.Count == 0;
     }
+    
+    public static void Reset(this MemoryStream stream) {
+        stream.Position = 0;
+    }
+    
+    public static int JRead(this Stream stream, byte[] buffer, int offset, int count) {
+        int result = stream.Read(buffer, offset, count);
+        return result == 0 ? -1 : result;
+    }
 }
 //\endcond

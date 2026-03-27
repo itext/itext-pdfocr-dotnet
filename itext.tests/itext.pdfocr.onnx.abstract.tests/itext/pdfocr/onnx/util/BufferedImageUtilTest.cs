@@ -91,10 +91,10 @@ namespace iText.Pdfocr.Onnx.Util {
 
         [NUnit.Framework.TestCaseSource("ResizeTestParams")]
         public virtual void ResizeTest(String cmpFileName, int width, int height, PaddingStrategy paddingStrategy) {
-            IronSoftware.Drawing.AnyBitmap inputImage = IronSoftware.Drawing.AnyBitmap.FromFile(new FileInfo(TEST_DIRECTORY
-                 + "resize_base.png").FullName);
-            IronSoftware.Drawing.AnyBitmap expectedImage = IronSoftware.Drawing.AnyBitmap.FromFile(new FileInfo(TEST_DIRECTORY
-                 + cmpFileName).FullName);
+            IronSoftware.Drawing.AnyBitmap inputImage = IronSoftware.Drawing.AnyBitmap.FromStream(
+                FileUtil.GetInputStreamForFile(TEST_DIRECTORY + "resize_base.png"));
+            IronSoftware.Drawing.AnyBitmap expectedImage = IronSoftware.Drawing.AnyBitmap.FromStream(
+                FileUtil.GetInputStreamForFile(TEST_DIRECTORY + cmpFileName));
             ImageResizeOptions resizeOptions = new ImageResizeOptions(BufferedImageUtil.GetImageType(expectedImage), 
                 width, height, paddingStrategy);
             IronSoftware.Drawing.AnyBitmap actualImage = BufferedImageUtil.Resize(inputImage, width, height, resizeOptions);

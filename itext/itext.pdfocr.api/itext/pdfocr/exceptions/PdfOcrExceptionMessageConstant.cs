@@ -27,6 +27,8 @@ namespace iText.Pdfocr.Exceptions {
     public class PdfOcrExceptionMessageConstant {
         public const String CANNOT_READ_INPUT_IMAGE = "Cannot read input image";
 
+        public const String CANNOT_READ_INPUT_STREAM = "Cannot read input stream";
+
         public const String CANNOT_READ_INPUT_IMAGE_PARAMS = "Cannot read input image {0}";
 
         public const String CANNOT_RESOLVE_PROVIDED_FONTS = "Cannot resolve any of provided fonts. Please check provided FontProvider.";
@@ -34,6 +36,8 @@ namespace iText.Pdfocr.Exceptions {
         public const String CANNOT_CREATE_PDF_DOCUMENT = "Cannot create PDF document: {0}";
 
         public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
+
+        public const String CANNOT_WRITE_TO_STREAM = "Cannot write to stream: {1}";
 
         public const String STATISTICS_EVENT_TYPE_CANT_BE_NULL = "Statistics event type can't be null";
 
@@ -48,6 +52,12 @@ namespace iText.Pdfocr.Exceptions {
         public const String PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE = "Pdf document must be opened in stamping mode";
 
         public const String IO_EXCEPTION_OCCURRED = "IO exception occurred while reading the document";
+
+        public const String CANNOT_OPEN_INPUT_STREAM = "Cannot open input stream from file {0}.";
+
+        public const String CANNOT_OPEN_OUTPUT_STREAM = "Cannot open output stream from file {0}.";
+
+        public const String CANNOT_SAVE_TO_FILE = "Cannot save to file {0}.";
 
         private PdfOcrExceptionMessageConstant() {
         }

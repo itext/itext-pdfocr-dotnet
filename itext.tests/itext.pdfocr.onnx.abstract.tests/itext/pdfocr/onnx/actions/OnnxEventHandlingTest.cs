@@ -64,13 +64,13 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OPEN_INPUT_STREAM, LogLevel = LogLevelConstants.ERROR)]
         public virtual void OcrPdfCreatorCreatePdfFileNoImageTest() {
             FileInfo imgFile = new FileInfo("unknown");
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(imgFile);
             FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfFileNoImage.pdf");
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OCR_ENGINE);
-            NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => ocrPdfCreator.CreatePdfFile(images, outPdfFile
+            NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => ocrPdfCreator.CreatePdfFile(images, outPdfFile
                 ));
             // check ocr events
             NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
@@ -160,7 +160,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OPEN_INPUT_STREAM, LogLevel = LogLevelConstants.ERROR)]
         public virtual void OcrPdfCreatorCreatePdfNoImageTest() {
             IList<FileInfo> images = JavaCollectionsUtil.SingletonList(new FileInfo("no_image"));
             FileInfo outPdfFile = new FileInfo(DESTINATION_FOLDER + "ocrPdfCreatorCreatePdfNoImage.pdf");
@@ -237,7 +237,19 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void DoImageOcrStreamTest() {
+            using (Stream input = FileUtil.GetInputStreamForFile(TEST_IMAGE_DIRECTORY + "numbers_01.jpg")) {
+                OCR_ENGINE.DoImageOcr(input);
+            }
+            NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
+            IEvent usageEvent = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            // there is no statistic event
+            ValidateConfirmEvent(eventsHandler.GetEvents()[1], usageEvent);
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OPEN_INPUT_STREAM, LogLevel = LogLevelConstants.ERROR)]
         public virtual void DoImageOcrNoImageTest() {
             FileInfo imgFile = new FileInfo("uncknown");
             NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => OCR_ENGINE.DoImageOcr(imgFile));
@@ -278,6 +290,21 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
+        public virtual void CreateTxtFileStreamTest() {
+            using (Stream input = FileUtil.GetInputStreamForFile(TEST_IMAGE_DIRECTORY + "numbers_01.jpg")) {
+                using (FileStream output = new FileStream(TEST_IMAGE_DIRECTORY + "createTxtFileStream.txt", FileMode.Create
+                    )) {
+                    OCR_ENGINE.CreateTxtFile(input, output);
+                }
+            }
+            NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
+            IEvent usageEvent1 = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent1, EventConfirmationType.ON_DEMAND);
+            // there is no statistic event
+            ValidateConfirmEvent(eventsHandler.GetEvents()[1], usageEvent1);
+        }
+
+        [NUnit.Framework.Test]
         public virtual void CreateTxtFileNullEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
             OCR_ENGINE.CreateTxtFile(JavaUtil.ArraysAsList(imgFile, imgFile), new FileInfo(DESTINATION_FOLDER + "createTxtFileNullEventHelper.txt"
@@ -294,7 +321,7 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OPEN_INPUT_STREAM, LogLevel = LogLevelConstants.ERROR)]
         public virtual void CreateTxtFileNoImageTest() {
             FileInfo imgFile = new FileInfo("no_image");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
@@ -304,41 +331,28 @@ namespace iText.Pdfocr.Onnx.Actions {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OPEN_OUTPUT_STREAM, LogLevel = LogLevelConstants.ERROR)]
         public virtual void CreateTxtFileNoFileTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
             FileInfo outPdfFile = new FileInfo("nopath/nofile");
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => OCR_ENGINE.CreateTxtFile(images, 
                 outPdfFile));
-            NUnit.Framework.Assert.IsTrue(e.Message.Contains(PdfOcrExceptionMessageConstant.CANNOT_WRITE_TO_FILE.JSubstring
-                (0, 20)));
+            NUnit.Framework.Assert.IsTrue(e.Message.Contains(PdfOcrExceptionMessageConstant.CANNOT_OPEN_OUTPUT_STREAM.
+                JSubstring(0, 20)));
             NUnit.Framework.Assert.IsTrue(e.Message.Contains("nopath"));
             NUnit.Framework.Assert.IsTrue(e.Message.Contains("nofile"));
-            NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
-            IEvent usageEvent = eventsHandler.GetEvents()[0];
-            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
-            // there is no statistic event
-            // there is no confirm event
-            usageEvent = eventsHandler.GetEvents()[1];
-            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
         }
 
-        // there is no statistic event
-        // there is no confirm event
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileNullOutFileTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
             IList<FileInfo> images = JavaUtil.ArraysAsList(imgFile, imgFile);
             NUnit.Framework.Assert.Catch(typeof(NullReferenceException), () => OCR_ENGINE.CreateTxtFile(images, null));
-            NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
-            IEvent usageEvent = eventsHandler.GetEvents()[0];
-            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
-            // there is no statistic event
-            usageEvent = eventsHandler.GetEvents()[1];
-            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            NUnit.Framework.Assert.AreEqual(0, eventsHandler.GetEvents().Count);
         }
 
-        // there is no statistic event
         // Section with MetaInfo related tests
         [NUnit.Framework.Test]
         public virtual void SetEventCountingMetaInfoTest() {
@@ -416,6 +430,18 @@ namespace iText.Pdfocr.Onnx.Actions {
         [NUnit.Framework.Test]
         public virtual void DoImageOcrCustomEventHelperTest() {
             FileInfo imgFile = new FileInfo(TEST_IMAGE_DIRECTORY + "numbers_01.jpg");
+            OCR_ENGINE.DoImageOcr(imgFile, new OcrProcessContext(new OnnxEventHandlingTest.CustomEventHelper()));
+            NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
+            IEvent usageEvent = eventsHandler.GetEvents()[0];
+            ValidateUsageEvent(usageEvent, EventConfirmationType.ON_DEMAND);
+            // there is no statistic event
+            ValidateConfirmEvent(eventsHandler.GetEvents()[1], usageEvent);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void DoImageOcrStreamCustomEventHelperTest() {
+            Stream imgFile = iText.Commons.Utils.FileUtil.GetInputStreamForFile(System.IO.Path.Combine(TEST_IMAGE_DIRECTORY
+                 + "numbers_01.jpg"));
             OCR_ENGINE.DoImageOcr(imgFile, new OcrProcessContext(new OnnxEventHandlingTest.CustomEventHelper()));
             NUnit.Framework.Assert.AreEqual(2, eventsHandler.GetEvents().Count);
             IEvent usageEvent = eventsHandler.GetEvents()[0];

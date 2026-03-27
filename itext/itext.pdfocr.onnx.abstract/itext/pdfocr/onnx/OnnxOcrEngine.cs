@@ -69,6 +69,10 @@ namespace iText.Pdfocr.Onnx {
         /// <summary>Set of properties.</summary>
         private readonly OnnxEngineProperties properties;
 
+        /// <summary>The logger.</summary>
+        private static readonly ILogger LOGGER = ITextLogManager.GetLogger(typeof(iText.Pdfocr.Onnx.OnnxOcrEngine)
+            );
+
         /// <summary>Create a new OCR engine with the provided predictors.</summary>
         /// <param name="detectionPredictor">text detector. For an input image it outputs a list of text boxes</param>
         /// <param name="orientationPredictor">
@@ -143,20 +147,7 @@ namespace iText.Pdfocr.Onnx {
         /// <summary><inheritDoc/></summary>
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
             ) {
-            IDictionary<int, IList<TextInfo>> result = DoOnnxOcr(inputs, ocrProcessContext);
-            if (iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS.Equals(properties.GetTextPositioning())) {
-                PdfOcrTextBuilder.SortTextInfosByLines(result);
-            }
-            else {
-                if (iText.Pdfocr.Onnx.Text.TextPositioning.BY_LINES.Equals(properties.GetTextPositioning())) {
-                    PdfOcrTextBuilder.CollectWordsIntoLines(result);
-                }
-                else {
-                    // Use TextPositioning.BY_WORDS_AND_LINES by default.
-                    PdfOcrTextBuilder.GenerifyWordBBoxesByLine(result);
-                }
-            }
-            return result;
+            return DoImageOcrInternal(PdfOcrFileUtil.ConvertToInputStreams(inputs), ocrProcessContext);
         }
 
         /// <summary><inheritDoc/></summary>
@@ -167,27 +158,8 @@ namespace iText.Pdfocr.Onnx {
         /// <summary><inheritDoc/></summary>
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
             ) {
-            ITextLogManager.GetLogger(GetType()).LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES
-                , inputImages.Count));
-            AbstractPdfOcrEventHelper storedEventHelper;
-            if (ocrProcessContext.GetOcrEventHelper() == null) {
-                storedEventHelper = new OnnxEventHelper();
-            }
-            else {
-                storedEventHelper = ocrProcessContext.GetOcrEventHelper();
-            }
-            try {
-                // save confirm events from doImageOcr, to send them only after successful writing to the file
-                OnnxFileResultEventHelper fileResultEventHelper = new OnnxFileResultEventHelper(storedEventHelper);
-                ocrProcessContext.SetOcrEventHelper(fileResultEventHelper);
-                IDictionary<int, IList<TextInfo>> outputMap = DoOnnxOcr(inputImages, ocrProcessContext);
-                String content = PdfOcrTextBuilder.BuildText(outputMap);
-                PdfOcrFileUtil.WriteToTextFile(txtFile.FullName, content);
-                fileResultEventHelper.RegisterAllSavedEvents();
-            }
-            finally {
-                ocrProcessContext.SetOcrEventHelper(storedEventHelper);
-            }
+            CreateTxtFileInternal(PdfOcrFileUtil.ConvertToInputStreams(inputImages), PdfOcrFileUtil.ConvertToOutputStream
+                (txtFile), ocrProcessContext);
         }
 
         /// <summary><inheritDoc/></summary>
@@ -205,8 +177,136 @@ namespace iText.Pdfocr.Onnx {
             return null;
         }
 
+        /// <summary>
+        /// Reads data from the provided input image stream and returns retrieved data
+        /// in the format described below.
+        /// </summary>
+        /// <param name="input">
+        /// input stream
+        /// <see cref="System.IO.Stream"/>
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(Stream input) {
+            return DoImageOcr(input, new OcrProcessContext(new OnnxEventHelper()));
+        }
+
+        /// <summary>
+        /// Reads data from the provided input image stream and returns retrieved data
+        /// in the format described below.
+        /// </summary>
+        /// <param name="input">
+        /// input image
+        /// <see cref="System.IO.Stream"/>
+        /// </param>
+        /// <param name="ocrProcessContext">ocr processing context</param>
+        /// <returns>
+        /// 
+        /// <see cref="System.Collections.IDictionary{K, V}"/>
+        /// where key is
+        /// <see cref="int?"/>
+        /// representing the number of the page and value is
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// elements where each
+        /// <see cref="iText.Pdfocr.TextInfo"/>
+        /// element contains a word or a line and its 4
+        /// coordinates(bbox)
+        /// </returns>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(Stream input, OcrProcessContext ocrProcessContext
+            ) {
+            return DoImageOcrInternal(JavaCollectionsUtil.SingletonList(input), ocrProcessContext);
+        }
+
+        /// <summary>
+        /// Performs OCR using provided
+        /// <see cref="iText.Pdfocr.IOcrEngine"/>
+        /// for the given
+        /// input image and saves result into provided
+        /// <see cref="System.IO.FileStream"/>
+        /// with UTF-8 encoding.
+        /// </summary>
+        /// <remarks>
+        /// Performs OCR using provided
+        /// <see cref="iText.Pdfocr.IOcrEngine"/>
+        /// for the given
+        /// input image and saves result into provided
+        /// <see cref="System.IO.FileStream"/>
+        /// with UTF-8 encoding.
+        /// Note that a human reading order is not guaranteed
+        /// due to possible specifics of input images (multi column layout, tables etc)
+        /// </remarks>
+        /// <param name="inputImage">
+        /// image
+        /// <see cref="System.IO.Stream"/>
+        /// </param>
+        /// <param name="outputStream">
+        /// output stream
+        /// <see cref="System.IO.FileStream"/>
+        /// </param>
+        public virtual void CreateTxtFile(Stream inputImage, FileStream outputStream) {
+            CreateTxtFileInternal(JavaCollectionsUtil.SingletonList(inputImage), outputStream, new OcrProcessContext(new 
+                OnnxEventHelper()));
+        }
+
+        private IDictionary<int, IList<TextInfo>> DoImageOcrInternal(IList<Stream> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            IDictionary<int, IList<TextInfo>> result = DoOnnxOcr(inputs, ocrProcessContext);
+            if (iText.Pdfocr.Onnx.Text.TextPositioning.BY_WORDS.Equals(properties.GetTextPositioning())) {
+                PdfOcrTextBuilder.SortTextInfosByLines(result);
+            }
+            else {
+                if (iText.Pdfocr.Onnx.Text.TextPositioning.BY_LINES.Equals(properties.GetTextPositioning())) {
+                    PdfOcrTextBuilder.CollectWordsIntoLines(result);
+                }
+                else {
+                    // Use TextPositioning.BY_WORDS_AND_LINES by default.
+                    PdfOcrTextBuilder.GenerifyWordBBoxesByLine(result);
+                }
+            }
+            return result;
+        }
+
+        private void CreateTxtFileInternal(IList<Stream> inputImages, Stream outputStream, OcrProcessContext ocrProcessContext
+            ) {
+            LOGGER.LogInformation(MessageFormatUtil.Format(PdfOcrLogMessageConstant.START_OCR_FOR_IMAGES, inputImages.
+                Count));
+            AbstractPdfOcrEventHelper storedEventHelper;
+            if (ocrProcessContext.GetOcrEventHelper() == null) {
+                storedEventHelper = new OnnxEventHelper();
+            }
+            else {
+                storedEventHelper = ocrProcessContext.GetOcrEventHelper();
+            }
+            try {
+                // save confirm events from doImageOcr, to send them only after successful writing to the file
+                OnnxFileResultEventHelper fileResultEventHelper = new OnnxFileResultEventHelper(storedEventHelper);
+                ocrProcessContext.SetOcrEventHelper(fileResultEventHelper);
+                IDictionary<int, IList<TextInfo>> outputMap = DoOnnxOcr(inputImages, ocrProcessContext);
+                String content = PdfOcrTextBuilder.BuildText(outputMap);
+                PdfOcrFileUtil.WriteToStream(outputStream, content);
+                fileResultEventHelper.RegisterAllSavedEvents();
+            }
+            finally {
+                ocrProcessContext.SetOcrEventHelper(storedEventHelper);
+            }
+        }
+
 //\cond DO_NOT_DOCUMENT
-        internal static IList<IronSoftware.Drawing.AnyBitmap> GetImages(FileInfo input) {
+        internal static IList<IronSoftware.Drawing.AnyBitmap> GetImages(MemoryStream input) {
             try {
                 if (TiffImageUtil.IsTiffImage(input)) {
                     IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(input);
@@ -216,7 +316,7 @@ namespace iText.Pdfocr.Onnx {
                     return images;
                 }
                 else {
-                    IronSoftware.Drawing.AnyBitmap image = IronSoftware.Drawing.AnyBitmap.FromFile(input.FullName);
+                    IronSoftware.Drawing.AnyBitmap image = IronSoftware.Drawing.AnyBitmap.FromStream(input);
                     if (image == null) {
                         throw new PdfOcrInputException(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE);
                     }
@@ -233,7 +333,7 @@ namespace iText.Pdfocr.Onnx {
         /// Reads raw data from the provided input image files and returns retrieved data
         /// in the format described below.
         /// </summary>
-        /// <param name="input">
+        /// <param name="inputStreams">
         /// 
         /// <see cref="System.Collections.IList{E}"/>
         /// of input image files
@@ -253,11 +353,11 @@ namespace iText.Pdfocr.Onnx {
         /// element contains a word or a line and its 4
         /// coordinates(bbox)
         /// </returns>
-        private IDictionary<int, IList<TextInfo>> DoOnnxOcr(IList<FileInfo> input, OcrProcessContext ocrProcessContext
+        private IDictionary<int, IList<TextInfo>> DoOnnxOcr(IList<Stream> inputStreams, OcrProcessContext ocrProcessContext
             ) {
             IList<IronSoftware.Drawing.AnyBitmap> images = new List<IronSoftware.Drawing.AnyBitmap>();
-            foreach (FileInfo file in input) {
-                images.AddAll(GetImages(file));
+            foreach (Stream stream in inputStreams) {
+                images.AddAll(GetImages(ByteArrayStreamUtil.CreateByteArrayInputStream(stream)));
             }
             OnnxProcessor onnxProcessor = new OnnxProcessor(detectionPredictor, orientationPredictor, recognitionPredictor
                 );

@@ -231,7 +231,7 @@ namespace iText.Pdfocr {
                 int i = 0;
                 foreach (FileInfo inputImage in inputImages) {
                     try {
-                        int pageCount = TiffImageUtil.IsTiffImage(inputImage) ? PdfCreatorUtil.GetNumberOfPageTiff(inputImage) : 1;
+                        int pageCount = TiffImageUtil.IsTiffImage(inputImage) ? TiffImageUtil.GetNumberOfPageTiff(inputImage) : 1;
                         IDictionary<int, IList<TextInfo>> currentImagesTextDataInfos = new Dictionary<int, IList<TextInfo>>();
                         for (int j = 0; j <= pageCount; j++) {
                             currentImagesTextDataInfos.Put(j, imagesTextDataInfos.Get(i + j));

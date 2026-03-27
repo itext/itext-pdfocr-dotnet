@@ -27,7 +27,6 @@ using Microsoft.Extensions.Logging;
 using iText.Commons;
 using iText.Commons.Utils;
 using iText.IO.Image;
-using iText.IO.Source;
 using iText.Kernel.Geom;
 using iText.Layout;
 using iText.Layout.Element;
@@ -35,6 +34,7 @@ using iText.Layout.Layout;
 using iText.Layout.Renderer;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr {
 //\cond DO_NOT_DOCUMENT
@@ -171,7 +171,7 @@ namespace iText.Pdfocr {
                 using (Stream imageStream = new FileStream(inputImage.FullName, FileMode.Open, FileAccess.Read)) {
                     ImageType imageType = ImageTypeDetector.DetectImageType(imageStream);
                     if (ImageType.TIFF == imageType) {
-                        int tiffPages = GetNumberOfPageTiff(inputImage);
+                        int tiffPages = TiffImageUtil.GetNumberOfPageTiff(inputImage);
                         for (int page = 0; page < tiffPages; page++) {
                             byte[] bytes = File.ReadAllBytes(inputImage.FullName);
                             ImageData imageData = ImageDataFactory.CreateTiff(bytes, true, page + 1, true);
@@ -273,22 +273,6 @@ namespace iText.Pdfocr {
         /// <returns>result value in points</returns>
         internal static float GetPoints(float pixels) {
             return pixels * PX_TO_PT;
-        }
-//\endcond
-
-//\cond DO_NOT_DOCUMENT
-        /// <summary>Counts number of pages in the provided tiff image.</summary>
-        /// <param name="inputImage">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
-        /// </param>
-        /// <returns>number of pages in the provided TIFF image</returns>
-        internal static int GetNumberOfPageTiff(FileInfo inputImage) {
-            RandomAccessFileOrArray raf = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateBestSource
-                (inputImage.FullName));
-            int numOfPages = TiffImageData.GetNumberOfPages(raf);
-            raf.Close();
-            return numOfPages;
         }
 //\endcond
     }

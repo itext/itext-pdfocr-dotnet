@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using iText.Commons.Utils;
 using iText.Pdfocr.Helpers;
 using iText.Pdfocr.Logs;
 using iText.Test;
@@ -52,6 +53,31 @@ namespace iText.Pdfocr.Util {
             NUnit.Framework.Assert.IsFalse(TiffImageUtil.IsTiffImage(new FileInfo(path)));
             path = PdfHelper.GetImagesTestDirectory() + "single7x5cm.tif";
             NUnit.Framework.Assert.IsTrue(TiffImageUtil.IsTiffImage(new FileInfo(path)));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void GetAllImagesStreamTest() {
+            String path = PdfHelper.GetImagesTestDirectory() + "multipage.tiff";
+            IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(ByteArrayStreamUtil.CreateByteArrayInputStream
+                (FileUtil.GetInputStreamForFile(path)));
+            NUnit.Framework.Assert.AreEqual(9, images.Count);
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE_STREAM)]
+        public virtual void GetAllImagesStreamExceptionTest() {
+            IList<IronSoftware.Drawing.AnyBitmap> images = TiffImageUtil.GetAllImages(new MemoryStream(new byte[0]));
+            NUnit.Framework.Assert.AreEqual(0, images.Count);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void IsTiffImageStreamTest() {
+            String path = PdfHelper.GetImagesTestDirectory() + "thai.PNG";
+            NUnit.Framework.Assert.IsFalse(TiffImageUtil.IsTiffImage(ByteArrayStreamUtil.CreateByteArrayInputStream(FileUtil
+                .GetInputStreamForFile(path))));
+            path = PdfHelper.GetImagesTestDirectory() + "single7x5cm.tif";
+            NUnit.Framework.Assert.IsTrue(TiffImageUtil.IsTiffImage(ByteArrayStreamUtil.CreateByteArrayInputStream(FileUtil
+                .GetInputStreamForFile(path))));
         }
     }
 }
