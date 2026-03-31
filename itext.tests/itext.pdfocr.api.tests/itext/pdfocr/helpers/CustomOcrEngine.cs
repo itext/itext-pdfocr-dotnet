@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -52,6 +52,25 @@ namespace iText.Pdfocr.Helpers {
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
             return DoImageOcr(input);
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+            IDictionary<int, IList<TextInfo>> result = new Dictionary<int, IList<TextInfo>>();
+            foreach (FileInfo file in inputs) {
+                IDictionary<int, IList<TextInfo>> imageOcr = DoImageOcr(file);
+                int pageShift = result.Count;
+                foreach (KeyValuePair<int, IList<TextInfo>> entry in imageOcr) {
+                    result.Put(entry.Key + pageShift, entry.Value);
+                }
+            }
+            return result;
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            return DoImageOcr(inputs);
         }
 
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {

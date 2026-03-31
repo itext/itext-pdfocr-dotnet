@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -41,6 +41,17 @@ namespace iText.Pdfocr.Helpers {
         public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
             ) {
             return DoImageOcr(input);
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+            return JavaCollectionsUtil.EmptyMap<int, IList<TextInfo>>();
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            return DoImageOcr(inputs);
         }
 
         public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {

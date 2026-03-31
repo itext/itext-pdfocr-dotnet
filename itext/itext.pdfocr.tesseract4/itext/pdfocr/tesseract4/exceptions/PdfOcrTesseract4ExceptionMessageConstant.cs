@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -32,9 +32,6 @@ namespace iText.Pdfocr.Tesseract4.Exceptions {
         public const String LANGUAGE_IS_NOT_IN_THE_LIST = "Provided list of languages doesn't contain {0} language";
 
         public const String CANNOT_READ_PROVIDED_IMAGE = "Cannot read input image {0}";
-
-        [Obsolete]
-        public const String CANNOT_WRITE_TO_FILE = "Cannot write to file {0}: {1}";
 
         public const String TESSERACT_FAILED = "Tesseract failed. Please check provided parameters";
 

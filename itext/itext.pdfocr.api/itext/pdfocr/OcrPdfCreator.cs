@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -46,6 +46,7 @@ using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
 using iText.Pdfocr.Statistics;
 using iText.Pdfocr.Structuretree;
+using iText.Pdfocr.Util;
 
 namespace iText.Pdfocr {
     /// <summary>
@@ -224,8 +225,29 @@ namespace iText.Pdfocr {
             // map pageNumber -> retrieved text data(text and its coordinates)
             IDictionary<FileInfo, IDictionary<int, IList<TextInfo>>> imagesTextData = new LinkedDictionary<FileInfo, IDictionary
                 <int, IList<TextInfo>>>(inputImages.Count * 2);
-            foreach (FileInfo inputImage in inputImages) {
-                imagesTextData.Put(inputImage, ocrEngine.DoImageOcr(inputImage, ocrProcessContext));
+            IDictionary<int, IList<TextInfo>> imagesTextDataInfos = ocrEngine.DoImageOcr(inputImages, ocrProcessContext
+                );
+            if (!imagesTextDataInfos.IsEmpty()) {
+                int i = 0;
+                foreach (FileInfo inputImage in inputImages) {
+                    try {
+                        int pageCount = TiffImageUtil.IsTiffImage(inputImage) ? PdfCreatorUtil.GetNumberOfPageTiff(inputImage) : 1;
+                        IDictionary<int, IList<TextInfo>> currentImagesTextDataInfos = new Dictionary<int, IList<TextInfo>>();
+                        for (int j = 0; j <= pageCount; j++) {
+                            currentImagesTextDataInfos.Put(j, imagesTextDataInfos.Get(i + j));
+                        }
+                        i += pageCount;
+                        imagesTextData.Put(inputImage, currentImagesTextDataInfos);
+                    }
+                    catch (System.IO.IOException e) {
+                        LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                        throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
+                    }
+                    catch (iText.IO.Exceptions.IOException e) {
+                        LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                        throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE, e);
+                    }
+                }
             }
             // create PdfDocument
             return CreatePdfDocument(pdfWriter, pdfOutputIntent, imagesTextData, pdfSequenceId, documentProperties);
@@ -1073,8 +1095,14 @@ namespace iText.Pdfocr {
                     paragraph.SetTextRenderingMode(PdfCanvasConstants.TextRenderingMode.INVISIBLE);
                 }
                 canvas.ShowTextAligned(paragraph, xOffset + (float)imageCoordinates.GetX(), yOffset + (float)imageCoordinates
-                    .GetY(), canvas.GetPdfDocument().GetPageNumber(page), TextAlignment.LEFT, VerticalAlignment.BOTTOM, GetRotationAngle
-                    (item.GetOrientation()));
+                    .GetY(), canvas.GetPdfDocument().GetPageNumber(page), TextAlignment.LEFT, VerticalAlignment.BOTTOM, item
+                    .GetRotationAngle());
+                if (ocrPdfCreatorProperties.GetTextBBoxColor() != null) {
+                    Point[] points = item.GetTextPoints();
+                    pdfCanvas.SaveState().SetStrokeColor(ocrPdfCreatorProperties.GetTextBBoxColor()).MoveTo(points[0].GetX(), 
+                        points[0].GetY()).LineTo(points[1].GetX(), points[1].GetY()).LineTo(points[2].GetX(), points[2].GetY()
+                        ).LineTo(points[3].GetX(), points[3].GetY()).ClosePath().Stroke().RestoreState();
+                }
                 if (ocrPdfCreatorProperties.IsTagged()) {
                     pdfCanvas.CloseTag();
                 }
@@ -1131,36 +1159,6 @@ namespace iText.Pdfocr {
         }
 
         /// <summary>
-        /// Returns the text rotation angle in radian for the provided
-        /// <see cref="TextOrientation"/>.
-        /// </summary>
-        /// <param name="orientation">text orientation to get the angle for</param>
-        /// <returns>
-        /// the text rotation angle in radian for the provided
-        /// <see cref="TextOrientation"/>
-        /// </returns>
-        private static float GetRotationAngle(TextOrientation orientation) {
-            switch (orientation) {
-                case TextOrientation.HORIZONTAL_ROTATED_90: {
-                    return (float)(0.5 * Math.PI);
-                }
-
-                case TextOrientation.HORIZONTAL_ROTATED_180: {
-                    return (float)Math.PI;
-                }
-
-                case TextOrientation.HORIZONTAL_ROTATED_270: {
-                    return (float)(1.5 * Math.PI);
-                }
-
-                case TextOrientation.HORIZONTAL:
-                default: {
-                    return 0;
-                }
-            }
-        }
-
-        /// <summary>
         /// Creates layers for image and text according rules set in
         /// <see cref="OcrPdfCreatorProperties"/>.
         /// </summary>
@@ -1198,26 +1196,6 @@ namespace iText.Pdfocr {
             }
         }
 
-        /// <summary>Get left bound of text chunk.</summary>
-        private static float GetLeft(TextInfo textInfo, float multiplier) {
-            return textInfo.GetBboxRect().GetLeft() * multiplier;
-        }
-
-        /// <summary>Get right bound of text chunk.</summary>
-        private static float GetRight(TextInfo textInfo, float multiplier) {
-            return (textInfo.GetBboxRect().GetRight() + 1) * multiplier - 1;
-        }
-
-        /// <summary>Get top bound of text chunk.</summary>
-        private static float GetTop(TextInfo textInfo, float multiplier) {
-            return textInfo.GetBboxRect().GetTop() * multiplier;
-        }
-
-        /// <summary>Get bottom bound of text chunk.</summary>
-        private static float GetBottom(TextInfo textInfo, float multiplier) {
-            return (textInfo.GetBboxRect().GetBottom() + 1) * multiplier - 1;
-        }
-
         /// <summary>Check if line is not empty.</summary>
         private static bool LineNotEmpty(String line, float bboxHeightPt, float bboxWidthPt) {
             return !String.IsNullOrEmpty(line) && bboxHeightPt > 0 && bboxWidthPt > 0;
@@ -1225,66 +1203,35 @@ namespace iText.Pdfocr {
 
         /// <summary>Get width of text chunk in points.</summary>
         private static float GetTextWidthPt(TextInfo textInfo, float multiplier) {
-            switch (textInfo.GetOrientation()) {
-                case TextOrientation.HORIZONTAL_ROTATED_90:
-                case TextOrientation.HORIZONTAL_ROTATED_270: {
-                    return GetTop(textInfo, multiplier) - GetBottom(textInfo, multiplier);
-                }
-
-                case TextOrientation.HORIZONTAL:
-                case TextOrientation.HORIZONTAL_ROTATED_180:
-                default: {
-                    return GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier);
-                }
-            }
+            Point[] textPoints = textInfo.GetTextPoints();
+            float width = Math.Max(PointDist(textPoints[0], textPoints[3]), PointDist(textPoints[1], textPoints[2]));
+            return width * multiplier;
         }
 
         /// <summary>Get height of text chunk in points.</summary>
         private static float GetTextHeightPt(TextInfo textInfo, float multiplier) {
-            switch (textInfo.GetOrientation()) {
-                case TextOrientation.HORIZONTAL_ROTATED_90:
-                case TextOrientation.HORIZONTAL_ROTATED_270: {
-                    return GetRight(textInfo, multiplier) - GetLeft(textInfo, multiplier);
-                }
-
-                case TextOrientation.HORIZONTAL:
-                case TextOrientation.HORIZONTAL_ROTATED_180:
-                default: {
-                    return GetTop(textInfo, multiplier) - GetBottom(textInfo, multiplier);
-                }
-            }
+            Point[] textPoints = textInfo.GetTextPoints();
+            float height = Math.Max(PointDist(textPoints[0], textPoints[1]), PointDist(textPoints[2], textPoints[3]));
+            return height * multiplier;
         }
 
         /// <summary>Get horizontal text offset in points.</summary>
         private static float GetXOffsetPt(TextInfo textInfo, float multiplier) {
-            switch (textInfo.GetOrientation()) {
-                case TextOrientation.HORIZONTAL_ROTATED_90:
-                case TextOrientation.HORIZONTAL_ROTATED_180: {
-                    return GetRight(textInfo, multiplier);
-                }
-
-                case TextOrientation.HORIZONTAL:
-                case TextOrientation.HORIZONTAL_ROTATED_270:
-                default: {
-                    return GetLeft(textInfo, multiplier);
-                }
-            }
+            return (float)(textInfo.GetTextPoints()[0].GetX() * multiplier);
         }
 
         /// <summary>Get vertical text offset in points.</summary>
         private static float GetYOffsetPt(TextInfo textInfo, float multiplier) {
-            switch (textInfo.GetOrientation()) {
-                case TextOrientation.HORIZONTAL_ROTATED_180:
-                case TextOrientation.HORIZONTAL_ROTATED_270: {
-                    return GetTop(textInfo, multiplier);
-                }
+            return (float)(textInfo.GetTextPoints()[0].GetY()) * multiplier;
+        }
 
-                case TextOrientation.HORIZONTAL:
-                case TextOrientation.HORIZONTAL_ROTATED_90:
-                default: {
-                    return GetBottom(textInfo, multiplier);
-                }
-            }
+        /// <summary>Calculates the distance between two points.</summary>
+        /// <param name="point1">source point</param>
+        /// <param name="point2">destination point</param>
+        /// <returns>the distance between source and destination points</returns>
+        private static float PointDist(Point point1, Point point2) {
+            return (float)Math.Sqrt(Math.Pow(point1.GetX() - point2.GetX(), 2) + Math.Pow(point1.GetY() - point2.GetY(
+                ), 2));
         }
 
         /// <summary>A handler for PDF canvas that validates existing glyphs.</summary>

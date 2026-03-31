@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -21,8 +21,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
+using System.IO;
 using iText.Commons.Utils;
 using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
 using iText.Pdfocr.Tesseract4;
@@ -121,6 +124,21 @@ namespace iText.Pdfocr.Ocrpdf {
             MakeSearchable("skewedRotated45");
         }
 
+        [NUnit.Framework.Test]
+        public virtual void MultiFilesTest() {
+            IList<FileInfo> files = JavaUtil.ArraysAsList(new FileInfo(TEST_IMAGES_DIRECTORY + "german_01.jpg"), new FileInfo
+                (TEST_IMAGES_DIRECTORY + "noisy_01.png"), new FileInfo(TEST_IMAGES_DIRECTORY + "nümbérs.jpg"));
+            String resultPdfPath = TARGET_DIRECTORY + "multiFiles_" + testType + ".pdf";
+            String expectedPdfPath = CMP_DIRECTORY + "cmp_multiFiles.pdf";
+            OcrPdfCreatorProperties properties = CreatorProperties("Text1", "Image1", DeviceCmyk.CYAN);
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(tesseractReader, properties);
+            using (PdfWriter writer = new PdfWriter(resultPdfPath)) {
+                ocrPdfCreator.CreatePdf(files, writer).Close();
+            }
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
+                (), "diff_"));
+        }
+
         private void MakeSearchable(String fileName) {
             String path = TEST_PDFS_DIRECTORY + fileName + ".pdf";
             String expectedPdfPath = CMP_DIRECTORY + fileName + ".pdf";
@@ -129,6 +147,15 @@ namespace iText.Pdfocr.Ocrpdf {
                 ), null, DeviceCmyk.MAGENTA, false, false);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
                 (), "diff_"));
+        }
+
+        private OcrPdfCreatorProperties CreatorProperties(String textLayerName, String imageLayerName, Color color
+            ) {
+            OcrPdfCreatorProperties ocrPdfCreatorProperties = new OcrPdfCreatorProperties();
+            ocrPdfCreatorProperties.SetTextLayerName(textLayerName);
+            ocrPdfCreatorProperties.SetTextColor(color);
+            ocrPdfCreatorProperties.SetImageLayerName(imageLayerName);
+            return ocrPdfCreatorProperties;
         }
     }
 }

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -499,7 +499,9 @@ namespace iText.Pdfocr.Tesseract4 {
                 String[] lineItems = iText.Commons.Utils.StringUtil.Split(txtLine2, " ");
                 foreach (iText.StyledXmlParser.Jsoup.Nodes.Element word in lineOrCaption.GetElementsByClass(OCRX_WORD)) {
                     Rectangle bboxRect = GetAlignedBBox(word, textPositioning, pageBbox, unparsedBBoxes);
-                    textInfos.Add(new TextInfo(word.Text(), bboxRect));
+                    textInfos.Add(new TextInfo().SetText(word.Text()).SetTextPoints(new Point[] { new Point(bboxRect.GetLeft()
+                        , bboxRect.GetBottom()), new Point(bboxRect.GetLeft(), bboxRect.GetTop()), new Point(bboxRect.GetRight
+                        (), bboxRect.GetTop()), new Point(bboxRect.GetRight(), bboxRect.GetBottom()) }));
                     if (iText.Commons.Utils.StringUtil.ReplaceAll(lineItems[0], NEW_LINE_OR_SPACE_PATTERN, "").Equals(iText.Commons.Utils.StringUtil.ReplaceAll
                         (GetTextInfosText(textInfos), SPACE_PATTERN, ""))) {
                         lineItems = JavaUtil.ArraysCopyOfRange(lineItems, 1, lineItems.Length);
@@ -530,7 +532,33 @@ namespace iText.Pdfocr.Tesseract4 {
         /// <summary>Add text chunk represented by text and bbox to list of text infos.</summary>
         private static void AddToTextData(IList<TextInfo> textData, String text, Rectangle bboxRect, TextOrientation
              orientation) {
-            TextInfo textInfo = new TextInfo(text, bboxRect, orientation);
+            Point[] textBox = new Point[] { new Point(bboxRect.GetLeft(), bboxRect.GetBottom()), new Point(bboxRect.GetLeft
+                (), bboxRect.GetTop()), new Point(bboxRect.GetRight(), bboxRect.GetTop()), new Point(bboxRect.GetRight
+                (), bboxRect.GetBottom()) };
+            Point[] rotatedTextBox;
+            switch (orientation) {
+                case TextOrientation.HORIZONTAL_ROTATED_90: {
+                    rotatedTextBox = new Point[] { textBox[3], textBox[0], textBox[1], textBox[2] };
+                    break;
+                }
+
+                case TextOrientation.HORIZONTAL_ROTATED_180: {
+                    rotatedTextBox = new Point[] { textBox[2], textBox[3], textBox[0], textBox[1] };
+                    break;
+                }
+
+                case TextOrientation.HORIZONTAL_ROTATED_270: {
+                    rotatedTextBox = new Point[] { textBox[1], textBox[2], textBox[3], textBox[0] };
+                    break;
+                }
+
+                case TextOrientation.HORIZONTAL:
+                default: {
+                    rotatedTextBox = textBox;
+                    break;
+                }
+            }
+            TextInfo textInfo = new TextInfo().SetText(text).SetTextPoints(rotatedTextBox);
             textData.Add(textInfo);
         }
 
@@ -555,10 +583,14 @@ namespace iText.Pdfocr.Tesseract4 {
             TextInfo textInfo = new TextInfo(textInfos[0]);
             for (int i = 1; i < textInfos.Count; i++) {
                 textInfo.SetText(textInfo.GetText() + textInfos[i].GetText());
-                Rectangle leftBBox = textInfo.GetBboxRect();
-                Rectangle rightBBox = textInfos[i].GetBboxRect();
-                textInfo.SetBboxRect(new Rectangle(0, 0).SetBbox(leftBBox.GetLeft(), Math.Min(leftBBox.GetBottom(), rightBBox
-                    .GetBottom()), rightBBox.GetRight(), Math.Max(leftBBox.GetTop(), rightBBox.GetTop())));
+                Rectangle leftBBox = textInfo.GetBBoxRect();
+                Rectangle rightBBox = textInfos[i].GetBBoxRect();
+                float leftX = leftBBox.GetLeft();
+                float bottomY = Math.Min(leftBBox.GetBottom(), rightBBox.GetBottom());
+                float rightX = rightBBox.GetRight();
+                float topY = Math.Max(leftBBox.GetTop(), rightBBox.GetTop());
+                textInfo.SetTextPoints(new Point[] { new Point(leftX, bottomY), new Point(leftX, topY), new Point(rightX, 
+                    topY), new Point(rightX, bottomY) });
             }
             return textInfo;
         }

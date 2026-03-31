@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -344,7 +344,7 @@ namespace iText.Pdfocr.General {
             if (pageText == null || pageText.Count == 0) {
                 pageText = new List<TextInfo>();
                 TextInfo textInfo = new TextInfo();
-                textInfo.SetBboxRect(new Rectangle(0, 0, 0, 0));
+                textInfo.SetTextPoints(new Rectangle(0, 0, 0, 0).ToPointsArray());
                 textInfo.SetText("");
                 pageText.Add(textInfo);
             }

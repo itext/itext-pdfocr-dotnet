@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -279,6 +279,25 @@ namespace iText.Pdfocr.Tesseract4 {
             VerifyImageFormatValidity(input);
             return ((AbstractTesseract4OcrEngine.TextInfoTesseractOcrResult)ProcessInputFiles(input, OutputFormat.HOCR
                 , ocrProcessContext.GetOcrEventHelper())).GetTextInfos();
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+            return DoImageOcr(inputs, new OcrProcessContext(new Tesseract4EventHelper()));
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+            ) {
+            IDictionary<int, IList<TextInfo>> allTextInfos = new LinkedDictionary<int, IList<TextInfo>>();
+            foreach (FileInfo image in inputs) {
+                IDictionary<int, IList<TextInfo>> imageTextInfos = DoImageOcr(image, ocrProcessContext);
+                int pageShift = allTextInfos.Count;
+                foreach (KeyValuePair<int, IList<TextInfo>> entry in imageTextInfos) {
+                    allTextInfos.Put(entry.Key + pageShift, entry.Value);
+                }
+            }
+            return allTextInfos;
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -144,7 +144,7 @@ namespace iText.Pdfocr {
             NUnit.Framework.Assert.AreEqual(1, result.Count);
             TextInfo textInfo = new TextInfo();
             textInfo.SetText("text");
-            textInfo.SetBboxRect(new Rectangle(204.0f, 158.0f, 538.0f, 136.0f));
+            textInfo.SetTextPoints(new Rectangle(204.0f, 158.0f, 538.0f, 136.0f).ToPointsArray());
             int page = 2;
             result.Put(page, JavaCollectionsUtil.SingletonList<TextInfo>(textInfo));
             NUnit.Framework.Assert.AreEqual(2, result.Count);
@@ -202,7 +202,7 @@ namespace iText.Pdfocr {
             String input = PdfHelper.GetImagesTestDirectory() + "numbers_01.jpg";
             IOcrEngine ocrEngine = new TestStructureDetectionOcrEngine();
             OcrPdfCreatorProperties creatorProperties = new OcrPdfCreatorProperties();
-            creatorProperties.SetTextColor(DeviceRgb.RED);
+            creatorProperties.SetTextColor(DeviceRgb.RED).SetTextBBoxColor(DeviceRgb.GREEN);
             creatorProperties.SetTagged(true);
             OcrPdfCreator pdfCreator = new OcrPdfCreator(ocrEngine, creatorProperties);
             TestProcessProperties processProperties = new TestProcessProperties(5, 6, 50, 15, 100, 200);

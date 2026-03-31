@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2025 Apryse Group NV
+Copyright (c) 1998-2026 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -22,6 +22,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 namespace iText.Pdfocr {
     /// <summary>Enumeration of supported text orientations.</summary>
+    /// <remarks>
+    /// Enumeration of supported text orientations.
+    /// <para />
+    /// <see cref="TextOrientation"/>
+    /// is used to determine text bounding box rectangle orientation.
+    /// Text rotation could be more precisely determined by the bounding points, see
+    /// <see cref="TextInfo.GetRotationAngle()"/>.
+    /// </remarks>
     public enum TextOrientation {
         /// <summary>Horizontal text, non-rotated.</summary>
         HORIZONTAL,
