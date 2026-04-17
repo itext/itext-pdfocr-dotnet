@@ -1,4 +1,4 @@
-Please notice that the following fonts are used with the mentioned below licenses.
+This software uses the following test resources under the following licenses:
 
-* FreeSans - GPL license you can find following the link: https://www.gnu.org/licenses
-* Kanit-Regular - SIL Open Font License, Version 1.1
+FreeSans.ttf | GPL license | LICENSE_GNU.txt | Based on "https://savannah.gnu.org/projects/freefont"
+Kanit-Regular.ttf | SIL Open Font License v1.1 | LICENSE_OFL.txt | Based on "https://fonts.google.com/specimen/Kanit"
