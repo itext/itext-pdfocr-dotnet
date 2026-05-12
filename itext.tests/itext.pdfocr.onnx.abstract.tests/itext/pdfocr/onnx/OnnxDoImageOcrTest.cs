@@ -163,5 +163,14 @@ namespace iText.Pdfocr.Onnx {
                 (imageFile, OCR_ENGINE));
             NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
         }
+        
+        [NUnit.Framework.Test]
+        public virtual void Jpeg2000Test() {
+            FileInfo imageFile = new FileInfo(TEST_IMAGE_DIRECTORY + "bee.jp2");
+            
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), 
+                () => OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+        }
     }
 }
