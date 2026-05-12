@@ -765,7 +765,17 @@ namespace iText.Pdfocr {
                         <ImageExtraction.PageImageData, IDictionary<int, IList<TextInfo>>>(pageImageData.Count);
                     foreach (ImageExtraction.PageImageData image in pageImageData) {
                         allImagePaths.Add(image.GetPath().FullName);
-                        imagesTextData.Put(image, ocrEngine.DoImageOcr(image.GetPath(), ocrProcessContext));
+                        IDictionary<int, IList<TextInfo>> ocrResult;
+                        try {
+                            ocrResult = ocrEngine.DoImageOcr(image.GetPath(), ocrProcessContext);
+                        }
+                        catch (PdfOcrException e) {
+                            int imageObjNr = image.GetXObject().GetPdfObject().GetIndirectReference().GetObjNumber();
+                            LOGGER.LogError(e, MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, pageNr, imageObjNr)
+                                );
+                            throw;
+                        }
+                        imagesTextData.Put(image, ocrResult);
                     }
                     // Put the result into pdf
                     AddToPdfPage(pdfPage, imagesTextData, layers[1]);

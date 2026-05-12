@@ -25,10 +25,16 @@ using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
 using iText.Kernel.Colors;
+using iText.Kernel.Logs;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Logs;
 using iText.Pdfocr.Tesseract4;
+using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Pdfocr.Tesseract4.Logs;
+using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Ocrpdf {
     public abstract class OcrPdfIntegrationTest : IntegrationTestHelper {
@@ -139,12 +145,32 @@ namespace iText.Pdfocr.Ocrpdf {
                 (), "diff_"));
         }
 
-        private void MakeSearchable(String fileName) {
+        [NUnit.Framework.Test]
+        [LogMessage(KernelLogMessageConstant.JPXDECODE_FILTER_DECODING, LogLevel = LogLevelConstants.INFO)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void Jpeg2000Test() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputTesseract4Exception), () => MakeSearchableWithoutCompare
+                ("jpeg2000"));
+            String message = e.Message;
+            // Exception message is each run unique and looks like
+            // "pdfocr_img_f31dce56-6917-49ac-b437-92d296936f5413047335812688118701.jp2 format is not supported."
+            message = ".jp2 " + message.Substring(message.IndexOf("format", StringComparison.Ordinal));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT
+                , ".jp2"), message);
+        }
+
+        private String MakeSearchableWithoutCompare(String fileName) {
             String path = TEST_PDFS_DIRECTORY + fileName + ".pdf";
-            String expectedPdfPath = CMP_DIRECTORY + fileName + ".pdf";
             String resultPdfPath = TARGET_DIRECTORY + fileName + "_" + testType + ".pdf";
             DoOcrAndSavePdfToPath(tesseractReader, path, resultPdfPath, JavaCollectionsUtil.SingletonList<String>("eng"
                 ), null, DeviceCmyk.MAGENTA, false, false);
+            return resultPdfPath;
+        }
+
+        private void MakeSearchable(String fileName) {
+            String resultPdfPath = MakeSearchableWithoutCompare(fileName);
+            String expectedPdfPath = CMP_DIRECTORY + fileName + ".pdf";
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, GetTargetDirectory
                 (), "diff_"));
         }

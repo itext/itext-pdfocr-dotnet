@@ -21,6 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Utils;
 using iText.IO.Exceptions;
@@ -136,20 +137,32 @@ namespace iText.Pdfocr {
             String resultPdfPath = DESTINATION_FOLDER + "pdfA3b.pdf";
             OcrPdfCreatorProperties properties = new OcrPdfCreatorProperties();
             properties.SetTextColor(DeviceCmyk.MAGENTA);
-            OcrPdfCreator ocrPdfCreator = new _OcrPdfCreator_154(new CustomOcrEngine(), properties);
+            OcrPdfCreator ocrPdfCreator = new _OcrPdfCreator_158(new CustomOcrEngine(), properties);
             ocrPdfCreator.MakePdfSearchable(new FileInfo(path), new FileInfo(resultPdfPath), null);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, DESTINATION_FOLDER
                 , "diff_"));
             new VeraPdfValidator().Validate(resultPdfPath);
         }
 
-        private sealed class _OcrPdfCreator_154 : OcrPdfCreator {
-            public _OcrPdfCreator_154(IOcrEngine baseArg1, OcrPdfCreatorProperties baseArg2)
+        private sealed class _OcrPdfCreator_158 : OcrPdfCreator {
+            public _OcrPdfCreator_158(IOcrEngine baseArg1, OcrPdfCreatorProperties baseArg2)
                 : base(baseArg1, baseArg2) {
             }
 
             protected internal override void ValidateInputPdfDocument(PdfDocument pdfDoc) {
             }
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void LogOnInputImageExceptionTest() {
+            String path = PdfHelper.GetPdfsTestDirectory() + "randomImage.pdf";
+            String resultPdfPath = DESTINATION_FOLDER + "logOnInputImageException.pdf";
+            OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(new OcrPdfApiTest.ErrorOcrEngine());
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => ocrPdfCreator.MakePdfSearchable
+                (new FileInfo(path), new FileInfo(resultPdfPath)));
+            NUnit.Framework.Assert.AreEqual("Custom message", e.Message);
+            NUnit.Framework.Assert.IsTrue(e is PdfOcrInputException);
         }
 
         private static void MakeSearchable(String fileName) {
@@ -178,6 +191,37 @@ namespace iText.Pdfocr {
             ocrPdfCreator.MakePdfSearchable(pdfDoc);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(resultPdfPath, expectedPdfPath, DESTINATION_FOLDER
                 , "diff_"));
+        }
+
+        private class ErrorOcrEngine : IOcrEngine {
+            public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input) {
+                return null;
+            }
+
+            public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(FileInfo input, OcrProcessContext ocrProcessContext
+                ) {
+                throw new PdfOcrInputException("Custom message");
+            }
+
+            public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs) {
+                return null;
+            }
+
+            public virtual IDictionary<int, IList<TextInfo>> DoImageOcr(IList<FileInfo> inputs, OcrProcessContext ocrProcessContext
+                ) {
+                return null;
+            }
+
+            public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile) {
+            }
+
+            public virtual void CreateTxtFile(IList<FileInfo> inputImages, FileInfo txtFile, OcrProcessContext ocrProcessContext
+                ) {
+            }
+
+            public virtual bool IsTaggingSupported() {
+                return false;
+            }
         }
     }
 }
