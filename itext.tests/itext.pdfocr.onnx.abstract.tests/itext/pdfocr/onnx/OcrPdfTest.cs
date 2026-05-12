@@ -133,6 +133,14 @@ namespace iText.Pdfocr.Onnx {
             NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
         }
 
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void Jbig2Test() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => MakeSearchableWithoutCompare
+                ("jbig2"));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+        }
+
         private void MakeSearchable(String fileName) {
             MakeSearchable(fileName, fileName, null);
         }

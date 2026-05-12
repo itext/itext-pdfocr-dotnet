@@ -160,6 +160,20 @@ namespace iText.Pdfocr.Ocrpdf {
                 , ".jp2"), message);
         }
 
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void Jbig2Test() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputTesseract4Exception), () => MakeSearchableWithoutCompare
+                ("jbig2"));
+            String message = e.Message;
+            // Exception message is each run unique and looks like
+            // "pdfocr_img_55d1a7ff-de74-41ab-a72f-6876fb8ead471913987692833581352.jbig2 format is not supported."
+            message = ".jbig2 " + message.Substring(message.IndexOf("format", StringComparison.Ordinal));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT
+                , ".jbig2"), message);
+        }
+
         private String MakeSearchableWithoutCompare(String fileName) {
             String path = TEST_PDFS_DIRECTORY + fileName + ".pdf";
             String resultPdfPath = TARGET_DIRECTORY + fileName + "_" + testType + ".pdf";
