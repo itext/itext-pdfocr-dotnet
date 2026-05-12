@@ -361,8 +361,12 @@ namespace iText.Pdfocr.Util {
                 Point[] wordP = word.GetTextPoints();
                 PdfOcrTextBuilder.Line left = new PdfOcrTextBuilder.Line(wordP[0], wordP[1]);
                 PdfOcrTextBuilder.Line right = new PdfOcrTextBuilder.Line(wordP[3], wordP[2]);
-                word.SetTextPoints(new Point[] { left.Intersection(bottom), left.Intersection(top), right.Intersection(top
-                    ), right.Intersection(bottom) });
+                Point ll = left.Intersection(bottom);
+                Point ul = left.Intersection(top);
+                Point ur = right.Intersection(top);
+                Point lr = right.Intersection(bottom);
+                word.SetTextPoints(new Point[] { ll == null ? wordP[0] : ll, ul == null ? wordP[1] : ul, ur == null ? wordP
+                    [2] : ur, lr == null ? wordP[3] : lr });
             }
         }
 
@@ -568,7 +572,7 @@ namespace iText.Pdfocr.Util {
         /// Class representing parametric representation of a line:
         /// point
         /// <c>(x, y)</c>
-        /// and unit direction vector
+        /// and normalized unit direction vector
         /// <c>(ux, uy)</c>.
         /// </summary>
         private class Line {
@@ -659,6 +663,9 @@ namespace iText.Pdfocr.Util {
             /// </returns>
             public virtual Point Intersection(PdfOcrTextBuilder.Line other) {
                 double det = this.ux * other.uy - other.ux * this.uy;
+                // ux and uy are normalized, so determinant equals to sin(a), where 'a' is an angle between lines.
+                // If det is ~= 0, it means sin(a) ~= 0, what means 'a' ~= 0 or 180 degrees, so lines are either parallel
+                // or collinear, and we won't be able to find an intersection point
                 if (Math.Abs(det) < 1e-10) {
                     return null;
                 }

@@ -74,6 +74,22 @@ namespace iText.Pdfocr.Util {
         }
 
         [NUnit.Framework.Test]
+        public virtual void GenerifyThinLineTest() {
+            IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
+            IList<TextInfo> textInfos = new List<TextInfo>();
+            textInfos.Add(new TextInfo("-", new Point[] { new Point(525, 50), new Point(525, 26), new Point(525, 28), 
+                new Point(525, 52) }));
+            textInfoMap.Put(1, textInfos);
+            PdfOcrTextBuilder.GenerifyWordBBoxesByLine(textInfoMap);
+            Point[] points = textInfos[0].GetTextPoints();
+            NUnit.Framework.Assert.AreEqual(4, points.Length);
+            NUnit.Framework.Assert.IsNotNull(points[0]);
+            NUnit.Framework.Assert.IsNotNull(points[1]);
+            NUnit.Framework.Assert.IsNotNull(points[2]);
+            NUnit.Framework.Assert.IsNotNull(points[3]);
+        }
+
+        [NUnit.Framework.Test]
         public virtual void PagesOrderTest() {
             IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
             textInfoMap.Put(3, JavaUtil.ArraysAsList(new TextInfo("Third", new Rectangle(200, 0, 100, 100))));
