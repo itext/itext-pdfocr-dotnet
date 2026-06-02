@@ -29,9 +29,11 @@ using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
+using iText.Layout.Logs;
 using iText.Pdfocr;
 using iText.Pdfocr.Logs;
 using iText.Pdfocr.Tesseract4;
+using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
@@ -245,6 +247,9 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, LogLevel = LogLevelConstants.WARN)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_INFO, LogLevel = LogLevelConstants.INFO, Count = 
+            3)]
         public virtual void TestArabicTextWithEng() {
             String imgPath = TEST_IMAGES_DIRECTORY + "arabic_01.jpg";
             FileInfo file = new FileInfo(imgPath);
@@ -262,6 +267,9 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, LogLevel = LogLevelConstants.WARN)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_INFO, LogLevel = LogLevelConstants.INFO, Count = 
+            3)]
         public virtual void TestArabicText() {
             String imgPath = TEST_IMAGES_DIRECTORY + "arabic_02.png";
             FileInfo file = new FileInfo(imgPath);
@@ -306,6 +314,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 12)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING)]
         [NUnit.Framework.Test]
         public virtual void TestHindiTextWithUrdu() {
             String testName = "testHindiTextWithUrdu";
@@ -328,6 +337,7 @@ namespace iText.Pdfocr.Tessdata {
 
         [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Ignore = true
             )]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Ignore = true)]
         [NUnit.Framework.Test]
         public virtual void TestHindiTextWithUrduActualTextWithIncorrectFont() {
             String testName = "testHindiTextWithUrduActualTextWithIncorrectFont";
@@ -349,6 +359,10 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 2, LogLevel = LogLevelConstants
+            .WARN)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_INFO, Count = 3, LogLevel = LogLevelConstants.INFO
+            )]
         public virtual void TestHindiTextWithEng() {
             String imgPath = TEST_IMAGES_DIRECTORY + "hindi_02.jpg";
             FileInfo file = new FileInfo(imgPath);
@@ -401,6 +415,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 2)]
         public virtual void TestBengali() {
             String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
             FileInfo file = new FileInfo(imgPath);
@@ -479,6 +494,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING)]
         public virtual void TestBengaliScript() {
             String imgPath = TEST_IMAGES_DIRECTORY + "bengali_01.jpeg";
             FileInfo file = new FileInfo(imgPath);
@@ -527,6 +543,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 1)]
         public virtual void TestThai03ImageWithImprovedHocrParsing() {
             String[] expected = new String[] { "บ๊อบสตรอเบอรีออดิชั่นธัม โมเนิร์สเซอรี่", "ศากยบุตร เอเซีย", "หน่อมแน้ม เวอร์เบอร์เกอร์แชมป์"
                  };

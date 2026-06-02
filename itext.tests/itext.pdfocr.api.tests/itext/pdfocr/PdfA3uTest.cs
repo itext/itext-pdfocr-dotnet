@@ -28,6 +28,7 @@ using iText.Kernel.Exceptions;
 using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using iText.Layout.Font;
+using iText.Layout.Logs;
 using iText.Pdfa.Exceptions;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
@@ -109,6 +110,7 @@ namespace iText.Pdfocr {
         }
 
         [LogMessage(PdfOcrExceptionMessageConstant.CANNOT_CREATE_PDF_DOCUMENT, Count = 1)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestNonCompliantThaiPdfA() {
             Exception exception = NUnit.Framework.Assert.Catch(typeof(PdfOcrException), () => {
@@ -127,6 +129,7 @@ namespace iText.Pdfocr {
                 , 3611)), exception.Message);
         }
 
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestCompliantThaiPdfA() {
             String testName = "testCompliantThaiPdfA";
