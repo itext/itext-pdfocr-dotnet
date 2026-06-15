@@ -26,6 +26,8 @@ using System.Linq;
 using iText.Commons.Utils;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Onnx.Detection;
+using iText.Pdfocr.Onnx.Recognition;
 using iText.Pdfocr.Onnx.Util;
 using iText.Test;
 
@@ -40,6 +42,12 @@ namespace iText.Pdfocr.Onnx {
 
         private static readonly String TARGET_DIRECTORY = NUnit.Framework.TestContext.CurrentContext.TestDirectory
              + "/test/resources/itext/pdfocr/OnnxModelsOCRIntegrationTest/";
+
+        private static readonly String FAST_MODEL_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/rep_fast_tiny-28867779.onnx";
+
+        private static readonly String PARSEQ_MODEL_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfocr/models/parseq-00b40714.onnx";
 
         public static IEnumerable<Object[]> OcrEngines() {
             return JavaUtil.ArraysToEnumerable(OcrEngineType.All()).Select((type) => new Object[] { type }).ToList();
@@ -85,6 +93,20 @@ namespace iText.Pdfocr.Onnx {
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             OnnxTestUtils.ExtractTextAndCompare(dest, cmpTxt, "Text1", 0.7);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void FrenchTest() {
+            IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST_MODEL_PATH);
+            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(PARSEQ_MODEL_PATH);
+            IOcrEngine ocrEngine = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
+            String src = TEST_IMAGE_DIRECTORY + "french_01.png";
+            String dest = TARGET_DIRECTORY + "french.pdf";
+            String cmp = TEST_DIRECTORY + "cmp_french.pdf";
+            String cmpTxt = TEST_DIRECTORY + "french.txt";
+            OnnxTestUtils.DoOcrAndCreatePdf(src, dest, ocrEngine);
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            ExtractTextAndCompare(dest, cmpTxt);
         }
 
         private void ExtractTextAndCompare(String dest, String cmpTxt) {

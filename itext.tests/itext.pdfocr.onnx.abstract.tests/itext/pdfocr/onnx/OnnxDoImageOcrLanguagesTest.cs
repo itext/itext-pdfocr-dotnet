@@ -51,7 +51,8 @@ namespace iText.Pdfocr.Onnx {
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
+            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG,
+                Vocabulary.LATIN_EXTENDED, 0);
             MULTILANG_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             OCR_ENGINE = OcrEngineType.DOCTR.Get();
         }

@@ -405,7 +405,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         /// <returns>a new text recognition properties object for a PARSeq model</returns>
         public static iText.Pdfocr.Onnx.Recognition.OnnxRecognitionPredictorProperties ParSeq(String modelPath, IOrtSessionOptionsCreator
              ortSessionOptionsCreator) {
-            return iText.Pdfocr.Onnx.Recognition.OnnxRecognitionPredictorProperties.ParSeq(modelPath, Vocabulary.LATIN_EXTENDED
+            return iText.Pdfocr.Onnx.Recognition.OnnxRecognitionPredictorProperties.ParSeq(modelPath, Vocabulary.FRENCH
                 , 0, ortSessionOptionsCreator);
         }
 
