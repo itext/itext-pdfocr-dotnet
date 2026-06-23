@@ -30,6 +30,7 @@ using iText.Commons;
 using iText.Commons.Actions.Confirmations;
 using iText.Commons.Actions.Contexts;
 using iText.Commons.Actions.Data;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.Pdfocr;

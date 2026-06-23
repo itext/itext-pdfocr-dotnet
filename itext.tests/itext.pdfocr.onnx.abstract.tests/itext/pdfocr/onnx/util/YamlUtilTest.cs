@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.Test;
 

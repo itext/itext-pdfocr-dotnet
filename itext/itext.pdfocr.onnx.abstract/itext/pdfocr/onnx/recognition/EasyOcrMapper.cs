@@ -15,6 +15,7 @@ limitations under the License.
 */
 using System;
 using System.Collections.Generic;
+using iText.Commons.Internal.Runtime;
 
 namespace iText.Pdfocr.Onnx.Recognition {
     /// <summary>Label mapper for EasyOCR text recognition models.</summary>

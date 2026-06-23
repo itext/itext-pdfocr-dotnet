@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using iText.Commons.Actions;
 using iText.Commons.Actions.Data;
+using iText.Commons.Internal.Runtime;
 using iText.Test;
 
 namespace iText.Pdfocr.Statistics {

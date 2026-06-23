@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using Tesseract;
+using iText.Commons.Internal.Runtime;
 using iText.IO.Image;
 using iText.Pdfocr;
 using iText.Pdfocr.Logs;
