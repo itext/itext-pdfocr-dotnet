@@ -6,8 +6,8 @@
         <title>iText pdfOcr</title>
         <authors>Apryse Software</authors>
         <owners>Apryse Software</owners>
-        <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
-        <projectUrl>https://itextpdf.com/en/products/itext-7/pdfocr</projectUrl>
+        <licenseUrl>https://www.gnu.org/licenses/agpl-3.0.html</licenseUrl>
+        <projectUrl>https://itextpdf.com/products/pdf-ocr-text-recognition</projectUrl>
         <icon>ITSC-avatar.png</icon>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
         <description>pdfOCR is an iText add-on to recognize and extract text in scanned documents and images. It can also convert them into fully ISO-compliant PDF or PDF/A-3u files that are accessible, searchable, and suitable for archiving</description>
@@ -15,7 +15,7 @@
         <copyright>Copyright (c) 1998-2026 Apryse Group NV</copyright>
         <language>en-US</language>
         <tags>OCR PDF ligatures text glyphs iText Optical Character Recognition PDF/A ISO-compliant Tesseract open-source opensource English Mandarin Chinese Hindi Spanish French Arabic Bengali Russian Portuguese Indonesian scan image extractable data searchable diacritic sdk c# .net</tags>
-        <repository type="git" url="https://github.com/itext/i7n-pdfocr.git" />
+        <repository type="git" url="https://github.com/itext/itext-pdfocr-dotnet" />
         <dependencies>
             <group targetFramework="net461">
                 <dependency id="itext" version="9.8.0-SNAPSHOT" />
