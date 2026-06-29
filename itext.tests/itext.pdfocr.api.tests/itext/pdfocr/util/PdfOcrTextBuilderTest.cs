@@ -56,6 +56,20 @@ namespace iText.Pdfocr.Util {
         }
 
         [NUnit.Framework.Test]
+        public virtual void BuildTextDistancedTest() {
+            IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
+            IList<TextInfo> textInfos = new List<TextInfo>();
+            textInfos.Add(new TextInfo("Third", new Rectangle(200, 0, 100, 100)));
+            textInfos.Add(new TextInfo("Fourth", new Rectangle(610, 0, 100, 100)));
+            textInfos.Add(new TextInfo("Second", new Rectangle(100, 100, 120, 65)));
+            textInfos.Add(new TextInfo("First", new Rectangle(0, 200, 100, 30)));
+            textInfoMap.Put(1, textInfos);
+            String actualResult = PdfOcrTextBuilder.BuildText(textInfoMap);
+            String expectedResult = "First\nSecond\nThird\nFourth\n";
+            NUnit.Framework.Assert.AreEqual(expectedResult, actualResult);
+        }
+
+        [NUnit.Framework.Test]
         public virtual void GenerifyLineTest() {
             IDictionary<int, IList<TextInfo>> textInfoMap = new Dictionary<int, IList<TextInfo>>();
             IList<TextInfo> textInfos = new List<TextInfo>();
@@ -65,6 +79,7 @@ namespace iText.Pdfocr.Util {
             textInfos.Add(new TextInfo("First", new Rectangle(0, 0, 100, 30)));
             textInfoMap.Put(1, textInfos);
             PdfOcrTextBuilder.GenerifyWordBBoxesByLine(textInfoMap);
+            textInfos = textInfoMap.Get(1);
             NUnit.Framework.Assert.IsTrue(new Rectangle(0, 0, 100, 50).EqualsWithEpsilon(textInfos[0].GetBBoxRect()));
             NUnit.Framework.Assert.IsTrue(new Rectangle(100, 0, 120, 50).EqualsWithEpsilon(textInfos[1].GetBBoxRect())
                 );

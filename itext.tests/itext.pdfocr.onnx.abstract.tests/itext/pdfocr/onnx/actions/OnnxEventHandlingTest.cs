@@ -293,8 +293,8 @@ namespace iText.Pdfocr.Onnx.Actions {
         [NUnit.Framework.Test]
         public virtual void CreateTxtFileStreamTest() {
             using (Stream input = FileUtil.GetInputStreamForFile(TEST_IMAGE_DIRECTORY + "numbers_01.jpg")) {
-                using (FileStream output = new FileStream(TEST_IMAGE_DIRECTORY + "createTxtFileStream.txt", FileMode.Create
-                    )) {
+                using (FileStream output = new FileStream(DESTINATION_FOLDER + "createTxtFileStream.txt", FileMode.Create)
+                    ) {
                     OCR_ENGINE.CreateTxtFile(input, output);
                 }
             }
