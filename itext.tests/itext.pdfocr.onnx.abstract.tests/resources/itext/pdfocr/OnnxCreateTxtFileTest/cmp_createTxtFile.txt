@@ -1,10 +1,10 @@
-This  a test
+﻿This  a test
 message for
 OCR Scanner
-ST
--
 Test
 BMPTest
+ST
+-
 TEST
 This textIS sideways
 DiagonalTxT
@@ -18,14 +18,16 @@ tarse en publico. Hay que actuar con calma y
 cansaremos de repetirlo, Lo mas importante es saber
 que se va a poner   tener todo a
 Si intenta probar un nuevo lapiz labial para la
-sion, asegurese que armonice con
-rà.                             el vestido que lle
+sion, asegurese que armonice con el vestido      lle
+rà.
+que
 También el maquillaje de los ojos debe armoni
 con el conjunto.
 C
 4
 o
-oueur           A
+oueur
+A
 ou
 K
 K
@@ -42,7 +44,8 @@ typesetting remaining essentially unchanged. It was popularised in
 the 1960s with the release of Letraset sheets containing Lorem
 Ipsum passages, and more recently with desktop publishing
 software like Aldus PageMaker including versions of Lorem Ipsum.
-pue                                 s!
+pue
+s!
 jwMsdI
 a
 a
@@ -50,8 +53,9 @@ thousand
 eighty nineteen
 thirteen
 twenty        hundred
-seventwelve fifty
-fifteen fourS1X
+seventwelve
+fifteen four      fifty
+S1X
 million ten three cight forty
 sixteen two ones
 nine fiveseventeen

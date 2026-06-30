@@ -109,7 +109,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "numbers_02.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("12345\n-\n56\n-\n-\n01\n&\n0\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("12345\n-\n56\n-\n-\n0\n01\n&\n", textFromImage);
         }
 
         [NUnit.Framework.Test]

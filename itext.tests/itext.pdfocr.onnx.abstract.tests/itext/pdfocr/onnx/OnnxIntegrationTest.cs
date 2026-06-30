@@ -133,18 +133,23 @@ namespace iText.Pdfocr.Onnx {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("-\nAY SI ENSAYARA COMO ACTUAR?\n" +
-                                                "Tanto peor, lo mejor es descansar y no pensar\n" +
-                                                "la fiesta, si se puede. No hay nada mas desalentador\n" +
-                                                "ver en las fiestas a jovenes con cara de lastima y\n" +
-                                                "iluslonadas y que se han pasado todo el dia tratando\n" +
-                                                "hallar lo mejor y la mas atractiva manera de pres\n" +
-                                                "tarse en publico. Hay que actuar con calma y no\n" +
-                                                "cansaremos de repetirlo, Lo mas importante es saber\n" +
-                                                "que se va a poner y tener todo a mano,\n" +
-                                                "Si intenta probar un nuevo lapiz labial para la o\n" +
-                                                "sion, asegurese que armonice con el vestido\n-\nrà. que lle\n" +
-                                                "También el maquillaje de los ojos debe armoni\ncon el conjunto.",
+                NUnit.Framework.Assert.AreEqual("-\n"
+                    + "AY SI ENSAYARA COMO ACTUAR?\n"
+                    + "Tanto peor, lo mejor es descansar y no pensar\n"
+                    + "la fiesta, si se puede. No hay nada mas desalentador\n"
+                    + "ver en las fiestas a jovenes con cara de lastima y\n"
+                    + "iluslonadas y que se han pasado todo el dia tratando\n"
+                    + "hallar lo mejor y la mas atractiva manera de pres\n"
+                    + "tarse en publico. Hay que actuar con calma y no\n"
+                    + "cansaremos de repetirlo, Lo mas importante es saber\n"
+                    + "que se va a poner y tener todo a mano,\n"
+                    + "Si intenta probar un nuevo lapiz labial para la o\n"
+                    + "sion, asegurese que armonice con el vestido\n"
+                    + "-\n"
+                    + "que lle\n"
+                    + "rà.\n"
+                    + "También el maquillaje de los ojos debe armoni\n"
+                    + "con el conjunto.",
                     extractionStrategy.GetResultantText());
             }
         }
@@ -157,16 +162,42 @@ namespace iText.Pdfocr.Onnx {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
-                NUnit.Framework.Assert.AreEqual("Silliness Enablers INVOICE\nYou dream it we enable it\n" +
-                                                "Middle of Nowhere\nPhone +329 292 22 22 INVOICE #100\n" +
-                                                "Fax +32 9 270 00 00 DATE: 6/30/2020\nTO: SHIP TO\nAndré Lemos " +
-                                                "André Lemos\nTycoon Corp. Tycoon Corp\nWonderful Street Wonderful" +
-                                                " Street\nLala Land Lala Land\n+351 911 111111 +351 911 111 111\n" +
-                                                "COMMENT OR SPFCIAI INSTRUCTIONS\nITEMS MUST BF DELIVER - FUL - " +
-                                                "ASSEMBLED\nRSON P.O NUMBER REQUISITIONER SHIPPED VIA F.O.B POINT " +
-                                                "TERMS\n3Vi #7394009320 Website form AIR Delivery Due or receipt\n" +
-                                                "QUANTITY DESCRIPTION UNIT TOTAL\nPR RICE\n10 Lasers $3000 $30000\n" +
-                                                "2 Band-Aids $1 $2\n5 Sharks $99999 $499995"
+                NUnit.Framework.Assert.AreEqual("INVOICE\n"
+                    + "Silliness Enablers\n"
+                    + "You dream it we enable it\n"
+                    + "Middle of Nowhere\n"
+                    + "INVOICE #100\n"
+                    + "Phone +329 292 22 22\n"
+                    + "DATE: 6/30/2020\n"
+                    + "Fax +32 9 270 00 00\n"
+                    + "SHIP TO\n"
+                    + "TO:\n"
+                    + "André Lemos\n"
+                    + "André Lemos\n"
+                    + "Tycoon Corp\n"
+                    + "Tycoon Corp.\n"
+                    + "Wonderful Street\n"
+                    + "Wonderful Street\n"
+                    + "Lala Land\n"
+                    + "Lala Land\n"
+                    + "+351 911 111 111\n"
+                    + "+351 911 111111\n"
+                    + "COMMENT OR SPFCIAI INSTRUCTIONS\n"
+                    + "ITEMS MUST BF DELIVER - FUL - ASSEMBLED\n"
+                    + "RSON\n"
+                    + "P.O NUMBER REQUISITIONER SHIPPED VIA F.O.B POINT TERMS\n"
+                    + "3Vi #7394009320 Website form AIR\n"
+                    + "Delivery Due or receipt\n"
+                    + "DESCRIPTION UNIT PR RICE TOTAL\n"
+                    + "QUANTITY\n"
+                    + "$3000 $30000\n"
+                    + "10\n"
+                    + "Lasers\n"
+                    + "$1 $2\n"
+                    + "2 Band-Aids\n"
+                    + "$99999 $499995\n"
+                    + "5\n"
+                    + "Sharks"
                     , extractionStrategy.GetResultantText());
             }
         }
