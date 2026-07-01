@@ -22,6 +22,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System.Collections.Generic;
 using System.IO;
+using iText.Commons.Internal.Runtime;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
 using iText.Pdfocr.Structuretree;

@@ -30,6 +30,7 @@ using iText.Pdfocr.Onnx.Exceptions;
 using iText.Pdfocr.Onnx.Orientation;
 using iText.Pdfocr.Onnx.Recognition;
 using iText.Pdfocr.Onnx.Util;
+using iText.Pdfocr.Util;
 using iText.Test;
 
 namespace iText.Pdfocr.Onnx {
@@ -60,8 +61,9 @@ namespace iText.Pdfocr.Onnx {
                 PaddingStrategy.SYMMETRIC_BLACK);
             float[] mean = new float[] { 0.798F, 0.785F, 0.772F };
             float[] std = new float[] { 0.264F, 0.2749F, 0.287F };
+            MemoryStream stream = ByteArrayStreamUtil.CreateByteArrayInputStream(FileUtil.GetInputStreamForFile(TIFF));
             Exception e = NUnit.Framework.Assert.Catch(typeof(ArgumentException), () => BufferedImageUtil.ToBchwInput(
-                OnnxOcrEngine.GetImages(new FileInfo(TIFF)), new OnnxInputProperties(imageResizeOptions, mean, std)));
+                OnnxOcrEngine.GetImages(stream), new OnnxInputProperties(imageResizeOptions, mean, std)));
             NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrOnnxExceptionMessageConstant.TOO_MANY_IMAGES
                 , 2, 1), e.Message);
         }

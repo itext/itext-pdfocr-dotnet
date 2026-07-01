@@ -26,8 +26,6 @@ using Microsoft.Extensions.Logging;
 using Tesseract;
 using iText.Commons;
 using iText.Commons.Utils;
-using iText.IO.Image;
-using iText.IO.Source;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
 using iText.Pdfocr.Util;
@@ -47,22 +45,6 @@ namespace iText.Pdfocr.Tesseract4 {
         /// </summary>
         private ImagePreprocessingUtil() {
         }
-
-//\cond DO_NOT_DOCUMENT
-        /// <summary>Counts number of pages in the provided tiff image.</summary>
-        /// <param name="inputImage">
-        /// input image
-        /// <see cref="System.IO.FileInfo"/>
-        /// </param>
-        /// <returns>number of pages in the provided TIFF image</returns>
-        internal static int GetNumberOfPageTiff(FileInfo inputImage) {
-            RandomAccessFileOrArray raf = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateBestSource
-                (inputImage.FullName));
-            int numOfPages = TiffImageData.GetNumberOfPages(raf);
-            raf.Close();
-            return numOfPages;
-        }
-//\endcond
 
 //\cond DO_NOT_DOCUMENT
         /// <summary>Reads provided image file using stream.</summary>

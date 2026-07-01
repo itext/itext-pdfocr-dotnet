@@ -60,8 +60,8 @@ namespace iText.Pdfocr.Onnx.Orientation {
 
         [NUnit.Framework.TestCaseSource("PredictWithLongLinesParams")]
         public virtual void PredictWithLongLines(TextOrientation expectedResult, String inputFileName) {
-            IronSoftware.Drawing.AnyBitmap inputImage = IronSoftware.Drawing.AnyBitmap.FromFile(new FileInfo(TEST_DIRECTORY
-                 + inputFileName).FullName);
+            IronSoftware.Drawing.AnyBitmap inputImage = IronSoftware.Drawing.AnyBitmap.FromStream(
+                FileUtil.GetInputStreamForFile(TEST_DIRECTORY + inputFileName));
             IEnumerator<TextOrientation> result = PREDICTOR.Predict(JavaCollectionsUtil.Singleton(inputImage));
             result.MoveNext();
             TextOrientation actualResult = result.Current;

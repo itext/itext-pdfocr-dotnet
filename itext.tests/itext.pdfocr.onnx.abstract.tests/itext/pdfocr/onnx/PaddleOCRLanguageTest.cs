@@ -23,13 +23,16 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Layout.Font;
+using iText.Layout.Logs;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Detection;
 using iText.Pdfocr.Onnx.Recognition;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
@@ -67,6 +70,8 @@ namespace iText.Pdfocr.Onnx {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, LogLevel = LogLevelConstants.WARN)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_INFO, LogLevel = LogLevelConstants.INFO)]
         public virtual void ArabicTest() {
             String modelName = "arabic_PP-OCRv3_mobile_rec_infer";
             RunOcrTest(modelName, "arabic_01.jpg");
@@ -139,6 +144,7 @@ namespace iText.Pdfocr.Onnx {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 1)]
         public virtual void ThaiTest() {
             String modelName = "th_PP-OCRv5_mobile_rec_infer";
             RunOcrTest(modelName, "thai_01.jpg");

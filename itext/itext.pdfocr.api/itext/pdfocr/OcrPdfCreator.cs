@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using iText.Commons;
 using iText.Commons.Actions;
 using iText.Commons.Actions.Sequence;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.IO.Font.Otf;
 using iText.IO.Image;
@@ -231,7 +232,7 @@ namespace iText.Pdfocr {
                 int i = 0;
                 foreach (FileInfo inputImage in inputImages) {
                     try {
-                        int pageCount = TiffImageUtil.IsTiffImage(inputImage) ? PdfCreatorUtil.GetNumberOfPageTiff(inputImage) : 1;
+                        int pageCount = TiffImageUtil.IsTiffImage(inputImage) ? TiffImageUtil.GetNumberOfPageTiff(inputImage) : 1;
                         IDictionary<int, IList<TextInfo>> currentImagesTextDataInfos = new Dictionary<int, IList<TextInfo>>();
                         for (int j = 0; j <= pageCount; j++) {
                             currentImagesTextDataInfos.Put(j, imagesTextDataInfos.Get(i + j));
@@ -765,7 +766,17 @@ namespace iText.Pdfocr {
                         <ImageExtraction.PageImageData, IDictionary<int, IList<TextInfo>>>(pageImageData.Count);
                     foreach (ImageExtraction.PageImageData image in pageImageData) {
                         allImagePaths.Add(image.GetPath().FullName);
-                        imagesTextData.Put(image, ocrEngine.DoImageOcr(image.GetPath(), ocrProcessContext));
+                        IDictionary<int, IList<TextInfo>> ocrResult;
+                        try {
+                            ocrResult = ocrEngine.DoImageOcr(image.GetPath(), ocrProcessContext);
+                        }
+                        catch (PdfOcrException e) {
+                            int imageObjNr = image.GetXObject().GetPdfObject().GetIndirectReference().GetObjNumber();
+                            LOGGER.LogError(e, MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, pageNr, imageObjNr)
+                                );
+                            throw;
+                        }
+                        imagesTextData.Put(image, ocrResult);
                     }
                     // Put the result into pdf
                     AddToPdfPage(pdfPage, imagesTextData, layers[1]);

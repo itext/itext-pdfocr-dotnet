@@ -51,7 +51,8 @@ namespace iText.Pdfocr.Onnx {
         public static void BeforeClass() {
             CreateOrClearDestinationFolder(TARGET_DIRECTORY);
             IDetectionPredictor detectionPredictor = OnnxDetectionPredictor.Fast(FAST);
-            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG);
+            IRecognitionPredictor recognitionPredictor = OnnxRecognitionPredictor.ParSeq(MULTILANG,
+                Vocabulary.LATIN_EXTENDED, 0);
             MULTILANG_ENGINE = new OnnxOcrEngine(detectionPredictor, recognitionPredictor);
             OCR_ENGINE = OcrEngineType.DOCTR.Get();
         }
@@ -75,7 +76,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "arabic_01.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("13\n-\n6\nSta:as)\n9\n4at\n-\nA\nlive,\nlaugh,\nlove\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("13\n-\n6\nSta:as)\n9\n4at\n-\nlive,\nlaugh,\nlove\nA\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -99,7 +100,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "chinese_01.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("I\n4\n-\n-\nnI\nK/i\nhao\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("I\n4\n-\n-\nnI\nhao\nK/i\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -173,7 +174,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "japanese_01.png";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("B\n*\n-\na\n-\naa\nK\n*\n-\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("B\n*\n-\naa\n-\na\nK\n*\n-\n", textFromImage);
         }
 
         [NUnit.Framework.Test]

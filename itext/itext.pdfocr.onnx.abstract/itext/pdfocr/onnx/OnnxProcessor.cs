@@ -7,6 +7,7 @@ See <https://opensource.org/licenses/Apache-2.0> for full license details.
 using System;
 using System.Collections.Generic;
 using iText.Commons.Actions.Confirmations;
+using iText.Commons.Internal.Runtime;
 using iText.Pdfocr;
 using iText.Pdfocr.Onnx.Actions.Events;
 using iText.Pdfocr.Onnx.Detection;

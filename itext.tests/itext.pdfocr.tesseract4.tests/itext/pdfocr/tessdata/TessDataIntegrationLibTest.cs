@@ -24,10 +24,12 @@ using System;
 using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Utils;
+using iText.Layout.Logs;
 using iText.Pdfocr;
 using iText.Pdfocr.Logs;
 using iText.Pdfocr.Tesseract4;
 using iText.Pdfocr.Tesseract4.Exceptions;
+using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Tessdata {
@@ -66,6 +68,8 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, LogLevel = LogLevelConstants.WARN)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_INFO, LogLevel = LogLevelConstants.INFO)]
         public virtual void CompareInvoiceFrontThaiImage() {
             String testName = "compareInvoiceFrontThaiImage";
             String filename = "invoice_front_thai";
@@ -89,6 +93,7 @@ namespace iText.Pdfocr.Tessdata {
         }
 
         [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 2)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, LogLevel = LogLevelConstants.WARN)]
         [NUnit.Framework.Test]
         public virtual void CompareThaiTextImage() {
             String testName = "compareThaiTextImage";

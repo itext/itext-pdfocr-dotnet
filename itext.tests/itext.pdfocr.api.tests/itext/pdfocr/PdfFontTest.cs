@@ -27,6 +27,7 @@ using iText.IO.Font;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Layout.Font;
+using iText.Layout.Logs;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Helpers;
 using iText.Pdfocr.Logs;
@@ -131,6 +132,7 @@ namespace iText.Pdfocr {
         }
 
         [LogMessage(PdfOcrLogMessageConstant.COULD_NOT_FIND_CORRESPONDING_GLYPH_TO_UNICODE_CHARACTER, Count = 7)]
+        [LogMessage(LayoutLogMessageConstant.TYPOGRAPHY_NOT_FOUND_WARNING, Count = 1)]
         [NUnit.Framework.Test]
         public virtual void TestThaiImageWithNotDefGlyphs() {
             String testName = "testThaiImageWithNotDefGlyphs";

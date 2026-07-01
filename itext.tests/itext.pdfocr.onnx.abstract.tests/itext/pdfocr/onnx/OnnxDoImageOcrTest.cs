@@ -109,7 +109,7 @@ namespace iText.Pdfocr.Onnx {
             String src = TEST_IMAGE_DIRECTORY + "numbers_02.jpg";
             FileInfo imageFile = new FileInfo(src);
             String textFromImage = OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE);
-            NUnit.Framework.Assert.AreEqual("12345\n-\n56\n-\n-\n01\n&\n0\n", textFromImage);
+            NUnit.Framework.Assert.AreEqual("12345\n-\n56\n-\n-\n0\n01\n&\n", textFromImage);
         }
 
         [NUnit.Framework.Test]
@@ -161,6 +161,24 @@ namespace iText.Pdfocr.Onnx {
             FileInfo imageFile = new FileInfo(src);
             Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => OnnxTestUtils.GetTextFromImage
                 (imageFile, OCR_ENGINE));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+        }
+        
+        [NUnit.Framework.Test]
+        public virtual void Jpeg2000Test() {
+            FileInfo imageFile = new FileInfo(TEST_IMAGE_DIRECTORY + "bee.jp2");
+            
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), 
+                () => OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+        }
+        
+        [NUnit.Framework.Test]
+        public virtual void Jbig2Test() {
+            FileInfo imageFile = new FileInfo(TEST_IMAGE_DIRECTORY + "jbig2decode.jbig2");
+            
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), 
+                () => OnnxTestUtils.GetTextFromImage(imageFile, OCR_ENGINE));
             NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
         }
     }

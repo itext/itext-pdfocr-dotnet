@@ -23,10 +23,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using iText.Kernel.Colors;
+using iText.Kernel.Logs;
 using iText.Kernel.Utils;
 using iText.Pdfocr;
+using iText.Pdfocr.Exceptions;
+using iText.Pdfocr.Logs;
+using iText.Pdfocr.Onnx.Exceptions;
 using iText.Pdfocr.Onnx.Util;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.Pdfocr.Onnx {
     [NUnit.Framework.Category("IntegrationTest")]
@@ -119,23 +124,50 @@ namespace iText.Pdfocr.Onnx {
             MakeSearchable("skewedRotated45");
         }
 
+        [NUnit.Framework.Test]
+        [LogMessage(KernelLogMessageConstant.JPXDECODE_FILTER_DECODING, LogLevel = LogLevelConstants.INFO)]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void Jpeg2000Test() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => MakeSearchableWithoutCompare
+                ("jpeg2000"));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(PdfOcrLogMessageConstant.CANNOT_OCR_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void Jbig2Test() {
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputException), () => MakeSearchableWithoutCompare
+                ("jbig2"));
+            NUnit.Framework.Assert.AreEqual(PdfOcrOnnxExceptionMessageConstant.FAILED_TO_READ_IMAGE, e.Message);
+        }
+
         private void MakeSearchable(String fileName) {
             MakeSearchable(fileName, fileName, null);
         }
 
+        private void MakeSearchableWithoutCompare(String fileName) {
+            MakeSearchableWithoutCompare(fileName, fileName, null);
+        }
+
         private void MakeSearchable(String fileName, String outFileName, OcrPdfCreatorProperties ocrPdfCreatorProperties
+            ) {
+            String outPath = MakeSearchableWithoutCompare(fileName, outFileName, ocrPdfCreatorProperties);
+            String cmpPath = TEST_DIRECTORY + "cmp_" + outFileName + ".pdf";
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(outPath, cmpPath, TARGET_DIRECTORY, "diff_"
+                ));
+        }
+
+        private String MakeSearchableWithoutCompare(String fileName, String outFileName, OcrPdfCreatorProperties ocrPdfCreatorProperties
             ) {
             String srcPath = TEST_PDFS_DIRECTORY + fileName + ".pdf";
             String outPath = TARGET_DIRECTORY + outFileName + ".pdf";
-            String cmpPath = TEST_DIRECTORY + "cmp_" + outFileName + ".pdf";
             if (ocrPdfCreatorProperties == null) {
                 ocrPdfCreatorProperties = new OcrPdfCreatorProperties().SetTextColor(DeviceCmyk.MAGENTA);
             }
             OcrPdfCreator ocrPdfCreator = new OcrPdfCreator(OcrEngineTypeWithOrientation.DOCTR.Get(), ocrPdfCreatorProperties
                 );
             ocrPdfCreator.MakePdfSearchable(new FileInfo(srcPath), new FileInfo(outPath));
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(outPath, cmpPath, TARGET_DIRECTORY, "diff_"
-                ));
+            return outPath;
         }
     }
 }

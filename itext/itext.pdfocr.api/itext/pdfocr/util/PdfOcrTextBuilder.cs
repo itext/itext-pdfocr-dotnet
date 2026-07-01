@@ -24,8 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
-using iText.Commons.Utils.Collections;
 using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Pdfocr;
@@ -33,7 +33,9 @@ using iText.Pdfocr;
 namespace iText.Pdfocr.Util {
     /// <summary>Class to build text output from the provided image OCR result and write it to the TXT file.</summary>
     public sealed class PdfOcrTextBuilder {
-        private const float DEFAULT_INTERSECTION_THRESHOLD = 0.55F;
+        private const double DEFAULT_INTERSECTION_THRESHOLD = 0.55;
+
+        private const double DEFAULT_DISTANCE_THRESHOLD = 2;
 
         private static readonly double DEFAULT_ANGLE_THRESHOLD = MathUtil.ToRadians(10);
 
@@ -199,32 +201,69 @@ namespace iText.Pdfocr.Util {
         /// element contains a word or a line and its 4 coordinates (bbox)
         /// </param>
         public static void SortTextInfosByLines(IDictionary<int, IList<TextInfo>> textInfos) {
-            foreach (KeyValuePair<int, IList<TextInfo>> entry in textInfos) {
-                JavaCollectionsUtil.Sort(entry.Value, new _IComparer_155());
+            IList<int> pages = textInfos.Keys.OrderBy(i => i).ToList();
+            foreach (int pageNr in pages) {
+                IList<TextInfo> originals = textInfos.Get(pageNr);
+                if (originals == null || originals.Count <= 1) {
+                    continue;
+                }
+                // Group by rotation: group TextInfo items whose angles are within DEFAULT_ANGLE_THRESHOLD
+                IList<IList<TextInfo>> rotGroups = new List<IList<TextInfo>>();
+                IList<double> rotations = new List<double>();
+                foreach (TextInfo ti in originals) {
+                    double angle = ti.GetRotationAngle();
+                    int toPlace = -1;
+                    double bestDiff = DEFAULT_ANGLE_THRESHOLD;
+                    for (int i = 0; i < rotations.Count; ++i) {
+                        double angleDiff = Math.Abs(GetAngleDiff(ti, rotGroups[i][0]));
+                        if (angleDiff <= bestDiff) {
+                            bestDiff = angleDiff;
+                            toPlace = i;
+                        }
+                    }
+                    if (toPlace == -1) {
+                        IList<TextInfo> g = new List<TextInfo>();
+                        g.Add(ti);
+                        rotGroups.Add(g);
+                        rotations.Add(angle);
+                    }
+                    else {
+                        rotGroups[toPlace].Add(ti);
+                    }
+                }
+                // Sort by angle
+                IList<int> indices = new List<int>(rotations.Count);
+                for (int i = 0; i < rotations.Count; ++i) {
+                    indices.Add(i);
+                }
+                JavaCollectionsUtil.Sort(indices, (first, second) => {
+                    return JavaUtil.DoubleCompare(RoundAngle(rotations[first], DEFAULT_ANGLE_THRESHOLD), RoundAngle(rotations[
+                        second], DEFAULT_ANGLE_THRESHOLD));
+                }
+                );
+                IList<TextInfo> result = new List<TextInfo>(originals.Count);
+                foreach (int idx in indices) {
+                    IList<TextInfo> group = rotGroups[idx];
+                    JavaCollectionsUtil.Sort(group, new _IComparer_200());
+                    // Not really needed, but just in case
+                    result.AddAll(group);
+                }
+                textInfos.Put(pageNr, result);
             }
         }
 
-        private sealed class _IComparer_155 : IComparer<TextInfo> {
-            public _IComparer_155() {
+        private sealed class _IComparer_200 : IComparer<TextInfo> {
+            public _IComparer_200() {
             }
 
             public int Compare(TextInfo first, TextInfo second) {
-                // Not really needed, but just in case.
                 if (first == second) {
                     return 0;
-                }
-                double angleDiff = iText.Pdfocr.Util.PdfOcrTextBuilder.GetAngleDiff(first, second);
-                if (Math.Abs(angleDiff) > iText.Pdfocr.Util.PdfOcrTextBuilder.DEFAULT_ANGLE_THRESHOLD) {
-                    double firstRoundAngle = iText.Pdfocr.Util.PdfOcrTextBuilder.RoundAngle(first.GetRotationAngle(), iText.Pdfocr.Util.PdfOcrTextBuilder
-                        .DEFAULT_ANGLE_THRESHOLD);
-                    double secondRoundAngle = iText.Pdfocr.Util.PdfOcrTextBuilder.RoundAngle(second.GetRotationAngle(), iText.Pdfocr.Util.PdfOcrTextBuilder
-                        .DEFAULT_ANGLE_THRESHOLD);
-                    return JavaUtil.DoubleCompare(firstRoundAngle, secondRoundAngle);
                 }
                 PdfOcrTextBuilder.BoundingBox[] boxes = PdfOcrTextBuilder.BoundingBox.GetNormalizedBBoxes(first, second);
                 PdfOcrTextBuilder.BoundingBox box1 = boxes[0];
                 PdfOcrTextBuilder.BoundingBox box2 = boxes[1];
-                if (!iText.Pdfocr.Util.PdfOcrTextBuilder.AreIntersect(box1, box2)) {
+                if (!iText.Pdfocr.Util.PdfOcrTextBuilder.AreIntersectOnVertical(box1, box2)) {
                     double middleDistPerpendicularDiff = (box2.minY + box2.GetHeight() / 2) - (box1.minY + box1.GetHeight() / 
                         2);
                     return middleDistPerpendicularDiff > 0 ? 1 : -1;
@@ -304,7 +343,7 @@ namespace iText.Pdfocr.Util {
             }
             PdfOcrTextBuilder.BoundingBox[] boxes = PdfOcrTextBuilder.BoundingBox.GetNormalizedBBoxes(currentTextInfo, 
                 previousTextInfo);
-            return AreIntersect(boxes[0], boxes[1]);
+            return AreIntersectOnVertical(boxes[0], boxes[1]) && AreCloseOnHorizontal(boxes[0], boxes[1]);
         }
 //\endcond
 
@@ -361,15 +400,21 @@ namespace iText.Pdfocr.Util {
                 Point[] wordP = word.GetTextPoints();
                 PdfOcrTextBuilder.Line left = new PdfOcrTextBuilder.Line(wordP[0], wordP[1]);
                 PdfOcrTextBuilder.Line right = new PdfOcrTextBuilder.Line(wordP[3], wordP[2]);
-                word.SetTextPoints(new Point[] { left.Intersection(bottom), left.Intersection(top), right.Intersection(top
-                    ), right.Intersection(bottom) });
+                Point ll = left.Intersection(bottom);
+                Point ul = left.Intersection(top);
+                Point ur = right.Intersection(top);
+                Point lr = right.Intersection(bottom);
+                word.SetTextPoints(new Point[] { ll == null ? wordP[0] : ll, ul == null ? wordP[1] : ul, ur == null ? wordP
+                    [2] : ur, lr == null ? wordP[3] : lr });
             }
         }
 
         /// <summary>Checks whether 2 text chunks are in the same line by their bounding boxes.</summary>
         /// <remarks>
-        /// Checks whether 2 text chunks are in the same line by their bounding boxes. The horizontal intersection
-        /// determined by the projection onto the y-axis must be more than
+        /// Checks whether 2 text chunks are in the same line by their bounding boxes.
+        /// <para />
+        /// The intersection on vertical is determined by the projection onto the y-axis must be more
+        /// than
         /// <see cref="DEFAULT_INTERSECTION_THRESHOLD"/>
         /// for at least one of the text chunks.
         /// </remarks>
@@ -378,15 +423,44 @@ namespace iText.Pdfocr.Util {
         /// <returns>
         /// 
         /// <see langword="true"/>
-        /// if chunks intersect horizontally,
+        /// if chunks intersect on vertical,
         /// <see langword="false"/>
         /// otherwise
         /// </returns>
-        private static bool AreIntersect(PdfOcrTextBuilder.BoundingBox box1, PdfOcrTextBuilder.BoundingBox box2) {
+        private static bool AreIntersectOnVertical(PdfOcrTextBuilder.BoundingBox box1, PdfOcrTextBuilder.BoundingBox
+             box2) {
             double intersection = Math.Min(box1.maxY, box2.maxY) - Math.Max(box1.minY, box2.minY);
             double firstIntersectPercentage = intersection / box1.GetHeight();
             double secondIntersectPercentage = intersection / box2.GetHeight();
             return Math.Max(firstIntersectPercentage, secondIntersectPercentage) > DEFAULT_INTERSECTION_THRESHOLD;
+        }
+
+        /// <summary>Checks whether 2 text chunks are close to each other on the horizontal.</summary>
+        /// <remarks>
+        /// Checks whether 2 text chunks are close to each other on the horizontal.
+        /// <para />
+        /// If the distance between them is
+        /// <see cref="DEFAULT_DISTANCE_THRESHOLD"/>
+        /// times bigger
+        /// than the biggest chunk, such chunks are treated as not close.
+        /// </remarks>
+        /// <param name="box1">bounding box of the first text chunk</param>
+        /// <param name="box2">bounding box of the second text chunk</param>
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if chunks intersect,
+        /// <see langword="false"/>
+        /// otherwise
+        /// </returns>
+        private static bool AreCloseOnHorizontal(PdfOcrTextBuilder.BoundingBox box1, PdfOcrTextBuilder.BoundingBox
+             box2) {
+            double distance = Math.Min(box1.maxX, box2.maxX) - Math.Max(box1.minX, box2.minX);
+            if (distance >= 0) {
+                // Even intersected
+                return true;
+            }
+            return Math.Abs(distance) < Math.Max(box1.GetWidth(), box2.GetWidth()) * DEFAULT_DISTANCE_THRESHOLD;
         }
 
         /// <summary>Merges list of text infos into single line.</summary>
@@ -568,7 +642,7 @@ namespace iText.Pdfocr.Util {
         /// Class representing parametric representation of a line:
         /// point
         /// <c>(x, y)</c>
-        /// and unit direction vector
+        /// and normalized unit direction vector
         /// <c>(ux, uy)</c>.
         /// </summary>
         private class Line {
@@ -659,6 +733,9 @@ namespace iText.Pdfocr.Util {
             /// </returns>
             public virtual Point Intersection(PdfOcrTextBuilder.Line other) {
                 double det = this.ux * other.uy - other.ux * this.uy;
+                // ux and uy are normalized, so determinant equals to sin(a), where 'a' is an angle between lines.
+                // If det is ~= 0, it means sin(a) ~= 0, what means 'a' ~= 0 or 180 degrees, so lines are either parallel
+                // or collinear, and we won't be able to find an intersection point
                 if (Math.Abs(det) < 1e-10) {
                     return null;
                 }

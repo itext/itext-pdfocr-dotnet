@@ -51,9 +51,19 @@ namespace iText.Pdfocr.Logs {
 
         public const String CANNOT_RETRIEVE_PAGES_FROM_IMAGE = "Cannot get pages from image {0}: {1}";
 
+        public const String CANNOT_RETRIEVE_PAGES_FROM_IMAGE_STREAM = "Cannot get pages from image: {0}";
+
         public const String PAGE_SIZE_IS_NOT_APPLIED = "Page size has no effect when pdf file is being OCRed";
 
         public const String IMAGE_LAYER_NAME_IS_NOT_APPLIED = "Image layer name has no effect when pdf file is being OCRed";
+
+        public const String CANNOT_OPEN_INPUT_STREAM = "Cannot open input stream from file {0}.";
+
+        public const String CANNOT_OPEN_OUTPUT_STREAM = "Cannot open output stream from file {0}.";
+
+        public const String CANNOT_READ_INPUT_STREAM = "Cannot read input stream: {0}.";
+
+        public const String CANNOT_OCR_IMAGE = "Cannot OCR image from page {0} with object number {1}.";
 
         private PdfOcrLogMessageConstant() {
         }

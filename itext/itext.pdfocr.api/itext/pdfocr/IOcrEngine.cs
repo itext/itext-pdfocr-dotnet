@@ -143,13 +143,13 @@ namespace iText.Pdfocr {
         /// Performs OCR using provided
         /// <see cref="IOcrEngine"/>
         /// for the given list of
-        /// input images and saves output to a text file using provided path.
+        /// input images and saves output to a text file with UTF-8 encoding using provided path.
         /// </summary>
         /// <remarks>
         /// Performs OCR using provided
         /// <see cref="IOcrEngine"/>
         /// for the given list of
-        /// input images and saves output to a text file using provided path.
+        /// input images and saves output to a text file with UTF-8 encoding using provided path.
         /// Note that a human reading order is not guaranteed
         /// due to possible specifics of input images (multi column layout, tables etc)
         /// </remarks>
@@ -165,13 +165,13 @@ namespace iText.Pdfocr {
         /// Performs OCR using provided
         /// <see cref="IOcrEngine"/>
         /// for the given list of
-        /// input images and saves output to a text file using provided path.
+        /// input images and saves output to a text file with UTF-8 encoding using provided path.
         /// </summary>
         /// <remarks>
         /// Performs OCR using provided
         /// <see cref="IOcrEngine"/>
         /// for the given list of
-        /// input images and saves output to a text file using provided path.
+        /// input images and saves output to a text file with UTF-8 encoding using provided path.
         /// Note that a human reading order is not guaranteed
         /// due to possible specifics of input images (multi column layout, tables etc)
         /// </remarks>

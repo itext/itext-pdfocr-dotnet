@@ -1,7 +1,8 @@
-Please notice that the following fonts are used with the mentioned below licenses.
+This software uses the following test resources under the following licenses:
 
-* Cairo-Regular - SIL Open Font License, Version 1.1
-* FreeSans - GPL license you can find following the link: https://www.gnu.org/licenses
-* Kosugi-Regular - Apache License, Version 2.0.
-* NotoSans-Regular - SIL Open Font License, Version 1.1
-* NotoSansSC-Regular - SIL Open Font License, Version 1.1
+Cairo-Regular.ttf | SIL Open Font License v1.1 | LICENSE_OFL-1.1.txt | Based on "https://fonts.google.com/specimen/Cairo"
+FreeSans.ttf | GPL license | LICENSE_GNU.txt | Based on "https://savannah.gnu.org/projects/freefont"
+Kosugi-Regular.ttf | Apache License, Version 2.0 | LICENSE_APACHE.txt | Based on "https://fonts.google.com/specimen/Kosugi"
+NotoSans-Regular.ttf | SIL Open Font License v1.1 | LICENSE_OFL-1.1.txt | Based on "https://github.com/googlefonts/noto-fonts"
+NotoSansSC-Regular.otf | SIL Open Font License v1.1 | LICENSE_OFL-1.1.txt | Based on "https://fonts.google.com/noto/specimen/Noto+Sans+SC"
+NotoSansThai-Regular.ttf | SIL Open Font License v1.1 | LICENSE_OFL-1.1.txt | Based on "https://fonts.google.com/noto/specimen/Noto+Sans+Thai"

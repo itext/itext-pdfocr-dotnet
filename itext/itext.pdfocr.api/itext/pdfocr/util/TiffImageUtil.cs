@@ -27,6 +27,7 @@ using Microsoft.Extensions.Logging;
 using iText.Commons;
 using iText.Commons.Utils;
 using iText.IO.Image;
+using iText.IO.Source;
 using iText.IO.Util;
 using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Logs;
@@ -59,6 +60,26 @@ namespace iText.Pdfocr.Util {
 
             return new List<IronSoftware.Drawing.AnyBitmap>();
         }
+        
+        /// <summary>Retrieves all images from a TIFF file.</summary>
+        /// <param name="inputImage">TIFF stream to retrieve images from</param>
+        /// <returns>
+        /// the list of
+        /// <see cref="IronSoftware.Drawing.AnyBitmap"/>
+        /// 's in the TIFF stream
+        /// </returns>
+        public static IList<IronSoftware.Drawing.AnyBitmap> GetAllImages(MemoryStream inputImage) {
+            try {
+                IronSoftware.Drawing.AnyBitmap originalImage = IronSoftware.Drawing.AnyBitmap.FromStream(inputImage);
+                inputImage.Reset();
+                return (List<IronSoftware.Drawing.AnyBitmap>)originalImage.GetAllFrames;
+            } catch (Exception e) {
+                LOGGER.LogError(MessageFormatUtil.Format(
+                    PdfOcrLogMessageConstant.CANNOT_RETRIEVE_PAGES_FROM_IMAGE_STREAM, e.Message));
+            }
+
+            return new List<IronSoftware.Drawing.AnyBitmap>();
+        }
 
         /// <summary>Checks whether image type is TIFF.</summary>
         /// <param name="inputImage">
@@ -74,6 +95,24 @@ namespace iText.Pdfocr.Util {
         /// otherwise
         /// </returns>
         public static bool IsTiffImage(FileInfo inputImage) {
+            return GetImageType(inputImage) == ImageType.TIFF;
+        }
+        
+        /// <summary>Checks whether image type is TIFF.</summary>
+        /// <param name="inputImage">
+        /// input
+        /// <see cref="System.IO.MemoryStream"/>
+        /// to check for TIFF image type
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if provided image is TIFF image,
+        /// <see langword="false"/>
+        /// otherwise
+        /// </returns>
+        public static bool IsTiffImage(MemoryStream inputImage)
+        {
             return GetImageType(inputImage) == ImageType.TIFF;
         }
 
@@ -94,10 +133,47 @@ namespace iText.Pdfocr.Util {
             }
             catch (Exception e) {
                 LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
-                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS).SetMessageParams
-                    (inputImage.FullName);
+                throw new PdfOcrInputException(MessageFormatUtil.Format(
+                    PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS, inputImage.FullName));
             }
             return type;
+        }
+        
+        /// <summary>Gets the image type.</summary>
+        /// <param name="inputImage">
+        /// input
+        /// <see cref="System.IO.MemoryStream"/>
+        /// to get image type for
+        /// </param>
+        /// <returns>
+        /// image type
+        /// <see cref="iText.IO.Image.ImageType"/>
+        /// </returns>
+        public static ImageType GetImageType(MemoryStream inputImage) {
+            ImageType type;
+            try {
+                type = ImageTypeDetector.DetectImageType(inputImage);
+                inputImage.Reset();
+            }
+            catch (Exception e) {
+                LOGGER.LogError(MessageFormatUtil.Format(PdfOcrLogMessageConstant.CANNOT_READ_INPUT_IMAGE, e.Message));
+                throw new PdfOcrInputException(PdfOcrExceptionMessageConstant.CANNOT_READ_INPUT_IMAGE_PARAMS).SetMessageParams("");
+            }
+            return type;
+        }
+        
+        /// <summary>Counts number of pages in the provided tiff image.</summary>
+        /// <param name="inputImage">
+        /// input image
+        /// <see cref="System.IO.FileInfo"/>
+        /// </param>
+        /// <returns>number of pages in the provided TIFF image</returns>
+        public static int GetNumberOfPageTiff(FileInfo inputImage) {
+            RandomAccessFileOrArray raf = new RandomAccessFileOrArray(
+                new RandomAccessSourceFactory().CreateBestSource(inputImage.FullName));
+            int numOfPages = TiffImageData.GetNumberOfPages(raf);
+            raf.Close();
+            return numOfPages;
         }
     }
 }

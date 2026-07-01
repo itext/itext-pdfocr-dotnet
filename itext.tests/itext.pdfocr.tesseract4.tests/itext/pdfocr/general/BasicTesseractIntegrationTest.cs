@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.IO.Source;
 using iText.Kernel.Colors;
@@ -35,6 +36,7 @@ using iText.Pdfocr.Exceptions;
 using iText.Pdfocr.Tesseract4;
 using iText.Pdfocr.Tesseract4.Exceptions;
 using iText.Pdfocr.Tesseract4.Logs;
+using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.Pdfocr.General {
@@ -326,6 +328,17 @@ namespace iText.Pdfocr.General {
             foreach (String line in expectedOutput) {
                 NUnit.Framework.Assert.IsTrue(iText.Commons.Utils.StringUtil.ReplaceAll(result, "\r", "").Contains(line));
             }
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(Tesseract4LogMessageConstant.CANNOT_READ_INPUT_IMAGE, LogLevel = LogLevelConstants.ERROR)]
+        public virtual void Jpeg2000Test() {
+            String imageName = "bee.jp2";
+            FileInfo imageFile = new FileInfo(TEST_IMAGES_DIRECTORY + imageName);
+            Exception e = NUnit.Framework.Assert.Catch(typeof(PdfOcrInputTesseract4Exception), () => GetTextUsingTesseractFromImage
+                (tesseractReader, imageFile));
+            NUnit.Framework.Assert.AreEqual(MessageFormatUtil.Format(PdfOcrTesseract4ExceptionMessageConstant.INCORRECT_INPUT_IMAGE_FORMAT
+                , imageName), e.Message);
         }
 
         /// <summary>Parse text from image and compare with expected.</summary>
