@@ -6,7 +6,7 @@
         <title>iText pdfOcr</title>
         <authors>Apryse Software</authors>
         <owners>Apryse Software</owners>
-        <licenseUrl>https://www.gnu.org/licenses/agpl-3.0.html</licenseUrl>
+        <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
         <projectUrl>https://itextpdf.com/products/pdf-ocr-text-recognition</projectUrl>
         <icon>ITSC-avatar.png</icon>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
