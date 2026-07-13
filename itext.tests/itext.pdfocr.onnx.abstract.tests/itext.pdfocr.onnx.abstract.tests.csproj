@@ -6,15 +6,7 @@
     <RootNamespace />
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <OutputType>library</OutputType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.0' ">
-    <OutputType>Library</OutputType>
-    <DefineConstants>NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -54,18 +46,8 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <PackageReference Include="Microsoft.CodeCoverage" Version="16.11.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-  </ItemGroup>
+ 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
     <!-- OpenCvSharp4.official.runtime.linux-x64 can't be used, see comment in DEVSIX-9744 for more information -->
     <PackageReference Include="Sdcb.OpenCvSharp4.mini.runtime.linux-x64" Version="4.11.0.35" />
