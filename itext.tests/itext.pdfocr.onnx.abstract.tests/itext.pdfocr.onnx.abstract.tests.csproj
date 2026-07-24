@@ -1,63 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  <PropertyGroup Label="Configuration">
-    <SignAssembly>True</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <RootNamespace />
-  </PropertyGroup>
-  <PropertyGroup>
-    <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ApplicationIcon />
-    <OutputTypeEx>library</OutputTypeEx>
-    <StartupObject />
-    <AssemblyName>itext.pdfocr.onnx.abstract.tests</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="itext.snk" />
-  </ItemGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;1591;1570;1572;1573;1574;1580;1584;1658</NoWarn>
-    <!-- TODO DEVSIX-9075: remove this suppression -->
-    <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
-  </PropertyGroup>
+    <!-- The .csrpoj file uses ../Directory.Build.props as a source for some configurations -->
+    <PropertyGroup>
+        <AssemblyName>itext.pdfocr.onnx.abstract.tests</AssemblyName>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOsPlatform('Windows'))">
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">win-x64</RuntimeIdentifier>
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'x86' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X86'">win-x86</RuntimeIdentifier>
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">win-arm64</RuntimeIdentifier>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOsPlatform('OSX'))">
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">osx-x64</RuntimeIdentifier>
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">osx-arm64</RuntimeIdentifier>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOsPlatform('Linux'))">
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">linux-x64</RuntimeIdentifier>
-    <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">linux-arm64</RuntimeIdentifier>
-  </PropertyGroup>
-  <PropertyGroup>
-    <!-- Default fallback -->
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOsPlatform('Windows'))">
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">win-x64</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'x86' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X86'">win-x86</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">win-arm64</RuntimeIdentifier>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOsPlatform('OSX'))">
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">osx-x64</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">osx-arm64</RuntimeIdentifier>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == '' And $([MSBuild]::IsOsPlatform('Linux'))">
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'X64'">linux-x64</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64' Or '$([System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture)' == 'Arm64'">linux-arm64</RuntimeIdentifier>
+    </PropertyGroup>
+    <PropertyGroup>
+        <!-- Default fallback -->
+        <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
 
- 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
-    <!-- OpenCvSharp4.official.runtime.linux-x64 can't be used, see comment in DEVSIX-9744 for more information -->
-    <PackageReference Include="Sdcb.OpenCvSharp4.mini.runtime.linux-x64" Version="4.11.0.35" />
-    <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\itext\itext.pdfocr.onnx.abstract\itext.pdfocr.onnx.abstract.csproj" />
-    <PackageReference Include="itext.pdftest" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
-    <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
-    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
-    <ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
+        <!-- OpenCvSharp4.official.runtime.linux-x64 can't be used, see comment in DEVSIX-9744 for more information -->
+        <PackageReference Include="Sdcb.OpenCvSharp4.mini.runtime.linux-x64" Version="4.11.0.35" />
+        <PackageReference Include="OpenCvSharp4.runtime.osx_arm64" Version="4.8.1-rc" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\itext\itext.pdfocr.onnx.abstract\itext.pdfocr.onnx.abstract.csproj" />
+        
+        <PackageReference Include="itext.pdftest" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+        <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+        
+        <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+        <ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+    </ItemGroup>
 </Project>

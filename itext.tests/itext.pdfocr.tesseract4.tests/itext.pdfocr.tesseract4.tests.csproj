@@ -1,47 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
-  
-  <PropertyGroup Label="Configuration">
-    <SignAssembly>True</SignAssembly>
-    <DelaySign>False</DelaySign>
-    <RootNamespace />
-  </PropertyGroup>
+    <!-- The .csrpoj file uses ../Directory.Build.props as a source for some configurations -->
     <PropertyGroup>
-      <TargetFrameworks>net461</TargetFrameworks>
-      <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ApplicationIcon />
-    <OutputTypeEx>library</OutputTypeEx>
-    <StartupObject />
-    <AssemblyName>itext.pdfocr.tesseract4.tests</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
- 
-  <ItemGroup>
-    <None Include="itext.snk" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-  </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj" />
-    <PackageReference Include="itext.pdftest" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
-    <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
-    <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
-    <ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Tesseract">
-      <HintPath>..\..\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+        <!-- TargetFrameworks property from ../Directory.Build.props is overriden -->
+        <TargetFrameworks>net461</TargetFrameworks>
+        <AssemblyName>itext.pdfocr.tesseract4.tests</AssemblyName>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="System.Drawing" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\itext\itext.pdfocr.tesseract4\itext.pdfocr.tesseract4.csproj" />
+        
+        <PackageReference Include="itext.pdftest" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+        <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+        
+        <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+        <ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Tesseract">
+            <HintPath>..\..\itext\itext.pdfocr.tesseract4\lib\Tesseract.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>
