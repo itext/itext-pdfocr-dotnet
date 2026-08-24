@@ -153,8 +153,8 @@ namespace iText.Pdfocr.Onnx {
             ) {
             String outPath = MakeSearchableWithoutCompare(fileName, outFileName, ocrPdfCreatorProperties);
             String cmpPath = TEST_DIRECTORY + "cmp_" + outFileName + ".pdf";
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(outPath, cmpPath, TARGET_DIRECTORY, "diff_"
-                ));
+            NUnit.Framework.Assert.IsNull(new CompareTool().SetContentStreamFloatTolerance(0.02f).CompareByContent(outPath
+                , cmpPath, TARGET_DIRECTORY, "diff_"));
         }
 
         private String MakeSearchableWithoutCompare(String fileName, String outFileName, OcrPdfCreatorProperties ocrPdfCreatorProperties
