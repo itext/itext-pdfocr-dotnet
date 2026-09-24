@@ -31,10 +31,10 @@
     <ItemGroup>
         <ProjectReference Include="..\..\itext\itext.pdfocr.onnx.cpu\itext.pdfocr.onnx.cpu.csproj" />
         
-        <PackageReference Include="itext.pdftest" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+        <PackageReference Include="itext.pdftest" Version="9.9.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
         <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
         
-        <PackageReference Include="itext.bouncy-castle-adapter" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+        <PackageReference Include="itext.bouncy-castle-adapter" Version="9.9.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
         <ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
     </ItemGroup>
 </Project>
