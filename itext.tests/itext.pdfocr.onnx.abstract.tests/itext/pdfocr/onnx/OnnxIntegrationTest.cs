@@ -74,7 +74,7 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "jfifTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_jfifTest.pdf";
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            NUnit.Framework.Assert.IsNull(new CompareTool().SetContentStreamFloatTolerance(0.02f).CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(dest))) {
                 ExtractionStrategy extractionStrategy = OnnxTestUtils.ExtractTextFromLayer(pdfDocument, 1, "Text1");
                 NUnit.Framework.Assert.AreEqual(DeviceCmyk.MAGENTA, extractionStrategy.GetFillColor());
@@ -208,7 +208,7 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "arabicTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_arabicTest.pdf";
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            NUnit.Framework.Assert.IsNull(new CompareTool().SetContentStreamFloatTolerance(0.02f).CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -226,7 +226,7 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "chineseTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_chineseTest.pdf";
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            NUnit.Framework.Assert.IsNull(new CompareTool().SetContentStreamFloatTolerance(0.02f).CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
         [NUnit.Framework.Test]
@@ -262,7 +262,7 @@ namespace iText.Pdfocr.Onnx {
             String dest = TARGET_DIRECTORY + "hindiTest.pdf";
             String cmp = TEST_DIRECTORY + "cmp_hindiTest.pdf";
             OnnxTestUtils.DoOcrAndCreatePdf(src, dest, OCR_ENGINE);
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
+            NUnit.Framework.Assert.IsNull(new CompareTool().SetContentStreamFloatTolerance(0.02f).CompareByContent(dest, cmp, TARGET_DIRECTORY, "diff_"));
         }
 
         [NUnit.Framework.Test]

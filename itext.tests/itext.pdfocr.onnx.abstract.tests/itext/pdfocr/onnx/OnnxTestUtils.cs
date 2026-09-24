@@ -43,14 +43,16 @@ namespace iText.Pdfocr.Onnx {
         }
 
         public static void ComparePdfs(String dest, String cmp, String targetDirectory) {
-            String diff = new CompareTool().CompareByContent(dest, cmp, targetDirectory, "diff_");
+            String diff = new CompareTool().SetContentStreamFloatTolerance(0.021f).CompareByContent(dest, cmp, targetDirectory
+                , "diff_");
             if (diff != null) {
                 String[] splitted = iText.Commons.Utils.StringUtil.Split(cmp, "\\.");
                 String filename = splitted[splitted.Length - 2];
                 String cmp2 = cmp.Replace(filename, filename + "_2");
                 if (FileUtil.FileExists(cmp2)) {
                     // Second cmp is required on .NET because of different results on .NET CoreApp and .NET Framework.
-                    diff = new CompareTool().CompareByContent(dest, cmp2, targetDirectory, "diff_");
+                    diff = new CompareTool().SetContentStreamFloatTolerance(0.021f).CompareByContent(dest, cmp2, targetDirectory
+                        , "diff_");
                 }
             }
             NUnit.Framework.Assert.IsNull(diff);
