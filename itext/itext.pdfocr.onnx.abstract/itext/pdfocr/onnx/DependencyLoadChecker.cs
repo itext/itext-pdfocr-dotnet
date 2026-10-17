@@ -45,7 +45,7 @@ namespace iText.Pdfocr.Onnx {
         /// in that case constructs exception with a friendlier error message, otherwise, throws exception as is.
         /// </summary>
         /// <param name="throwable">exception or error to process</param>
-        public static void ProcessException(Exception throwable) {
+        internal static void ProcessException(Exception throwable) {
             String throwableMessage = throwable.Message;
             bool isOnnxRuntime = throwable is TypeInitializationException && 
                                  throwableMessage.Contains("Microsoft.ML.OnnxRuntime.NativeMethods");

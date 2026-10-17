@@ -50,7 +50,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         private readonly LinkedList<int> mergeQueue = new LinkedList<int>();
 
         /// <summary>Creates new <see cref="TextBoxSplitter"/> instance.</summary>
-        public TextBoxSplitter() {
+        internal TextBoxSplitter() {
             // Empty constructor in order for default one to not be removed if another one is added.
         }
 
@@ -60,7 +60,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         /// </summary>
         /// <param name="inputs">models inputs to split</param>
         /// <returns>iterator, which outputs split input images</returns>
-        public virtual IEnumerator<IronSoftware.Drawing.AnyBitmap> MapInputs(IEnumerator<IronSoftware.Drawing.AnyBitmap
+        internal virtual IEnumerator<IronSoftware.Drawing.AnyBitmap> MapInputs(IEnumerator<IronSoftware.Drawing.AnyBitmap
             > inputs) {
             if (!mergeQueue.IsEmpty()) {
                 throw new InvalidOperationException(PdfOcrOnnxExceptionMessageConstant.CANNOT_START_ANOTHER_MAPPING_OPERATION
@@ -143,7 +143,7 @@ namespace iText.Pdfocr.Onnx.Recognition {
         /// </summary>
         /// <param name="outputs">text outputs to merge</param>
         /// <returns>iterator, which returns merged images</returns>
-        public virtual IEnumerator<String> MapOutputs(IEnumerator<String> outputs) {
+        internal virtual IEnumerator<String> MapOutputs(IEnumerator<String> outputs) {
             return new _IEnumerator_127(this, outputs);
         }
 

@@ -62,15 +62,17 @@ namespace iText.Pdfocr.Onnx {
             return wrappedEventHelper.GetConfirmationType();
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>
         /// Register all previously saved events to wrapped
         /// <see cref="iText.Pdfocr.AbstractPdfOcrEventHelper"/>.
         /// </summary>
-        public void RegisterAllSavedEvents() {
+        internal void RegisterAllSavedEvents() {
             foreach (AbstractProductITextEvent @event in events) {
                 wrappedEventHelper.OnEvent(@event);
             }
         }
+//\endcond
 
         private static bool IsConfirmForProcessImageOnnxEvent(AbstractProductITextEvent @event) {
             return @event is ConfirmEvent && ((ConfirmEvent)@event).GetConfirmedEvent() is PdfOcrOnnxProductEvent && PdfOcrOnnxProductEvent
